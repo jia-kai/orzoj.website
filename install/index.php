@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri May 07 22:56:55 2010 +0800
+ * $Date: Fri May 28 22:16:24 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  * $License: http://gnu.org/licenses GNU GPLv3
  */
@@ -68,7 +68,7 @@ case 2:
 		echo 'Congruatulations!Connect database successfully.<br>';
 		$usertable = array(
 			'cols' => array(
-				'uid' => array('type' => 'INT32','auto_assign' => true),
+				'id' => array('type' => 'INT32','auto_assign' => true),
 				'username' => array('type' => 'TEXT'),
 				'password' => array('type' => 'TEXT'),
 				'realname' => array('type' => 'TEXT'),
@@ -87,7 +87,7 @@ case 2:
 				'usergroup' => array('type' => 'INT32','default' => 0),
 				'otherinfo' => array('type' => 'TEXT')
 			),
-			'primary key' => 'uid');
+			'primary key' => 'id');
 		if ($db->table_exists($tablepre.'users')) $db->delete_table($tablepre.'users');
 		if ($db->create_table($tablepre.'users',$usertable))
 		{
@@ -101,7 +101,7 @@ case 2:
 		}
 		$problemtable =  array(
 			'cols' => array(
-				'pid' => array('type' => 'INT32','auto_assign' => true),
+				'id' => array('type' => 'INT32','auto_assign' => true),
 				'title' => array('type' => 'TEXT'),
 				'description' => array('type' => 'TEXT'),
 				'inputformat' => array('type' => 'TEXT'),
@@ -125,7 +125,7 @@ case 2:
 				'memorylimit' => array('type' => 'TEXT'),
 				'otherinfo' => array('type' => 'TEXT'),
 			),
-			'primary key' => 'pid'
+			'primary key' => 'id'
 		);
 		if ($db->table_exists($tablepre.'problems')) $db->delete_table($tablepre.'problems');
 		if ($db->create_table($tablepre.'problems',$problemtable))

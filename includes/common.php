@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: common.php
- * $Date: Tue May 11 23:10:14 2010 +0800
+ * $Date: Thu May 27 22:05:58 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -116,3 +116,10 @@ function option_set($option_name,$new_value)
 			return false;
 	}
 }
+
+function expression_calc($expression,$variable)
+{
+
+}
+
+

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: error.php
- * $Date: Sun Apr 18 05:11:16 2010 -0400
+ * $Date: Fri May 28 22:39:07 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -68,3 +68,25 @@ function error_get_latest_message()
 		return false;
 }
 
+
+function error_throw_a_complete_html_page($errorinfo)
+{
+?>
+<html>
+<head>
+<meta http-equiv="Content-type" content="content-type:text/html;charset=utf-8">
+<title>Orz Online Judge -- Error Page</title>
+</head>
+<body>
+Error:An error occurred at <?=strftime('%a %b %d %H:%M:%S %Y')?>.<br>
+The detailed infomation about the error is:
+<br>
+<textarea readonly cols=50 rows=10>
+<?=htmlspecialchars($errorinfo)?>
+</textarea><br>
+Please visit <a href="http://www.marveteam.org/" target="_blank">MarveTeam</a> or <a href="http://orzoj.marveteam.org/" target="_blank">Orz Online Judge</a> for more details.<br>
+If you think it a bug,please report this bug to the developers.<br>
+</body>
+</html>
+<?php
+}

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Sun May 23 11:26:24 2010 +0800
+ * $Date: Fri May 28 22:16:51 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -120,7 +120,7 @@ function problem_edit($id,$title,$description,$inputformat,$outputformat,$sample
 		'otherinfo' => serialize($otherinfo)
 	);
 	global $db,$tablepre;
-	$wclause = array('param1' => 'pid','op1' => 'int_eq','param2' => $id);
+	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => $id);
 	if ($db->update_data($tablepre.'problems',$new_data,$wclause) !== FALSE)
 		return true;
 	else
@@ -133,7 +133,7 @@ function problem_edit($id,$title,$description,$inputformat,$outputformat,$sample
 function problem_delete($id)
 {
 	global $db,$tablepre;
-	$wclause = array('param1' => 'pid','op1' => 'int_eq','param2' => $id);
+	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => $id);
 	if ($db->delete_item($tablepre.'problems',$wclause) !== FALSE)
 		return true;
 	else

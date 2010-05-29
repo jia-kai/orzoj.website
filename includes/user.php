@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user.php
- * $Date: Sun May 16 11:21:23 2010 +0800
+ * $Date: Fri May 28 22:18:00 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -157,7 +157,7 @@ function user_change_personal_info($uid,$email,$programminglanguage)
 		'email' => $email,
 		'programminglanguage' => (int)($programminglanguage)
 	);
-	if (($affected_rows = $db->update_data($tablepre.'users',$newdata,array('param1' => 'uid','op1' => 'int_eq','param2' => (int)($uid)))) !== FALSE)
+	if (($affected_rows = $db->update_data($tablepre.'users',$newdata,array('param1' => 'id','op1' => 'int_eq','param2' => (int)($uid)))) !== FALSE)
 		return true;
 	else
 	{
@@ -177,7 +177,7 @@ function user_change_password($uid,$old_pass,$new_pass)
 {
 	global $db,$tablepre;
 	$newdata = array('password' => user_pwd_gen($new_pass));
-	$wclause = array('param1' => 'uid','op1' => 'int_eq','param2' => (int)($uid));
+	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => (int)($uid));
 	$content = $db->select_from($tablepre.'users',NULL,$wclause);
 	if (!is_array($content))
 	{
@@ -215,7 +215,7 @@ function user_change_password($uid,$old_pass,$new_pass)
 function user_change_question_ans_answer($uid,$old_answer,$new_question,$new_an)
 {
 	global $db,$tablepre;
-	$wclause = array('param1' => 'uid','op1' => 'int_eq','param2' => (int)($uid));
+	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => (int)($uid));
 	$content = $db->select_from($tablepre.'users',NULL,$wclause);
 	if (!is_array($content))
 	{
@@ -249,7 +249,7 @@ function user_change_question_ans_answer($uid,$old_answer,$new_question,$new_an)
 function user_delete_by_uid($uid)
 {
 	global $db,$tablepre;
-	$whereclause = array('param1' => 'uid','op1' => 'int_eq','param2' => (int)($uid));
+	$whereclause = array('param1' => 'id','op1' => 'int_eq','param2' => (int)($uid));
 	if ($db->delete_item($tablepre.'users',$whereclause) !== FALSE)
 		return true;
 	else
@@ -267,7 +267,7 @@ function user_delete_by_uid($uid)
 function user_search_by_uid($uid)
 {
 	global $db,$tablepre;
-	$whereclause = array('param1' => 'uid','op1' => 'int_eq','param2' => (int)($uid));
+	$whereclause = array('param1' => 'id','op1' => 'int_eq','param2' => (int)($uid));
 	$content = $db->select_from($tablepre.'users',NULL,$whereclause);
 	if ($content && count($content))
 		return $content[0];
@@ -322,7 +322,7 @@ function user_login($uid,$expires = NULL)
 		cookie_set('user_uid',$uid,$expires);
 		cookie_set('user_checksum',$info['checksum'],$expires);
 		$newinfo =  array('lastlogintime' => time(),'lastloginip' => $_SERVER['REMOTE_ADDR']);
-		if ($db->update_data($tablepre.'users',$newinfo,array('param1' => 'uid','op1' => 'int_eq','param2' => (int)($uid))))
+		if ($db->update_data($tablepre.'users',$newinfo,array('param1' => 'id','op1' => 'int_eq','param2' => (int)($uid))))
 			return true;
 		else
 		{

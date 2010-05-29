@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: rewrite.php
- * $Date: Fri May 28 22:15:24 2010 +0800
+ * $File: xml.php
+ * $Date: Wed May 26 22:35:11 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -31,29 +31,25 @@
 
 if (!defined('IN_ORZOJ')) exit;
 
-require $root_path.'includes/common.php';
+require_once $root_path."includes/xml/xml2array.php";
+require_once $root_path."includes/xml/array2xml.php";
 
-
-/**
- * @decparted
- */
-function rewrite_generate_url($type,$info)
+function xmlfile_to_array($file)
 {
-	$url = get_option('weburl');
-	extract($info,EXTR_PREFIX_ALL,'info');
-	switch ($type)
-	{
-	case 'problemview':
-		$rt = $url.'index.php?action=problemview&';
-		if ($info_method = 'id')
-			$rt .= 'method=id&id='.$info_id;
-		else if ($info_method = 'slug')
-			$rt .= 'method=slug&slug='.urlencode($info_slug);
-		break;
-	case 'problemlist':
-		$rt = $url.'index.php?action=problemlist&page='.$info_page;
-		break;
-	}
+	return xml_to_array(file_get_contents($file));
+}
+
+function xml_to_array($content)
+{
+	$dd = new  XMLToArray();
+	$arrs = $dd->XMLToArray($content);
+	return $arrs;
+}
+
+function array_to_xml($arr)
+{
+	$dd = new ArrayToXML();
+	return $dd->ArrayToXML($arr);
 }
 
 
