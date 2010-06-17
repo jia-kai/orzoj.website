@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user.php
- * $Date: Fri May 28 22:18:00 2010 +0800
+ * $Date: Wed Jun 16 10:10:44 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -104,7 +104,7 @@ function user_salt_gen($length = 10)
  * @param int programminglanguage ususally used programming language.
  * @return bool|int on success,true or new user's id will be returned.Otherwise,false will be returned,and $errormsg is set.
  */
-function user_add($username,$password,$email,$question,$answer,$programminglanguage,$otherinfo)
+function user_create($username,$password,$email,$question,$answer,$programminglanguage,$otherinfo)
 {
 	global $db,$tablepre;
 	$insert_data = array(
@@ -115,7 +115,7 @@ function user_add($username,$password,$email,$question,$answer,$programminglangu
 		'answer' => user_pwd_gen($answer),
 		'programminglanguage' => (int)($programminglanguage),
 		'regtime' => time(),
-		'checksum' => user_salt_gen(64),
+		'checksum' => sha1(uniqid()),
 		'regip' => $_SERVER['REMOTE_ADDR'],
 		'otherinfo' => serialize($otherinfo)
 	);
@@ -264,7 +264,7 @@ function user_delete_by_uid($uid)
  * @param int $uid user id 
  * @return array|bool if success,an array with user info in it is returned.Otherwise,FALSE is returned.
  */
-function user_search_by_uid($uid)
+function user_search_by_id($uid)
 {
 	global $db,$tablepre;
 	$whereclause = array('param1' => 'id','op1' => 'int_eq','param2' => (int)($uid));
@@ -273,7 +273,6 @@ function user_search_by_uid($uid)
 		return $content[0];
 	else if (is_array($content))
 	{
-		error_set_message(__('User not found.'));
 		return false;
 	}
 	else

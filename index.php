@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Fri May 28 22:35:50 2010 +0800
+ * $Date: Wed Jun 16 00:13:31 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -34,12 +34,14 @@ $root_path = dirname(__FILE__).'/';
 $includes_path = $root_path.'includes/';
 
 require_once $root_path.'config.php';
+require_once $includes_path.'common.php';
 require_once $includes_path.'db/'.$db_type.'.php';
 require_once $includes_path."error.php";
+require_once $includes_path.'plugin.php';
 
 $dbclass = 'dbal_'.$db_type;
 $db = new $dbclass;
-if ($db->connect($db_host,$db_port,$db_user,$db_password,$db_name))
+if ($db->connect($db_host,$db_port,$db_user,$db_password,$db_dbname))
 {
 	$connect_result = true;
 	unset($db_password);
@@ -61,12 +63,60 @@ EOF
 
 $action = NULL;
 
+//load autoload option;
+$autoloadoption = $db->select_from($tablepre.'options',NULL,array('param1' => 'autoload','op1' => 'int_eq','1'));
+if ($autoloadoption)
+{
+	$options = array();
+	foreach ($autoloadoption as $option)
+	{
+		if ($option['optionname'] == 'db' || $option['optionname'] == 'options') continue;
+		$options[$option['optionname']] = $option['optionvalue'];
+	}
+	extract($options,EXTR_OVERWRITE);
+}
+else
+{
+	error_throw_a_complete_html_page(<<<EOF
+Failed to load autoload options.
+Error information is . {$db->error()}
+EOF
+);
+}
+
+
 switch ($_GET['action'])
 {
 case 'problemview':
+	require_once $includes_path.'problem.php';
+	if ($_GET['method'] == 'id')
+	{
+		$kernv_this_problem= problem_search_by_id($_GET['id']);
+	}
+	else if ($_GET['method'] == 'slug')
+	{
+		$kernv_this_problem = problem_search_by_slug($_GET['slug']);
+	}
+	else
+	{
+		$action = array('action' => '404');
+		break;
+	}
+	if ($kernv_this_problem != FALSE)
+	{
+		$kernv_this_problem = apply_filters('after_load_problem',$kernv_this_problem);
+	}
+	else
+		$action = array('action' => '404');
 	break;
 default:
-	$action = 'index';
+	$action = array('action' => 'index');
 }
+
+
+switch ($action['action'])
+{
+}
+
 
 

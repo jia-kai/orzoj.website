@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: common.php
- * $Date: Thu May 27 22:05:58 2010 +0800
+ * $Date: Wed Jun 16 00:01:16 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -117,9 +117,48 @@ function option_set($option_name,$new_value)
 	}
 }
 
+/**
+ * Calculate expression (Unsecure)
+ * FIXME:It's un-secured.
+ * @param string $expression an expression with +-* / and variables
+ * @param array $variable variables' list.Variable begins with dollor($).Variable name is case sensitive
+ */
 function expression_calc($expression,$variable)
 {
-
+	$search = array();
+	$replace = array();
+	foreach ($variable as $key => $v)
+	{
+		if (substr($key,0,1) == '$')
+		{
+			$search[] = $key;
+			$replace[] = $v;
+		}
+	}
+	$expression = str_replace($search,$replace,$expression);
+	$expression = '$result = '.$expression.';';
+	eval($expression);
+	return $result;
 }
 
+/**
+ * Get Real User IP
+ */
+function get_real_ip()
+{
+	return $_SERVER['REMOTE_ADDR'];
+}
+
+
+function site_siteurl()
+{
+	global $siteurl;
+	return $siteurl;
+}
+
+function site_email()
+{
+	global $email;
+	return $email;
+}
 

@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: rewrite.php
- * $Date: Tue Jun 15 23:54:35 2010 +0800
+ * $File: status.php
+ * $Date: Thu Jun 17 16:29:37 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -30,37 +30,4 @@
  */
 
 if (!defined('IN_ORZOJ')) exit;
-
-require $root_path.'includes/common.php';
-
-
-/**
- * @decrepated
- */
-function rewrite_generate_url($type,$info)
-{
-	$url = get_option('weburl');
-	extract($info,EXTR_PREFIX_ALL,'info');
-	switch ($type)
-	{
-	case 'problemview':
-		$rt = $url.'index.php?action=problemview&';
-		if ($info_method = 'id')
-			$rt .= 'method=id&id='.$info_id;
-		else if ($info_method = 'slug')
-			$rt .= 'method=slug&slug='.urlencode($info_slug);
-		break;
-	case 'problemlist':
-		$rt = $url.'index.php?action=problemlist&page='.$info_page;
-		break;
-	case 'page':
-		$rt = $url.'?action=page&method=';
-		if ($info_method = 'slug')
-			$rt .= 'slug&slug='.urlencode($info_slug);
-		else if ($info_method = 'id')
-			$rt .= 'id&id='.$info_id;
-		break;
-	}
-}
-
 

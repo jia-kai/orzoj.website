@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Sat May 22 22:39:32 2010 +0800
+ * $Date: Tue Jun 15 23:31:18 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
 */
 /**
@@ -183,6 +183,27 @@ class dbal
 	function get_query_amount()
 	{
 		return $this->_get_query_amount();
+	}
+	/**
+	 * Start a transaction
+	 */
+	function transaction_begin()
+	{
+		return $this->_transaction_begin();
+	}
+	/**
+	 * Commit a transaction
+	 */
+	function transaction_commit()
+	{
+		return $this->_transaction_commit();
+	}
+	/**
+	 * Rollback meaning discard a transaction
+	 */
+	function transaction_rollback()
+	{
+		return $this->_transaction_rollback();
 	}
 }
 

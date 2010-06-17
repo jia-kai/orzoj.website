@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri May 28 22:16:24 2010 +0800
+ * $Date: Thu Jun 17 16:12:15 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  * $License: http://gnu.org/licenses GNU GPLv3
  */
@@ -48,10 +48,12 @@ Table Prefix:<input name="tablepre" type="text"><br>
 	break;
 case 2:
 ?>
-<title>Orz Online Judge Installation -- Step 3</title>
+<title>Orz Online Judge Installation -- Step 2</title>
 </head>
 <body>
 <?php
+	require_once "sql.php";
+	require_once "generate_config.php";
 	$dbhost = $_POST['dbhost'];
 	$dblayer = $_POST['dblayer'];
 	$dbport = $_POST['dbport'];
@@ -59,103 +61,38 @@ case 2:
 	$dbpassword = $_POST['dbpassword'];
 	$dbname = $_POST['dbname'];
 	$tablepre = $_POST['tablepre'];
+	conf_file_generate($dblayer,$dbhost,$dbport,$dbusername,$dbpassword,$dbname,$tablepre);
 	$root_path = rtrim(realpath('../'),'/').'/';
 	require $root_path.'includes/db/'.$dblayer.'.php';
 	$classname = 'dbal_'.$dblayer;
 	$db = new $classname;
 	if ($db->connect($dbhost,$dbport,$dbusername,$dbpassword,$dbname))
 	{
-		echo 'Congruatulations!Connect database successfully.<br>';
-		$usertable = array(
-			'cols' => array(
-				'id' => array('type' => 'INT32','auto_assign' => true),
-				'username' => array('type' => 'TEXT'),
-				'password' => array('type' => 'TEXT'),
-				'realname' => array('type' => 'TEXT'),
-				'email' => array('type' => 'TEXT'),
-				'question' => array('type' => 'TEXT'),
-				'answer' => array('type' => 'TEXT'),
-				'regtime' => array('type' => 'INT64'),
-				'regip' => array('type' => 'TEXT'),
-				'lastlogintime' => array('type' => 'INT64'),
-				'lastloginip' => array('type' => 'TEXT'),
-				'submitamount' => array('type' => 'INT32','default' => 0),
-				'acamount' => array('type' => 'INT32','default' => 0),
-				'acrate' => array('type' => 'INT32','default' => 0),
-				'programminglanguage' => array('type' => 'INT32','default' => 0),
-				'checksum' => array('type' => 'TEXT'),
-				'usergroup' => array('type' => 'INT32','default' => 0),
-				'otherinfo' => array('type' => 'TEXT')
-			),
-			'primary key' => 'id');
-		if ($db->table_exists($tablepre.'users')) $db->delete_table($tablepre.'users');
-		if ($db->create_table($tablepre.'users',$usertable))
+		$tables = array(
+			array('options','Option Table',$optiontable),
+			array('users','User Table',$usertable),
+			array('problems','Problem Table',$problemtable),
+			array('problemgroups','Problem Group Table',$problemgrouptable),
+			array('problemtypes','Problem Type Table',$problemtypetable),
+			array('contets','Contest Table',$contesttable),
+			array('problem_contest_relationships','Problem Contest Relationship Table',$problemcontestbindtable),
+			array('problem_problemtype_relationships','Problem-ProblemType Relationship Table',$problem_pbtype_relationshiptable),
+			array('problem_problemgroup_relationships','Problem-ProblemGroup Relationship Table',$problem_pbgroup_relationshiptable),
+			array('rules','Rule Table',$ruletable)
+			);
+		foreach ($tables as $table)
 		{
-			echo 'Create user table succesfully.<br>';
-			ob_flush();
-		}
-		else
-		{
-			echo 'Failed to create user table.Error message:'.htmlspecialchars($db->error()).'<br>';
-			die('</body></html>');
-		}
-		$problemtable =  array(
-			'cols' => array(
-				'id' => array('type' => 'INT32','auto_assign' => true),
-				'title' => array('type' => 'TEXT'),
-				'description' => array('type' => 'TEXT'),
-				'inputformat' => array('type' => 'TEXT'),
-				'outputformat' => array('type' => 'TEXT'),
-				'sampleinput' => array('type' => 'TEXT'),
-				'sampleoutput' => array('type' => 'TEXT'),
-				'hint' => array('type' => 'TEXT'),
-				'source' => array('type' => 'TEXT'),
-				'submitamount' => array('type' => 'INT32','default' => 0),
-				'acamount' => array('type' => 'INT32','default' => 0),
-				'acrate' => array('type' => 'INT32','default' => 0),
-				'difficulty' => array('type' => 'INT32','default' => 0),
-				'contestid' => array('type' => 'INT32','default' => 0),
-				'dataid' => array('type' => 'INT32','default' => 0),
-				'typeid' => array('type' => 'INT32','default' => 0),
-				'problemgroupid' => array('type' => 'INT32','default' => 0),
-				'usefile' => array('type' => 'INT32'),
-				'inputfile' => array('type' => 'TEXT'),
-				'outputfile' => array('type' => 'TEXT'),
-				'timelimit' => array('type' => 'TEXT'),
-				'memorylimit' => array('type' => 'TEXT'),
-				'otherinfo' => array('type' => 'TEXT'),
-			),
-			'primary key' => 'id'
-		);
-		if ($db->table_exists($tablepre.'problems')) $db->delete_table($tablepre.'problems');
-		if ($db->create_table($tablepre.'problems',$problemtable))
-		{
-			echo 'Create problem table succesfully.<Br>';
-			ob_flush();
-		}
-		else
-		{
-			echo 'Failed to create problem table.Error message:'.htmlspecialchars($db->error()).'<Br>';
-			die('</body></html>');
-		}
-		$problemgrouptable = array(
-			'cols' => array(
-				'id' => array('type' => 'INT32','auto_assign' => true),
-				'groupname' => array('type' => 'TEXT'),
-				'parent' => array('type' => 'INT32','default' => 0)
-				),
-			'primary key' => 'id',
-		);
-		if ($db->table_exists($tablepre.'problemgroups')) $db->delete_table($tablepre.'problems');
-		if ($db->create_table($tablepre.'problemgroups',$problemgrouptable))
-		{
-			echo 'Create Problem Group table succesfully.<Br>';
-			ob_flush();
-		}
-		else
-		{
-			echo 'Failed to create problem group table.Error message:'.htmlspecialchars($db->error()).'<Br>';
-			die('</body></html>');
+			if ($db->table_exists($tablepre.$table[0])) $db->delete_table($tablepre.$table[0]);
+			if ($db->create_table($tablepre.$table[0],$table[2]))
+			{
+				echo 'Create '.$table[1].' successfully.<br>';
+				ob_flush();
+			}
+			else
+			{
+				echo 'Failed to create '.$table[1].'.Error information:'.htmlspecialchars($db->error());
+				die('</body></html>');
+			}
 		}
 	}
 	else

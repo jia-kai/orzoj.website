@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Fri May 28 22:16:51 2010 +0800
+ * $Date: Thu Jun 17 16:30:06 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -37,6 +37,7 @@ require_once "error.php";
 /**
  * Add Problem
  * @param string $title Title of the problem
+ * @param string $slug URL Friendly name of the problem
  * @param string $description Description of the problem
  * @param string $inputformat Input Format of the problem
  * @param string $outputformat Output Format of the problem
@@ -54,12 +55,13 @@ require_once "error.php";
  * @param string $outputfile If file I/O,it't the output file's name
  * @return bool on success,TRUE or new problem's id is returned.Otherwise,false is returned and $errormsg is set.
  */
-function problem_add($title,$description,$inputformat,$outputformat,$sampleinput,$sampleoutput,$source,$hint,
+function problem_add($title,$slug,$description,$inputformat,$outputformat,$sampleinput,$sampleoutput,$source,$hint,
 	$difficulty,$contestid,$dataid,$type,$problemgroup,$usefile,$inputfile,$outputfile,$timelimit,$memorylimit,$otherinfo
 	)
 {
 	$insert_data = array(
 		'title' => $title,
+		'slug' => ((strlen($slug) > 0 )?($slug):($title)),
 		'description' => $description,
 		'inputformat' => $inputformat,
 		'outputformat' => $outputformat,
@@ -94,12 +96,13 @@ function problem_add($title,$description,$inputformat,$outputformat,$sampleinput
 	}
 }
 
-function problem_edit($id,$title,$description,$inputformat,$outputformat,$sampleinput,$sampleoutput,$source,$hint,
+function problem_edit($id,$title,$slug,$description,$inputformat,$outputformat,$sampleinput,$sampleoutput,$source,$hint,
 	$difficulty,$contestid,$dataid,$type,$problemgroup,$usefile,$inputfile,$outputfile,$timelimit,$memorylimit
 )
 {
 	$new_data= array(
 		'title' => $title,
+		'slug' => ((strlen($slug) > 0)?($slug):($title)),
 		'description' => $description,
 		'inputformat' => $inputformat,
 		'outputformat' => $outputformat,
@@ -133,16 +136,66 @@ function problem_edit($id,$title,$description,$inputformat,$outputformat,$sample
 function problem_delete($id)
 {
 	global $db,$tablepre;
+	$db->transaction_begin();
 	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => $id);
 	if ($db->delete_item($tablepre.'problems',$wclause) !== FALSE)
-		return true;
+	{
+		$w2 = array('param1' => 'problemid','op1' => 'int_eq','param2' => $id);
+		if ($db->delete_item($tablepre.'problem_contest_relationships',$w2) !== FALSE)
+		{
+			if ($db->delete_item($tablepre.'problem_problemgroup_relationships',$w2) !== FALSE)
+			{
+				if ($db->delete_item($tablepre.'problem_problemtype_relationships',$w2) !== FALSE)
+				{
+					$db->transaction_commit();
+					return true;
+				}
+				else
+					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+			}
+			else
+					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+			$db->transaction_rollback();
+
+		}
+		else
+		{
+			error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+			$db->transaction_rollback();
+			return false;
+		}
+	}
 	else
 	{
 		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+		$db->transaction_rollback();
 		return false;
 	}
 }
 
+function problem_search_by_id($id)
+{
+	global $db,$tablepre;
+	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => $id);
+	$content = $db->select_from($tablepre.'problems',NULL,$wclause);
+	if (count($content) > 0)
+		return $content[0];
+	else
+		return false;
+}
+
+
+function problem_search_by_slug($slug)
+{
+	global $db,$tablepre;
+	$wclause = array('param1' => 'slug','op1' => 'int_eq','param2' => $slug);
+	$content = $db->select_from($tablepre.'problems',NULL,$wclause);
+	if (count($content) > 0)
+		return $content[0];
+	else
+		return false;
+
+}
 
 /**
  * Add problem group
@@ -191,14 +244,26 @@ function problem_group_edit($groupid,$groupname,$parent = 0)
 function problem_group_delete($groupid)
 {
 	global $db,$tablepre;
+	$db->transaction_begin();
 	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => (int)($groupid));
 	if ($db->delete_item($tablepre.'problemgroups',$wclause) === FALSE)
 	{
 		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+		$db->transaction_rollback();
 		return false;
 	}
 	else
+	{
+		$w2 = array('param1' => 'problemgroupid','op1' => 'int_eq','param2' => (int)($groupid));
+		if ($db->delete_item($tablepre.'problem_problemgroup_relationships',$w2) === false)
+		{
+			error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+			$db->transaction_rollback();
+			return false;
+		}
+		$db->transaction_commit();
 		return true;
+	}
 }
 
 
@@ -242,12 +307,24 @@ function problem_type_edit($typeid,$typename)
 function problem_type_delete($typeid)
 {
 	global $db,$tablepre;
+	$db->transaction_begin();
 	$wclause = array('param1' =>'id','op1'=> 'int_eq','param2' => (int)($typeid));
 	if ($db->delete_item($tablepre.'problemtypes',$wclause) !== FALSE)
+	{
+		$w2 = array('param1' => 'problemtypeid','op1' => 'int_eq','param2' => (int)($typeid));
+		if ($db->delete_item($tablepre.'problem_problemtype_relationships',$w2) === false)
+		{
+			error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+			$db->transaction_rollback();
+			return false;
+		}
+		$db->transaction_commit();
 		return true;
+	}
 	else
 	{
 		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+		$db->transaction_rollback();
 		return false;
 	}
 }

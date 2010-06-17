@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Sat May 22 22:32:06 2010 +0800
+ * $Date: Wed Jun 16 22:34:14 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -52,7 +52,7 @@ class dbal_mysql extends dbal
 	/**
 	 * decleare engine,character,collate after creating
 	 */
-	var $add_after_create_table = 'ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci';
+	var $add_after_create_table = 'ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci';
 	/**
 	 * Query Counts
 	 */
@@ -117,7 +117,7 @@ class dbal_mysql extends dbal
 	{
 		/* {{{ */
 		$cols = $structure['cols'];
-		$sql .= 'CREATE TABLE `'.$tablename.'` ( ';
+		$sql = 'CREATE TABLE `'.$tablename.'` ( ';
 		$current =1;
 		$tocount = count($cols);
 		foreach ($cols as $colname => $colstruc)
@@ -128,11 +128,11 @@ class dbal_mysql extends dbal
 			{
 				$tmp.= 'DEFAULT \''.$this->_escape_string($colstruc['default']).'\' ';
 			}
-			if ($colstruc['auto_assign'])
+			if (isset($colstruc['auto_assign']) && $colstruc['auto_assign'])
 			{
 				$tmp.=' auto_increment ';
 			}
-			if ($structure['primary key'] == $colname)
+			if (isset($structure['primary key']) && $structure['primary key'] == $colname)
 				$tmp.=' PRIMARY KEY ';
 			if ($current != $tocount) $tmp.=',';
 			$current++;
@@ -367,6 +367,27 @@ class dbal_mysql extends dbal
 	function _get_query_amount()
 	{
 		return $this->querycount;
+	}
+	/**
+	 * @access private
+	 */
+	function _transaction_begin()
+	{
+		return $this->_query("BEGIN;");
+	}
+	/**
+	 * @access private
+	 */
+	function _transaction_commit()
+	{
+		return $this->_query("COMMIT;");
+	}
+	/**
+	 * @access private
+	 */
+	function _transaction_rollback()
+	{
+		return $this->_query("ROLLBACK;");
 	}
 }
 /*
