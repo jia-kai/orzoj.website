@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Thu Jun 17 16:30:06 2010 +0800
+ * $Date: Fri Jul 02 20:35:03 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -46,10 +46,10 @@ require_once "error.php";
  * @param string $source The source of this problem
  * @param string $hint Hints
  * @param int $difficulty the difficulty $difficulty / 100
- * @param int $contestid id of the contest
+ * @param array(int) $contestid id of the contest
  * @param int $dataid id of the data
- * @param int $type type of the problem
- * @param int $problemgroup group of the problem
+ * @param array(int) $type type of the problem
+ * @param array(int) $problemgroup group of the problem
  * @param bool $usefile use file I/O or not
  * @param string $inputfile if file I/O,it's the input file's name
  * @param string $outputfile If file I/O,it't the output file's name
@@ -59,6 +59,8 @@ function problem_add($title,$slug,$description,$inputformat,$outputformat,$sampl
 	$difficulty,$contestid,$dataid,$type,$problemgroup,$usefile,$inputfile,$outputfile,$timelimit,$memorylimit,$otherinfo
 	)
 {
+	global $db,$tablepre;
+	$db->transaction_begin();
 	$insert_data = array(
 		'title' => $title,
 		'slug' => ((strlen($slug) > 0 )?($slug):($title)),
@@ -70,28 +72,83 @@ function problem_add($title,$slug,$description,$inputformat,$outputformat,$sampl
 		'source' => $source,
 		'hint' => $hint,
 		'difficulty' => (int)($difficulty),
-		'contestid' => (int)($contestid),
 		'dataid' => (int)($dataid),
-		'typeid' => array($type),
-		'problemgroupid' => array($problemgroup),
-		'usefile' => (((int)$usefile > 0)?true:false),
+		'usefile' => (int)((((int)$usefile > 0)?true:false)),
 		'inputfile' => $inputfile,
 		'outputfile' => $outputfile,
 		'timelimit' => $timelimit,
 		'memorylimit' => $memorylimit,
 		'otherinfo' => serialize($otherinfo)
 		);
-	global $db,$tablepre;
 	if (($insert_id = $db->insert_into($tablepre.'problems',$insert_data)) !== FALSE)
 	{
-		if ($insert_id !== TRUE)
-			return $insert_id;
+		if ($insert_id === TRUE)
+		{
+			$db->transaction_rollback();
+			error_set_message(__('Can\'t fetch new problem\'s ID'));
+			return false;
+		}
 		else
+		{
+			foreach ($type as $key => $a_type)
+			{
+				$insert_type_data = array(
+					'problemid' => $insert_id,
+					'typeid' => $a_type
+				);
+				if ($db->insert_into($tablepre.'problem_problemtype_relationships',$insert_type_data))
+				{
+					continue;
+				}
+				else
+				{
+					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+					$db->transaction_rollback();
+					return false;
+				}
+			}
+			foreach ($problemgroup as $key => $a_group)
+			{
+				$insert_type_data = array(
+					'problemid' => $insert_id,
+					'problemgroupid' => $a_group
+				);
+				if ($db->insert_id($tablepre.'problem_problemgroup_relationships',$insert_type_data))
+				{
+					continue;
+				}
+				else
+				{
+					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+					$db->transaction_rollback();
+					return false;
+				}
+			}
+			foreach ($contestid as $key => $a_contest)
+			{
+				$insert_type_data = array(
+					'problemid' => $insert_id,
+					'contestid' => $a_contest
+				);
+				if ($db->insert_into($tablepre.'problem_contest_relationships',$insert_type_data))
+				{
+					continue;
+				}
+				else
+				{
+					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+					$db->transaction_rollback();
+					return false;
+				}
+			}
+			$db->transaction_commit();
 			return true;
+		}
 	}
 	else
 	{
 		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+		$db->transaction_rollback();
 		return false;
 	}
 }
@@ -100,9 +157,12 @@ function problem_edit($id,$title,$slug,$description,$inputformat,$outputformat,$
 	$difficulty,$contestid,$dataid,$type,$problemgroup,$usefile,$inputfile,$outputfile,$timelimit,$memorylimit
 )
 {
-	$new_data= array(
+
+	global $db,$tablepre;
+	$db->transaction_begin();
+	$new_data = array(
 		'title' => $title,
-		'slug' => ((strlen($slug) > 0)?($slug):($title)),
+		'slug' => ((strlen($slug) > 0 )?($slug):($title)),
 		'description' => $description,
 		'inputformat' => $inputformat,
 		'outputformat' => $outputformat,
@@ -111,24 +171,80 @@ function problem_edit($id,$title,$slug,$description,$inputformat,$outputformat,$
 		'source' => $source,
 		'hint' => $hint,
 		'difficulty' => (int)($difficulty),
-		'contestid' => (int)($contestid),
 		'dataid' => (int)($dataid),
-		'typeid' => array($type),
-		'problemgroupid' => array($problemgroup),
-		'usefile' => (((int)$usefile > 0)?true:false),
+		'usefile' => (int)((((int)$usefile > 0)?true:false)),
 		'inputfile' => $inputfile,
 		'outputfile' => $outputfile,
 		'timelimit' => $timelimit,
 		'memorylimit' => $memorylimit,
 		'otherinfo' => serialize($otherinfo)
-	);
-	global $db,$tablepre;
+		);
 	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => $id);
 	if ($db->update_data($tablepre.'problems',$new_data,$wclause) !== FALSE)
+	{
+		$insert_id = $id;
+		$db->delete_item($tablepre.'problem_problemgroup_relationships',array('param1' => 'problemid','op1' => 'int_eq','param2' => $insert_id));
+		$db->delete_item($tablepre.'problem_problemtype_relationships',array('param1' => 'problemid','op1' => 'int_eq','param2' => $insert_id));
+		$db->delete_item($tablepre.'problem_contest_relationships',array('param1' => 'problemid','op1' => 'int_eq','param2' => $insert_id));
+		foreach ($type as $key => $a_type)
+		{
+			$insert_type_data = array(
+				'problemid' => $insert_id,
+				'typeid' => $a_type
+			);
+			if ($db->insert_into($tablepre.'problem_problemtype_relationships',$insert_type_data))
+			{
+				continue;
+			}
+			else
+			{
+				error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+				$db->transaction_rollback();
+				return false;
+			}
+		}
+		foreach ($problemgroup as $key => $a_group)
+		{
+			$insert_type_data = array(
+				'problemid' => $insert_id,
+				'problemgroupid' => $a_group
+			);
+			if ($db->insert_id($tablepre.'problem_problemgroup_relationships',$insert_type_data))
+			{
+				continue;
+			}
+			else
+			{
+				error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+				$db->transaction_rollback();
+				return false;
+			}
+		}
+		foreach ($contestid as $key => $a_contest)
+		{
+			$insert_type_data = array(
+				'problemid' => $insert_id,
+				'contestid' => $a_contest
+			);
+			if ($db->insert_into($tablepre.'problem_contest_relationships',$insert_type_data))
+			{
+				continue;
+			}
+			else
+			{
+				error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+				$db->transaction_rollback();
+				return false;
+			}
+		}
+
+		$db->transaction_commit;
 		return true;
+	}
 	else
 	{
 		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+		$db->transaction_rollback();
 		return false;
 	}
 }
@@ -154,7 +270,7 @@ function problem_delete($id)
 					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
 			}
 			else
-					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+				error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
 			$db->transaction_rollback();
 
 		}
@@ -197,6 +313,35 @@ function problem_search_by_slug($slug)
 
 }
 
+
+function problem_search_by_problemgroup($groupid)
+{
+	global $db,$tablepre;
+	$db->directquery =false;
+	$sub_query = $db->select_from($tablepre.'problem_problemgroup_relationships','problemid',array('param1' => 'problemgroupid','op1' => 'int_eq','param2' => $groupid));
+	$db->directquery = true;
+	return $db->select_from($tablepre.'problems',NULL,array('param1' => 'problemid','op1' => 'subquery_in','param2' => $sub_query[0]));
+}
+
+function problem_search_by_contest($contestid)
+{
+	global $db,$tablepre;
+	$db->directquery =false;
+	$sub_query = $db->select_from($tablepre.'problem_contest_relationships','problemid',array('param1' => 'contestid','op1' => 'int_eq','param2' => $groupid));
+	$db->directquery = true;
+	return $db->select_from($tablepre.'problems',NULL,array('param1' => 'problemid','op1' => 'subquery_in','param2' => $sub_query[0]));
+
+}
+
+function problem_search_by_problemtype($typeid)
+{
+	global $db,$tablepre;
+	$db->directquery =false;
+	$sub_query = $db->select_from($tablepre.'problem_problemtype_relationships','problemid',array('param1' => 'problemtypeid','op1' => 'int_eq','param2' => $groupid));
+	$db->directquery = true;
+	return $db->select_from($tablepre.'problems',NULL,array('param1' => 'problemid','op1' => 'subquery_in','param2' => $sub_query[0]));
+}
+
 /**
  * Add problem group
  * @param string $groupname name of problem group
@@ -223,6 +368,7 @@ function problem_group_add($groupname,$parent = 0)
 		return false;
 	}
 }
+
 
 function problem_group_edit($groupid,$groupname,$parent = 0)
 {

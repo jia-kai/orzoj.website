@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Tue Jun 15 23:31:18 2010 +0800
+ * $Date: Fri Jul 02 20:04:48 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
 */
 /**
@@ -32,9 +32,15 @@ if (!defined('IN_ORZOJ')) exit;
 
 /**
  * Database abstract laywer base
+ * If dbal.directquery is set to true.
+ * Functions which will generate query statements will return the statements(array) instead of querying result.
  */
 class dbal
 {
+	/**
+	 * Direct Query(true) or Return SQL Statement(FALSE)
+	 */
+	var $directquery = false;
 	/**
 	 * the link resource
 	 */
@@ -204,6 +210,21 @@ class dbal
 	function transaction_rollback()
 	{
 		return $this->_transaction_rollback();
+	}
+
+	/**
+	 * Make a Query
+	 */
+	function query($query)
+	{
+		return $this->_query();
+	}
+	/**
+	 * Make queries
+	 */
+	function queries($queries)
+	{
+		return $this->_queries($queries);
 	}
 }
 

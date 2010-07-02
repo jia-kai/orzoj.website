@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: contest.php
- * $Date: Thu Jun 17 16:28:32 2010 +0800
+ * $Date: Wed Jun 23 23:08:26 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -40,9 +40,10 @@ if (!defined('IN_ORZOJ')) exit;
  * @param int $end_time end  time
  * @param string $description description of contest
  * @param array $judge_server available judge server for this content
- * @param NULL|bool $password if null,it's a public contest,otherwise,It's the password for entering the contest.
+ * @param int $public Whether the contest and its problems are public.If $public = 1,it's completely public.If $public=2,it's not public.If $public = 3,it will switch to public after the contest. 
+ * @param array $auth if $public != 1 ,auth info is requried.
  */
-function contest_create($name,$rule,$start_time,$end_time,$description,$judge_server,$password)
+function contest_create($name,$rule,$start_time,$end_time,$description,$judge_server,$public,$auth)
 {
 	$newdata = array(
 		'name' => $name,
@@ -50,7 +51,9 @@ function contest_create($name,$rule,$start_time,$end_time,$description,$judge_se
 		'starttime' => $start_time,
 		'endtime' => $end_time,
 		'description' => $description,
-		'judgeserver' => addslashes($judge_server)
+		'judgeserver' => addslashes($judge_server),
+		'public' =>  (int)($public),
+		'auth' => addslashes($auth)
 		);
 }
 
@@ -144,12 +147,13 @@ function rule_edit($ruleid,$rulename,$whentojudge,$sortby)
 function rule_delete($ruleid)
 {
 	global $db,$tablepre;
+	$db->transaction_begin();
+	$w1 = array('param1' => 'ruleid','op1' => 'int_eq','param2' => $ruleid);
 	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => $ruleid);
 	if ($db->delete_item($tablepre.'rules',$wclause) !== false)
 		return true;
 	else
 		return false;
 }
-
 
 

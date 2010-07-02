@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Wed Jun 16 22:34:14 2010 +0800
+ * $Date: Fri Jul 02 20:15:27 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -74,7 +74,7 @@ class dbal_mysql extends dbal
 		if ($port > 0) $host = $host.':'.$port;
 		if (@$this->linker = mysql_connect($host,$user,$passwd))
 		{
-			@mysql_query("SET NAMES $charset",$this->linker);
+			@mysql_query("SET NAMES {$this->charset}",$this->linker);
 			$this->querycount++;
 			if (@mysql_select_db($database,$this->linker))
 			{
@@ -140,8 +140,13 @@ class dbal_mysql extends dbal
 		}
 		$sql.=') ';
 		$sql.=$this->add_after_create_table;
-		if ($this->_query($sql)) return true;
-		else return false;
+		if ($this->directquery)
+		{
+			if ($this->_query($sql)) return true;
+			else return false;
+		}
+		else
+			return array($sql);
 		/* }}} */
 	}
 	/**
@@ -172,10 +177,15 @@ class dbal_mysql extends dbal
 		$sql.='DELETE FROM `'.$tablename.'` ';
 		if ($where = $this->_build_where_clause($whereclause))
 			$sql.=$where;
-		if ($this->_query($sql))
-			return mysql_affected_rows($this->linker);
+		if ($this->directquery)
+		{
+			if ($this->_query($sql))
+				return mysql_affected_rows($this->linker);
+			else
+				return false;
+		}
 		else
-			return false;
+			return array($sql);
 	}
 	/**
 	 * @access private
@@ -204,8 +214,13 @@ class dbal_mysql extends dbal
 			$cid++;
 		}
 		$sql.=$rowssql.') VALUES('.$valuesql.')';
-		if ($this->_query($sql)) return mysql_insert_id($this->linker);
-		else return false;
+		if ($this->directquery)
+		{
+			if ($this->_query($sql)) return mysql_insert_id($this->linker);
+			else return false;
+		}
+		else
+			return array($sql);
 	}
 	/**
 	 * @access private
@@ -213,8 +228,13 @@ class dbal_mysql extends dbal
 	function _delete_table($tablename)
 	{
 		$sql = 'DROP TABLE `'.$tablename.'`';
-		if ($this->_query($sql)) return true;
-		else return false;
+		if ($this->directquery)
+		{
+			if ($this->_query($sql)) return true;
+			else return false;
+		}
+		else
+			return array($sql);
 	}
 	/**
 	 * @access private
@@ -222,10 +242,15 @@ class dbal_mysql extends dbal
 	function _table_exists($tablename)
 	{
 		$sql = 'SELECT * FROM `'.$tablename.'`';
-		if ($this->_query($sql))
-			return true;
+		if ($this->directquery)
+		{
+			if ($this->_query($sql))
+				return true;
+			else
+				return false;
+		}
 		else
-			return false;
+			return array($sql);
 	}
 	/**
 	 * @access private
@@ -238,10 +263,12 @@ class dbal_mysql extends dbal
 		{
 			$sql.=implode(',',$rows).' ';
 		}
-		else
+		else if ($rows == NULL)
 		{
 			$sql.=' * ';
 		}
+		else
+			$sql.=' `'.$rows.'` ';
 		$sql.='FROM `'.$tablename.'`';
 		if (is_array($whereclause)) $sql.=$this->_build_where_clause($whereclause);
 		if (is_array($orderby))
@@ -264,13 +291,18 @@ class dbal_mysql extends dbal
 			else $sql.='LIMIT 0';
 			if ($amount > 0) $sql.=','.$amount;
 		}
-		if ($rt = $this->_query($sql))
+		if ($this->directquery)
 		{
-			return $this->_fetch_all_rows($rt);
+			if ($rt = $this->_query($sql))
+			{
+				return $this->_fetch_all_rows($rt);
+			}
+			else
+				return false;
 		}
 		else
-			return false;
-		/* }}} */
+			return array($sql);
+			/* }}} */
 	}
 	/**
 	 * @access private
@@ -297,18 +329,18 @@ class dbal_mysql extends dbal
 	function _build_where_clause($whereclause)
 	{
 		if (is_array($whereclause))
-			return ' WHERE '.$this->_dfs_make_where($whereclause).' ';
+			return ' WHERE '.$this->_recursive_make_where($whereclause).' ';
 		else
 			return false;
 	}
 	/**
 	 * @access private
 	 */
-	function _dfs_make_where($whereclause)
+	function _recursive_make_where($whereclause)
 	{
 		/* {{{ */
 		$sql = ' ( ';
-		if (is_array($whereclause['param1'])) $sql.=$this->_dfs_make_where($whereclause['param1']);
+		if (is_array($whereclause['param1'])) $sql.=$this->_recursive_make_where($whereclause['param1']);
 		else $sql.=$this->_escape_string($whereclause['param1']);
 		switch ($whereclause['op1'])
 		{
@@ -328,11 +360,21 @@ class dbal_mysql extends dbal
 		case 'int_ge'://GREATER THAN OR EQUAL
 			$sql.=' >= \''.$this->_escape_string($whereclause['param2']).'\'';
 			break;
-		case 'logincal_and'://LOGICAL AND
+		case 'logical_and'://LOGICAL AND
 			if (is_array($whereclause['param2']))
-				$sql.=' AND '.$this->_dfs_make_where($whereclause['param2']);
+				$sql.=' AND '.$this->_recursive_make_where($whereclause['param2']);
 			else
 				$sql.=' AND '.$whereclause['param2'];
+			break;
+		case 'logical_or'://LOGICAL OR
+			if (is_array($whereclause['param2']))
+				$sql.=' OR '.$this->_recursive_make_where($whereclause['param2']);
+			else
+				$sql.=' OR '.$whereclause['param2'];
+			break;
+
+		case 'subquery_in'://In Sub Query
+			$sql.=' IN ('.$whereclause['param2'].')';
 			break;
 		}
 		$sql.=' ) ';
@@ -344,7 +386,6 @@ class dbal_mysql extends dbal
 	 */
 	function _update_data($tablename,$newvalue,$whereclause = NULL)
 	{
-		echo "<Br>\n";
 		$sql.='UPDATE `'.$tablename.'` SET ';
 		foreach ($newvalue as $key => $value)
 		{
@@ -354,12 +395,17 @@ class dbal_mysql extends dbal
 		$sql.= implode(',',$newvalue);
 		$sql.=' ';
 		if (is_array($whereclause)) $sql.=$this->_build_where_clause($whereclause);
-		if ($rt = $this->_query($sql))
+		if ($this->directquery)
 		{
-			return mysql_affected_rows($this->linker);
+			if ($rt = $this->_query($sql))
+			{
+				return mysql_affected_rows($this->linker);
+			}
+			else
+				return false;
 		}
 		else
-			return false;
+			return array($sql);
 	}
 	/**
 	 * @access private
@@ -373,21 +419,55 @@ class dbal_mysql extends dbal
 	 */
 	function _transaction_begin()
 	{
-		return $this->_query("BEGIN;");
+		if ($this->directquery)
+		{
+			return $this->_query("BEGIN;");
+		}
+		else
+			return array("BEGIN;");
 	}
 	/**
 	 * @access private
 	 */
 	function _transaction_commit()
 	{
-		return $this->_query("COMMIT;");
+		if ($this->directquery)
+		{
+			return $this->_query("COMMIT;");
+		}
+		else
+			return array("COMMIT;");
 	}
 	/**
 	 * @access private
 	 */
 	function _transaction_rollback()
 	{
-		return $this->_query("ROLLBACK;");
+		if ($this->directquery)
+		{
+			return $this->_query("ROLLBACK;");
+		}
+		else
+			return array("ROLLBACK;");
+	}
+	/**
+	 * @access private
+	 */
+	function _queries($queries)
+	{
+		$this->transaction_begin();
+		foreach ($queries as $query)
+		{
+			if ($this->_query($query))
+				continue;
+			else
+			{
+				$this->transaction_rollback();
+				return false;
+			}
+		}
+		$this->transaction_commit();
+		return true;
 	}
 }
 /*
