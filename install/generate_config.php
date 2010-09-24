@@ -7,12 +7,12 @@ function conf_file_generate($dblayer,$dbhost,$dbport,$dbusername,$dbpassword,$db
 	$tablepre = addslashes($tablepre);
 	$str = <<<EOF
 <?php
-\$dblayer = '$dblayer';
-\$dbhost = '$dbhost';
-\$dbport = '$dbport';
-\$dbusername = '$dbusername';
-\$dbpassword = '$dbpassword';
-\$dbname = '$dbname';
+\$db_type = '$dblayer';
+\$db_host = '$dbhost';
+\$db_port = '$dbport';
+\$db_user = '$dbusername';
+\$db_password = '$dbpassword';
+\$db_dbname = '$dbname';
 \$tablepre = '$tablepre';
 EOF;
 	$fpointer = fopen("config.php","w");

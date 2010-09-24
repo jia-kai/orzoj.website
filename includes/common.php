@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: common.php
- * $Date: Wed Jun 16 00:01:16 2010 +0800
+ * $Date: Fri Sep 24 16:57:46 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -98,7 +98,7 @@ function option_set($option_name,$new_value)
 {
 	global $db,$tablepre;
 	$ndt  = array('option_name' => $option_name,
-		'option_value' => $option_value
+		'option_value' => $new_value
 		);
 	$wclause = array('param1' => 'option_name','op1' => 'text_eq','param2' => $option_name);
 	if (option_get($option_name) !== FALSE)

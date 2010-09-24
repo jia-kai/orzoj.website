@@ -6,8 +6,8 @@ class ArrayToXML
 	{
 		if (is_array($arr))
 		{
-			$xmlstring = "<?xml version=\"1.0\"?>\n";
-			$xmlstring.= $this->xml_generator($arr['_ELEMENTS']);
+/*			$xmlstring = "<?xml version=\"1.0\"?>\n"; */
+			$xmlstring= $this->xml_generator($arr['_ELEMENTS']);
 			return $xmlstring;
 		}
 		else

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Fri Jul 02 20:35:03 2010 +0800
+ * $Date: Wed Sep 22 16:34:26 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -34,20 +34,15 @@ if (!defined('IN_ORZOJ')) exit;
 require_once "l10n.php";
 require_once "error.php";
 
+
 /**
  * Add Problem
  * @param string $title Title of the problem
  * @param string $slug URL Friendly name of the problem
+ * @param string $unique_code unique code to match problem and test-data. 
  * @param string $description Description of the problem
- * @param string $inputformat Input Format of the problem
- * @param string $outputformat Output Format of the problem
- * @param string $sampleinput The Sample Input
- * @param string $sampleoutput The Sample Output
- * @param string $source The source of this problem
- * @param string $hint Hints
  * @param int $difficulty the difficulty $difficulty / 100
  * @param array(int) $contestid id of the contest
- * @param int $dataid id of the data
  * @param array(int) $type type of the problem
  * @param array(int) $problemgroup group of the problem
  * @param bool $usefile use file I/O or not
@@ -55,198 +50,98 @@ require_once "error.php";
  * @param string $outputfile If file I/O,it't the output file's name
  * @return bool on success,TRUE or new problem's id is returned.Otherwise,false is returned and $errormsg is set.
  */
-function problem_add($title,$slug,$description,$inputformat,$outputformat,$sampleinput,$sampleoutput,$source,$hint,
-	$difficulty,$contestid,$dataid,$type,$problemgroup,$usefile,$inputfile,$outputfile,$timelimit,$memorylimit,$otherinfo
-	)
+function problem_add($title,$slug,$unique_code,$description,$difficulty,$contestid,
+	$type,$problemgroup,
+	$usefile,$inputfile,$outputfile,$timelimit,$memorylimit,$publishtime)
 {
 	global $db,$tablepre;
 	$db->transaction_begin();
-	$insert_data = array(
+	$data = array(
 		'title' => $title,
-		'slug' => ((strlen($slug) > 0 )?($slug):($title)),
+		'slug' => $slug,
+		'code' => $unique_code,
 		'description' => $description,
-		'inputformat' => $inputformat,
-		'outputformat' => $outputformat,
-		'sampleinput' => $sampleinput,
-		'sampleoutput' => $sampleoutput,
-		'source' => $source,
-		'hint' => $hint,
-		'difficulty' => (int)($difficulty),
-		'dataid' => (int)($dataid),
-		'usefile' => (int)((((int)$usefile > 0)?true:false)),
+		'difficulty' => $difficulty,
+		'usefile' => $usefile,
 		'inputfile' => $inputfile,
 		'outputfile' => $outputfile,
 		'timelimit' => $timelimit,
 		'memorylimit' => $memorylimit,
-		'otherinfo' => serialize($otherinfo)
+		'publishtime' => ($publishtime > 0 ? $publishtime : time())
 		);
-	if (($insert_id = $db->insert_into($tablepre.'problems',$insert_data)) !== FALSE)
+	if (($insert_id = $db->insert_into($tablepre.'problems',$data)) !== FALSE)
 	{
-		if ($insert_id === TRUE)
+		if ($insert_id == 0)
 		{
+			error_set_message(sprintf(__('Can\'t fetch the ID of new problem.')));
 			$db->transaction_rollback();
-			error_set_message(__('Can\'t fetch new problem\'s ID'));
-			return false;
+			return FALSE;
 		}
 		else
 		{
-			foreach ($type as $key => $a_type)
+			
+			$success = apply_filters('after_add_problem',true,$insert_id);
+			if ($success)
 			{
-				$insert_type_data = array(
-					'problemid' => $insert_id,
-					'typeid' => $a_type
-				);
-				if ($db->insert_into($tablepre.'problem_problemtype_relationships',$insert_type_data))
-				{
-					continue;
-				}
-				else
-				{
-					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
-					$db->transaction_rollback();
-					return false;
-				}
+				$db->transaction_commit();
+				return TRUE;
 			}
-			foreach ($problemgroup as $key => $a_group)
+			else
 			{
-				$insert_type_data = array(
-					'problemid' => $insert_id,
-					'problemgroupid' => $a_group
-				);
-				if ($db->insert_id($tablepre.'problem_problemgroup_relationships',$insert_type_data))
-				{
-					continue;
-				}
-				else
-				{
-					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
-					$db->transaction_rollback();
-					return false;
-				}
+				$db->transaction_rollback();
+				return FALSE;
 			}
-			foreach ($contestid as $key => $a_contest)
-			{
-				$insert_type_data = array(
-					'problemid' => $insert_id,
-					'contestid' => $a_contest
-				);
-				if ($db->insert_into($tablepre.'problem_contest_relationships',$insert_type_data))
-				{
-					continue;
-				}
-				else
-				{
-					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
-					$db->transaction_rollback();
-					return false;
-				}
-			}
-			$db->transaction_commit();
-			return true;
 		}
 	}
 	else
 	{
 		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
 		$db->transaction_rollback();
-		return false;
+		return FALSE;
 	}
+	$db->transaction_commit();
 }
 
-function problem_edit($id,$title,$slug,$description,$inputformat,$outputformat,$sampleinput,$sampleoutput,$source,$hint,
-	$difficulty,$contestid,$dataid,$type,$problemgroup,$usefile,$inputfile,$outputfile,$timelimit,$memorylimit
-)
+function problem_edit($id,$title,$slug,$description,$difficulty,$usefile,$inputfile,$outputfile,$timelimit,$memorylimit,$publishtime)
 {
 
 	global $db,$tablepre;
 	$db->transaction_begin();
-	$new_data = array(
+	$data = array(
 		'title' => $title,
-		'slug' => ((strlen($slug) > 0 )?($slug):($title)),
+		'slug' => $slug,
 		'description' => $description,
-		'inputformat' => $inputformat,
-		'outputformat' => $outputformat,
-		'sampleinput' => $sampleinput,
-		'sampleoutput' => $sampleoutput,
-		'source' => $source,
-		'hint' => $hint,
-		'difficulty' => (int)($difficulty),
-		'dataid' => (int)($dataid),
-		'usefile' => (int)((((int)$usefile > 0)?true:false)),
+		'difficulty' => $difficulty,
+		'usefile' => $usefile,
 		'inputfile' => $inputfile,
 		'outputfile' => $outputfile,
 		'timelimit' => $timelimit,
 		'memorylimit' => $memorylimit,
-		'otherinfo' => serialize($otherinfo)
-		);
+		'publishtime' => ($publishtime > 0 ? $publishtime : time())
+	);
 	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => $id);
-	if ($db->update_data($tablepre.'problems',$new_data,$wclause) !== FALSE)
+	$insert_id = $id;
+	if ($db->update_data($tablepre.'problems',$data,$wclause) !== FALSE)
 	{
-		$insert_id = $id;
-		$db->delete_item($tablepre.'problem_problemgroup_relationships',array('param1' => 'problemid','op1' => 'int_eq','param2' => $insert_id));
-		$db->delete_item($tablepre.'problem_problemtype_relationships',array('param1' => 'problemid','op1' => 'int_eq','param2' => $insert_id));
-		$db->delete_item($tablepre.'problem_contest_relationships',array('param1' => 'problemid','op1' => 'int_eq','param2' => $insert_id));
-		foreach ($type as $key => $a_type)
+		$success = apply_filters('after_add_problem',true,$insert_id);
+		if ($success)
 		{
-			$insert_type_data = array(
-				'problemid' => $insert_id,
-				'typeid' => $a_type
-			);
-			if ($db->insert_into($tablepre.'problem_problemtype_relationships',$insert_type_data))
-			{
-				continue;
-			}
-			else
-			{
-				error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
-				$db->transaction_rollback();
-				return false;
-			}
+			$db->transaction_commit();
+			return TRUE;
 		}
-		foreach ($problemgroup as $key => $a_group)
+		else
 		{
-			$insert_type_data = array(
-				'problemid' => $insert_id,
-				'problemgroupid' => $a_group
-			);
-			if ($db->insert_id($tablepre.'problem_problemgroup_relationships',$insert_type_data))
-			{
-				continue;
-			}
-			else
-			{
-				error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
-				$db->transaction_rollback();
-				return false;
-			}
+			$db->transaction_rollback();
+			return FALSE;
 		}
-		foreach ($contestid as $key => $a_contest)
-		{
-			$insert_type_data = array(
-				'problemid' => $insert_id,
-				'contestid' => $a_contest
-			);
-			if ($db->insert_into($tablepre.'problem_contest_relationships',$insert_type_data))
-			{
-				continue;
-			}
-			else
-			{
-				error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
-				$db->transaction_rollback();
-				return false;
-			}
-		}
-
-		$db->transaction_commit;
-		return true;
 	}
 	else
 	{
 		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
 		$db->transaction_rollback();
-		return false;
+		return FALSE;
 	}
+	$db->transaction_commit();
 }
 
 function problem_delete($id)
@@ -263,8 +158,17 @@ function problem_delete($id)
 			{
 				if ($db->delete_item($tablepre.'problem_problemtype_relationships',$w2) !== FALSE)
 				{
-					$db->transaction_commit();
-					return true;
+					$successful = apply_filters('after_deleting_problem',true,$id);
+					if ($successful)
+					{
+						$db->transaction_commit();
+						return true;
+					}
+					else
+					{
+						$db->transaction_rollback();
+						return false;
+					}
 				}
 				else
 					error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
@@ -295,7 +199,13 @@ function problem_search_by_id($id)
 	$wclause = array('param1' => 'id','op1' => 'int_eq','param2' => $id);
 	$content = $db->select_from($tablepre.'problems',NULL,$wclause);
 	if (count($content) > 0)
+	{
+		if (isset($content[0]['otherinfo']))
+		{
+			$content[0]['otherinfo'] = unserialize($content[0]['otherinfo']);
+		}
 		return $content[0];
+	}
 	else
 		return false;
 }
@@ -307,7 +217,13 @@ function problem_search_by_slug($slug)
 	$wclause = array('param1' => 'slug','op1' => 'int_eq','param2' => $slug);
 	$content = $db->select_from($tablepre.'problems',NULL,$wclause);
 	if (count($content) > 0)
+	{
+		if (isset($content[0]['otherinfo']))
+		{
+			$content[0]['otherinfo'] = unserialize($content[0]['otherinfo']);
+		}
 		return $content[0];
+	}
 	else
 		return false;
 
@@ -473,5 +389,10 @@ function problem_type_delete($typeid)
 		$db->transaction_rollback();
 		return false;
 	}
+}
+
+function problem_gen_html($id,$plain,$cache = FALSE)
+{
+	return $plain;
 }
 

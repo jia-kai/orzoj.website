@@ -2,8 +2,8 @@
 // $tablepre.'options'
 $optiontable = array(
 	'cols' => array(
-		'optionname' => array('type' => 'TEXT'),
-		'optionvalue' => array('type' => 'TEXT'),
+		'option_name' => array('type' => 'TEXT'),
+		'option_value' => array('type' => 'TEXT'),
 		'autoload' => array('type' => 'INT32','default' => 0)
 	)
 );
@@ -28,8 +28,6 @@ $usertable = array(
 		'acrate' => array('type' => 'INT32','default' => 0),
 		'programminglanguage' => array('type' => 'INT32','default' => 0),
 		'checksum' => array('type' => 'TEXT'),
-		'usergroup' => array('type' => 'INT32','default' => 0),
-		'otherinfo' => array('type' => 'TEXT')
 	),
 	'primary key' => 'id');
 
@@ -39,25 +37,17 @@ $problemtable =  array(
 		'id' => array('type' => 'INT32','auto_assign' => true),
 		'title' => array('type' => 'TEXT'),
 		'slug' => array('type' => 'TEXT'),
+		'code' => array('type' => 'TEXT200'),
 		'description' => array('type' => 'TEXT'),
-		'inputformat' => array('type' => 'TEXT'),
-		'outputformat' => array('type' => 'TEXT'),
-		'sampleinput' => array('type' => 'TEXT'),
-		'sampleoutput' => array('type' => 'TEXT'),
-		'hint' => array('type' => 'TEXT'),
-		'source' => array('type' => 'TEXT'),
+		'cached_html' => array('type' => 'TEXT'),
 		'submitamount' => array('type' => 'INT32','default' => 0),
 		'acamount' => array('type' => 'INT32','default' => 0),
 		'acrate' => array('type' => 'INT32','default' => 0),
 		'difficulty' => array('type' => 'INT32','default' => 0),
-		'dataid' => array('type' => 'INT32','default' => 0),
 		'usefile' => array('type' => 'INT32'),
 		'inputfile' => array('type' => 'TEXT'),
 		'outputfile' => array('type' => 'TEXT'),
-		'timelimit' => array('type' => 'TEXT'),
-		'memorylimit' => array('type' => 'TEXT'),
-		'publishtime' => array('type' => 'INT32'),
-		'otherinfo' => array('type' => 'TEXT'),
+		'publishtime' => array('type' => 'INT64'),
 	),
 	'primary key' => 'id'
 );
@@ -73,26 +63,16 @@ $problemgrouptable = array(
 	'primary key' => 'id',
 );
 
-// $tablepre.'problemtypes'
-$problemtypetable = array(
-	'cols' => array(
-		'id' => array('type' => 'INT32','auto_assign' => true),
-		'typename' => array('type' => 'TEXT')
-	),
-	'primary key' => 'id'
-);
-
 
 // $tablepre.'contests'
 $contesttable = array(
 	'cols' => array(
 		'id' => array('type' => 'INT32','auto_assign' => true),
 		'contestname' => array('type' => 'TEXT'),
-		'rule' => array('type' => 'INT32'),
-		'starttime' => array('type' => 'INT32'),
-		'endtime' => array('type' => 'INT32'),
-		'description' => array('type' => 'TEXT'),
-		'judgeserver' => array('type' => 'TEXT')
+		'rule' => array('type' => 'TEXT'),
+		'starttime' => array('type' => 'INT64'),
+		'endtime' => array('type' => 'INT64'),
+		'description' => array('type' => 'TEXT')
 	),
 	'primary key' => 'id'
 );
@@ -105,13 +85,6 @@ $problemcontestbindtable = array(
 	)
 );
 
-$problem_pbtype_relationshiptable = array(
-	'cols' => array(
-		'problemid' => array('type' => 'INT32'),
-		'problemtypeid' => array('type' => 'INT32')
-	)
-);
-
 $problem_pbgroup_relationshiptable = array(
 	'cols' => array(
 		'problemid' => array('type' => 'INT32'),
@@ -119,13 +92,33 @@ $problem_pbgroup_relationshiptable = array(
 	)
 );
 
-$ruletable = array(
+
+$judge_table = array(
 	'cols' => array(
-		'id' => array('type' => 'INT32'),
-		'rulename' => array('type' => 'TEXT'),
-		'ruledetail' => array('type' => 'TEXT')
-	),
-	'primary key' => 'id'
+		'id' => array('type' => 'INT32','auto_assign' => true),
+		'name' => array('type' => 'TEXT'),
+		'status' => array('type' => 'INT32','default' => 0),
+		'language_supported' => array('type' => 'TEXT'),
+		'variables' => array('type' => 'TEXT')
+		),
+		'primary key' =>  'id'
+	);
+
+
+$record_table = array(
+	'cols' => array(
+		'id' => array('type' => 'INT32','auto_assign' => true),
+		'userid' => array('type' => 'INT32'),
+		'problemid' => array('type' => 'INT32'),
+		'status' => array('type' => 'INT32'),
+		'time' => array('type' => 'INT32'),
+		'jtime' => array('type' => 'INT32'), //评测时间
+		'ip' => array('type' => 'TEXT'),
+		'score' =>  array('type' => 'INT32'),
+		'fullscore' => array('type' => 'INT32'),
+		'detail' => array('type' => 'TEXT'),
+		'judgeid' => array('type' => 'INT32')
+		)
 	);
 
 

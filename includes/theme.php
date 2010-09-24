@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Wed Jun 16 00:00:37 2010 +0800
+ * $Date: Sat Jul 17 23:07:38 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -36,16 +36,23 @@ require_once $root_path.'includes/common.php';
 
 $the_headers = array();
 
-function t_header()
+function t_html_head()
 {
-	$headers = apply_filters('get_headers','');
+	$headers = apply_filters('get_html_head','');
 	echo $headers;
 }
 
 function t_webname()
 {
-	global $webname;
-	return $webname;
+	global $option_webname;
+	if (isset($option_webname))
+	{
+		echo htmlspecialchars($option_webname);
+	}
+	else
+	{
+		echo 'Orz Online Judge Demo Site';
+	}
 }
 
 function t_footer()
@@ -67,5 +74,19 @@ function t_siteurl()
 function t_email()
 {
 	echo site_email();
+}
+
+function t_get_register_form()
+{
+	$register_form = array(
+		'name' => 'orzoj_user_register',
+		'method' => 'POST',
+		'action' => rewrite_generate_url('register_submission'),
+		'target' => '_self',
+		'content' => array(),
+		'button' => array()
+	);
+	$register_form = apply_filters('get_register_form',$register_form);
+	return $register_form;
 }
 

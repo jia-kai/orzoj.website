@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: error.php
- * $Date: Fri May 28 22:39:07 2010 +0800
+ * $Date: Sun Sep 05 11:41:56 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -78,15 +78,16 @@ function error_throw_a_complete_html_page($errorinfo)
 <title>Orz Online Judge -- Error Page</title>
 </head>
 <body>
-Error:An error occurred at <?=strftime('%a %b %d %H:%M:%S %Y')?>.<br>
+Error:An error occurred at <?php echo strftime('%a %b %d %H:%M:%S %Y')?>.<br>
 The detailed infomation about the error is:
 <br>
 <textarea readonly cols=50 rows=10>
-<?=htmlspecialchars($errorinfo)?>
+<?php echo htmlspecialchars($errorinfo)?>
 </textarea><br>
-Please visit <a href="http://www.marveteam.org/" target="_blank">MarveTeam</a> or <a href="http://orzoj.marveteam.org/" target="_blank">Orz Online Judge</a> for more details.<br>
+Please visit <a href="http://orzoj.sourceforge.net/" target="_blank">Orz Online Judge</a> for more details.<br>
 If you think it a bug,please report this bug to the developers.<br>
 </body>
 </html>
 <?php
+	exit();
 }

@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: rewrite.php
- * $Date: Sat Jul 17 23:07:04 2010 +0800
+ * $File: ispage.php
+ * $Date: Sat Jul 17 22:38:22 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -31,43 +31,14 @@
 
 if (!defined('IN_ORZOJ')) exit;
 
+require_once $root_path.'includes/plugin.php';
 require_once $root_path.'includes/common.php';
 
-
-/**
- * @decrepated
- */
-function rewrite_generate_url($type,$info = array())
+function is_register()
 {
-	$url = option_get('siteurl');
-	extract($info,EXTR_PREFIX_ALL,'info');
-	switch ($type)
-	{
-	case 'problemview':
-		$rt = $url.'index.php?action=problemview&';
-		if ($info_method = 'id')
-			$rt .= 'method=id&id='.$info_id;
-		else if ($info_method = 'slug')
-			$rt .= 'method=slug&slug='.urlencode($info_slug);
-		break;
-	case 'problemlist':
-		$rt = $url.'index.php?action=problemlist&page='.$info_page;
-		break;
-	case 'page':
-		$rt = $url.'?action=page&method=';
-		if ($info_method = 'slug')
-			$rt .= 'slug&slug='.urlencode($info_slug);
-		else if ($info_method = 'id')
-			$rt .= 'id&id='.$info_id;
-		break;
-	case 'register':
-		$rt = $url.'?action=register';
-		break;
-	case 'register_submission':
-		$rt = $url.'?action=register_submission';
-		break;
-	}
-	return $rt;
+	global $action;
+	if ($action['action'] == 'register') return true;
+	else
+		return false;
 }
-
 

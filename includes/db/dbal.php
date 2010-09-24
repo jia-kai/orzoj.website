@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Fri Jul 02 20:04:48 2010 +0800
+ * $Date: Sat Jul 17 22:51:30 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
 */
 /**
@@ -40,7 +40,7 @@ class dbal
 	/**
 	 * Direct Query(true) or Return SQL Statement(FALSE)
 	 */
-	var $directquery = false;
+	var $directquery = true;
 	/**
 	 * the link resource
 	 */

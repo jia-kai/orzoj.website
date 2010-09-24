@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Jun 17 16:12:15 2010 +0800
+ * $Date: Fri Sep 24 17:28:22 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  * $License: http://gnu.org/licenses GNU GPLv3
  */
@@ -25,7 +25,11 @@ if (get_magic_quotes_gpc())
 		foreach ($_COOKIE as $key => $v)
 			$_COOKIE[$key] = stripslashes($v);
 }
-$step = (int)($_GET['step']);
+$step = 0;
+if (isset($_GET['step']))
+{
+	$step = (int)($_GET['step']);
+}
 if ($step < 1) $step =1 ;
 switch ($step)
 {
@@ -39,7 +43,7 @@ Database Type:<select name="dblayer"><option value="mysql">MySQL(&gt;5.0)</optio
 Database Host Address:<input name="dbhost" type="text"><br>
 Database Host Port:<input name="dbport" type="text"><Br>
 Database Username:<input name="dbusername" type="text"><Br>
-Database Password:<input name="dbpassword" type="text"><br>
+Database Password:<input name="dbpassword" type="password"><br>
 Database Name:<input name="dbname" type="text"><br>
 Table Prefix:<input name="tablepre" type="text"><br>
 <input name="submit" type="submit" value="Go to the next step">
@@ -73,12 +77,10 @@ case 2:
 			array('users','User Table',$usertable),
 			array('problems','Problem Table',$problemtable),
 			array('problemgroups','Problem Group Table',$problemgrouptable),
-			array('problemtypes','Problem Type Table',$problemtypetable),
 			array('contets','Contest Table',$contesttable),
 			array('problem_contest_relationships','Problem Contest Relationship Table',$problemcontestbindtable),
-			array('problem_problemtype_relationships','Problem-ProblemType Relationship Table',$problem_pbtype_relationshiptable),
 			array('problem_problemgroup_relationships','Problem-ProblemGroup Relationship Table',$problem_pbgroup_relationshiptable),
-			array('rules','Rule Table',$ruletable)
+			array('judges','Judge Table',$judge_table)
 			);
 		foreach ($tables as $table)
 		{

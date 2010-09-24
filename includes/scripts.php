@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: rewrite.php
- * $Date: Sat Jul 17 23:07:04 2010 +0800
+ * $File: scripts.php
+ * $Date: Sat Jul 17 23:12:26 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -28,46 +28,19 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 if (!defined('IN_ORZOJ')) exit;
+require_once $root_path.'includes/l10n.php';
 
-require_once $root_path.'includes/common.php';
-
-
-/**
- * @decrepated
- */
-function rewrite_generate_url($type,$info = array())
+add_filter('get_register_form','scripts_gen_register_content_sys');
+function scripts_gen_register_content_sys($form)
 {
-	$url = option_get('siteurl');
-	extract($info,EXTR_PREFIX_ALL,'info');
-	switch ($type)
-	{
-	case 'problemview':
-		$rt = $url.'index.php?action=problemview&';
-		if ($info_method = 'id')
-			$rt .= 'method=id&id='.$info_id;
-		else if ($info_method = 'slug')
-			$rt .= 'method=slug&slug='.urlencode($info_slug);
-		break;
-	case 'problemlist':
-		$rt = $url.'index.php?action=problemlist&page='.$info_page;
-		break;
-	case 'page':
-		$rt = $url.'?action=page&method=';
-		if ($info_method = 'slug')
-			$rt .= 'slug&slug='.urlencode($info_slug);
-		else if ($info_method = 'id')
-			$rt .= 'id&id='.$info_id;
-		break;
-	case 'register':
-		$rt = $url.'?action=register';
-		break;
-	case 'register_submission':
-		$rt = $url.'?action=register_submission';
-		break;
-	}
-	return $rt;
+	$form['button'][] = array(
+		'name' => 'submit',
+		'code' => '<input name="submit" type="submit" value="'.__('Submit').'">'
+		);
+	$form['button'][] = array(
+		'name' => 'reset',
+		'code' => '<input name="reset" type="reset" value="'.__('Reset').'">'
+		);
+	return $form;
 }
-
-

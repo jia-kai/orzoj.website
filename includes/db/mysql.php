@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Fri Jul 02 20:15:27 2010 +0800
+ * $Date: Fri Sep 24 17:27:09 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -52,7 +52,7 @@ class dbal_mysql extends dbal
 	/**
 	 * decleare engine,character,collate after creating
 	 */
-	var $add_after_create_table = 'ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci';
+	var $add_after_create_table = 'ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_bin';
 	/**
 	 * Query Counts
 	 */
@@ -63,7 +63,8 @@ class dbal_mysql extends dbal
 	var $typemap = array(
 		'INT32' => 'INT',
 		'INT64' => 'BIGINT',
-		'TEXT' => 'TEXT'
+		'TEXT' => 'TEXT',
+		'TEXT200' => 'VARCHAR(200)'
 	);
 	/**
 	 * @access private
@@ -302,7 +303,7 @@ class dbal_mysql extends dbal
 		}
 		else
 			return array($sql);
-			/* }}} */
+		/* }}} */
 	}
 	/**
 	 * @access private
@@ -339,54 +340,59 @@ class dbal_mysql extends dbal
 	function _recursive_make_where($whereclause)
 	{
 		/* {{{ */
-		$sql = ' ( ';
-		if (is_array($whereclause['param1'])) $sql.=$this->_recursive_make_where($whereclause['param1']);
-		else $sql.=$this->_escape_string($whereclause['param1']);
-		switch ($whereclause['op1'])
+		if (isset($whereclause['param1']) && isset($whereclause['param2']))
 		{
-		case 'int_eq': //EQUAL
-		case 'text_eq':
-			$sql.=' = \''.$this->_escape_string($whereclause['param2']).'\'';
-			break;
-		case 'int_gt': //GREATER THAN
-			$sql.=' > \''.$this->_escape_string($whereclause['param2']).'\'';
-			break;
-		case 'int_lt'://LESS THAN
-			$sql.=' < \''.$this->_escape_string($whereclause['param2']).'\'';
-			break;
-		case 'int_le'://LESS THAN OR EQUAL
-			$sql.=' <= \''.$this->_escape_string($whereclause['param2']).'\'';
-			break;
-		case 'int_ge'://GREATER THAN OR EQUAL
-			$sql.=' >= \''.$this->_escape_string($whereclause['param2']).'\'';
-			break;
-		case 'logical_and'://LOGICAL AND
-			if (is_array($whereclause['param2']))
-				$sql.=' AND '.$this->_recursive_make_where($whereclause['param2']);
-			else
-				$sql.=' AND '.$whereclause['param2'];
-			break;
-		case 'logical_or'://LOGICAL OR
-			if (is_array($whereclause['param2']))
-				$sql.=' OR '.$this->_recursive_make_where($whereclause['param2']);
-			else
-				$sql.=' OR '.$whereclause['param2'];
-			break;
+			$sql = ' ( ';
+			if (is_array($whereclause['param1'])) $sql.=$this->_recursive_make_where($whereclause['param1']);
+			else $sql.=$this->_escape_string($whereclause['param1']);
+			switch ($whereclause['op1'])
+			{
+			case 'int_eq': //EQUAL
+				case 'text_eq':
+					$sql.=' = \''.$this->_escape_string($whereclause['param2']).'\'';
+					break;
+				case 'int_gt': //GREATER THAN
+					$sql.=' > \''.$this->_escape_string($whereclause['param2']).'\'';
+					break;
+				case 'int_lt'://LESS THAN
+					$sql.=' < \''.$this->_escape_string($whereclause['param2']).'\'';
+					break;
+				case 'int_le'://LESS THAN OR EQUAL
+					$sql.=' <= \''.$this->_escape_string($whereclause['param2']).'\'';
+					break;
+				case 'int_ge'://GREATER THAN OR EQUAL
+					$sql.=' >= \''.$this->_escape_string($whereclause['param2']).'\'';
+					break;
+				case 'logical_and'://LOGICAL AND
+					if (is_array($whereclause['param2']))
+						$sql.=' AND '.$this->_recursive_make_where($whereclause['param2']);
+					else
+						$sql.=' AND '.$whereclause['param2'];
+					break;
+				case 'logical_or'://LOGICAL OR
+					if (is_array($whereclause['param2']))
+						$sql.=' OR '.$this->_recursive_make_where($whereclause['param2']);
+					else
+						$sql.=' OR '.$whereclause['param2'];
+					break;
 
-		case 'subquery_in'://In Sub Query
-			$sql.=' IN ('.$whereclause['param2'].')';
-			break;
+				case 'subquery_in'://In Sub Query
+					$sql.=' IN ('.$whereclause['param2'].')';
+					break;
+			}
+			$sql.=' ) ';
+			return $sql;
+			/* }}} */
 		}
-		$sql.=' ) ';
-		return $sql;
-		/* }}} */
+		else
+			return '';
 	}
 	/**
 	 * @access private
 	 */
 	function _update_data($tablename,$newvalue,$whereclause = NULL)
 	{
-		$sql.='UPDATE `'.$tablename.'` SET ';
+		$sql ='UPDATE `'.$tablename.'` SET ';
 		foreach ($newvalue as $key => $value)
 		{
 			if (is_array($value)) $value = $value['value'];

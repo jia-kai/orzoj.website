@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: plugin.php
- * $Date: Wed Apr 14 10:01:31 2010 -0400
+ * $Date: Sat Sep 11 23:20:26 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -59,7 +59,7 @@ function add_filter($hook_name,$func_name,$priority = 10,$accepted_args = 1)
 	);
 	if (!isset($filters[$hook_name])) $filters[$hook_name] = array();
 	array_push($filters[$hook_name],$thisfilter);
-	usort($filters[$hook_name],plugin_add_filter_cmp);
+	usort($filters[$hook_name],'plugin_add_filter_cmp');
 	return true;
 }
 
@@ -90,9 +90,12 @@ function apply_filters($hook_name,$value)
 {
 	global $filters;
 	$args = func_get_args();
-	foreach ($filters[$hook_name] as $id => $filter)
+	if (isset($filters[$hook_name]) && is_array($filters[$hook_name]))
 	{
-		$value = call_user_func_array($filter['func_name'],array_slice($args,1,(int)($filter['accepted_args'])));
+		foreach ($filters[$hook_name] as $id => $filter)
+		{
+			$value = call_user_func_array($filter['func_name'],array_slice($args,1,(int)($filter['accepted_args'])));
+		}
 	}
 	return $value;
 }

@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: rewrite.php
- * $Date: Sat Jul 17 23:07:04 2010 +0800
+ * $File: rules.php
+ * $Date: Sat Sep 04 23:23:09 2010 +0800
  * $Author: Fan Qijiang <fqj1994@gmail.com>
  */
 /**
@@ -31,43 +31,18 @@
 
 if (!defined('IN_ORZOJ')) exit;
 
-require_once $root_path.'includes/common.php';
-
-
-/**
- * @decrepated
+/*
+ * @access private
  */
-function rewrite_generate_url($type,$info = array())
+class ContestRule
 {
-	$url = option_get('siteurl');
-	extract($info,EXTR_PREFIX_ALL,'info');
-	switch ($type)
-	{
-	case 'problemview':
-		$rt = $url.'index.php?action=problemview&';
-		if ($info_method = 'id')
-			$rt .= 'method=id&id='.$info_id;
-		else if ($info_method = 'slug')
-			$rt .= 'method=slug&slug='.urlencode($info_slug);
-		break;
-	case 'problemlist':
-		$rt = $url.'index.php?action=problemlist&page='.$info_page;
-		break;
-	case 'page':
-		$rt = $url.'?action=page&method=';
-		if ($info_method = 'slug')
-			$rt .= 'slug&slug='.urlencode($info_slug);
-		else if ($info_method = 'id')
-			$rt .= 'id&id='.$info_id;
-		break;
-	case 'register':
-		$rt = $url.'?action=register';
-		break;
-	case 'register_submission':
-		$rt = $url.'?action=register_submission';
-		break;
-	}
-	return $rt;
+	var $rulename;
+	/**
+	 * Rank this contest.
+	 * @param array $records the records and their results submitted by users about this contest.
+	 * @return array rank
+	 */
+	function Sort1($records)
 }
 
 
