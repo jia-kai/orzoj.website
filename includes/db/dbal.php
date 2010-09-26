@@ -1,8 +1,8 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Sat Jul 17 22:51:30 2010 +0800
- * $Author: Fan Qijiang <fqj1994@gmail.com>
+ * $Date: Sun Sep 26 14:09:43 2010 +0800
+ * $Author: Fan Qijiang <fqj1994@gmail.com>, Jiakai <jia.kai66@gmail.com>
 */
 /**
  * @package dbal
@@ -35,6 +35,9 @@ if (!defined('IN_ORZOJ')) exit;
  * If dbal.directquery is set to true.
  * Functions which will generate query statements will return the statements(array) instead of querying result.
  */
+
+$DBOP = array();
+
 class dbal
 {
 	/**
@@ -148,12 +151,29 @@ class dbal
 	 * This function is used to select data from a table
 	 * @param string $tablename name of the table
 	 * @param mixed $rows array(row1,row2,row3,...) OR NULL(means *)
-	 * @param array $whereclause array(
-	 *		'param1' => $whereclause OR expression,
-	 *		'op1' => text_eq/int_eq/int_gt/int_le/int_ge/int_lt/
-	 *					logical_and,
-	 *		 'param2' => $whereclause OR expression
-	 *		)
+	 * @param array $whereclause array of tokens, in the form of prefix expression
+	 *		each element in the array  is either an operator or an operand
+	 *		valid operators:
+	 *		   '=,'!='		--	equality or inequality test for integer
+	 *							the seconde operand will be converted to int
+	 *							operands:
+	 *								<col name:string>, <value:string or int>
+	 *		   '=s','!=s'	--	equality or inequality test for string
+	 *							operands:
+	 *								<col name:string>, <value:string>
+	 *		   '>', '>=', '<', '<='
+	 *						--	greater than, greater than or equal to, less than, less than or equal to respectivelty
+	 *							the second operand will be converted to int
+	 *							operands:
+	 *								<col name:string>, <value:string or int>
+	 *			'&&', '||', '!'
+	 *						--	logical and, logical or, negates value respectively
+	 *							operands for '&&' and '||':
+	 *								<statement>, <statement>
+	 *							operands for '!':
+	 *								<statement>
+	 *		use $DBOP[str] to get operator object named str
+	 *		example: array($DBOP["="], "id", "1") means "id = 1"
 	 * @param array $orderby array(row1 => 'ASC'/'DESC',row2 => 'ASC'/'DESC',...);meaning how to sort the result.
 	 * @param int $offset meaning start from which.
 	 * @param int $amount meaning get how many

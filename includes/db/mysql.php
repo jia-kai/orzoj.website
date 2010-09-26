@@ -1,8 +1,8 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Fri Sep 24 17:27:09 2010 +0800
- * $Author: Fan Qijiang <fqj1994@gmail.com>
+ * $Date: Sun Sep 26 14:55:56 2010 +0800
+ * $Author: Fan Qijiang <fqj1994@gmail.com>, Jiakai <jia.kai66@gmail.com>
  */
 /**
  * @package dbal
@@ -33,6 +33,92 @@
 if (!defined('IN_ORZOJ')) exit;
 
 require_once $root_path.'includes/db/dbal.php';
+
+function _mysql_escape_string($string)
+{
+	return mysql_escape_string($string);
+}
+
+function _mysql_escape_add_brck($str)
+{
+	return '(' . $str . ')';
+}
+
+class _Mysql_opt
+{
+	var $nopr, // number of operators
+		$opt, // mysql operator
+		$esc_func; // escape function
+	function __construct($nopr, $opt, $esc_func)
+	{
+		$this->nopr = $nopr;
+		$this->opt = $opt;
+		$this->esc_func = $esc_func;
+	}
+
+}
+
+$tmp = array(NULL, 'intval');
+$DBOP['='] = new _Mysql_opt(2, '=', $tmp);
+$DBOP['!='] = new _Mysql_opt(2, '!=', $tmp);
+$DBOP['>'] = new _Mysql_opt(2, '>', $tmp);
+$DBOP['>='] = new _Mysql_opt(2, '>=', $tmp);
+$DBOP['<'] = new _Mysql_opt(2, '<', $tmp);
+$DBOP['<='] = new _Mysql_opt(2, '<=', $tmp);
+
+$tmp = array(NULL, '_mysql_escape_string');
+$DBOP['=s'] = new _Mysql_opt(2, '=', $tmp);
+$DBOP['!=s'] = new _Mysql_opt(2, '!=', $tmp);
+
+$tmp = array('_mysql_escape_add_brck', '_mysql_escape_add_brck');
+$DBOP['&&'] = new _Mysql_opt(2, ' && ', $tmp);
+$DBOP['||'] = new _Mysql_opt(2, ' || ', $tmp);
+
+$DBOP['!'] = new _Mysql_opt(1, '! ', '_mysql_escape_add_brck');
+
+unset($tmp);
+
+function _mysql_build_where_clause($whereclause)
+{
+	if (!is_array($whereclause))
+		return false;
+	$whereclause = array_reverse($whereclause);
+	// postfix expression is easier to handle
+
+	$stack = array();
+	foreach ($whereclause as $token)
+	{
+		if (get_class($token) === '_Mysql_opt')
+		{
+			if (count($stack) < $token->nopr)
+				die(__FILE__ . ': invalid where clause');
+			if ($token->nopr == 1)
+			{
+				$opr = array_pop($stack);
+				$func = $token->esc_func;
+				if ($func)
+					$opr = $func($opr);
+				array_push($stack, $token->opt . $opr);
+			} else // at present, $token->opr must be 2
+			{
+				$func = $token->esc_func[0];
+				$opr0 = array_pop($stack);
+				if ($func)
+					$opr0 = $func($opr0);
+				$func = $token->esc_func[1];
+				$opr1 = array_pop($stack);
+				if ($func)
+					$opr1 = $func($opr1);
+				array_push($stack, $opr0 . $token->opt . $opr1);
+			}
+		} else array_push($stack, $token);
+	}
+	if (count($stack) != 1)
+		die(__FILE__ . ': invalid where clause');
+	return ' WHERE ' . $stack[0];
+}
+
+
 /**
  * MySQL Database Abstract Layer
  */
@@ -127,7 +213,7 @@ class dbal_mysql extends dbal
 			$tmp.= $this->typemap[$colstruc['type']].' ';
 			if (isset($colstruc['default']))
 			{
-				$tmp.= 'DEFAULT \''.$this->_escape_string($colstruc['default']).'\' ';
+				$tmp.= 'DEFAULT \''._mysql_escape_string($colstruc['default']).'\' ';
 			}
 			if (isset($colstruc['auto_assign']) && $colstruc['auto_assign'])
 			{
@@ -157,7 +243,7 @@ class dbal_mysql extends dbal
 	{
 		/* {{{ */
 		$sql = 'SELECT count(*) AS ct FROM `'.$tablename.'` ';
-		if ($wherec = $this->_build_where_clause($whereclause))
+		if ($wherec = _mysql_build_where_clause($whereclause))
 		{
 			$sql .= $wherec;
 		}
@@ -176,7 +262,7 @@ class dbal_mysql extends dbal
 	function _delete_item($tablename,$whereclause)
 	{
 		$sql.='DELETE FROM `'.$tablename.'` ';
-		if ($where = $this->_build_where_clause($whereclause))
+		if ($where = _mysql_build_where_clause($whereclause))
 			$sql.=$where;
 		if ($this->directquery)
 		{
@@ -187,13 +273,6 @@ class dbal_mysql extends dbal
 		}
 		else
 			return array($sql);
-	}
-	/**
-	 * @access private
-	 */
-	function _escape_string($string)
-	{
-		return mysql_escape_string($string);
 	}
 	/**
 	 * @access private
@@ -210,7 +289,7 @@ class dbal_mysql extends dbal
 			$rowssql.=$rowname;
 			if ($cid != $count) $rowssql.=',';
 			if (is_array($vv)) $vv = $vv['value'];
-			$valuesql.='\''.$this->_escape_string($vv).'\'';
+			$valuesql.='\''._mysql_escape_string($vv).'\'';
 			if ($cid != $count) $valuesql.=',';
 			$cid++;
 		}
@@ -271,7 +350,7 @@ class dbal_mysql extends dbal
 		else
 			$sql.=' `'.$rows.'` ';
 		$sql.='FROM `'.$tablename.'`';
-		if (is_array($whereclause)) $sql.=$this->_build_where_clause($whereclause);
+		if (is_array($whereclause)) $sql.=_mysql_build_where_clause($whereclause);
 		if (is_array($orderby))
 		{
 			$sql.=' ORDER BY ';
@@ -327,69 +406,6 @@ class dbal_mysql extends dbal
 	/**
 	 * @access private
 	 */
-	function _build_where_clause($whereclause)
-	{
-		if (is_array($whereclause))
-			return ' WHERE '.$this->_recursive_make_where($whereclause).' ';
-		else
-			return false;
-	}
-	/**
-	 * @access private
-	 */
-	function _recursive_make_where($whereclause)
-	{
-		/* {{{ */
-		if (isset($whereclause['param1']) && isset($whereclause['param2']))
-		{
-			$sql = ' ( ';
-			if (is_array($whereclause['param1'])) $sql.=$this->_recursive_make_where($whereclause['param1']);
-			else $sql.=$this->_escape_string($whereclause['param1']);
-			switch ($whereclause['op1'])
-			{
-			case 'int_eq': //EQUAL
-				case 'text_eq':
-					$sql.=' = \''.$this->_escape_string($whereclause['param2']).'\'';
-					break;
-				case 'int_gt': //GREATER THAN
-					$sql.=' > \''.$this->_escape_string($whereclause['param2']).'\'';
-					break;
-				case 'int_lt'://LESS THAN
-					$sql.=' < \''.$this->_escape_string($whereclause['param2']).'\'';
-					break;
-				case 'int_le'://LESS THAN OR EQUAL
-					$sql.=' <= \''.$this->_escape_string($whereclause['param2']).'\'';
-					break;
-				case 'int_ge'://GREATER THAN OR EQUAL
-					$sql.=' >= \''.$this->_escape_string($whereclause['param2']).'\'';
-					break;
-				case 'logical_and'://LOGICAL AND
-					if (is_array($whereclause['param2']))
-						$sql.=' AND '.$this->_recursive_make_where($whereclause['param2']);
-					else
-						$sql.=' AND '.$whereclause['param2'];
-					break;
-				case 'logical_or'://LOGICAL OR
-					if (is_array($whereclause['param2']))
-						$sql.=' OR '.$this->_recursive_make_where($whereclause['param2']);
-					else
-						$sql.=' OR '.$whereclause['param2'];
-					break;
-
-				case 'subquery_in'://In Sub Query
-					$sql.=' IN ('.$whereclause['param2'].')';
-					break;
-			}
-			$sql.=' ) ';
-			return $sql;
-			/* }}} */
-		}
-		else
-			return '';
-	}
-	/**
-	 * @access private
-	 */
 	function _update_data($tablename,$newvalue,$whereclause = NULL)
 	{
 		$sql ='UPDATE `'.$tablename.'` SET ';
@@ -400,7 +416,7 @@ class dbal_mysql extends dbal
 		}
 		$sql.= implode(',',$newvalue);
 		$sql.=' ';
-		if (is_array($whereclause)) $sql.=$this->_build_where_clause($whereclause);
+		if (is_array($whereclause)) $sql.=_mysql_build_where_clause($whereclause);
 		if ($this->directquery)
 		{
 			if ($rt = $this->_query($sql))
@@ -476,6 +492,7 @@ class dbal_mysql extends dbal
 		return true;
 	}
 }
+
 /*
  * vim:foldmethod=marker
  */
