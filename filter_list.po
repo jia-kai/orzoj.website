@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-09-24 22:45+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+#: index.php:133
+msgid "after_load_problem"
+msgstr "
+Execution Condition:After Problem is being load when user visit the web
+Parameters:Only one parameter.An array that contains the content about a problem fetched from Database
+Description:You should return an array after modifying the given argument.
+"
+
+#: index.php:142
+msgid "get_user_register_info"
+msgstr "
+Execution Condition:After subbmitting the registering request.
+Parameters:Only one parameter.An array that contains the registering information
+Description:You should add/delete/modify the content of the array which includes username/password/etc and return it after modifying
+"
+
+#: includes/problem.php:83 includes/problem.php:126
+msgid "after_add_problem"
+msgstr "
+Execution Condition:After adding a problem when calling problem_add in includes/problem.php
+Parameters:Two Parameters.The first one is a boolean,showing that whether all functions are executed correctly.If you find out it false,do not execute anything and just return it.If it is true,you should do something you want and return true/false according to whether you execute it successfully.The second parameter is an integer,showing the id of the new problem.
+"
+
+#: includes/problem.php:161
+msgid "after_deleting_problem"
+msgstr "
+Execution Condition:After deleting a problem in problem_del
+Parameters:The same as after_add_problem
+Description:If the returned value of last called function is false,the deletion operation will be canceled and all database operation will be rollback(Using the transaction support).
+"
+
+#: includes/theme.php:41
+msgid "get_html_head"
+msgstr "
+Execution Condition:After the theme calls t_html_head()
+Parameters:Only one,A string meaning the html code you want to put in the <head></head>.This is the complete head block of HTML code.So in most of time,you need only add content after it rather than change it directly.
+"
+
+#: includes/theme.php:60
+msgid "get_footers"
+msgstr "
+Execution Condition:After the theme calls t_footer()
+Parameters:Only one.Meaning the HTML code at the bottom of this page
+"
+
+#: includes/theme.php:89
+msgid "get_register_form"
+msgstr "
+Execution Condition:Before showing the register page in order to fetch the field list.
+Parameters:An array.It contains the name,action,method,elements of this form.See includes/theme.php t_get_register_form() 
+"
+
+#: includes/judge.php:68 includes/judge.php:101
+msgid "after_add_judge"
+msgstr "
+Execution Condition:This is executed after a new judge is added.
+Parameters:Parameter 1 -- A bool which is the same as after_add_problem.Parameter 2 -- New Judge's ID
+"

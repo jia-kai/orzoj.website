@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Sun Sep 26 17:16:47 2010 +0800
+ * $Date: Sun Sep 26 22:20:38 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -232,7 +232,7 @@ class dbal
 	 */
 	function query($query)
 	{
-		return $this->_query();
+		return $this->_query($query);
 	}
 	/**
 	 * Make queries
