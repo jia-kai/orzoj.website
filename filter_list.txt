@@ -1,4 +1,0 @@
-This is for filters' list
-1. after_load_problem  This filter is called after loading problem from the database in /index.php.The value is the problem_value.No EXTRA param.
-2. get_headers get header infomation.The value is already_exsited header infomation.NO EXTRA param.
-

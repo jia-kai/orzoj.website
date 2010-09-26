@@ -1,18 +1,14 @@
 <?php
 /*
  * $File: plugin.php
- * $Date: Sat Sep 11 23:20:26 2010 +0800
- * $Author: Fan Qijiang <fqj1994@gmail.com>
+ * $Date: Sun Sep 26 17:16:44 2010 +0800
  */
 /**
- * @package plugin
+ * @package orzoj-website
  * @license http://gnu.org/licenses/ GNU GPLv3
- * @version phpweb-1.0.0alpha1
- * @author Fan Qijiang <fqj1994@gmail.com>
- * @copyright (c) Fan Qijiang
  */
 /*
-	Copyright (C) <2009,2010>  (Fan Qijiang) <fqj1994@gmail.com>
+	This file is part of orzoj
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

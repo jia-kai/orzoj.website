@@ -1,19 +1,14 @@
 <?php
 /*
  * $File: mo.php
- * $Date: Wed Apr 14 10:09:39 2010 -0400
- * $Author: Fan Qijiang <fqj1994@gmail.com>
+ * $Date: Sun Sep 26 17:16:50 2010 +0800
  */
 /**
- * @package l10n-pomo
+ * @package orzoj-website
  * @license http://gnu.org/licenses/ GNU GPLv3
- * @copyright (c) Fan Qijiang
- * @author Fan Qijiang <fqj1994@gmail.com>
- * @version phpweb-1.0.0alpha1
  */
 /*
-	Orz Online Judge is a cross-platform programming online judge.
-	Copyright (C) <2009>  (Fan Qijiang) <fqj1994@gmail.com>
+	This file is part of orzoj
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

@@ -1,19 +1,14 @@
 <?php
 /* 
- * $File: common.php
- * $Date: Fri Sep 24 16:57:46 2010 +0800
- * $Author: Fan Qijiang <fqj1994@gmail.com>
+ * $File: functions.php
+ * $Date: Sun Sep 26 17:16:43 2010 +0800
  */
 /**
- * @package orzoj-phpwebsite
+ * @package orzoj-website
  * @license http://gnu.org/licenses GNU GPLv3
- * @version phpweb-1.0.0alpha1
- * @copyright (C) Fan Qijiang
- * @author Fan Qijiang <fqj1994@gmail.com>
  */
 /*
-	Orz Online Judge is a cross-platform programming online judge.
-	Copyright (C) <2010>  (Fan Qijiang) <fqj1994@gmail.com>
+	This file is part of orzoj
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -30,6 +25,7 @@
  */
 if (!defined('IN_ORZOJ')) exit;
 
+require_once $includes_path . 'db/' . $db_type . '.php'
 
 /**
  * Set Cookie with $tablepre at the beginning of cookie name
@@ -74,6 +70,28 @@ function htmlencode($text)
 	return nl2br(htmlspecialchars($text));
 }
 
+$_db_instance = NULL;
+/**
+ * connect to the database and return an instance of dbal
+ * @return dbal|bool on success, return an instance; return FALSE on failure
+ */
+function get_db_instance()
+{
+	global $_db_instance, $db_type, $db_host, $db_port, $db_user, $db_password, $db_dbname;
+	if ($_db_instance)
+		return $_db_instance;
+	$_db_instance = new 'dbal_' . $db_type;
+	if ($_db_instance->connect($db_host, $db_port, $db_user, $db_password, $db_dbname))
+	{
+		$db_password = '';
+		return $_db_instance;
+	}
+	else
+	{
+		$_db_instance = NULL;
+		return FALSE;
+	}
+}
 
 function option_get($option_name)
 {
@@ -119,7 +137,7 @@ function option_set($option_name,$new_value)
 
 /**
  * Calculate expression (Unsecure)
- * FIXME:It's un-secured.
+ * FIXME:It's unsecure
  * @param string $expression an expression with +-* / and variables
  * @param array $variable variables' list.Variable begins with dollor($).Variable name is case sensitive
  */

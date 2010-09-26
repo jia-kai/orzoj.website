@@ -1,19 +1,14 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Sun Sep 26 14:09:43 2010 +0800
- * $Author: Fan Qijiang <fqj1994@gmail.com>, Jiakai <jia.kai66@gmail.com>
+ * $Date: Sun Sep 26 17:16:47 2010 +0800
 */
 /**
- * @package dbal
+ * @package orzoj-website
  * @license http://gnu.org/licenses/ GNU GPLv3
- * @author Fan Qijiang <fqj1994@gmail.com>
- * @version phpweb-1.0.0alpha1
- * @copyright (c) Fan Qijiang
  */
 /*
-	Orz Online Judge is a cross-platform programming online judge.
-	Copyright (C) <2010>  (Fan Qijiang) <fqj1994@gmail.com>
+	This file is part of orzoj
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

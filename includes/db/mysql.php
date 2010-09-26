@@ -1,19 +1,14 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Sun Sep 26 14:55:56 2010 +0800
- * $Author: Fan Qijiang <fqj1994@gmail.com>, Jiakai <jia.kai66@gmail.com>
+ * $Date: Sun Sep 26 17:16:44 2010 +0800
  */
 /**
- * @package dbal
+ * @package orzoj-website
  * @license http://gnu.org/licenses/ GNU GPLv3
- * @author Fan Qijiang <fqj1994@gmail.com>
- * @copyright (c) Fan Qijiang
- * @version phpweb-1.0.0alpha1
  */
 /*
-	Orz Online Judge is a cross-platform programming online judge.
-	Copyright (C) <2010>  (Fan Qijiang) <fqj1994@gmail.com>
+	This file is part of orzoj
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -32,7 +27,7 @@
 
 if (!defined('IN_ORZOJ')) exit;
 
-require_once $root_path.'includes/db/dbal.php';
+require_once $includes_path . 'db/dbal.php';
 
 function _mysql_escape_string($string)
 {

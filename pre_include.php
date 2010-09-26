@@ -1,19 +1,14 @@
 <?php
 /* 
- * $File: status.php
- * $Date: Thu Jun 17 16:29:37 2010 +0800
- * $Author: Fan Qijiang <fqj1994@gmail.com>
+ * $File: pre_include.php
+ * $Date: Sun Sep 26 17:14:17 2010 +0800
  */
 /**
- * @package orzoj-phpwebsite
+ * @package orzoj-website
  * @license http://gnu.org/licenses GNU GPLv3
- * @version phpweb-1.0.0alpha1
- * @copyright (C) Fan Qijiang
- * @author Fan Qijiang <fqj1994@gmail.com>
  */
 /*
-	Orz Online Judge is a cross-platform programming online judge.
-	Copyright (C) <2010>  (Fan Qijiang) <fqj1994@gmail.com>
+	This file is part of orzoj
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -29,5 +24,14 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (!defined('IN_ORZOJ')) exit;
+ob_start();
+date_default_timezone_set('GMT');
+error_reporting(E_ALL);
+define('IN_ORZOJ', true);
+
+$root_path = dirname(__FILE__) . '/';
+$includes_path = $root_path . 'includes/';
+
+require_once $root_path . 'config.php';
+require_once $includes_path . 'l10n.php';
 

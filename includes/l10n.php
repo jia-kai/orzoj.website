@@ -1,19 +1,14 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Sun Apr 18 05:15:20 2010 -0400
- * $Author: Fan Qijiang <fqj1994@gmail.com>
+ * $Date: Sun Sep 26 17:16:41 2010 +0800
  */
 /**
- * @package orzoj-phpwebsite
+ * @package orzoj-website
  * @license http://gnu.org/licenses GNU GPLv3
- * @version phpweb-1.0.0alpha1
- * @copyright (C) Fan Qijiang
- * @author Fan Qijiang <fqj1994@gmail.com>
  */
 /*
-	Orz Online Judge is a cross-platform programming online judge.
-	Copyright (C) <2009,2010>  (Fan Qijiang) <fqj1994@gmail.com>
+	This file is part of orzoj
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -30,8 +25,8 @@
  */
 if (!defined('IN_ORZOJ')) exit;
 
-require_once $root_path."includes/pomo/mo.php";
-require_once $root_path.'includes/pomo/po.php';
+require_once $includes_path . 'pomo/mo.php';
+require_once $includes_path . 'pomo/po.php';
 
 $translators = array();
 

@@ -1,0 +1,64 @@
+/
+|--	pre_include.php 	must be included first
+|--	includes/
+|	|--	db/
+|	|	|--	dbal.php	database abstract layer
+|	|	|--	mysql.php	implementation for mysql of database abstract layer
+|	|--	functions.php	commonly used functions
+|	|--	error.php		interface for error reporting
+|	|--	l10n.php		functions for localization
+|	|-- pomo/
+|	|	|--	po.php		po reader
+|	|	|--	mo.php		mo reader
+|	|--	plugin.php		functions for handling plugins
+|	|--	sched.php		manage scheduled tasks
+|	|--	discuss.php		functions for managing discussion posts
+|	|--	theme.php		API for themes
+|	|--	user.php		check user login and permissions, and get user data
+|--	contest/
+|	|--	ctal.php		contest abstract layer
+|	|--	oi.php			implementation for OI rules of contest abstract layer
+|	|--	acm.php			implementation for ACM rules of contest abstract layer
+|--	install/
+|	|--	index.php		install database tables and generate config.php
+|	|--	tables.php		table definitions
+|--	contents/
+|	|--	plugins/		store plugins
+|	|	|--	...
+|	|--	themes/			store themes
+|	|	|--	...
+|	|--	uploads/		store uploaded data such as images (permission: 777)
+|	|	|--	...
+|--	admin/				
+|	|--	index.php		website administation
+|--	msg.php				communicate with orzoj-server
+|--	index.php			parse options and call theme functions
+
+
+plugin structure:
+/contents/plugins/
+|--	<plugin name>/
+	|--	index.php		included by orzoj-website base functions, must add suitable filters
+	|--	...				plugin specified files	
+
+
+theme structure:
+/contents/themes/
+|--	<theme name>/
+	|--	index.php		display the main page
+	|--	prob.php		list problems
+	|--	status.php		display realtime status
+	|--	rank.php		display author rank list
+	|--	discuss.php		display discussion page
+	|--	submit.php		submit a source
+	|--	about.php
+	|-- contest.php		display contests information
+	|--	user.php		manage user info, such as changing password, enabling plugins
+	|--	announce.php	display announcements
+	|--	judges.php		display judge information
+	|--	probgrp.php		display problem groups
+	|--	usergrp.php		display user groups
+	|--	...				theme specified files
+
+
+all the pages accessed by user except those in install are in the top-level directory
