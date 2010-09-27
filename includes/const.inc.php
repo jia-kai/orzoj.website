@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Mon Sep 27 15:40:36 2010 +0800
+ * $Date: Mon Sep 27 15:53:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,4 +27,9 @@
 define('PROB_CODE_LEN_MAX', 25);
 define('PROB_SLUG_LEN_MAX', 100);
 
+define('JUDGE_STATUS_ONLINE',1);
+define('JUDGE_STATUS_OFFLINE',0);
+define('JUDGE_STATUS_RUNNING',2);
+
 ?>
+

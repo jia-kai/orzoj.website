@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Sep 27 15:44:50 2010 +0800
+ * $Date: Mon Sep 27 15:52:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -227,7 +227,7 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'name' => array('type' => 'TEXT'),
-			'online' => array('type' => 'INT32'), // 0 means offline, otherwise online
+			'status' => array('type' => 'INT32'),
 			'lang_sup' => array('type' => 'TEXT'), // serialized array of id of supported languages
 			'detail' => array('type' => 'TEXT') // serialized array of query_ans from orzoj-server
 		),
