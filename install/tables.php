@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Sep 27 11:51:21 2010 +0800
+ * $Date: Mon Sep 27 13:25:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -107,16 +107,14 @@ $tables = array(
 			'id' => array('type' => 'INT32'),
 			'title' => array('type' => 'TEXT'),
 			'code' => array('type' => 'TEXT200'), // like the code on SPOJ
+			'slug' => array('type' => 'TEXT200'), // url friendly title.
 			'decription' => array('type' => 'TEXT'),
 			'grp_deny' => array('type' => 'TEXT'),  // serialized array of gid
 			'grp_allow' => array('type' => 'TEXT'),
 
 			'ac_amount' => array('type' => 'INT32', 'default' => 0),
-			'wa_amount' => array('type' => 'INT32', 'default' => 0),
+			'unac_amount' => array('type' => 'INT32', 'default' => 0),
 			'ce_amount' => array('type' => 'INT32', 'default' => 0),
-			'mle_amount' => array('type' => 'INT32', 'default' => 0),
-			'tle_amount' => array('type' => 'INT32', 'default' => 0),
-			're_amount' => array('type' => 'INT32', 'default' => 0),
 		),
 		'primary_key' => 'id'
 	),
@@ -188,6 +186,7 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'name' => array('type' => 'TEXT'),
+			//FIXME:how about Running
 			'online' => array('type' => 'INT32'), // 0 means offline, otherwise online
 			'lang_sup' => array('type' => 'TEXT'), // serialized array of id of supported languages
 			'detail' => array('type' => 'TEXT') // serialized array of query_ans from orzoj-server
