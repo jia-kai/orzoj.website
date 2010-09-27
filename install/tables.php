@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Sep 27 20:19:44 2010 +0800
+ * $Date: Mon Sep 27 20:52:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -188,7 +188,7 @@ $tables = array(
 	'wlang' => array( // website language
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'name' => array('type' => 'TEXT')
+			'name' => array('type' => 'TEXT') // filename is the same as language's name
 		),
 		'primary_key' => 'id'
 	),

@@ -19,6 +19,7 @@
 |	|--	const.inc.php	constants
 |--	contest/
 |	|--	ctal.php		contest abstract layer
+|	|--	default.php		usual practice (judge immediately after submission, no rank)
 |	|--	oi.php			implementation for OI rules of contest abstract layer
 |	|--	acm.php			implementation for ACM rules of contest abstract layer
 |--	install/
@@ -31,6 +32,8 @@
 |	|	|--	...
 |	|--	uploads/		store uploaded data such as images (permission: 777)
 |	|	|--	...
+|	|--	lang/			.mo files for variuos languages
+|	|	|-- *.mo
 |--	admin/				
 |	|--	index.php		website administation
 |--	msg.php				communicate with orzoj-server
@@ -53,7 +56,6 @@ theme structure:
 	|--	rank.php		display author rank list
 	|--	discuss.php		display discussion page
 	|--	submit.php		submit a source
-	|--	about.php
 	|--	contest.php		display contests information
 	|--	user.php		manage user info, such as changing password, enabling plugins
 	|--	announce.php	display announcements
