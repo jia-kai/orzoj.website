@@ -1,10 +1,11 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Mon Sep 27 12:06:27 2010 +0800
+ * $Date: Mon Sep 27 15:34:51 2010 +0800
  */
 /**
  * @package orzoj-website
+ * @subpackage dbal
  * @license http://gnu.org/licenses/ GNU GPLv3
  */
 /*
@@ -205,9 +206,8 @@ class dbal_mysql extends dbal
 	/**
 	 * @access private
 	 */
-	function _create_table($tablename,$structure)
+	function _create_table($tablename, $structure)
 	{
-		/* {{{ */
 		$cols = $structure['cols'];
 		$sql = 'CREATE TABLE `'.$tablename.'` ( ';
 		$current =1;
@@ -218,35 +218,63 @@ class dbal_mysql extends dbal
 			$tmp.= $this->typemap[$colstruc['type']].' ';
 			if (isset($colstruc['default']))
 			{
-				$tmp.= 'DEFAULT \''._mysql_escape_string($colstruc['default']).'\' ';
+				$tmp.= 'DEFAULT \'' . _mysql_escape_string($colstruc['default']) . '\' ';
 			}
 			if (isset($colstruc['auto_assign']) && $colstruc['auto_assign'])
 			{
-				$tmp.=' auto_increment ';
+				$tmp.=' AUTO_INCREMENT ';
 			}
 			if (isset($structure['primary_key']) && $structure['primary_key'] == $colname)
 				$tmp.=' PRIMARY KEY ';
-			if ($current != $tocount) $tmp.=',';
+			if ($current != $tocount)
+				$tmp.=',';
 			$current++;
 			$sql.=$tmp;
 		}
 		$sql.=') ';
 		$sql.=$this->add_after_create_table;
+
+		$sql = array($sql);
+
+		if (isset($structure['index']))
+			foreach($structure['index'] as $val)
+			{
+				$sql_index = 'ALTER TABLE `' . $tablename .'`';
+				if (isset($val['type']))
+				{
+					$t = $val['type'];
+					if ($t == 'UNIQUE')
+						$sql_index .= ' ADD UNIQUE INDEX (';
+					else die('unknown index type: ' . $t);
+				} else
+					$sql_index .= ' ADD INDEX (';
+
+				foreach ($val['cols'] as $col)
+				{
+					$sql_index .= '`' . $col . '`';
+					$t = $structure['cols'][$col]['type'];
+					if ($t == 'TEXT' || $t == 'TEXT200')
+						$sql_index .= '(' . $structure['index_len'][$col] . ')';
+					$sql_index .= ',';
+				}
+				$sql_index[strlen($sql_index) - 1] = ')';
+				array_push($sql, $sql_index);
+			}
+
+
 		if ($this->directquery)
 		{
-			if ($this->_query($sql)) return true;
+			if ($this->_queries($sql)) return true;
 			else return false;
 		}
 		else
-			return array($sql);
-		/* }}} */
+			return $sql;
 	}
 	/**
 	 * @access private
 	 */
 	function _get_number_of_rows($tablename,$whereclause)
 	{
-		/* {{{ */
 		$sql = 'SELECT count(*) AS ct FROM `'.$tablename.'` ';
 		if ($wherec = _mysql_build_where_clause($whereclause))
 		{
@@ -259,7 +287,6 @@ class dbal_mysql extends dbal
 		}
 		else
 			return false;
-		/* }}} */
 	}
 	/**
 	 * @access private
@@ -346,13 +373,12 @@ class dbal_mysql extends dbal
 	 */
 	function _select_from($tablename,$rows,$whereclause,$orderby,$offset,$amount)
 	{
-		/* {{{ */
 		$sql = 'SELECT ';
 		if (is_array($rows))
 		{
 			foreach ($rows as $row) 
 				$sql .= '`' . $row . '`,';
-			$sql[count($sql) - 1] = ' ';
+			$sql[strlen($sql) - 1] = ' ';
 		}
 		else if ($rows == NULL)
 		{
@@ -396,7 +422,6 @@ class dbal_mysql extends dbal
 		}
 		else
 			return array($sql);
-		/* }}} */
 	}
 	/**
 	 * @access private
@@ -508,6 +533,3 @@ class dbal_mysql extends dbal
 	}
 }
 
-/*
- * vim:foldmethod=marker
- */

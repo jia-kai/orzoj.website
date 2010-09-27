@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Sep 27 13:25:50 2010 +0800
+ * $Date: Mon Sep 27 15:44:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,8 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+require_once realpath('..') . '/includes/const.inc.php';
+
 define('GID_ADMIN', 1); // admin group id
 define('GID_LOCK', 2); // locked group id
 define('GID_ALL', 3); // every should be in this group
@@ -38,8 +40,8 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'time' => array('type' => 'INT64'),
-			'func' => array('type' => 'TEXT'), // function name
 			'file' => array('type' => 'TEXT'), // file where the function is, relative to $root_path
+			'func' => array('type' => 'TEXT'), // function name
 			'args' => array('type' => 'TEXT') // serialized array
 		),
 		'primary_key' => 'id'
@@ -52,23 +54,20 @@ $tables = array(
 			'username' => array('type' => 'TEXT'),
 			'passwd' => array('type' => 'TEXT'),	// u_make_pass()
 			'realname' => array('type' => 'TEXT'),
+			'aid' => array('type' => 'INT32'), // avatar id
 			'email' => array('type' => 'TEXT'),
 			'self_desc' => array('type' => 'TEXT'), // self description
 			'tid' => array('type' => 'INT32'), // team id
 			'reg_time' => array('type' => 'INT64'), // register time
 			'reg_ip' => array('type' => 'TEXT'), // register ip
-			'plang' => array('type' => 'INT32'), // programming language usually use
+			'plang' => array('type' => 'INT32'), // preferred programming language 
 			'wlang' => array('type' => 'INT32'), // website language
 			'last_login_time' => array('type' => 'INT64'),
 			'last_login_ip' => array('type' => 'TEXT'),
 			'submit_amount' => array('type' => 'INT32', 'default' => 0),
 			'ac_amount' => array('type' => 'INT32', 'default' => 0),
 			'unac_amount' => array('type' => 'INT32', 'default' => 0),
-			'ce_amount' => array('type' => 'INT32', 'default' => 0),
-
-			// FIXME: or portrait holds a new table?
-			'portrait_type' => array('type' => 'INT32'), // 0 if use default portrait, 1 if customized
-			'portrait_addr' => array('type' => 'TEXT'), // FIXME: or id ?
+			'ce_amount' => array('type' => 'INT32', 'default' => 0)
 		),
 		'primary_key' => 'id'
 	),
@@ -85,9 +84,16 @@ $tables = array(
 	/* map_user_group */
 	'map_user_group' => array(
 		'cols' => array(
-			// xxx: index on uid and gid
 			'uid' => array('type' => 'INT32'),
 			'gid' => array('type' => 'INT32')
+		),
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('uid')),
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('gid'))
 		)
 	),
 
@@ -101,10 +107,19 @@ $tables = array(
 		'primary_key' => 'id'
 	),
 
+	/* user_avatars */
+	'user_avatars' => array(
+		'cols' => array(
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'file' => array('type' => 'TEXT') // in the /contents/uploads directory
+		),
+		'primary_key' => 'id'
+	),
+
 	/* problems */
 	'problems' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32'),
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'title' => array('type' => 'TEXT'),
 			'code' => array('type' => 'TEXT200'), // like the code on SPOJ
 			'slug' => array('type' => 'TEXT200'), // url friendly title.
@@ -116,7 +131,21 @@ $tables = array(
 			'unac_amount' => array('type' => 'INT32', 'default' => 0),
 			'ce_amount' => array('type' => 'INT32', 'default' => 0),
 		),
-		'primary_key' => 'id'
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('code')
+			),
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('slug')
+			)
+		),
+		'index_len' => array(
+			'code' => PROB_CODE_LEN_MAX,
+			'slug' => PROB_SLUG_LEN_MAX
+		)
 	),
 
 	/* prob_groups */
@@ -132,10 +161,17 @@ $tables = array(
 
 	/* map_prob_grp */
 	'map_prob_grp' => array( // map of problems and problem groups
-		// xxx: index
 		'cols' => array(
 			'pid' => array('type' => 'INT32'),
 			'gid' => array('type' => 'INT32')
+		),
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('pid')),
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('gid'))
 		)
 	),
 
@@ -159,7 +195,6 @@ $tables = array(
 
 	/* records */
 	'records' => array(
-		// xxx: index for uid and pid
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'uid' => array('type' => 'INT32'), // user id
@@ -167,7 +202,7 @@ $tables = array(
 			'sid' => array('type' => 'INT32'), // source id
 			'jid' => array('type' => 'INT32'), // judge id
 			'view_gid' => array('type' => 'TEXT'), // serialized array group id
-			'src_len' => array('type' => 'INT32'), // source length in byte
+			'src_len' => array('type' => 'INT32'), // source length in bytes
 			'status' => array('type' => 'INT32'), // see includes/record.inc.php
 			'stime' => array('type' => 'INT64'), // submission time
 			'jtime' => array('type' => 'INT64'), // time when it is judged
@@ -178,7 +213,13 @@ $tables = array(
 			'mem' => array('type' => 'INT32'), // maximal memory, kb
 			'detail' => array('type' => 'TEXT') // serialized array of case details. see includes/record.inc.php
 		),
-		'primary_key' => 'id'
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'cols' => array('uid')),
+			array(
+				'cols' => array('pid'))
+		)
 	),
 
 	/* judges */
@@ -186,7 +227,6 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'name' => array('type' => 'TEXT'),
-			//FIXME:how about Running
 			'online' => array('type' => 'INT32'), // 0 means offline, otherwise online
 			'lang_sup' => array('type' => 'TEXT'), // serialized array of id of supported languages
 			'detail' => array('type' => 'TEXT') // serialized array of query_ans from orzoj-server

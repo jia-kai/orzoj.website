@@ -16,6 +16,7 @@
 |	|--	theme.php		API for themes
 |	|--	user.php		check user login and permissions, and get user data
 |	|--	record.inc.php	execution status constant definitions and record-related structures
+|	|--	const.inc.php	constants
 |--	contest/
 |	|--	ctal.php		contest abstract layer
 |	|--	oi.php			implementation for OI rules of contest abstract layer

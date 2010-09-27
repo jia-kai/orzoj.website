@@ -1,10 +1,11 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Mon Sep 27 11:32:47 2010 +0800
+ * $Date: Mon Sep 27 15:35:01 2010 +0800
 */
 /**
  * @package orzoj-website
+ * @subpackage dbal
  * @license http://gnu.org/licenses/ GNU GPLv3
  */
 /*
@@ -91,18 +92,28 @@ class dbal
 	/**
 	 * Create a table in a database
 	 * @param string $tablename name of a table
-	 * @param mixed $structure structure of a table<br>
-	 *   details:<br>
-	 *    array(<br>
-	 *    'cols' => array(<br>
-	 *     $colname => array('type' => $coltype, <br>
-	 *						'default' => $defaultvalue , <br>
-	 *						'auto_assign' => true/false)<br>
-	 *    ),<br>
-	 *     'primary_key' => $keycolname<br>
-	 *     )<br>
-	 * @return boolean If succeeded, TRUE will be returned,otherwise, FALSE will 
-	 *  be returned,and error infomation is set.
+	 * @param mixed $structure structure of a table
+	 *   details:
+	 *    array(
+	 *    'cols' => array(
+	 *     <col name> => array('type' => <coltype>:INT32|INT64|TEXT|TEXT200, 
+	 *						'default' => <default value> , 
+	 *						'auto_assign' => true|false)
+	 *    ),
+	 *	 ['primary_key' => $keycolname,]
+	 *	 ['index' => array(
+	 *		 array(
+	 *			 ['type' => 'UNIQUE',]
+	 *			 'cols' => array(<col0 name>, <col1 name>, ...)
+	 *		 )
+	 *	 ),
+	 *	 ['index_len' => array(
+	 *		 <col name> => <length of index on this col>
+	 *	 )]]
+	 *   for columns of type TEXT, length must be specified if you want to create an
+	 *	 index on it
+	 *	 @return boolean If succeeded, TRUE will be returned,otherwise, FALSE will 
+	 *	 be returned,and error infomation is set.
 	 * @example doc_examples/dbal_create_table.php
 	 */
 	function create_table($tablename, $structure)
