@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: error.php
- * $Date: Sun Sep 26 17:16:39 2010 +0800
+ * $Date: Mon Sep 27 19:40:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -54,11 +54,7 @@ function error_get_latest_message()
 {
 	global $errormsg;
 	if (count($errormsg) > 0)
-	{
-		$msg = $errormsg[count($errormsg)-1];
-		unset($errormsg[count($errormsg)-1]);
-		return $msg;
-	}
+		return array_pop($errormsg);
 	else
 		return false;
 }

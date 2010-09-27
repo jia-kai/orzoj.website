@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Mon Sep 27 15:35:01 2010 +0800
+ * $Date: Mon Sep 27 20:38:09 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -28,7 +28,7 @@ if (!defined('IN_ORZOJ')) exit;
 
 /**
  * Database abstract laywer base
- * If dbal.directquery is set to true.
+ * If dbal.direct_query is set to true.
  * Functions which will generate query statements will return the statements(array) instead of querying result.
  */
 
@@ -39,7 +39,7 @@ class dbal
 	/**
 	 * Direct Query(true) or Return SQL Statement(FALSE)
 	 */
-	var $directquery = true;
+	var $direct_query = true;
 	/**
 	 * the link resource
 	 */

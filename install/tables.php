@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Sep 27 15:52:35 2010 +0800
+ * $Date: Mon Sep 27 20:19:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -227,7 +227,7 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'name' => array('type' => 'TEXT'),
-			'status' => array('type' => 'INT32'),
+			'status' => array('type' => 'INT32'),  // see /includes/const.inc.php
 			'lang_sup' => array('type' => 'TEXT'), // serialized array of id of supported languages
 			'detail' => array('type' => 'TEXT') // serialized array of query_ans from orzoj-server
 		),
@@ -247,9 +247,18 @@ $tables = array(
 	/* options */
 	'options' => array(
 		'cols' => array(
-			'key' => array('type' => 'TEXT'),
+			'key' => array('type' => 'TEXT200'),
 			'value' => array('type' => 'TEXT'),
 			'auto_load' => array('type' => 'INT32', 'default' => 0)
+		),
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('key')
+			)
+		),
+		'index_len' => array(
+			'key' => OPTION_KEY_LEN_MAX
 		)
 	)
 );

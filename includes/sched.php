@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: sched.php
- * $Date: Mon Sep 27 01:18:46 2010 +0800
+ * $Date: Mon Sep 27 20:35:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,25 +25,31 @@
  */
 if (!defined('IN_ORZOJ')) exit;
 
-$table_jobs = $table_prefix . 'jobs';
+require_once $includes_path . 'functions.php';
+require_once $includes_path . 'error.php';
+
+db_init();
 
 /**
  * add a scheduled task
  * @param int $time task executing time (seconds since the Epoch)
- * @param string|mixed $func 
+ * @param string $file which file $func is (it's usually __FILE__) must be in orzoj-website direcotry
+ * @param string $func the function to be called. It should not return NULL on success
  * @param array $args
  * @return int|bool id or FALSE if failed
  * @see instert_into
  */
-function sched_add($time, $func, $args)
+function sched_add($time, $file, $func, $args)
 {
-	global $db, $table_jobs;
+	global $db, $root_path;
+	$file = substr(realpath($file), strlen($root_path));
 	$value_array = array(
 		'time' => $time,
+		'file' => $file,
 		'func' => $func,
-		'args' => $args
+		'args' => serialize($args)
 		);
-	return $db->insert_into($table_jobs, $value_array);
+	return $db->insert_into('jobs', $value_array);
 }
 
 /**
@@ -53,67 +59,61 @@ function sched_add($time, $func, $args)
  */
 function sched_remove($id)
 {
-	global $db, $table_jobs;
+	global $db, $DBOP;
 	$where_clause = array(
 		$DBOP['='], 'id', $id
 		);
-	return $db->delete_item($table_jobs, $where_clause);
+	return $db->delete_item('jobs', $where_clause);
 }
 
 /**
- * update a scheduled task
+ * modify a scheduled task
  * @param int $id
  * @param int $time
  * @return bool TRUE if succeed, otherwise FALSE
  */
 function sched_update($id, $time)
 {
-	global $db, $table_jobs;
+	global $db, $DBOP;
 	$value = array(
 		'time' => $time
 	);
 	$where_clause = array(
 		$DBOP['='], 'id', $id
 	);
-	return $db->update_data($table_jobs, $value, $where_clause);
+	return $db->update_data('jobs', $value, $where_clause);
 }
 
 /**
  * 
  * find and execute jobs that should be executed now 
- * @return void
+ * this function should be guaranteed to be executed frequently and regularly
+ * @return int number of executed jobs, or -1 on error
  */
-
-/*
- * XXX
- * test functions
-function a_plus_b($a, $b)
-{
-	echo $a + $b . '<br />';
-}
-$db->insert_into($table_jobs, array('id' => 1, 'time' => 123, 'func' => 'a_plus_b', 'args' => serialize(array(rand(), rand()))));
- */
-
 function sched_work()
 {
-	global $db, $table_jobs, $DBOP;
+	global $db, $DBOP, $root_path;
 	$where_clause = array(
 		$DBOP['<='], 'time', time()
 		);
-	$ret = $db->select_from($table_jobs, NULL, $where_clause);
+	$ret = $db->select_from('jobs', NULL, $where_clause);
 	if ($ret === FALSE)
-		die(__(__FILE__ . ' : sched_work() : select from database failed.'));
-	foreach ($ret as $key => $value)
+		error_set_message(__('%s: sched_work: failed to select from database: %s',
+		__FILE__, $db->error()));
+	$cnt = 0;
+	foreach ($ret as $row)
 	{
-		$func = $value['func'];
-		$args = unserialize($value['args']);
-		$ret = call_user_func_array($func, $args);
-		// TODO
-		// write log file or write log in database? or do not write log?
-		if ($ret === NULL) // function calling failed
+		require_once $root_path . $row['file'];
+		$func = $row['func'];
+		$args = unserialize($row['args']);
+		if (call_user_func_array($func, $args) === NULL)
 		{
-			// XXX
+			error_set_message(__('%s: failed to call user function', __FILE__));
+			return -1;
 		}
+		sched_remove($row['id']);
+		$cnt ++;
 	}
+	return $cnt;
 }
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Sun Sep 26 22:29:32 2010 +0800
+ * $Date: Mon Sep 27 19:24:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -56,7 +56,7 @@ function judge_add($name,$language_supported,$query_ans)
 	{
 		if ($insert_id == 0)
 		{
-			error_set_message(sprintf(__('Can\'t fetch the ID of new judge.')));
+			error_set_message(__('Can\'t fetch the ID of new judge.'));
 			$db->transaction_rollback();
 			return FALSE;
 		}
@@ -77,7 +77,7 @@ function judge_add($name,$language_supported,$query_ans)
 	}
 	else
 	{
-		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+		error_set_message(__('SQL Error : %s'),$db->error());
 		$db->transaction_rollback();
 	}
 }
@@ -110,7 +110,7 @@ function judge_update($id,$name,$language_supported,$query_ans)
 	}
 	else
 	{
-		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+		error_set_message(__('SQL Error : %s'),$db->error());
 		$db->transaction_rollback();
 	}
 
@@ -130,7 +130,7 @@ function judge_set_status($id,$status,$success_filter)
 	}
 	else
 	{
-		error_set_message(sprintf(__('SQL Error : %s'),$db->error()));
+		error_set_message(__('SQL Error : %s'),$db->error());
 		return false;
 	}
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Mon Sep 27 15:53:45 2010 +0800
+ * $Date: Mon Sep 27 20:00:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,6 +23,8 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+define('OPTION_KEY_LEN_MAX', 30);
 
 define('PROB_CODE_LEN_MAX', 25);
 define('PROB_SLUG_LEN_MAX', 100);

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Mon Sep 27 15:34:51 2010 +0800
+ * $Date: Mon Sep 27 20:37:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -245,7 +245,7 @@ class dbal_mysql extends dbal
 					$t = $val['type'];
 					if ($t == 'UNIQUE')
 						$sql_index .= ' ADD UNIQUE INDEX (';
-					else die('unknown index type: ' . $t);
+					else die(__FILE__ . ': unknown index type: ' . $t);
 				} else
 					$sql_index .= ' ADD INDEX (';
 
@@ -262,7 +262,7 @@ class dbal_mysql extends dbal
 			}
 
 
-		if ($this->directquery)
+		if ($this->direct_query)
 		{
 			if ($this->_queries($sql)) return true;
 			else return false;
@@ -293,10 +293,10 @@ class dbal_mysql extends dbal
 	 */
 	function _delete_item($tablename,$whereclause)
 	{
-		$sql.='DELETE FROM `'.$tablename.'` ';
+		$sql = 'DELETE FROM `' . $tablename . '` ';
 		if ($where = _mysql_build_where_clause($whereclause))
-			$sql.=$where;
-		if ($this->directquery)
+			$sql .= $where;
+		if ($this->direct_query)
 		{
 			if ($this->_query($sql))
 				return mysql_affected_rows($this->linker);
@@ -311,7 +311,7 @@ class dbal_mysql extends dbal
 	 */
 	function _insert_into($tablename,$value)
 	{
-		$sql= 'INSERT INTO `' . $tablename.'`';
+		$sql = 'INSERT INTO `' . $tablename.'`';
 		$rowssql = '';
 		$valuesql = '';
 		$cid = 1;
@@ -329,7 +329,7 @@ class dbal_mysql extends dbal
 			$cid++;
 		}
 		$sql .= '(' . $rowssql . ') VALUES(' . $valuesql . ')';
-		if ($this->directquery)
+		if ($this->direct_query)
 		{
 			if ($this->_query($sql))
 				return mysql_insert_id($this->linker);
@@ -344,7 +344,7 @@ class dbal_mysql extends dbal
 	function _delete_table($tablename)
 	{
 		$sql = 'DROP TABLE `'.$tablename.'`';
-		if ($this->directquery)
+		if ($this->direct_query)
 		{
 			if ($this->_query($sql)) return true;
 			else return false;
@@ -358,7 +358,7 @@ class dbal_mysql extends dbal
 	function _table_exists($tablename)
 	{
 		$sql = 'SELECT * FROM `'.$tablename.'`';
-		if ($this->directquery)
+		if ($this->direct_query)
 		{
 			if ($this->_query($sql))
 				return true;
@@ -411,7 +411,7 @@ class dbal_mysql extends dbal
 			else $sql.='LIMIT 0';
 			if ($amount > 0) $sql.=','.$amount;
 		}
-		if ($this->directquery)
+		if ($this->direct_query)
 		{
 			if ($rt = $this->_query($sql))
 			{
@@ -457,7 +457,7 @@ class dbal_mysql extends dbal
 		$sql .= ' ';
 		if (is_array($whereclause))
 			$sql .= _mysql_build_where_clause($whereclause);
-		if ($this->directquery)
+		if ($this->direct_query)
 		{
 			if ($rt = $this->_query($sql))
 			{
@@ -481,7 +481,7 @@ class dbal_mysql extends dbal
 	 */
 	function _transaction_begin()
 	{
-		if ($this->directquery)
+		if ($this->direct_query)
 		{
 			return $this->_query("BEGIN;");
 		}
@@ -493,7 +493,7 @@ class dbal_mysql extends dbal
 	 */
 	function _transaction_commit()
 	{
-		if ($this->directquery)
+		if ($this->direct_query)
 		{
 			return $this->_query("COMMIT;");
 		}
@@ -505,7 +505,7 @@ class dbal_mysql extends dbal
 	 */
 	function _transaction_rollback()
 	{
-		if ($this->directquery)
+		if ($this->direct_query)
 		{
 			return $this->_query("ROLLBACK;");
 		}

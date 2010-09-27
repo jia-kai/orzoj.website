@@ -1,10 +1,11 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Mon Sep 27 00:20:40 2010 +0800
+ * $Date: Mon Sep 27 19:25:22 2010 +0800
  */
 /**
  * @package orzoj-website
+ * @subpackage l10n
  * @license http://gnu.org/licenses GNU GPLv3
  */
 /*
@@ -33,10 +34,9 @@ $translators = array();
 
 /**
  * Get translation
- * @param string $fmt format
+ * @param string $fmt format, like that of printf in C
  * @param mixed ...
  * @return string translation
- * @see __
  */
 function _gettext($fmt)
 {

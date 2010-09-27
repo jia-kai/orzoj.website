@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Sep 27 00:47:18 2010 +0800
+ * $Date: Mon Sep 27 20:14:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,34 +28,32 @@ if (!defined('IN_ORZOJ')) exit;
 require_once $includes_path . 'db/' . $db_type . '.php';
 
 /**
- * Set Cookie with $tablepre at the beginning of cookie name
- * @param string $cookiename name of cookie
- * @param string $cookievalue value of cookie
- * @param int $lasttime how long will the cookie exists.NULL means broswer session
+ * Set Cookie with $table_prefix at the beginning of cookie name
+ * @param string $name name of cookie
+ * @param string $value value of cookie
+ * @param int $lasttime how long will the cookie exists. NULL means broswer session
  */
-function cookie_set($cookiename,$cookievalue,$lasttime = NULL)
+function cookie_set($name, $value, $lasttime = NULL)
 {
-	global $tablepre;
+	global $table_prefix;
+	$name = $table_prefix . $name;
 	if ($lasttime > 0)
-	{
-		setcookie($tablepre.$cookiename,$cookievalue,time() + $lasttime);
-	}
+		setcookie($name, $value, time() + $lasttime);
 	else
-	{
-		setcookie($tablepre.$cookiename,$cookievalue);
-	}
+		setcookie($name, $value);
 }
 
 /**
- * Get Cookie Value with $tablepre at the beginning of cookie name
- * @param string $cookiename name of cookie
- * @return bool|string If cookie exists,a string is returned.Otherwise,False is returned.
+ * Get Cookie value with $table_prefix at the beginning of cookie name
+ * @param string $name name of cookie
+ * @return bool|string If cookie exists,a string is returned. Otherwise,False is returned.
  */
-function cookie_get($cookiename)
+function cookie_get($name)
 {
-	global $tablepre;
-	if (isset($_COOKIE[$tablepre.$cookiename]))
-		return $_COOKIE[$tablepre.$cookiename];
+	global $table_prefix;
+	$name = $table_prefix . $name;
+	if (isset($_COOKIE[$name]))
+		return $_COOKIE[$name];
 	else
 		return false;
 }
@@ -79,7 +77,8 @@ $db = NULL;
  */
 function db_init()
 {
-	global $db, $db_type, $db_host, $db_port, $db_user, $db_password, $db_dbname;
+	global $db, $db_type, $db_host, $db_port, $db_user, $db_password, $db_dbname,
+		$table_prefix;
 	if ($db)
 		return;
 	$db_class = 'dbal_' . $db_type;
@@ -87,48 +86,66 @@ function db_init()
 	if ($db->connect($db_host, $db_port, $db_user, $db_password, $db_dbname))
 	{
 		$db_password = '';
+		$db->set_prefix($table_prefix);
 		return;
 	}
 	else
 		die(__('connection error: %s', $db->error()));
 }
 
-function option_get($option_name)
+/**
+ * get option value
+ * @param string $key option key
+ * @return string|bool option value on success, FALSE on failure 
+ */
+function option_get($key)
 {
-	global $db,$tablepre;
-	$wclause = array('param1' => 'option_name','op1' => 'text_eq','param2' => $option_name);
-	$data = $db->select_from($tablepre.'options',NULL,$wclause);
-	if ($data &&count($data)) return $data[0]['option_value'];
+	global $db, $DBOP;
+	$data = $db->select_from('options', NULL,
+		array($DBOP['=s'], 'key', $key));
+	if ($data && count($data))
+		return $data[0]['value'];
 	else
 		return false;
 }
 
-function option_delete($option_name)
+/**
+ * delete option
+ * @param string $key option key
+ * @return bool whether succeed
+ */
+function option_delete($key)
 {
-	global $db,$tablepre;
-	$wclause = array('param1' => 'option_name','op1' => 'text_eq','param2' => $option_name);
-	if ($db->delete_item($tablepre.'options',$wclause) !== FALSE) return true;
+	global $db, $DBOP;
+	if ($db->delete_item('options', array($DBOP['=s'], 'key', $key)) !== FALSE)
+		return true;
 	else
 		return false;
 }
 
-function option_set($option_name,$new_value)
+/**
+ * set option value
+ * @param string $key option key
+ * @param string $value option value
+ * @return bool whether succeed
+ */
+function option_set($key, $value)
 {
-	global $db,$tablepre;
-	$ndt  = array('option_name' => $option_name,
-		'option_value' => $new_value
+	global $db, $DBOP;
+	$ndt  = array('key' => $key,
+		'value' => $value
 		);
 	$wclause = array('param1' => 'option_name','op1' => 'text_eq','param2' => $option_name);
-	if (option_get($option_name) !== FALSE)
+	if (option_get($key) !== FALSE)
 	{
-		if ($db->update_data($tablepre.'options',$ndt,$wclause) !== FALSE)
+		if ($db->update_data('options', $ndt, array($DBOP['=s'], 'key', $key)) !== FALSE)
 			return true;
 		else
 			return false;
 	}
 	else
 	{
-		if ($db->insert_into($tablepre.'options',$ndt) !== FALSE)
+		if ($db->insert_into('options', $ndt) !== FALSE)
 			return true;
 		else
 			return false;
@@ -136,9 +153,10 @@ function option_set($option_name,$new_value)
 }
 
 /**
- * Get Real User IP
+ * get remote address
+ * @return string 
  */
-function get_real_ip()
+function get_remote_addr()
 {
 	return $_SERVER['REMOTE_ADDR'];
 }
