@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mo.php
- * $Date: Sun Sep 26 17:16:50 2010 +0800
+ * $Date: Mon Sep 27 00:18:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -66,12 +66,6 @@ class MOReader
 	{
 		fseek($fpointer,$offset,SEEK_SET);
 		$ans = NULL;
-		//FIXME : how to deal with it ? low / high endian to byte array
-		/*if ($this->BYTEORDER ==0)
-			$arr = unpack('V',fread($fpointer,$length));
-		else
-			$arr = unpack('N',fread($fpointer,$length));
-		 */
 		for ($i=1;$i<=$length;$i++)
 			$ans.=chr(array_shift(unpack('c',fread($fpointer,1))));
 		return $ans;

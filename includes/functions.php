@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sun Sep 26 22:28:30 2010 +0800
+ * $Date: Mon Sep 27 00:47:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,7 +25,7 @@
  */
 if (!defined('IN_ORZOJ')) exit;
 
-require_once $includes_path . 'db/' . $db_type . '.php'
+require_once $includes_path . 'db/' . $db_type . '.php';
 
 /**
  * Set Cookie with $tablepre at the beginning of cookie name
@@ -70,27 +70,27 @@ function htmlencode($text)
 	return nl2br(htmlspecialchars($text));
 }
 
-$_db_instance = NULL;
+$db = NULL;
 /**
- * connect to the database and return an instance of dbal
- * @return dbal|bool on success, return an instance; return FALSE on failure
+ * connect to the database and set global variable $db
+ * die('connection error: <msg>') on failure
+ * @global $db
+ * @return void
  */
-function get_db_instance()
+function db_init()
 {
-	global $_db_instance, $db_type, $db_host, $db_port, $db_user, $db_password, $db_dbname;
-	if ($_db_instance)
-		return $_db_instance;
-	$_db_instance = new 'dbal_' . $db_type;
-	if ($_db_instance->connect($db_host, $db_port, $db_user, $db_password, $db_dbname))
+	global $db, $db_type, $db_host, $db_port, $db_user, $db_password, $db_dbname;
+	if ($db)
+		return;
+	$db_class = 'dbal_' . $db_type;
+	$db = new $db_class;
+	if ($db->connect($db_host, $db_port, $db_user, $db_password, $db_dbname))
 	{
 		$db_password = '';
-		return $_db_instance;
+		return;
 	}
 	else
-	{
-		$_db_instance = NULL;
-		return FALSE;
-	}
+		die(__('connection error: %s', $db->error()));
 }
 
 function option_get($option_name)

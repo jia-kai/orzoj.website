@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Sun Sep 26 17:16:41 2010 +0800
+ * $Date: Mon Sep 27 00:20:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,6 +25,7 @@
  */
 if (!defined('IN_ORZOJ')) exit;
 
+
 require_once $includes_path . 'pomo/mo.php';
 require_once $includes_path . 'pomo/po.php';
 
@@ -32,30 +33,41 @@ $translators = array();
 
 /**
  * Get translation
- * @param string $text original text
+ * @param string $fmt format
+ * @param mixed ...
  * @return string translation
  * @see __
  */
-function _gettext($text)
+function _gettext($fmt)
 {
 	global $translators;
+	$args = func_get_args();
+	$res = $fmt;
 	foreach ($translators as $key => $translator)
 	{
-		$current = $translator['class']->translate($text); if ($current != $text) return $current;
-   	}
-	return $text;
+		$current = $translator['class']->translate($fmt); 
+		if ($current != $fmt)
+		{
+			$res = $current;
+			break;
+		}
+	}
+	$args[0] = $res;
+	return call_user_func_array('sprintf', $args);
 }
 
 
 /**
  * Get translation
- * @param string $text original text
+ * @param string $fmt format 
+ * @param mixed ...
  * @return string translation
  * @see _gettext
  */
-function __($text)
+function __($fmt)
 {
-	return _gettext($text);
+	$args = func_get_args();
+	return call_user_func_array('_gettext', $args);
 }
 
 /**
@@ -84,7 +96,7 @@ function l10n_add_mo_file($filename,$use_cache = true)
  * @param bool $use_cache whether use in memory or not
  * @see l10n_add_mo_file
  */
-function l10n_add_po_file($filename,$use_cache)
+function l10n_add_po_file($filename,$use_cache = true)
 {
 	global $translators;
 	$insert_id = count($translators);
@@ -96,4 +108,5 @@ function l10n_add_po_file($filename,$use_cache)
 		'class' => $newmo
 	);
 }
+
 

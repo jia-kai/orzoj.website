@@ -1,10 +1,11 @@
 <?php
 /* 
- * $File: pre_include.php
- * $Date: Mon Sep 27 02:13:20 2010 +0800
+ * $File: index.php
+ * $Date: Mon Sep 27 02:15:29 2010 +0800
  */
 /**
  * @package orzoj-website
+ * @subpackage install
  * @license http://gnu.org/licenses GNU GPLv3
  */
 /*
@@ -23,18 +24,6 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-ob_start();
-date_default_timezone_set('GMT');
-error_reporting(E_ALL);
 define('IN_ORZOJ', true);
+require_once '../pre_include.php';
 
-$root_path = dirname(__FILE__) . '/';
-$includes_path = $root_path . 'includes/';
-
-require_once $root_path . 'config.php';
-require_once $includes_path . 'l10n.php';
-require_once $includes_path . 'db/' . $db_type . '.php';
-require_once $includes_path . 'functions.php';
-
-db_init();

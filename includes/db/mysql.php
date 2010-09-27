@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Sun Sep 26 17:16:44 2010 +0800
+ * $Date: Mon Sep 27 00:58:03 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,17 +28,25 @@
 if (!defined('IN_ORZOJ')) exit;
 
 require_once $includes_path . 'db/dbal.php';
-
+/**
+ * @ignore
+ */
 function _mysql_escape_string($string)
 {
 	return mysql_escape_string($string);
 }
 
+/**
+ * @ignore
+ */
 function _mysql_escape_add_brck($str)
 {
 	return '(' . $str . ')';
 }
 
+/**
+ * @ignore
+ */
 class _Mysql_opt
 {
 	var $nopr, // number of operators
@@ -72,7 +80,9 @@ $DBOP['||'] = new _Mysql_opt(2, ' || ', $tmp);
 $DBOP['!'] = new _Mysql_opt(1, '! ', '_mysql_escape_add_brck');
 
 unset($tmp);
-
+/**
+ * @ignore
+ */
 function _mysql_build_where_clause($whereclause)
 {
 	if (!is_array($whereclause))
@@ -95,17 +105,17 @@ function _mysql_build_where_clause($whereclause)
 					$opr = $func($opr);
 				array_push($stack, $token->opt . $opr);
 			} else // at present, $token->opr must be 2
-			{
-				$func = $token->esc_func[0];
-				$opr0 = array_pop($stack);
-				if ($func)
-					$opr0 = $func($opr0);
-				$func = $token->esc_func[1];
-				$opr1 = array_pop($stack);
-				if ($func)
-					$opr1 = $func($opr1);
-				array_push($stack, $opr0 . $token->opt . $opr1);
-			}
+				{
+					$func = $token->esc_func[0];
+					$opr0 = array_pop($stack);
+					if ($func)
+						$opr0 = $func($opr0);
+					$func = $token->esc_func[1];
+					$opr1 = array_pop($stack);
+					if ($func)
+						$opr1 = $func($opr1);
+					array_push($stack, $opr0 . $token->opt . $opr1);
+				}
 		} else array_push($stack, $token);
 	}
 	if (count($stack) != 1)

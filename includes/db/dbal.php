@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Sun Sep 26 22:20:38 2010 +0800
+ * $Date: Mon Sep 27 00:44:23 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -172,9 +172,9 @@ class dbal
 	 * @param array $orderby array(row1 => 'ASC'/'DESC',row2 => 'ASC'/'DESC',...);meaning how to sort the result.
 	 * @param int $offset meaning start from which.
 	 * @param int $amount meaning get how many
-	 * @return array An array refering to the data is returned.
+	 * @return array|bool An array refering to the data is returned or FALSE if failed.
 	 */
-	function select_from($tablename,$rows = NULL,$whereclause = NULL,$orderby = NULL,$offset = NULL,$amount = NULL)
+	function select_from($tablename, $rows = NULL, $whereclause = NULL, $orderby = NULL, $offset = NULL, $amount = NULL)
 	{
 		return $this->_select_from($tablename,$rows,$whereclause,$orderby,$offset,$amount);
 	}
