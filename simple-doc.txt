@@ -24,7 +24,7 @@
 |	|--	acm.php			implementation for ACM rules of contest abstract layer
 |--	install/
 |	|--	index.php		install database tables and generate config.php
-|	|--	tables.php		table definitions
+|	|--	tables.php		database structure definitions
 |--	contents/
 |	|--	plugins/		store plugins
 |	|	|--	...

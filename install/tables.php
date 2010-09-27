@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Sep 27 20:52:00 2010 +0800
+ * $Date: Mon Sep 27 21:48:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -58,6 +58,7 @@ $tables = array(
 			'email' => array('type' => 'TEXT'),
 			'self_desc' => array('type' => 'TEXT'), // self description
 			'tid' => array('type' => 'INT32'), // team id
+			'view_gid' => array('type' => 'TEXT'), // serialized array of group id who can view the user's source
 			'reg_time' => array('type' => 'INT64'), // register time
 			'reg_ip' => array('type' => 'TEXT'), // register ip
 			'plang' => array('type' => 'INT32'), // preferred programming language 
@@ -73,12 +74,18 @@ $tables = array(
 	),
 
 	/* user_groups */
-	'user_groups' => array(
+	'user_groups' => array( // managed by site administrator
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'pgid' => array('type' => 'INT32'), // parent group id
 			'desc' => array('type' => 'TEXT'), // description
 		),
-		'primary_key' => 'id'
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'cols' => array('pgid')
+			)
+		),
 	),
 
 	/* map_user_group */
@@ -152,10 +159,16 @@ $tables = array(
 	'prob_groups' => array( // classification of problems
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'pgid' => array('type' => 'INT32'), // parent group id
 			'title' => array('type' => 'TEXT'),
 			'desc' => array('type' => 'TEXT')
 		),
-		'primary_key' => 'id'
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'cols' => array('pgid')
+			)
+		),
 	),
 
 
@@ -201,7 +214,6 @@ $tables = array(
 			'pid' => array('type' => 'INT32'), // problem id
 			'sid' => array('type' => 'INT32'), // source id
 			'jid' => array('type' => 'INT32'), // judge id
-			'view_gid' => array('type' => 'TEXT'), // serialized array group id
 			'src_len' => array('type' => 'INT32'), // source length in bytes
 			'status' => array('type' => 'INT32'), // see includes/record.inc.php
 			'stime' => array('type' => 'INT64'), // submission time
