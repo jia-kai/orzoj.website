@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Sep 27 21:48:06 2010 +0800
+ * $Date: Mon Sep 27 22:02:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -47,6 +47,10 @@ $tables = array(
 		'primary_key' => 'id'
 	),
 
+
+	// only users in  ADMIN group can add or remove groups
+	// group administrators can add or remove members
+
 	/* users */
 	'users' => array(
 		'cols' => array(
@@ -74,7 +78,7 @@ $tables = array(
 	),
 
 	/* user_groups */
-	'user_groups' => array( // managed by site administrator
+	'user_groups' => array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'pgid' => array('type' => 'INT32'), // parent group id
@@ -92,7 +96,9 @@ $tables = array(
 	'map_user_group' => array(
 		'cols' => array(
 			'uid' => array('type' => 'INT32'),
-			'gid' => array('type' => 'INT32')
+			'gid' => array('type' => 'INT32'),
+			'pending' => array('type' => 'INT32'), // whether the user id pending to join the group
+			'admin' => array('type' => 'INT32'), // whether the user is an administrator of the group
 		),
 		'index' => array(
 			array(
