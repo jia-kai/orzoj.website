@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Mon Sep 27 00:58:03 2010 +0800
+ * $Date: Mon Sep 27 12:06:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -214,7 +214,7 @@ class dbal_mysql extends dbal
 		$tocount = count($cols);
 		foreach ($cols as $colname => $colstruc)
 		{
-			$tmp = $colname.' ';
+			$tmp = '`'.$colname.'` ';
 			$tmp.= $this->typemap[$colstruc['type']].' ';
 			if (isset($colstruc['default']))
 			{
@@ -224,7 +224,7 @@ class dbal_mysql extends dbal
 			{
 				$tmp.=' auto_increment ';
 			}
-			if (isset($structure['primary key']) && $structure['primary key'] == $colname)
+			if (isset($structure['primary_key']) && $structure['primary_key'] == $colname)
 				$tmp.=' PRIMARY KEY ';
 			if ($current != $tocount) $tmp.=',';
 			$current++;
@@ -284,24 +284,28 @@ class dbal_mysql extends dbal
 	 */
 	function _insert_into($tablename,$value)
 	{
-		$sql= 'INSERT INTO `'.$tablename.'` (';
+		$sql= 'INSERT INTO `' . $tablename.'`';
 		$rowssql = '';
 		$valuesql = '';
 		$cid = 1;
 		$count = count($value);
-		foreach ($value as $rowname => $vv)
+		foreach ($value as $filedname => $vv)
 		{
-			$rowssql.=$rowname;
-			if ($cid != $count) $rowssql.=',';
-			if (is_array($vv)) $vv = $vv['value'];
-			$valuesql.='\''._mysql_escape_string($vv).'\'';
-			if ($cid != $count) $valuesql.=',';
+			$rowssql .= '`' . $filedname . '`';
+			if ($cid != $count)
+				$rowssql .= ',';
+			if (is_array($vv))
+				$vv = $vv['value'];
+			$valuesql .= '\'' . _mysql_escape_string($vv) . '\'';
+			if ($cid != $count)
+				$valuesql .= ',';
 			$cid++;
 		}
-		$sql.=$rowssql.') VALUES('.$valuesql.')';
+		$sql .= '(' . $rowssql . ') VALUES(' . $valuesql . ')';
 		if ($this->directquery)
 		{
-			if ($this->_query($sql)) return mysql_insert_id($this->linker);
+			if ($this->_query($sql))
+				return mysql_insert_id($this->linker);
 			else return false;
 		}
 		else
@@ -346,11 +350,13 @@ class dbal_mysql extends dbal
 		$sql = 'SELECT ';
 		if (is_array($rows))
 		{
-			$sql.=implode(',',$rows).' ';
+			foreach ($rows as $row) 
+				$sql .= '`' . $row . '`,';
+			$sql[count($sql) - 1] = ' ';
 		}
 		else if ($rows == NULL)
 		{
-			$sql.=' * ';
+			$sql.= ' * ';
 		}
 		else
 			$sql.=' `'.$rows.'` ';
@@ -361,12 +367,15 @@ class dbal_mysql extends dbal
 			$sql.=' ORDER BY ';
 			$ordercount = count($orderby);
 			$cid = 1;
-			foreach ($orderby as $rowname => $orderway)
+			foreach ($orderby as $filedname => $orderway)
 			{
-				if ($orderway == 'DESC') $orderway = 'DESC';
-				else $orderway = 'ASC';
-				$sql.=$rowname.' '.$orderway;
-				if ($cid != $ordercount) $sql.=',';
+				if ($orderway == 'DESC')
+					$orderway = 'DESC';
+				else
+					$orderway = 'ASC';
+				$sql .= '`' . $filedname . '` ' . $orderway;
+				if ($cid != $ordercount)
+					$sql .= ',';
 				$cid++;
 			}
 		}
@@ -417,11 +426,12 @@ class dbal_mysql extends dbal
 		foreach ($newvalue as $key => $value)
 		{
 			if (is_array($value)) $value = $value['value'];
-			$newvalue[$key] = $key . ' = \''.mysql_escape_string($value).'\'';
+			$newvalue[$key] = '`' . $key . '` = \'' . mysql_escape_string($value) . '\'';
 		}
-		$sql.= implode(',',$newvalue);
-		$sql.=' ';
-		if (is_array($whereclause)) $sql.=_mysql_build_where_clause($whereclause);
+		$sql .= implode(',', $newvalue);
+		$sql .= ' ';
+		if (is_array($whereclause))
+			$sql .= _mysql_build_where_clause($whereclause);
 		if ($this->directquery)
 		{
 			if ($rt = $this->_query($sql))

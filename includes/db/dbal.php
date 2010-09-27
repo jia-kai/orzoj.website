@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Mon Sep 27 00:44:23 2010 +0800
+ * $Date: Mon Sep 27 11:32:47 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -48,6 +48,19 @@ class dbal
 	 */
 	var $dblayer;
 	/**
+	 * default table prefix, which will be added before table name
+	 */
+	var $table_prefix = '';
+	/**
+	 * set the table prefix
+	 * @param string $prefix
+	 * @return void
+	 */
+	function set_prefix($prefix)
+	{
+		$this->table_prefix = $prefix;
+	}
+	/**
 	 * This function is used to connect database.
 	 * @param string $host host address to connect
 	 * @param int $port port number of host
@@ -56,9 +69,9 @@ class dbal
 	 * @param string $database database name
 	 * @return boolean If succees,TRUE is returned.Otherwise,false is returned
 	 */
-	function connect($host,$port,$user,$passwd,$database)
+	function connect($host, $port, $user, $passwd, $database)
 	{
-		return $this->_connect($host,$port,$user,$passwd,$database);
+		return $this->_connect($host, $port, $user, $passwd, $database);
 	}
 	/**
 	 * Close database connection
@@ -86,15 +99,15 @@ class dbal
 	 *						'default' => $defaultvalue , <br>
 	 *						'auto_assign' => true/false)<br>
 	 *    ),<br>
-	 *     'primary key' => $keycolname<br>
+	 *     'primary_key' => $keycolname<br>
 	 *     )<br>
 	 * @return boolean If succeeded, TRUE will be returned,otherwise, FALSE will 
 	 *  be returned,and error infomation is set.
 	 * @example doc_examples/dbal_create_table.php
 	 */
-	function create_table($tablename,$structure)
+	function create_table($tablename, $structure)
 	{
-		return $this->_create_table($tablename,$structure);
+		return $this->_create_table($this->table_prefix . $tablename, $structure);
 	}
 	/**
 	 * Get the number of rows in a table
@@ -106,9 +119,9 @@ class dbal
 	 *  the error information if error is supported by database
 	 * @see select_from
 	 */
-	function get_number_of_rows($tablename,$whereclause = NULL)
+	function get_number_of_rows($tablename, $whereclause = NULL)
 	{
-		return $this->_get_number_of_rows($tablename,$whereclause);
+		return $this->_get_number_of_rows($this->table_prefix . $tablename, $whereclause);
 	}
 	/**
 	 * Delete items from specific table
@@ -118,9 +131,9 @@ class dbal
 	 *	otherwise,FALSE(NOT 0) will be returned.
 	 * @see select_from
 	 */
-	function delete_item($tablename,$whereclause = NULL)
+	function delete_item($tablename, $whereclause = NULL)
 	{
-		return $this->_delete_item($tablename,$whereclause);
+		return $this->_delete_item($this->table_prefix . $tablename, $whereclause);
 	}
 	/**
 	 * Insert data into a table
@@ -130,17 +143,17 @@ class dbal
 	 *	otherwise FALSE will be returned.Use === or !== to check.
 	 * @see update_data
 	 */
-	function insert_into($tablename,$value)
+	function insert_into($tablename, $value)
 	{
-		return $this->_insert_into($tablename,$value);
+		return $this->_insert_into($this->table_prefix . $tablename, $value);
 	}
 	function delete_table($tablename)
 	{
-		return $this->_delete_table($tablename);
+		return $this->_delete_table($this->table_prefix . $tablename);
 	}
 	function table_exists($tablename)
 	{
-		return $this->_table_exists($tablename);
+		return $this->_table_exists($this->table_prefix . $tablename);
 	}
 	/**
 	 * This function is used to select data from a table
@@ -176,7 +189,8 @@ class dbal
 	 */
 	function select_from($tablename, $rows = NULL, $whereclause = NULL, $orderby = NULL, $offset = NULL, $amount = NULL)
 	{
-		return $this->_select_from($tablename,$rows,$whereclause,$orderby,$offset,$amount);
+		return $this->_select_from($this->table_prefix . $tablename, 
+			$rows, $whereclause, $orderby, $offset, $amount);
 	}
 	/**
 	 * update data in the database
@@ -186,9 +200,9 @@ class dbal
 	 * @return int|bool if success,affected rows OR TRUE will be returned,otherwise ,false
 	 * @see select_from
 	 */
-	function update_data($tablename,$newvalue,$whereclause = NULL)
+	function update_data($tablename, $newvalue, $whereclause = NULL)
 	{
-		return $this->_update_data($tablename,$newvalue,$whereclause);
+		return $this->_update_data($this->table_prefix . $tablename, $newvalue, $whereclause);
 	}
 	/**
 	 * @access private

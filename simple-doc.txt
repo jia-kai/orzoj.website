@@ -15,6 +15,7 @@
 |	|--	discuss.php		functions for managing discussion posts
 |	|--	theme.php		API for themes
 |	|--	user.php		check user login and permissions, and get user data
+|	|--	record.inc.php	execution status constant definitions and record-related structures
 |--	contest/
 |	|--	ctal.php		contest abstract layer
 |	|--	oi.php			implementation for OI rules of contest abstract layer
@@ -52,7 +53,7 @@ theme structure:
 	|--	discuss.php		display discussion page
 	|--	submit.php		submit a source
 	|--	about.php
-	|-- contest.php		display contests information
+	|--	contest.php		display contests information
 	|--	user.php		manage user info, such as changing password, enabling plugins
 	|--	announce.php	display announcements
 	|--	judges.php		display judge information
