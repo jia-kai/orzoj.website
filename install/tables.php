@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Sep 27 22:04:51 2010 +0800
+ * $Date: Tue Sep 28 09:51:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,11 +28,6 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once realpath('..') . '/includes/const.inc.php';
-
-define('GID_ADMIN', 1); // admin group id
-define('GID_LOCK', 2); // locked group id
-define('GID_ALL', 3); // every should be in this group
-define('GID_NONE', 4); // nobody should be in this group
 
 $tables = array(
 	/* jobs */
@@ -66,7 +61,7 @@ $tables = array(
 			'reg_time' => array('type' => 'INT64'), // register time
 			'reg_ip' => array('type' => 'TEXT'), // register ip
 			'plang' => array('type' => 'INT32'), // preferred programming language 
-			'wlang' => array('type' => 'INT32'), // website language
+			'wlang' => array('type' => 'INT32'), // preferred website language
 			'last_login_time' => array('type' => 'INT64'),
 			'last_login_ip' => array('type' => 'TEXT'),
 			'submit_amount' => array('type' => 'INT32', 'default' => 0),
@@ -76,6 +71,8 @@ $tables = array(
 		),
 		'primary_key' => 'id'
 	),
+
+	// a user belongs to its group and all this group's ancestor groups
 
 	/* user_groups */
 	'user_groups' => array(
@@ -97,7 +94,7 @@ $tables = array(
 		'cols' => array(
 			'uid' => array('type' => 'INT32'),
 			'gid' => array('type' => 'INT32'),
-			'pending' => array('type' => 'INT32'), // whether the user id pending to join the group
+			'pending' => array('type' => 'INT32'), // whether the user is pending to join the group
 			'admin' => array('type' => 'INT32'), // whether the user is an administrator of the group
 		),
 		'index' => array(
@@ -129,6 +126,23 @@ $tables = array(
 		'primary_key' => 'id'
 	),
 
+	/* messages */
+	'messages' => array(
+		'cols' => array(
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'time' => array('type' => 'INT64'),
+			'uid_snd' => array('type' => 'INT32'), // sender's user id
+			'uid_rcv' => array('type' => 'INT32'), // receiver's user id
+			'content' => array('type' => 'TEXT'),
+			'read' => array('type' => 'INT32'), // whether this message has been read
+		),
+		'primary_key' => 'id',
+		'index' => array(
+			array('cols' => array('uid_snd')),
+			array('cols' => array('uid_rcv', 'read'))
+		)
+	),
+
 	/* problems */
 	'problems' => array(
 		'cols' => array(
@@ -137,7 +151,7 @@ $tables = array(
 			'code' => array('type' => 'TEXT200'), // like the code on SPOJ
 			'slug' => array('type' => 'TEXT200'), // url friendly title.
 			'decription' => array('type' => 'TEXT'),
-			'grp_deny' => array('type' => 'TEXT'),  // serialized array of gid
+			'grp_deny' => array('type' => 'TEXT'),  // serialized array of id groups disallowed to view this problem 
 			'grp_allow' => array('type' => 'TEXT'),
 
 			'ac_amount' => array('type' => 'INT32', 'default' => 0),
@@ -160,6 +174,11 @@ $tables = array(
 			'slug' => PROB_SLUG_LEN_MAX
 		)
 	),
+
+	// let S be the set of groups of a certain user belonging to, D and A be the sets of
+	// denied gid or allowed gid of a certain problem, E is the empty set, * is the intersection of two sets,
+	// then the user can access the problem iff:
+	//     S * D == E and S * A != E
 
 	/* prob_groups */
 	'prob_groups' => array( // classification of problems
@@ -207,7 +226,7 @@ $tables = array(
 	'wlang' => array( // website language
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'name' => array('type' => 'TEXT') // filename is the same as language's name
+			'name' => array('type' => 'TEXT') // language name, also the file name in /contents/lang/
 		),
 		'primary_key' => 'id'
 	),
@@ -236,7 +255,23 @@ $tables = array(
 			array(
 				'cols' => array('uid')),
 			array(
-				'cols' => array('pid'))
+				'cols' => array('pid')),
+			array(
+				'cols' => array('time')),
+			array(
+				'cols' => array('mem')),
+		)
+	),
+
+	'source' => array(
+		'cols' => array(
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'src' => array('type' => 'TEXT'),
+			'time' => array('type' => 'INT64')
+		),
+		'primary_key' => 'id',
+		'index' => array(
+			array('cols' => array('time'))
 		)
 	),
 
@@ -244,12 +279,21 @@ $tables = array(
 	'judges' => array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'name' => array('type' => 'TEXT'),
+			'name' => array('type' => 'TEXT200'),
 			'status' => array('type' => 'INT32'),  // see /includes/const.inc.php
 			'lang_sup' => array('type' => 'TEXT'), // serialized array of id of supported languages
 			'detail' => array('type' => 'TEXT') // serialized array of query_ans from orzoj-server
 		),
-		'primary_key' => 'id'
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('name')
+			)
+		),
+		'index_len' => array(
+			'name' => JUDGE_NAME_LEN_MAX
+		),
 	),
 
 	/* announcements */

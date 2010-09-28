@@ -17,6 +17,7 @@
 |	|--	user.php		check user login and permissions, and get user data
 |	|--	record.inc.php	execution status constant definitions and record-related structures
 |	|--	const.inc.php	constants
+|	|--	message.php		user-to-user messages
 |--	contest/
 |	|--	ctal.php		contest abstract layer
 |	|--	default.php		usual practice (judge immediately after submission, no rank)

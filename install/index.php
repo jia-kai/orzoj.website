@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Mon Sep 27 20:33:58 2010 +0800
+ * $Date: Tue Sep 28 09:52:18 2010 +0800
  */
 ob_start();
 define('IN_ORZOJ',true);
@@ -108,7 +108,7 @@ case 2:
 
 			if ($db->create_table($name, $table))
 			{
-				echo 'Create table "'. $name . '" successfully.<br />';
+				echo 'Table "'. $name . '" created successfully<br />';
 				ob_flush();
 			}
 			else
@@ -122,7 +122,7 @@ case 2:
 			$db_password, $db_name, $table_prefix))
 			echo '<br />Faied to write configuration file';
 		else
-			echo "<br />Please move config.php to the top directory of orzoj and delete install directory.";
+			echo '<br />Please move install/config.php to the top directory of orzoj and delete install directory.';
 	}
 	else
 		echo 'Failed to connect to database: ' . htmlspecialchars($db->error());

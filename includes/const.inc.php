@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Mon Sep 27 20:00:18 2010 +0800
+ * $Date: Tue Sep 28 09:49:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,9 +25,14 @@
  */
 
 define('OPTION_KEY_LEN_MAX', 30);
-
+define('JUDGE_NAME_LEN_MAX', 20);
 define('PROB_CODE_LEN_MAX', 25);
 define('PROB_SLUG_LEN_MAX', 100);
+
+define('GID_ADMIN', 1); // admin group id
+define('GID_LOCK', 2); // locked group id
+define('GID_ALL', 3); // every should be in this group
+define('GID_NONE', 4); // nobody should be in this group
 
 define('JUDGE_STATUS_ONLINE',1);
 define('JUDGE_STATUS_OFFLINE',0);
