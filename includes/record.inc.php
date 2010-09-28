@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.inc.php
- * $Date: Tue Sep 28 10:47:55 2010 +0800
+ * $Date: Tue Sep 28 14:09:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,7 +29,11 @@ if (!defined('IN_ORZOJ'))
 
 
 $cnt = 0;
-define('RECORD_STATUS_WAITING', $cnt ++);
+
+define('RECORD_STATUS_WAITING_TO_BE_FETCHED', $cnt ++);
+define('RECORD_STATUS_WAITING_FOR_CONTEST', $cnt ++);
+define('RECORD_STATUS_WAITING_ON_SERVER', $cnt ++);
+
 define('RECORD_STATUS_COMPILING', $cnt ++);
 define('RECORD_STATUS_COMPILE_SUCCESS', $cnt ++);
 define('RECORD_STATUS_COMPILE_FAILURE', $cnt ++);
@@ -45,3 +49,4 @@ define('RECORD_STATUS_JUDGE_WAITING', $cnt ++);
 define('RECORD_STATUS_ERROR', $cnt ++);
 unset($cnt);
 
+?>

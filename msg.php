@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: msg.php
- * $Date: Tue Sep 28 10:31:06 2010 +0800
+ * $Date: Tue Sep 28 11:53:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,7 +37,7 @@ define('MSG_STATUS_ERROR', 1);
 if (isset($_REQUEST['action'])) // login
 {
 	if (!isset($_REQUEST['version'])) exit('0');
-	if (VERSION != $_REQUEST['version']) exit('0');
+	if (MSG_VERSION != $_REQUEST['version']) exit('0');
 	if ($_REQUEST['action'] == 'login1')
 	{
 		$tmp_dynamic_password = option_get('tmp_dynamic_password');
@@ -80,7 +80,7 @@ $func_param->task = 1;
 $func_param->msg = "error";
 $func_param->judge = 1;
 
-call_user_func('report_error');
+call_func('report_error');
 /*
 if (isset($_REQUEST['data'])) // decode data from $_REQUEST
 {

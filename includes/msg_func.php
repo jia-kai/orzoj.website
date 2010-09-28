@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: msg_func.php
- * $Date: Mon Sep 27 23:35:14 2010 +0800
+ * $Date: Tue Sep 28 16:25:53 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,8 +27,10 @@
 if (!defined('IN_ORZOJ')) exit;
 
 require_once $includes_path . 'judges.php';
+require_once $includes_path . 'sched.php';
+
 /**
- * msg_write massage to sever
+ * write a massage to sever
  * @param int $status MSG_STATUS_OK or MSG_STATUS_ERROR
  * @param data string|array $data string if MSG_STATUS_ERROR, array if MSG_STATUS_OK
  * @return void
@@ -44,6 +46,28 @@ function msg_write($status, $data)
 		'checksum' => sha1($thread_id . $req_id . sha1($dynamic_password . $static_password) . $status . $data)
 		));
 }
+
+
+/**
+ * call functions in this page with exceptions dealing.
+ * exceptions are mostly throwd from dabase.
+ * @param string $name function to call
+ * @return void
+ */
+function call_func($name)
+{
+	try
+	{
+		call_user_func($name);
+	} catch (Exc_orzoj $e)
+	{
+		msg_write(MSG_STATUS_ERROR, $e->msg());
+	}
+}
+
+
+
+
 /**
  * report error to website
  * @global $func_param parameters in a array, including 'task' and 'msg'
@@ -61,11 +85,9 @@ function report_error()
 	);
 	$where_clause = array(
 		$DBOP['='], 'id', $task_id
-		);
-	if ($db->update_data('records', $value_array, $where_clause) === FALSE)
-		msg_write(MSG_STATUS_ERROR, $db->error());
-	else
-		msg_write(MSG_STATUS_OK, NULL);
+	);
+	$db->update_data('records', $value_array, $where_clause);
+	msg_write(MSG_STATUS_OK, NULL);
 }
 
 /**
@@ -93,15 +115,9 @@ function register_new_judge()
 	else
 	{
 		$ret = judge_add($judge_name, $lang_supported, $query_ans);
-		if ($ret === FALSE)
-			msg_write(STATUS_ERROR, __("register new judge error.")); // xxx
-		else
-		{
-			judge_online();
-			msg_write(STATUS_OK, array('id_num' => $ret));
-		}
+		judge_online();
+		msg_write(STATUS_OK, array('id_num' => $ret));
 	}
-
 }
 
 /**
@@ -114,9 +130,7 @@ function remove_judge()
 {
 	global $func_param, $db;
 	$judge_id = $func_param->judge;
-	$where_clause = array(
-		$DBOP['='], 'id', $id
-	);
+	$where_clause = array($DBOP['='], 'id', $id);
 	if ($db->delete_item('judges', $where_clause) === FALSE)
 		msg_write(MSG_STATUS_ERROR, __("remove judge error."));
 	else
@@ -124,13 +138,154 @@ function remove_judge()
 }
 
 /**
- * fetch a task which is to be executed
- * @global $db 
+ * @ignore
+ * throw out this exception means a task is fetched.
  */
-// FIXME: should data request support?
-function fetch_task()
+class Exc_msg extends Exception
+{
+}
+
+/**
+ * fetch a judge request
+ * @return void throw a Exception Exc_msg if succeed
+ */
+function fetch_judge_request()
+{
+	/* judge request */
+	$where_clause = array($DBOP['='], 'status', RECORD_STATUS_WAITING_TO_BE_FETCHED);
+	$orderby = array('stime' => 'ASC');
+	$record = $db->select_from('records', NULL, $where_clause, $orderby, NULL, 1);
+	if (count($record) != 0)
+	{
+		$record = $record[0];
+
+		// get problem code
+		$where_clause = array($DBOP['='], 'id', $record['pid']);
+		$pcode = $db->select_from('problems', NULL, $where_clause);
+		if (count($pcode) == 0)
+			throw new Exc_orzoj(__("MSG Error: Can not find problem %d in database.", $record['pid']));
+		$pcode = $pcode[0]['code'];
+
+		// get src
+		$where_clause = array($DBOP['='], 'id', $record['id']);
+		$src = $db->select_from('sources', NULL, $where_clause);
+		if (count($src) == 0)
+			throw new Exc_orzoj(__("MSG Error: Can not find source %d in database", $record['sid']));
+		$src = $src[0]['src'];
+
+		// get language string
+		$where_clause = array($DBOP['='], 'id', $record['lid']);
+		$lang = $db->select_from('plang', NULL, $where_clause);
+		if (count($lang) == 0)
+			throw new Exc_orzoj(__("MSG Error: Can not find plang %d in database", $record['lid']));
+		$lang = $lang[0]['name'];
+
+		msg_write(MSG_STATUS_OK, 
+			array(
+				'type' => 'judge',
+				'id' => $ret['id'],
+				'pcode' => $pcode,
+				'lang' => $lang,
+				'src' => $src,
+				// FIXME: where can I find use file or not, in contest or record?
+				'input' => '', // XXX
+				'output' => '', // XXX
+			)
+		);
+		// set source sent 
+		$value = array('sent' => 1);
+		$where_clause = array($DBOP['='], 'id', $record['sid']);
+		$db->update_data('sources', $value, $where_clause);
+
+		throw new Exc_msg();
+	}
+
+}
+
+/**
+ * fetch a get_src request
+ * @global $db
+ * @return void throw a Exception Exc_msg
+ */
+function fetch_get_src_request()
 {
 	global $db;
-	$where_clause = array($DBOP['<='], 'sched_time', time());
+	$src_req = $db->select_from('src_req', NULL, NULL, NULL, NULL, 1);
+	if (count($src_req) != 0)
+	{
+		$src_req = $src_req[0];
+		msg_write(MSG_STATUS_OK, 
+			array(
+				'type' => 'src',
+				'sid' => $src_req['sid'],
+			)
+		);
+		throw new Exc_msg();
+	}
+}
+
+/**
+ * XXX
+ * fetch a get_data_list request
+ * @global $db
+ * @return void throw a Exception Exc_msg
+ */
+function fetch_get_data_list_request()
+{
+	global $db;
+}
+
+/**
+ * XXX
+ * fetch a get_data request
+ * @global $db
+ * @return void throw a Exception Exc_msg
+ */
+function fetch_get_data_request()
+{
+	global $db;
+}
+
+/**
+ * no task
+ * @return void throw a Exception Exc_msg
+ */
+function no_task()
+{
+	throw new Exc_msg();
+}
+
+/**
+ * fetch a task which is to be executed (web request)
+ * there are four request now:
+ * "judge" : id, prob, lang, src, input, output
+ * "get_src" : id
+ * "get_data" : prob
+ * "none" 
+ * @return void
+ */
+function fetch_task()
+{
+	try
+	{
+		sched_work();
+		fetch_get_src_request();
+		fetch_judge_request();
+		fetch_get_data_list_request();
+		fetch_get_data_request();
+		no_task();
+	}
+	catch (Exc_msg $e);
+}
+
+/**
+ *  report to orzoj-website that no judges are available in
+ *  a specific language for a record
+ *  @global $db
+ *  @return void
+ */
+function report_no_judge()
+{
+	$db->s
 }
 

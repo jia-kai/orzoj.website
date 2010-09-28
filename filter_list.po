@@ -75,4 +75,5 @@ msgid "after_add_judge"
 msgstr "
 Execution Condition:This is executed after a new judge is added.
 Parameters:Parameter 1 -- A bool which is the same as after_add_problem.Parameter 2 -- New Judge's ID
+Limitation: DO NOT use database transaction.
 "

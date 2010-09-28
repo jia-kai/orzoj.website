@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Mon Sep 27 19:24:39 2010 +0800
+ * $Date: Tue Sep 28 14:15:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,85 +33,60 @@ define('JUDGE_STATUS_RUNNING',2);
 
 function judge_search_by_name($name)
 {
-	global $db,$tablepre;
-	$condition = array('param1' => 'name','op1' => 'text_eq','param2' => $name);
-	$rt = $db->select_from($tablepre.'judges',NULL,$condition);
+	global $db;
+	$condition = array($DBOP['=s'], 'name', $name);
+	$rt = $db->select_from('judges',NULL,$condition);
 	if (is_array($rt) && count($rt) > 0)
 		return $rt;
 	else
-		return false;
+		throw new Exc_orzoj('judge_search_by_name failure.');
 }
 
-function judge_add($name,$language_supported,$query_ans)
+function judge_add($name,$lang_sup,$query_ans)
 {
-	global $db,$tablepre;
+	global $db;
 	$content = array(
 		'name' => $name,
-		'language_supported' => serialize($language_supported),
-		'variables' => serialize($query_ans)
+		'lang_sup' => serialize($lang_sup),
+		'detail' => serialize($query_ans)
 	);
 	$db->transaction_begin();
-	$insert_id = $db->insert_into($tablepre.'judges',$content);
-	if ($insert_id !== FALSE)
+	$insert_id = $db->insert_into('judges',$content);
+	try
 	{
-		if ($insert_id == 0)
-		{
-			error_set_message(__('Can\'t fetch the ID of new judge.'));
-			$db->transaction_rollback();
-			return FALSE;
-		}
-		else
-		{
-			$success = apply_filters('after_add_judge',true,$insert_id);
-			if ($success)
-			{
-				$db->transaction_commit();
-				return $insert_id;
-			}
-			else
-			{
-				$db->transaction_rollback();
-				return FALSE;
-			}
-		}
+		apply_filters('after_add_judge',true,$insert_id);
 	}
-	else
+	catch (Exc_orzoj $e)
 	{
-		error_set_message(__('SQL Error : %s'),$db->error());
 		$db->transaction_rollback();
+		return $e;
 	}
+	$db->transaction_commit();
+	return $insert_id;
 }
 
 
-function judge_update($id,$name,$language_supported,$query_ans)
+function judge_update($id,$name,$lang_sup,$query_ans)
 {
-	global $db,$tablepre;
-	$condition = array('param1' => 'id','op1' => 'int_eq','param2' => $id);
+	global $db;
+	$condition = array($DBOP['='], 'id', $id);
 	$content = array(
 		'name' => $name,
-		'language_supported' => serialize($language_supported)
-		'variables' => serialize($query_ans)
+		'lang_sup' => serialize($lang_sup),
+		'detail' => serialize($query_ans)
 	);
 	$db->transaction_begin();
-	$succ = $db->update_data($tablepre.'judges',$content,$condition);
-	if ($succ !== FALSE)
+	try
 	{
-		$success = apply_filters('after_add_judge',true,$id);
-		if ($success)
-		{
-			$db->transaction_commit();
-			return $id;
-		}
-		else
-		{
-			$db->transaction_rollback();
-			return FALSE;
-		}
+		$db->update_data('judges',$content,$condition);
+		apply_filters('after_add_judge',true,$id);
+		$db->transaction_commit();
+		return $id;
 	}
-	else
+	catch (Exc_orzoj $e)
 	{
-		error_set_message(__('SQL Error : %s'),$db->error());
 		$db->transaction_rollback();
+		throw $e;
 	}
 
 }
@@ -119,36 +94,26 @@ function judge_update($id,$name,$language_supported,$query_ans)
 
 function judge_set_status($id,$status,$success_filter)
 {	
-	global $db,$tablepre;
-	$condition = array('param1' => 'id','op1' => 'int_eq','param2' => $id);
-	$content = array(
-		'status' => $status);
-	if ($db->update_data($tablepre.'judges',$content,$condition) !== FALSE)
-	{
-		$success = apply_filters($success_filter,true,$id);
-		return true;
-	}
-	else
-	{
-		error_set_message(__('SQL Error : %s'),$db->error());
-		return false;
-	}
-
+	global $db;
+	$condition = array($DBOP['='], 'id', $id);
+	$content = array('status' => $status);
+	$db->update_data('judges',$content,$condition);
+	apply_filters($success_filter, TRUE, $id);
 }
 
 function judge_online($id)
 {
-	return judge_set_status($id,JUDGE_STATUS_ONLINE,'after_judge_online');
+	judge_set_status($id,JUDGE_STATUS_ONLINE,'after_judge_online');
 }
 
 
 function judge_offline($id)
 {
-	return judge_set_status($id,JUDGE_STATUS_OFFLINE,'after_judge_offline');
+	judge_set_status($id,JUDGE_STATUS_OFFLINE,'after_judge_offline');
 }
 
 function judge_running($id)
 {
-	return judge_set_status($id,JUDGE_STATUS_RUNNING,'after_judge_running');
+	judge_set_status($id,JUDGE_STATUS_RUNNING,'after_judge_running');
 }
 

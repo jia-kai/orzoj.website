@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: sched.php
- * $Date: Tue Sep 28 09:59:22 2010 +0800
+ * $Date: Tue Sep 28 15:26:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -95,9 +95,6 @@ function sched_work()
 		$DBOP['<='], 'time', time()
 		);
 	$ret = $db->select_from('jobs', NULL, $where_clause);
-	if ($ret === FALSE)
-		error_set_message(__('%s: sched_work: failed to select from database: %s',
-		__FILE__, $db->error()));
 	$cnt = 0;
 	foreach ($ret as $row)
 	{
@@ -105,10 +102,7 @@ function sched_work()
 		$func = $row['func'];
 		$args = unserialize($row['args']);
 		if (call_user_func_array($func, $args) === NULL)
-		{
-			error_set_message(__('%s: failed to call user function', __FILE__));
-			return -1;
-		}
+			throw new Exc_orzoj(__('failed to call user function'));
 		sched_remove($row['id']);
 		$cnt ++;
 	}

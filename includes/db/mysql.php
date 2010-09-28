@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Tue Sep 28 16:11:23 2010 +0800
+ * $Date: Tue Sep 28 16:28:53 2010 +0800
  */
 /**
  * package orzoj-website
@@ -536,4 +536,5 @@ class Dbal_mysql extends Dbal
 		$this->transaction_commit();
 	}
 }
+
 

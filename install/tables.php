@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Sep 28 10:53:34 2010 +0800
+ * $Date: Tue Sep 28 16:30:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -237,8 +237,8 @@ $tables = array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'uid' => array('type' => 'INT32'), // user id
 			'pid' => array('type' => 'INT32'), // problem id
-			'sid' => array('type' => 'INT32'), // source id
 			'jid' => array('type' => 'INT32'), // judge id
+			'lid' => array('type' => 'INT32'), // language id
 			'src_len' => array('type' => 'INT32'), // source length in bytes
 			'status' => array('type' => 'INT32'), // see includes/record.inc.php
 			'stime' => array('type' => 'INT64'), // submission time
@@ -263,15 +263,16 @@ $tables = array(
 		)
 	),
 
-	'source' => array(
+	'sources' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'rid' => array('type' => 'INT32'), // record id
 			'src' => array('type' => 'TEXT'),
-			'time' => array('type' => 'INT64')
+			'time' => array('type' => 'INT64'),
+			'sent' => array('type' => 'INT32', 'default' => 0) // whether it has been sent to orzoj-server
 		),
-		'primary_key' => 'id',
+		'primary_key' => 'rid',
 		'index' => array(
-			array('cols' => array('time'))
+			array('cols' => array('time', 'sent'))
 		)
 	),
 
@@ -322,6 +323,14 @@ $tables = array(
 		'index_len' => array(
 			'key' => OPTION_KEY_LEN_MAX
 		)
+	),
+
+	/* src_req */
+	'src_req' => array(
+		'cols' => array(
+			'rid' => array('type' => 'id')
+		),
+		'primary_key' => 'rid'
 	)
 );
 
