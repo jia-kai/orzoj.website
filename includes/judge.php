@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Tue Sep 28 14:15:22 2010 +0800
+ * $Date: Tue Sep 28 16:47:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,96 +24,12 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (!defined('IN_ORZOJ')) exit;
-
-define('JUDGE_STATUS_ONLINE',1);
-define('JUDGE_STATUS_OFFLINE',0);
-define('JUDGE_STATUS_RUNNING',2);
+if (!defined('IN_ORZOJ'))
+	exit;
 
 
-function judge_search_by_name($name)
+// TODO
+function get_judge_list()
 {
-	global $db;
-	$condition = array($DBOP['=s'], 'name', $name);
-	$rt = $db->select_from('judges',NULL,$condition);
-	if (is_array($rt) && count($rt) > 0)
-		return $rt;
-	else
-		throw new Exc_orzoj('judge_search_by_name failure.');
-}
-
-function judge_add($name,$lang_sup,$query_ans)
-{
-	global $db;
-	$content = array(
-		'name' => $name,
-		'lang_sup' => serialize($lang_sup),
-		'detail' => serialize($query_ans)
-	);
-	$db->transaction_begin();
-	$insert_id = $db->insert_into('judges',$content);
-	try
-	{
-		apply_filters('after_add_judge',true,$insert_id);
-	}
-	catch (Exc_orzoj $e)
-	{
-		$db->transaction_rollback();
-		return $e;
-	}
-	$db->transaction_commit();
-	return $insert_id;
-}
-
-
-function judge_update($id,$name,$lang_sup,$query_ans)
-{
-	global $db;
-	$condition = array($DBOP['='], 'id', $id);
-	$content = array(
-		'name' => $name,
-		'lang_sup' => serialize($lang_sup),
-		'detail' => serialize($query_ans)
-	);
-	$db->transaction_begin();
-	try
-	{
-		$db->update_data('judges',$content,$condition);
-		apply_filters('after_add_judge',true,$id);
-		$db->transaction_commit();
-		return $id;
-	}
-	catch (Exc_orzoj $e)
-	{
-		$db->transaction_rollback();
-		throw $e;
-	}
-
-}
-
-
-function judge_set_status($id,$status,$success_filter)
-{	
-	global $db;
-	$condition = array($DBOP['='], 'id', $id);
-	$content = array('status' => $status);
-	$db->update_data('judges',$content,$condition);
-	apply_filters($success_filter, TRUE, $id);
-}
-
-function judge_online($id)
-{
-	judge_set_status($id,JUDGE_STATUS_ONLINE,'after_judge_online');
-}
-
-
-function judge_offline($id)
-{
-	judge_set_status($id,JUDGE_STATUS_OFFLINE,'after_judge_offline');
-}
-
-function judge_running($id)
-{
-	judge_set_status($id,JUDGE_STATUS_RUNNING,'after_judge_running');
 }
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Tue Sep 28 10:47:19 2010 +0800
+ * $Date: Tue Sep 28 16:35:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,7 +37,7 @@ define('GID_LOCK', 2); // locked group id
 define('GID_ALL', 3); // every should be in this group
 define('GID_NONE', 4); // nobody should be in this group
 
-define('JUDGE_STATUS_ONLINE',1);
 define('JUDGE_STATUS_OFFLINE',0);
-define('JUDGE_STATUS_RUNNING',2);
+define('JUDGE_STATUS_ONLINE',1);
+define('JUDGE_STATUS_BUSY',2);
 

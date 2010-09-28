@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Tue Sep 28 16:28:53 2010 +0800
+ * $Date: Tue Sep 28 16:33:25 2010 +0800
  */
 /**
  * package orzoj-website
@@ -89,7 +89,7 @@ unset($tmp);
 function _mysql_build_where_clause($whereclause)
 {
 	if (!is_array($whereclause))
-		return false;
+		return FALSE;
 	$whereclause = array_reverse($whereclause);
 	// postfix expression is easier to handle
 
@@ -339,14 +339,14 @@ class Dbal_mysql extends Dbal
 			if ($this->direct_query)
 			{
 				$this->query($sql);
-				return true;
+				return TRUE;
 			}
 			else
 				return array($sql);
 		}
 		catch (Exception $e)
 		{
-			return false;
+			return FALSE;
 		}
 	}
 

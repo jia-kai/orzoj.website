@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: msg_func.php
- * $Date: Tue Sep 28 16:25:53 2010 +0800
+ * $Date: Tue Sep 28 16:47:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,10 +24,12 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (!defined('IN_ORZOJ')) exit;
+if (!defined('IN_ORZOJ'))
+	exit;
 
 require_once $includes_path . 'judges.php';
 require_once $includes_path . 'sched.php';
+require_once $includes_path . 'const.inc.php';
 
 /**
  * write a massage to sever
@@ -287,5 +289,63 @@ function fetch_task()
 function report_no_judge()
 {
 	$db->s
+}
+
+function judge_add($name,$lang_sup,$query_ans)
+{
+	global $db;
+	$content = array(
+		'name' => $name,
+		'lang_sup' => serialize($lang_sup),
+		'detail' => serialize($query_ans)
+	);
+	$db->transaction_begin();
+	$insert_id = $db->insert_into('judges',$content);
+	apply_filters('after_add_judge',true,$insert_id);
+	$db->transaction_commit();
+	return $insert_id;
+}
+
+
+function judge_update($id, $name, $lang_sup, $query_ans)
+{
+	global $db;
+	$condition = array($DBOP['='], 'id', $id);
+	$content = array(
+		'name' => $name,
+		'lang_sup' => serialize($lang_sup),
+		'detail' => serialize($query_ans)
+	);
+	$db->transaction_begin();
+	$db->update_data('judges', $content, $condition);
+	apply_filters('after_add_judge', true, $id);
+	$db->transaction_commit();
+	return $id;
+}
+
+
+function judge_set_status($id, $status, $success_filter)
+{	
+	global $db;
+	$condition = array($DBOP['='], 'id', $id);
+	$content = array('status' => $status);
+	$db->update_data('judges', $content, $condition);
+	apply_filters($success_filter, TRUE, $id);
+}
+
+function judge_set_online($id)
+{
+	judge_set_status($id, JUDGE_STATUS_ONLINE, 'after_judge_online');
+}
+
+
+function judge_set_offline($id)
+{
+	judge_set_status($id, JUDGE_STATUS_OFFLINE, 'after_judge_offline');
+}
+
+function judge_set_running($id)
+{
+	judge_set_status($id, JUDGE_STATUS_RUNNING, 'after_judge_running');
 }
 
