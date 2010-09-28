@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Sep 28 19:48:00 2010 +0800
+ * $Date: Wed Sep 29 00:08:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,7 +29,8 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'db/' . $db_type . '.php';
 
 /**
- * Set Cookie with $table_prefix at the beginning of cookie name
+ * Set Cookie
+ * @param string $name name of cookie,$table_prefix will be added at the beginning automatically
  * @param string $name name of cookie
  * @param string $value value of cookie
  * @param int $lasttime how long will the cookie exists. NULL means broswer session, set it to a non-positive value will delete the cookie
@@ -49,7 +50,8 @@ function cookie_set($name, $value, $lasttime = NULL)
 }
 
 /**
- * Get Cookie value with $table_prefix at the beginning of cookie name
+ * Get Cookie value
+ * @param string $name name of cookie,$table_prefix will be added at the beginning automatically
  * @param string $name name of cookie
  * @return bool|string If cookie exists,a string is returned. Otherwise,False is returned.
  */
@@ -58,11 +60,44 @@ function cookie_get($name)
 	global $table_prefix;
 	$name = $table_prefix . $name;
 	if (isset($_COOKIE[$name]))
-		return get_magic_quotes_gpc() ? stripslashes($_COOKIE[$name]) :
-			$_COOKIE[$name];
+		return $_COOKIE[$name];
 	else
 		return false;
 }
+
+/**
+ * Set Session with $table_prefix at the beginning of session name
+ * @param string $name name of sesssion
+ * @param string $value value of sesssion
+ */
+function session_set($name, $value)
+{
+	global $table_prefix;
+	static $session_started = false;
+	if (!$session_started)
+	{
+		session_start();
+		$session_started = true;
+	}
+	$_SESSION[$table_prefix.$name] = $value;
+}
+
+/**
+ * Get Session value
+ * @param string $name name of session,$table_prefix will be added at the beginning automatically
+ * @return bool|string If cookie exists,content is returned.Otherwise,False is returned.
+ */
+function session_get($name)
+{
+	global $table_prefix;
+	if (isset($_SESSION[$name]))
+	{
+		return $_SESSION[$name];
+	}
+	else
+		return FALSE;
+}
+
 
 /**
  * Translate HTML special chars and then change \n to <br>
@@ -160,27 +195,4 @@ function get_remote_addr()
 	return $_SERVER['REMOTE_ADDR'];
 }
 
-/**
- * strip magic quotes for specified fileds in $_POST and $_GET
- * @param string ... string of indexes
- * @return void
- */
-function strip_magic_quotes()
-{
-	if (get_magic_quotes_gpc())
-	{
-		static $done = array();
-		$args = func_get_args();
-		foreach ($args as $arg)
-		{
-			if (isset($done[$arg]))
-				continue;
-			if (isset($_POST[$arg]))
-				$_POST[$arg] = stripslashes($_POST[$arg]);
-			if (isset($_GET[$arg]))
-				$_GET[$arg] = stripslashes($_GET[$arg]);
-			$done[$arg] = NULL;
-		}
-	}
-}
 

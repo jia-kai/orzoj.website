@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Tue Sep 28 20:34:24 2010 +0800
+ * $Date: Wed Sep 29 00:09:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -121,7 +121,7 @@ function user_check_login($cookie_time = NULL)
 	$user->groups = array();
 	$user->is_admin = FALSE;
 
-	for ($tmp as $val)
+	foreach ($tmp as $val)
 	{
 		$groups[] = $val['gid'];
 		if ($val['admin'])
@@ -194,7 +194,7 @@ function user_check_name($name)
 /**
  * @ignore
  */
-function user_make_passwd_v1($passwd)
+function user_make_passwd_v01($passwd)
 {
 	return sha1(md5($passwd) . $passwd . sha1($passwd));
 }

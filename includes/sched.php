@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: sched.php
- * $Date: Tue Sep 28 15:26:27 2010 +0800
+ * $Date: Tue Sep 28 23:44:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,7 +26,6 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-require_once $includes_path . 'error.php';
 
 /**
  * add a scheduled task

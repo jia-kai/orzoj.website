@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Tue Sep 28 16:04:20 2010 +0800
+ * $Date: Tue Sep 28 23:58:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,4 +38,13 @@ require_once $includes_path . 'functions.php';
 require_once $includes_path . 'exception.php';
 
 db_init();
+
+//TODO
+if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
+{
+	foreach ($_GET as $key => $v)
+	{
+	}
+}
+
 
