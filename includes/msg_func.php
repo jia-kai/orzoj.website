@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: msg_func.php
- * $Date: Tue Sep 28 16:47:14 2010 +0800
+ * $Date: Tue Sep 28 20:37:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -148,104 +148,11 @@ class Exc_msg extends Exception
 }
 
 /**
- * fetch a judge request
- * @return void throw a Exception Exc_msg if succeed
- */
-function fetch_judge_request()
-{
-	/* judge request */
-	$where_clause = array($DBOP['='], 'status', RECORD_STATUS_WAITING_TO_BE_FETCHED);
-	$orderby = array('stime' => 'ASC');
-	$record = $db->select_from('records', NULL, $where_clause, $orderby, NULL, 1);
-	if (count($record) != 0)
-	{
-		$record = $record[0];
-
-		// get problem code
-		$where_clause = array($DBOP['='], 'id', $record['pid']);
-		$pcode = $db->select_from('problems', NULL, $where_clause);
-		if (count($pcode) == 0)
-			throw new Exc_orzoj(__("MSG Error: Can not find problem %d in database.", $record['pid']));
-		$pcode = $pcode[0]['code'];
-
-		// get src
-		$where_clause = array($DBOP['='], 'id', $record['id']);
-		$src = $db->select_from('sources', NULL, $where_clause);
-		if (count($src) == 0)
-			throw new Exc_orzoj(__("MSG Error: Can not find source %d in database", $record['sid']));
-		$src = $src[0]['src'];
-
-		// get language string
-		$where_clause = array($DBOP['='], 'id', $record['lid']);
-		$lang = $db->select_from('plang', NULL, $where_clause);
-		if (count($lang) == 0)
-			throw new Exc_orzoj(__("MSG Error: Can not find plang %d in database", $record['lid']));
-		$lang = $lang[0]['name'];
-
-		msg_write(MSG_STATUS_OK, 
-			array(
-				'type' => 'judge',
-				'id' => $ret['id'],
-				'pcode' => $pcode,
-				'lang' => $lang,
-				'src' => $src,
-				// FIXME: where can I find use file or not, in contest or record?
-				'input' => '', // XXX
-				'output' => '', // XXX
-			)
-		);
-		// set source sent 
-		$value = array('sent' => 1);
-		$where_clause = array($DBOP['='], 'id', $record['sid']);
-		$db->update_data('sources', $value, $where_clause);
-
-		throw new Exc_msg();
-	}
-
-}
-
-/**
- * fetch a get_src request
+ * get a request from table 'msg_req'
  * @global $db
- * @return void throw a Exception Exc_msg
  */
-function fetch_get_src_request()
+function get_request()
 {
-	global $db;
-	$src_req = $db->select_from('src_req', NULL, NULL, NULL, NULL, 1);
-	if (count($src_req) != 0)
-	{
-		$src_req = $src_req[0];
-		msg_write(MSG_STATUS_OK, 
-			array(
-				'type' => 'src',
-				'sid' => $src_req['sid'],
-			)
-		);
-		throw new Exc_msg();
-	}
-}
-
-/**
- * XXX
- * fetch a get_data_list request
- * @global $db
- * @return void throw a Exception Exc_msg
- */
-function fetch_get_data_list_request()
-{
-	global $db;
-}
-
-/**
- * XXX
- * fetch a get_data request
- * @global $db
- * @return void throw a Exception Exc_msg
- */
-function fetch_get_data_request()
-{
-	global $db;
 }
 
 /**
@@ -254,6 +161,7 @@ function fetch_get_data_request()
  */
 function no_task()
 {
+	msg_write(MSG_STATUS_OK, array('type' => 'none');
 	throw new Exc_msg();
 }
 
@@ -271,10 +179,7 @@ function fetch_task()
 	try
 	{
 		sched_work();
-		fetch_get_src_request();
-		fetch_judge_request();
-		fetch_get_data_list_request();
-		fetch_get_data_request();
+		get_request();
 		no_task();
 	}
 	catch (Exc_msg $e);
