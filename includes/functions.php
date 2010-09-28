@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Sep 28 16:11:17 2010 +0800
+ * $Date: Tue Sep 28 17:38:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,7 +23,8 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-if (!defined('IN_ORZOJ')) exit;
+if (!defined('IN_ORZOJ'))
+	exit;
 
 require_once $includes_path . 'db/' . $db_type . '.php';
 
@@ -53,7 +54,8 @@ function cookie_get($name)
 	global $table_prefix;
 	$name = $table_prefix . $name;
 	if (isset($_COOKIE[$name]))
-		return $_COOKIE[$name];
+		return get_magic_quotes_gpc() ? stripslashes($_COOKIE[$name]) :
+			$_COOKIE[$name];
 	else
 		return false;
 }
@@ -155,4 +157,27 @@ function get_remote_addr()
 	return $_SERVER['REMOTE_ADDR'];
 }
 
+/**
+ * strip magic quotes for specified fileds in $_POST and $_GET
+ * @param string ... string of indexes
+ * @return void
+ */
+function strip_magic_quotes()
+{
+	if (get_magic_quotes_gpc())
+	{
+		static $done = array();
+		$args = func_get_args();
+		foreach ($args as $arg)
+		{
+			if (isset($done[$arg]))
+				continue;
+			if (isset($_POST[$arg]))
+				$_POST[$arg] = stripslashes($_POST[$arg]);
+			if (isset($_GET[$arg]))
+				$_GET[$arg] = stripslashes($_GET[$arg]);
+			$done[$arg] = NULL;
+		}
+	}
+}
 

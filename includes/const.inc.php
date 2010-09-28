@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Tue Sep 28 16:35:44 2010 +0800
+ * $Date: Tue Sep 28 17:16:53 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,6 +31,7 @@ define('OPTION_KEY_LEN_MAX', 30);
 define('JUDGE_NAME_LEN_MAX', 20);
 define('PROB_CODE_LEN_MAX', 25);
 define('PROB_SLUG_LEN_MAX', 100);
+define('USERNAME_LEN_MAX', 20);
 
 define('GID_ADMIN', 1); // admin group id
 define('GID_LOCK', 2); // locked group id

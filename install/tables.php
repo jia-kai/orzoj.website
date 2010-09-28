@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Sep 28 16:30:09 2010 +0800
+ * $Date: Tue Sep 28 18:15:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -50,8 +50,9 @@ $tables = array(
 	'users' => array( // related file: /includes/user.php
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'username' => array('type' => 'TEXT'),
-			'passwd' => array('type' => 'TEXT'),	// u_make_pass()
+			'username' => array('type' => 'TEXT200'),
+			'passwd' => array('type' => 'TEXT200'),
+			'salt' => array('type' => 'TEXT200'),
 			'realname' => array('type' => 'TEXT'),
 			'aid' => array('type' => 'INT32'), // avatar id
 			'email' => array('type' => 'TEXT'),
@@ -69,7 +70,15 @@ $tables = array(
 			'unac_amount' => array('type' => 'INT32', 'default' => 0),
 			'ce_amount' => array('type' => 'INT32', 'default' => 0)
 		),
-		'primary_key' => 'id'
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('username')
+			)
+		),
+		'index_len' => array(
+			'username' => USERNAME_LEN_MAX)
 	),
 
 	// a user belongs to its group and all this group's ancestor groups
@@ -325,12 +334,13 @@ $tables = array(
 		)
 	),
 
-	/* src_req */
-	'src_req' => array(
+	/* msg_req */
+	'msg_req' => array( // requests to orzoj-server in msg.php
 		'cols' => array(
-			'rid' => array('type' => 'id')
+			'id' => array('type' => 'INT32', 'auto_assign' = TRUE),
+			'data' => array('type' => 'TEXT'), // serialized array of request data
 		),
-		'primary_key' => 'rid'
+		'primary_key' => 'id'
 	)
 );
 
