@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Tue Sep 28 09:59:50 2010 +0800
+ * $Date: Tue Sep 28 16:04:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -35,6 +35,7 @@ $includes_path = $root_path . 'includes/';
 require_once $root_path . 'config.php';
 require_once $includes_path . 'l10n.php';
 require_once $includes_path . 'functions.php';
+require_once $includes_path . 'exception.php';
 
 db_init();
 

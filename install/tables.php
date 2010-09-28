@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Sep 28 10:14:40 2010 +0800
+ * $Date: Tue Sep 28 10:53:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -47,7 +47,7 @@ $tables = array(
 	// group administrators can add or remove non-administrator members
 
 	/* users */
-	'users' => array(
+	'users' => array( // related file: /includes/user.php
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'username' => array('type' => 'TEXT'),

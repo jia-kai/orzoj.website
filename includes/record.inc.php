@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.inc.php
- * $Date: Tue Sep 28 10:29:34 2010 +0800
+ * $Date: Tue Sep 28 10:47:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -45,4 +45,3 @@ define('RECORD_STATUS_JUDGE_WAITING', $cnt ++);
 define('RECORD_STATUS_ERROR', $cnt ++);
 unset($cnt);
 
-?>

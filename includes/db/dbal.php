@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Mon Sep 27 20:38:09 2010 +0800
+ * $Date: Tue Sep 28 16:09:23 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -24,73 +24,56 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-if (!defined('IN_ORZOJ')) exit;
-
-/**
- * Database abstract laywer base
- * If dbal.direct_query is set to true.
- * Functions which will generate query statements will return the statements(array) instead of querying result.
- */
+if (!defined('IN_ORZOJ'))
+	exit;
 
 $DBOP = array();
 
-class dbal
+/**
+ * Database abstract laywer base
+ * If dbal.direct_query is set to true,
+ * functions generating query statements will return the statements(array) instead of querying result.
+ * @exception Exc_db
+ */
+abstract class Dbal
 {
 	/**
-	 * Direct Query(true) or Return SQL Statement(FALSE)
+	 * TRUE: do sql query
+	 * FALSE: return an array of query(-ies)
 	 */
-	var $direct_query = true;
+	public $direct_query = TRUE;
+
 	/**
-	 * the link resource
+	 * charset of table
 	 */
-	var $linker;
+	protected $charset = 'utf8';
+
 	/**
-	 * database laywer's ID
-	 */
-	var $dblayer;
-	/**
-	 * default table prefix, which will be added before table name
-	 */
-	var $table_prefix = '';
-	/**
-	 * set the table prefix
-	 * @param string $prefix
+	 * set the prefix of table names
+	 * @param string $prefix the prefix to be added before table names
 	 * @return void
 	 */
-	function set_prefix($prefix)
-	{
-		$this->table_prefix = $prefix;
-	}
+	abstract protected function set_prefix($prefix);
+
 	/**
-	 * This function is used to connect database.
+	 * connect to the database.
 	 * @param string $host host address to connect
 	 * @param int $port port number of host
 	 * @param string $user username
 	 * @param string $passwd password
 	 * @param string $database database name
-	 * @return boolean If succees,TRUE is returned.Otherwise,false is returned
+	 * @return void
 	 */
-	function connect($host, $port, $user, $passwd, $database)
-	{
-		return $this->_connect($host, $port, $user, $passwd, $database);
-	}
+	abstract protected function connect($host, $port, $user, $passwd, $database);
+
 	/**
-	 * Close database connection
+	 * close the database connection
+	 * @return void
 	 */
-	function close()
-	{
-		return $this->_close();
-	}
+	abstract protected function close();
+
 	/**
-	 * Get error message
-	 * @return mixed Latest error message is returned
-	 */
-	function error()
-	{
-		return $this->_error();
-	}
-	/**
-	 * Create a table in a database
+	 * create a table in the database
 	 * @param string $tablename name of a table
 	 * @param mixed $structure structure of a table
 	 *   details:
@@ -114,62 +97,55 @@ class dbal
 	 *	 index on it
 	 *	 @return boolean If succeeded, TRUE will be returned,otherwise, FALSE will 
 	 *	 be returned,and error infomation is set.
-	 * @example doc_examples/dbal_create_table.php
+	 * @return void
 	 */
-	function create_table($tablename, $structure)
-	{
-		return $this->_create_table($this->table_prefix . $tablename, $structure);
-	}
+	abstract protected function create_table($tablename, $structure);
+
 	/**
-	 * Get the number of rows in a table
+	 * delete a table
+	 * @param string $tablename name of a table
+	 * @return void
+	 */
+	abstract protected function delete_table($tablename);
+
+	/**
+	 * test whether table exists
+	 * @param string $tablename name of a table
+	 * @return bool
+	 */
+	abstract protected function table_exists($tablename);
+
+	/**
+	 * get the number of rows in a table
 	 * @param string $tablename name of a table
 	 * @param array whereclause the where clause array
-	 * @return bool|int if succeeded ,the number of rows or TRUE will be returned,
-	 *  otherwise,FALSE(not ZERO,use === to check) will be returned,
-	 *  and you can use $object->error() or $object->errno() to get
-	 *  the error information if error is supported by database
+	 * @return int number of rows
 	 * @see select_from
 	 */
-	function get_number_of_rows($tablename, $whereclause = NULL)
-	{
-		return $this->_get_number_of_rows($this->table_prefix . $tablename, $whereclause);
-	}
+	abstract protected function get_number_of_rows($tablename, $whereclause = NULL);
+
 	/**
-	 * Delete items from specific table
+	 * delete items from specified table
 	 * @param string $tablename name of a table
 	 * @param array whereclause the where clause array
-	 * @return bool|int If succeeded,infected rows or TRUE will be returned,\
-	 *	otherwise,FALSE(NOT 0) will be returned.
+	 * @return int infected rows or TRUE
 	 * @see select_from
 	 */
-	function delete_item($tablename, $whereclause = NULL)
-	{
-		return $this->_delete_item($this->table_prefix . $tablename, $whereclause);
-	}
+	abstract protected function delete_item($tablename, $whereclause = NULL);
+
 	/**
-	 * Insert data into a table
+	 * insert data into a table
 	 * @param string $tablename name of a table
 	 * @param array $value what to insert.
-	 * @return int|bool If succeded,insert id ,ZERO(0) OR TRUE will be returned,
-	 *	otherwise FALSE will be returned.Use === or !== to check.
+	 * @return int insert id or 0 if id unavailable
 	 * @see update_data
 	 */
-	function insert_into($tablename, $value)
-	{
-		return $this->_insert_into($this->table_prefix . $tablename, $value);
-	}
-	function delete_table($tablename)
-	{
-		return $this->_delete_table($this->table_prefix . $tablename);
-	}
-	function table_exists($tablename)
-	{
-		return $this->_table_exists($this->table_prefix . $tablename);
-	}
+	abstract protected function insert_into($tablename, $value);
+
 	/**
-	 * This function is used to select data from a table
+	 * select data from a table
 	 * @param string $tablename name of the table
-	 * @param mixed $rows array(row1,row2,row3,...) OR NULL(means *)
+	 * @param mixed $cols array of column names OR NULL(means *)
 	 * @param array $whereclause array of tokens, in the form of prefix expression
 	 *		each element in the array  is either an operator or an operand
 	 *		valid operators:
@@ -193,79 +169,58 @@ class dbal
 	 *								<statement>
 	 *		use $DBOP[str] to get operator object named str
 	 *		example: array($DBOP["="], "id", "1") means "id = 1"
-	 * @param array $orderby array(row1 => 'ASC'/'DESC',row2 => 'ASC'/'DESC',...);meaning how to sort the result.
+	 * @param array $orderby array(<col name> => 'ASC'|'DESC') meaning how to sort the result.
 	 * @param int $offset meaning start from which.
 	 * @param int $amount meaning get how many
-	 * @return array|bool An array refering to the data is returned or FALSE if failed.
+	 * @return array the data fetched from database
 	 */
-	function select_from($tablename, $rows = NULL, $whereclause = NULL, $orderby = NULL, $offset = NULL, $amount = NULL)
-	{
-		return $this->_select_from($this->table_prefix . $tablename, 
-			$rows, $whereclause, $orderby, $offset, $amount);
-	}
+	abstract protected function
+		select_from($tablename, $cols = NULL, $whereclause = NULL, $orderby = NULL, $offset = NULL, $amount = NULL);
+
 	/**
 	 * update data in the database
 	 * @param string $tablename name of table
 	 * @param array $newvalue new value array(row_name => VALUE);VALUE :: value OR array('type' => TYPE,'value' => value)
 	 * @param array $whereclause whereclause
-	 * @return int|bool if success,affected rows OR TRUE will be returned,otherwise ,false
+	 * @return int affected rows or TRUE
 	 * @see select_from
 	 */
-	function update_data($tablename, $newvalue, $whereclause = NULL)
-	{
-		return $this->_update_data($this->table_prefix . $tablename, $newvalue, $whereclause);
-	}
+	abstract protected function update_data($tablename, $newvalue, $whereclause = NULL);
+
 	/**
-	 * @access private
+	 * @ignore
 	 */
 	function __destruct()
 	{
 		$this->close();
 	}
-	/**
-	 * Get Query Amount
-	 * @return int query amount
-	 */
-	function get_query_amount()
-	{
-		return $this->_get_query_amount();
-	}
-	/**
-	 * Start a transaction
-	 */
-	function transaction_begin()
-	{
-		return $this->_transaction_begin();
-	}
-	/**
-	 * Commit a transaction
-	 */
-	function transaction_commit()
-	{
-		return $this->_transaction_commit();
-	}
-	/**
-	 * Rollback meaning discard a transaction
-	 */
-	function transaction_rollback()
-	{
-		return $this->_transaction_rollback();
-	}
 
 	/**
-	 * Make a Query
+	 * get total number of queries
+	 * @return int query amount
 	 */
-	function query($query)
-	{
-		return $this->_query($query);
-	}
+	abstract protected function get_query_amount();
+
 	/**
-	 * Make queries
+	 * start a transaction
+	 * Note: transaction is not allowed to be nested
+	 * if an SQL error happens in a transaction, it will be rollbacked
+	 * automatically
+	 * @return void
 	 */
-	function queries($queries)
-	{
-		return $this->_queries($queries);
-	}
+	abstract protected function transaction_begin();
+
+	/**
+	 * commit a transaction
+	 * @return void
+	 */
+	abstract protected function transaction_commit();
+
+	/**
+	 * rollback a transaction, meaning discarding it
+	 * @return void
+	 */
+	abstract protected function transaction_rollback();
 }
 
 /*

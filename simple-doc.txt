@@ -5,7 +5,6 @@
 |	|	|--	dbal.php	database abstract layer
 |	|	|--	mysql.php	implementation for mysql of database abstract layer
 |	|--	functions.php	commonly used functions
-|	|--	error.php		interface for error reporting
 |	|--	l10n.php		functions for localization
 |	|-- pomo/
 |	|	|--	po.php		po reader
@@ -20,6 +19,7 @@
 |	|-- msg_func.php	functions for dealing messages
 |	|--	const.inc.php	miscellaneous constants
 |	|--	message.php		user-to-user messages
+|	|--	exception.php	exception definitions
 |--	contest/
 |	|--	ctal.php		contest abstract layer
 |	|--	default.php		usual practice (judge immediately after submission, no rank)

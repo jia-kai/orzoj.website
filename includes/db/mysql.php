@@ -1,12 +1,12 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Mon Sep 27 20:37:57 2010 +0800
+ * $Date: Tue Sep 28 16:11:23 2010 +0800
  */
 /**
- * @package orzoj-website
- * @subpackage dbal
- * @license http://gnu.org/licenses/ GNU GPLv3
+ * package orzoj-website
+ * subpackage dbal
+ * license http://gnu.org/licenses/ GNU GPLv3
  */
 /*
 	This file is part of orzoj
@@ -26,11 +26,12 @@
  */
 
 
-if (!defined('IN_ORZOJ')) exit;
+if (!defined('IN_ORZOJ'))
+	exit;
 
 require_once $includes_path . 'db/dbal.php';
 /**
- * @ignore
+ * ignore
  */
 function _mysql_escape_string($string)
 {
@@ -38,7 +39,7 @@ function _mysql_escape_string($string)
 }
 
 /**
- * @ignore
+ * ignore
  */
 function _mysql_escape_add_brck($str)
 {
@@ -46,7 +47,7 @@ function _mysql_escape_add_brck($str)
 }
 
 /**
- * @ignore
+ * ignore
  */
 class _Mysql_opt
 {
@@ -81,8 +82,9 @@ $DBOP['||'] = new _Mysql_opt(2, ' || ', $tmp);
 $DBOP['!'] = new _Mysql_opt(1, '! ', '_mysql_escape_add_brck');
 
 unset($tmp);
+
 /**
- * @ignore
+ * ignore
  */
 function _mysql_build_where_clause($whereclause)
 {
@@ -97,7 +99,7 @@ function _mysql_build_where_clause($whereclause)
 		if (get_class($token) === '_Mysql_opt')
 		{
 			if (count($stack) < $token->nopr)
-				die(__FILE__ . ': invalid where clause');
+				throw new Exc_inner(__('invalid where clause'));
 			if ($token->nopr == 1)
 			{
 				$opr = array_pop($stack);
@@ -120,7 +122,7 @@ function _mysql_build_where_clause($whereclause)
 		} else array_push($stack, $token);
 	}
 	if (count($stack) != 1)
-		die(__FILE__ . ': invalid where clause');
+		throw new Exc_inner(__('invalid where clause'));
 	return ' WHERE ' . $stack[0];
 }
 
@@ -128,89 +130,78 @@ function _mysql_build_where_clause($whereclause)
 /**
  * MySQL Database Abstract Layer
  */
-class dbal_mysql extends dbal
+class Dbal_mysql extends Dbal
 {
-	/**
-	 * @access private
-	 */
-	function __construct()
+	private
+		/**
+		 * mysql link returned by mysql_connect
+		 */
+		$linker = NULL,
+
+		/**
+		 * whether now it is in a transaction
+		 */
+		$in_transaction = FALSE,
+
+		/**
+		 * set engine, character and collate after creating a new table
+		 */
+		$add_after_create_table = 'ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_bin',
+
+		/**
+		 * query count
+		 */
+		$query_cnt = 0,
+
+		/**
+		 * type map of MySQL
+		 */
+		$typemap = array(
+			'INT32' => 'INT',
+			'INT64' => 'BIGINT',
+			'TEXT' => 'TEXT',
+			'TEXT200' => 'VARCHAR(200)'
+		),
+
+		/**
+		 * table prefix
+		 */
+		$table_prefix = '';
+
+	public function set_prefix($prefix)
 	{
-		$this->dblayer = 'mysql';
+		$this->table_prefix = $prefix;
 	}
-	/**
-	 * charset of table
-	 */
-	var $charset = 'utf8';
-	/**
-	 * decleare engine,character,collate after creating
-	 */
-	var $add_after_create_table = 'ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_bin';
-	/**
-	 * Query Counts
-	 */
-	var $querycount = 0;
-	/**
-	 * Type map of MySQL
-	 */
-	var $typemap = array(
-		'INT32' => 'INT',
-		'INT64' => 'BIGINT',
-		'TEXT' => 'TEXT',
-		'TEXT200' => 'VARCHAR(200)'
-	);
-	/**
-	 * @access private
-	 */
-	function _connect($host,$port,$user,$passwd,$database)
+
+	public function connect($host, $port, $user, $passwd, $database)
 	{
-		if ($this->linker) @mysql_close($this->linker);
-		if ($port > 0) $host = $host.':'.$port;
-		if (@$this->linker = mysql_connect($host,$user,$passwd))
+		$this->close();
+		if ($port > 0)
+			$host = $host . ':' . $port;
+		if ($this->linker = @mysql_connect($host, $user, $passwd))
 		{
-			@mysql_query("SET NAMES {$this->charset}",$this->linker);
-			$this->querycount++;
-			if (@mysql_select_db($database,$this->linker))
-			{
-				return TRUE;
-			}
-			else
-			{
-				return FALSE;
-			}
+			$this->query("SET NAMES {$this->charset}", $this->linker);
+			if (!@mysql_select_db($database, $this->linker))
+				throw new Exc_db(__('SQL error: %s', $this->get_err_msg()));
+		} else throw new Exc_db(__('failed to conenct to database: %s', $this->get_err_msg()));
+	}
+
+	public function close()
+	{
+		if ($this->linker)
+		{
+			@mysql_close($this->linker);
+			$this->linker = NULL;
 		}
-		return FALSE;
 	}
-	/**
-	 * @access private
-	 */
-	function _close()
+
+	public function create_table($tablename, $structure)
 	{
-		if ($this->linker) @mysql_close($this->linker);
-	}
-	/**
-	 * @access private
-	 */
-	function _error()
-	{
-		if ($this->linker) return @mysql_error($this->linker);
-		else return @mysql_error();
-	}
-	/**
-	 * @access private
-	 */
-	function _query($statement)
-	{
-		$this->querycount++;
-		return @mysql_query($statement,$this->linker);
-	}
-	/**
-	 * @access private
-	 */
-	function _create_table($tablename, $structure)
-	{
+		$tablename = $this->table_prefix . $tablename;
+
 		$cols = $structure['cols'];
-		$sql = 'CREATE TABLE `'.$tablename.'` ( ';
-		$current =1;
+		$sql = 'CREATE TABLE `' . $tablename . '` ( ';
+		$current = 1;
 		$tocount = count($cols);
 		foreach ($cols as $colname => $colstruc)
 		{
@@ -245,7 +236,7 @@ class dbal_mysql extends dbal
 					$t = $val['type'];
 					if ($t == 'UNIQUE')
 						$sql_index .= ' ADD UNIQUE INDEX (';
-					else die(__FILE__ . ': unknown index type: ' . $t);
+					else throw new Exc_inner(__('unknown index type: %s', $t));
 				} else
 					$sql_index .= ' ADD INDEX (';
 
@@ -263,54 +254,43 @@ class dbal_mysql extends dbal
 
 
 		if ($this->direct_query)
-		{
-			if ($this->_queries($sql)) return true;
-			else return false;
-		}
+			$this->queries($sql);
 		else
 			return $sql;
 	}
-	/**
-	 * @access private
-	 */
-	function _get_number_of_rows($tablename,$whereclause)
+
+	public function get_number_of_rows($tablename, $whereclause = NULL)
 	{
-		$sql = 'SELECT count(*) AS ct FROM `'.$tablename.'` ';
+		$tablename = $this->table_prefix . $tablename;
+		$sql = 'SELECT count(*) AS ct FROM `' . $tablename . '` ';
 		if ($wherec = _mysql_build_where_clause($whereclause))
 		{
 			$sql .= $wherec;
 		}
-		$status = $this->_query($sql);
-		if ($result = $this->_fetch_row($status))
-		{
+		$status = $this->query($sql);
+		if ($result = $this->fetch_row($status))
 			return $result['ct'];
-		}
-		else
-			return false;
+		throw new Exc_db(__('unexpected SQL error'));
 	}
-	/**
-	 * @access private
-	 */
-	function _delete_item($tablename,$whereclause)
+
+	public function delete_item($tablename, $whereclause = NULL)
 	{
+		$tablename = $this->table_prefix . $tablename;
 		$sql = 'DELETE FROM `' . $tablename . '` ';
 		if ($where = _mysql_build_where_clause($whereclause))
 			$sql .= $where;
 		if ($this->direct_query)
 		{
-			if ($this->_query($sql))
-				return mysql_affected_rows($this->linker);
-			else
-				return false;
+			$this->query($sql);
+			return @mysql_affected_rows($this->linker);
 		}
 		else
 			return array($sql);
 	}
-	/**
-	 * @access private
-	 */
-	function _insert_into($tablename,$value)
+
+	public function insert_into($tablename, $value)
 	{
+		$tablename = $this->table_prefix . $tablename;
 		$sql = 'INSERT INTO `' . $tablename.'`';
 		$rowssql = '';
 		$valuesql = '';
@@ -331,63 +311,65 @@ class dbal_mysql extends dbal
 		$sql .= '(' . $rowssql . ') VALUES(' . $valuesql . ')';
 		if ($this->direct_query)
 		{
-			if ($this->_query($sql))
-				return mysql_insert_id($this->linker);
-			else return false;
+			$this->query($sql);
+			return @mysql_insert_id($this->linker);
 		}
 		else
 			return array($sql);
 	}
-	/**
-	 * @access private
-	 */
-	function _delete_table($tablename)
+
+	public function delete_table($tablename)
 	{
+		$tablename = $this->table_prefix . $tablename;
 		$sql = 'DROP TABLE `'.$tablename.'`';
 		if ($this->direct_query)
 		{
-			if ($this->_query($sql)) return true;
-			else return false;
+			$this->query($sql);
 		}
 		else
 			return array($sql);
 	}
-	/**
-	 * @access private
-	 */
-	function _table_exists($tablename)
+
+	public function table_exists($tablename)
 	{
-		$sql = 'SELECT * FROM `'.$tablename.'`';
-		if ($this->direct_query)
+		$tablename = $this->table_prefix . $tablename;
+		try
 		{
-			if ($this->_query($sql))
+			$sql = 'SELECT * FROM `'. $tablename . '`';
+			if ($this->direct_query)
+			{
+				$this->query($sql);
 				return true;
+			}
 			else
-				return false;
+				return array($sql);
 		}
-		else
-			return array($sql);
-	}
-	/**
-	 * @access private
-	 */
-	function _select_from($tablename,$rows,$whereclause,$orderby,$offset,$amount)
-	{
-		$sql = 'SELECT ';
-		if (is_array($rows))
+		catch (Exception $e)
 		{
-			foreach ($rows as $row) 
+			return false;
+		}
+	}
+
+	public function select_from($tablename, $cols = NULL, $whereclause = NULL,
+		$orderby = NULL, $offset = NULL, $amount = NULL)
+	{
+		$tablename = $this->table_prefix . $tablename;
+		$sql = 'SELECT ';
+		if (is_array($cols))
+		{
+			foreach ($cols as $row) 
 				$sql .= '`' . $row . '`,';
 			$sql[strlen($sql) - 1] = ' ';
 		}
-		else if ($rows == NULL)
+		else if ($cols == NULL)
 		{
 			$sql.= ' * ';
 		}
 		else
-			$sql.=' `'.$rows.'` ';
+			$sql.=' `' . $cols . '` ';
 		$sql.='FROM `'.$tablename.'`';
-		if (is_array($whereclause)) $sql.=_mysql_build_where_clause($whereclause);
+		if (is_array($whereclause))
+			$sql .= _mysql_build_where_clause($whereclause);
 		if (is_array($orderby))
 		{
 			$sql.=' ORDER BY ';
@@ -413,40 +395,16 @@ class dbal_mysql extends dbal
 		}
 		if ($this->direct_query)
 		{
-			if ($rt = $this->_query($sql))
-			{
-				return $this->_fetch_all_rows($rt);
-			}
-			else
-				return false;
+			$rt = $this->query($sql);
+			return $this->fetch_all_rows($rt);
 		}
 		else
 			return array($sql);
 	}
-	/**
-	 * @access private
-	 */
-	function _fetch_row($resource)
+
+	public function update_data($tablename, $newvalue, $whereclause = NULL)
 	{
-		return @mysql_fetch_array($resource);
-	}
-	/**
-	 * @access private
-	 */
-	function _fetch_all_rows($resource)
-	{
-		$result = array();
-		while ($tmp = $this->_fetch_row($resource))
-		{
-			$result[] = $tmp;
-		}
-		return $result;
-	}
-	/**
-	 * @access private
-	 */
-	function _update_data($tablename,$newvalue,$whereclause = NULL)
-	{
+		$tablename = $this->table_prefix . $tablename;
 		$sql ='UPDATE `'.$tablename.'` SET ';
 		foreach ($newvalue as $key => $value)
 		{
@@ -459,77 +417,123 @@ class dbal_mysql extends dbal
 			$sql .= _mysql_build_where_clause($whereclause);
 		if ($this->direct_query)
 		{
-			if ($rt = $this->_query($sql))
-			{
-				return mysql_affected_rows($this->linker);
-			}
-			else
-				return false;
+			$rt = $this->query($sql);
+			return @mysql_affected_rows($this->linker);
 		}
 		else
 			return array($sql);
 	}
-	/**
-	 * @access private
-	 */
-	function _get_query_amount()
+
+	public function get_query_amount()
 	{
-		return $this->querycount;
+		return $this->query_cnt;
 	}
-	/**
-	 * @access private
-	 */
-	function _transaction_begin()
+
+	public function transaction_begin()
 	{
+		if ($this->in_transaction)
+			throw new Exc_inner(__('nested transaction'));
+		$this->in_transaction = TRUE;
 		if ($this->direct_query)
 		{
-			return $this->_query("BEGIN;");
+			$this->query("BEGIN;");
 		}
 		else
 			return array("BEGIN;");
 	}
-	/**
-	 * @access private
-	 */
-	function _transaction_commit()
+
+	public function transaction_commit()
 	{
+		if (!$this->in_transaction)
+			throw new Exc_inner(__('attempt to commit before beginning transaction'));
+		$this->in_transaction = FALSE;
 		if ($this->direct_query)
 		{
-			return $this->_query("COMMIT;");
+			$this->query("COMMIT;");
 		}
 		else
 			return array("COMMIT;");
 	}
-	/**
-	 * @access private
-	 */
-	function _transaction_rollback()
+
+	public function transaction_rollback()
 	{
+		if (!$this->in_transaction)
+			throw new Exc_inner(__('attempt to rollback before beginning transaction'));
+		$this->in_transaction = FALSE;
 		if ($this->direct_query)
 		{
-			return $this->_query("ROLLBACK;");
+			$this->query("ROLLBACK;");
 		}
 		else
 			return array("ROLLBACK;");
 	}
+
 	/**
-	 * @access private
+	 * fetch a row in the mysql resource
+	 * @return array result
 	 */
-	function _queries($queries)
+	private function fetch_row($resource)
+	{
+		return @mysql_fetch_array($resource);
+	}
+
+	/**
+	 * fetch all rows in the mysql resource
+	 * @return array array of rows
+	 */
+	private function fetch_all_rows($resource)
+	{
+		$result = array();
+		while ($tmp = $this->fetch_row($resource))
+		{
+			$result[] = $tmp;
+		}
+		return $result;
+	}
+
+	/**
+	 * get latest get_err_msg message
+	 * @return string get_err_msg message
+	 */
+	private function get_err_msg()
+	{
+		if ($this->linker)
+			return '[errno ' . mysql_errno($this->linker) .
+			'] ' . mysql_error($this->linker);
+		return '[errno ' . mysql_errno() . '] ' . mysql_error();
+	}
+
+	/**
+	 * apply a mysql query
+	 * @param string @query the query to be applied
+	 * @return the value returned by mysqlquery
+	 * @exception Exc_db
+	 */
+	private function query($query)
+	{
+		$this->query_cnt++;
+		$ret = @mysql_query($query, $this->linker);
+		if ($ret === FALSE)
+		{
+			if ($this->in_transaction)
+				$this->transaction_rollback();
+			throw new Exc_db(__('SQL query error [query: %s]: %s',
+				$query, $this->get_err_msg()));
+		}
+		return $ret;
+	}
+
+	/**
+	 * apply a series of queries in a transaction
+	 * @param array $queries array of queries
+	 * @return void
+	 */
+	private function queries($queries)
 	{
 		$this->transaction_begin();
 		foreach ($queries as $query)
-		{
-			if ($this->_query($query))
-				continue;
-			else
-			{
-				$this->transaction_rollback();
-				return false;
-			}
-		}
+			$this->query($query);
 		$this->transaction_commit();
-		return true;
 	}
 }
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Sep 27 20:14:23 2010 +0800
+ * $Date: Tue Sep 28 16:11:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -71,7 +71,6 @@ function htmlencode($text)
 $db = NULL;
 /**
  * connect to the database and set global variable $db
- * die('connection error: <msg>') on failure
  * @global $db
  * @return void
  */
@@ -81,16 +80,11 @@ function db_init()
 		$table_prefix;
 	if ($db)
 		return;
-	$db_class = 'dbal_' . $db_type;
+	$db_class = 'Dbal_' . $db_type;
 	$db = new $db_class;
-	if ($db->connect($db_host, $db_port, $db_user, $db_password, $db_dbname))
-	{
-		$db_password = '';
-		$db->set_prefix($table_prefix);
-		return;
-	}
-	else
-		die(__('connection error: %s', $db->error()));
+	$db->connect($db_host, $db_port, $db_user, $db_password, $db_dbname);
+	$db_password = '';
+	$db->set_prefix($table_prefix);
 }
 
 /**

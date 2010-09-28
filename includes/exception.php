@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: user.php
- * $Date: Tue Sep 28 10:55:56 2010 +0800
+ * $File: exception.php
+ * $Date: Tue Sep 28 15:36:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,25 +27,34 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 /**
- * @ignore
+ * orzoj exception
  */
-class _User
+class Exc_orzoj extends Exception
 {
-	var $id, $name, $realname,
-		$avatar, // avatar file name
-		$email, $self_desc, $tid,
-		$view_gid, // array of gid who can view the user's source
-		$reg_time, $reg_ip, $plang, $wlang,
-		$groups; // array of id of groups that the user blong to
+	public function msg()
+	{
+		return __("error at %s:%d:\n%s",
+		$this->getFile(), $this->getLine(), $this->getMessage());
+	}
 }
 
-$user = NULL;
 /**
- * check user login and initialize $user structure
- * @global $user
- * @return bool whether login successfully
+ * inner exceptions, normally caused by developer's fault
  */
-function check_login()
+class Exc_inner extends Exc_orzoj
+{
+	public function msg()
+	{
+		return __("inner error at %s:%d:\n%s\nTraceback: %s",
+			$this->getFile(), $this->getLine(), $this->getMessage(),
+			$this->getTraceAsString());
+	}
+}
+
+/**
+ * database exception
+ */
+class Exc_db extends Exc_orzoj
 {
 }
 

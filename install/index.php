@@ -1,7 +1,28 @@
 <?php
-/*
+/* 
  * $File: index.php
- * $Date: Tue Sep 28 09:52:18 2010 +0800
+ * $Date: Tue Sep 28 15:58:08 2010 +0800
+ */
+/**
+ * @package orzoj-website
+ * @subpackage install
+ * @license http://gnu.org/licenses GNU GPLv3
+ */
+/*
+	This file is part of orzoj
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 ob_start();
 define('IN_ORZOJ',true);
@@ -22,17 +43,15 @@ function conf_file_generate($db_layer,$db_host,$db_port,$db_username,$db_passwor
 \$db_password = '$db_password';
 \$db_dbname = '$db_name';
 \$table_prefix = '$table_prefix';
-?>
 EOF;
 	$fptr = fopen("config.php", "w");
 	if ($fptr)
 	{
 		fprintf($fptr, "%s", $str);
 		fclose($fptr);
-		return TRUE;
 	}
 	else
-		return FALSE;
+		throw new Exc_orzoj('failed to write configuration file');
 }
 ?>
 
@@ -83,7 +102,6 @@ case 2:
 </head>
 <body>
 <?php
-	require_once 'tables.php';
 	$db_host = $_POST['db_host'];
 	$db_layer = $_POST['db_layer'];
 	$db_port = $_POST['db_port'];
@@ -91,42 +109,42 @@ case 2:
 	$db_password = $_POST['db_password'];
 	$db_name = $_POST['db_name'];
 	$table_prefix = $_POST['table_prefix'];
-
-	$root_path = rtrim(realpath('../'),'/').'/';
-	$includes_path = $root_path . 'includes/';
-	require $root_path.'includes/db/'.$db_layer.'.php';
-	$classname = 'dbal_'.$db_layer;
-	$db = new $classname;
-
-	if ($db->connect($db_host, $db_port, $db_username, $db_password, $db_name))
+	try
 	{
+		$root_path = rtrim(realpath('..'),'/').'/';
+		$includes_path = $root_path . 'includes/';
+
+		require_once $includes_path . 'exception.php';
+		require_once $includes_path . 'l10n.php';
+		require_once $includes_path . 'db/'.$db_layer.'.php';
+		require_once 'tables.php';
+
+		conf_file_generate($db_layer, $db_host, $db_port, $db_username,
+			$db_password, $db_name, $table_prefix);
+
+
+		$classname = 'Dbal_'.$db_layer;
+		$db = new $classname;
+
+
+		$db->connect($db_host, $db_port, $db_username, $db_password, $db_name);
 		$db->set_prefix($table_prefix);
 		foreach ($tables as $name => $table)
 		{
 			if ($db->table_exists($name))
 				$db->delete_table($name);
 
-			if ($db->create_table($name, $table))
-			{
-				echo 'Table "'. $name . '" created successfully<br />';
-				ob_flush();
-			}
-			else
-			{
-				echo '<br />Failed to create table "' . $name .
-					'": ' . htmlspecialchars($db->error());
-				die('</body></html>');
-			}
+			$db->create_table($name, $table);
+			echo 'Table "'. $name . '" created successfully<br />';
+			ob_flush();
 		}
-		if (!conf_file_generate($db_layer, $db_host, $db_port, $db_username,
-			$db_password, $db_name, $table_prefix))
-			echo '<br />Faied to write configuration file';
-		else
-			echo '<br />Please move install/config.php to the top directory of orzoj and delete install directory.';
+		echo 'Installation completed. Please move install/config.php to the top direcotry of orzoj-website ' .
+			'and delete "install" directory.';
 	}
-	else
-		echo 'Failed to connect to database: ' . htmlspecialchars($db->error());
-	break;
+	catch (Exc_orzoj $e)
+	{
+		echo '<br />' . nl2br(htmlspecialchars($e->msg()));
+	}
 }
 ?>
 </body>
