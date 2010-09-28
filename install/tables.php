@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Sep 28 18:15:18 2010 +0800
+ * $Date: Tue Sep 28 20:37:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -81,13 +81,15 @@ $tables = array(
 			'username' => USERNAME_LEN_MAX)
 	),
 
-	// a user belongs to its group and all this group's ancestor groups
+	// if a user belongs to a group, it belongs to all this group's ancestor groups
+	//
+	// BUT a user belongs to the administrator group iff it belongs to the group directly
 
 	/* user_groups */
 	'user_groups' => array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'pgid' => array('type' => 'INT32'), // parent group id
+			'pgid' => array('type' => 'INT32'), // parent group id, or 0 if none
 			'desc' => array('type' => 'TEXT'), // description
 		),
 		'primary_key' => 'id',

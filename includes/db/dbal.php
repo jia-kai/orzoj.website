@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Tue Sep 28 16:09:23 2010 +0800
+ * $Date: Tue Sep 28 19:59:46 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -145,7 +145,7 @@ abstract class Dbal
 	/**
 	 * select data from a table
 	 * @param string $tablename name of the table
-	 * @param mixed $cols array of column names OR NULL(means *)
+	 * @param mixed $cols array of column names or string of column name or NULL(means all columns)
 	 * @param array $whereclause array of tokens, in the form of prefix expression
 	 *		each element in the array  is either an operator or an operand
 	 *		valid operators:

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Sep 28 17:38:31 2010 +0800
+ * $Date: Tue Sep 28 19:48:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,14 +32,18 @@ require_once $includes_path . 'db/' . $db_type . '.php';
  * Set Cookie with $table_prefix at the beginning of cookie name
  * @param string $name name of cookie
  * @param string $value value of cookie
- * @param int $lasttime how long will the cookie exists. NULL means broswer session
+ * @param int $lasttime how long will the cookie exists. NULL means broswer session, set it to a non-positive value will delete the cookie
  */
 function cookie_set($name, $value, $lasttime = NULL)
 {
 	global $table_prefix;
 	$name = $table_prefix . $name;
-	if ($lasttime > 0)
-		setcookie($name, $value, time() + $lasttime);
+	if (is_int($lasttime))
+	{
+		if ($lasttime > 0)
+			setcookie($name, $value, time() + $lasttime);
+		else setcookie($name, '', 123);
+	}
 	else
 		setcookie($name, $value);
 }
@@ -131,7 +135,6 @@ function option_set($key, $value)
 	$ndt  = array('key' => $key,
 		'value' => $value
 		);
-	$wclause = array('param1' => 'option_name','op1' => 'text_eq','param2' => $option_name);
 	if (option_get($key) !== FALSE)
 	{
 		if ($db->update_data('options', $ndt, array($DBOP['=s'], 'key', $key)) !== FALSE)

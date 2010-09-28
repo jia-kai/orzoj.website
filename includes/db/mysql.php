@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Tue Sep 28 16:33:25 2010 +0800
+ * $Date: Tue Sep 28 19:54:36 2010 +0800
  */
 /**
  * package orzoj-website
@@ -361,7 +361,7 @@ class Dbal_mysql extends Dbal
 				$sql .= '`' . $row . '`,';
 			$sql[strlen($sql) - 1] = ' ';
 		}
-		else if ($cols == NULL)
+		else if ($cols === NULL)
 		{
 			$sql.= ' * ';
 		}
