@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: sched.php
- * $Date: Mon Sep 27 20:35:15 2010 +0800
+ * $Date: Tue Sep 28 09:59:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,12 +23,10 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-if (!defined('IN_ORZOJ')) exit;
+if (!defined('IN_ORZOJ'))
+	exit;
 
-require_once $includes_path . 'functions.php';
 require_once $includes_path . 'error.php';
-
-db_init();
 
 /**
  * add a scheduled task
