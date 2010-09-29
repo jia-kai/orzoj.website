@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: msg.php
- * $Date: Wed Sep 29 14:43:19 2010 +0800
+ * $Date: Wed Sep 29 14:51:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -75,23 +75,17 @@ if (isset($_REQUEST['action'])) // login
 }
 
 
-// xxx --test--
-$func_param->task = 1;
-$func_param->msg = "error";
-$func_param->judge = 1;
-
 call_func('report_error');
 
-/*
 if (isset($_REQUEST['data'])) // decode data from $_REQUEST
 {
 	$data = json_decode($_REQUEST['data']);
 	if (isset($data->thread_id) && isset($data->req_id) && isset($data->data) && isset($data->checksum))
 	{
 		$thread_id = $data->thread_id;
-		$req_id = $data->req_id;
+		$rid = $data->req_id;
 		$dynamic_password = option_get('dynamic_password');
-		// FIXME: check $req_id increment
+		// FIXME: check $rid increment
 		$stdchecksum = sha1($data->thread_id . $data-> req_id . sha1($dynamic_password . $static_password) . $data->data);
 		if ($stdchecksum != $data->checksum)
 			exit('0');
@@ -103,11 +97,10 @@ if (isset($_REQUEST['data'])) // decode data from $_REQUEST
 
 	// use $func_param as a global variable
 	// calling functions are in msg_function.php
-	call_user_func($func_param->action);
+	call_func($func_param->action);
 }
 else
 	exit('1');
- */
 
 
 /* -------------------------------------- */
@@ -183,9 +176,7 @@ function report_error()
 function get_query_list()
 {
 	global $db;
-	$where_clause = array('key' => 'judge_info_list');
-	$query_list = $db->select_from('options', array('value'), $where_clause);
-	$query_list = unserialize($query_list[0]['value']);
+	$query_list = unserialize(option_get('judge_info_list'));
 	msg_write(MSG_STATUS_OK, $query_list);
 }
 
@@ -226,7 +217,7 @@ function remove_judge()
 
 /**
  * @ignore
- * throw out this exception means a task is fetched.
+ * throwing out this exception means a task is fetched.
  */
 class Exc_msg extends Exception
 {
