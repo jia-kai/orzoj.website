@@ -47,25 +47,15 @@ plugin structure:
 /contents/plugins/
 |--	<plugin name>/
 	|--	index.php		included by orzoj-website base functions, must add suitable filters
-	|--	...				plugin specified files	
+	|--	...				plugin specific files	
 
 
 theme structure:
 /contents/themes/
 |--	<theme name>/
-	|--	index.php		display the main page
-	|--	prob.php		list problems
-	|--	status.php		display realtime status
-	|--	rank.php		display author rank list
-	|--	discuss.php		display discussion page
-	|--	submit.php		submit a source
-	|--	contest.php		display contests information
-	|--	user.php		manage user info, such as changing password, enabling plugins
-	|--	announce.php	display announcements
-	|--	judges.php		display judge information
-	|--	probgrp.php		display problem groups
-	|--	usergrp.php		display user groups
-	|--	...				theme specified files
+	|--	index.php		will be included by /index.php, with global variable $action set properly
+	|--	...				theme specific files
 
 
 all the pages accessed by user except those in install are in the top-level directory
+

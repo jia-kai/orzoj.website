@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Sep 28 20:39:31 2010 +0800
+ * $Date: Wed Sep 29 08:57:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -49,26 +49,30 @@ $tables = array(
 	/* users */
 	'users' => array( // related file: /includes/user.php
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'username' => array('type' => 'TEXT200'),
-			'passwd' => array('type' => 'TEXT200'),
-			'salt' => array('type' => 'TEXT200'),
 			'realname' => array('type' => 'TEXT'),
 			'aid' => array('type' => 'INT32'), // avatar id
 			'email' => array('type' => 'TEXT'),
 			'self_desc' => array('type' => 'TEXT'), // self description
 			'tid' => array('type' => 'INT32'), // team id
-			'view_gid' => array('type' => 'TEXT'), // serialized array of group id who can view the user's source
-			'reg_time' => array('type' => 'INT64'), // register time
-			'reg_ip' => array('type' => 'TEXT'), // register ip
 			'plang' => array('type' => 'INT32'), // preferred programming language 
 			'wlang' => array('type' => 'INT32'), // preferred website language
-			'last_login_time' => array('type' => 'INT64'),
-			'last_login_ip' => array('type' => 'TEXT'),
-			'submit_amount' => array('type' => 'INT32', 'default' => 0),
-			'ac_amount' => array('type' => 'INT32', 'default' => 0),
-			'unac_amount' => array('type' => 'INT32', 'default' => 0),
-			'ce_amount' => array('type' => 'INT32', 'default' => 0)
+			// callers of user.php:user_add() should pass an array as $value containing
+			// the above coloumns and their corresponding values
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'passwd' => array('type' => 'TEXT200'),
+			'salt' => array('type' => 'TEXT200', 'default' => ''),
+			'view_gid' => array('type' => 'TEXT'),
+				// serialized array of group id who can view the user's source
+			'reg_time' => array('type' => 'INT64'), // register time
+			'reg_ip' => array('type' => 'TEXT'), // register ip
+			'last_login_time' => array('type' => 'INT64', 'default' => 0),
+			'last_login_ip' => array('type' => 'TEXT', 'default' => ''),
+
+			'cnt_submit' => array('type' => 'INT32', 'default' => 0), // number of submissions
+			'cnt_ac' => array('type' => 'INT32', 'default' => 0), // number of accepted submissions
+			'cnt_unac' => array('type' => 'INT32', 'default' => 0), // number of unaccepted submissions
+			'cnt_ce' => array('type' => 'INT32', 'default' => 0) // number of compiling-error submissions
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -165,9 +169,10 @@ $tables = array(
 			'grp_deny' => array('type' => 'TEXT'),  // serialized array of id groups disallowed to view this problem 
 			'grp_allow' => array('type' => 'TEXT'),
 
-			'ac_amount' => array('type' => 'INT32', 'default' => 0),
-			'unac_amount' => array('type' => 'INT32', 'default' => 0),
-			'ce_amount' => array('type' => 'INT32', 'default' => 0),
+			'cnt_submit' => array('type' => 'INT32', 'default' => 0),
+			'cnt_ac' => array('type' => 'INT32', 'default' => 0),
+			'cnt_unac' => array('type' => 'INT32', 'default' => 0),
+			'cnt_ce' => array('type' => 'INT32', 'default' => 0),
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -339,7 +344,7 @@ $tables = array(
 	/* msg_req */
 	'msg_req' => array( // requests to orzoj-server in msg.php
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' = TRUE),
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'data' => array('type' => 'TEXT'), // serialized array of request data
 		),
 		'primary_key' => 'id'

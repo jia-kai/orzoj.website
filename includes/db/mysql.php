@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Tue Sep 28 19:54:36 2010 +0800
+ * $Date: Wed Sep 29 09:27:33 2010 +0800
  */
 /**
  * package orzoj-website
@@ -35,7 +35,7 @@ require_once $includes_path . 'db/dbal.php';
  */
 function _mysql_escape_string($string)
 {
-	return mysql_escape_string($string);
+	return '\'' . mysql_escape_string($string) . '\'';
 }
 
 /**
@@ -209,7 +209,7 @@ class Dbal_mysql extends Dbal
 			$tmp.= $this->typemap[$colstruc['type']].' ';
 			if (isset($colstruc['default']))
 			{
-				$tmp.= 'DEFAULT \'' . _mysql_escape_string($colstruc['default']) . '\' ';
+				$tmp.= ' DEFAULT ' . _mysql_escape_string($colstruc['default']) . ' ';
 			}
 			if (isset($colstruc['auto_assign']) && $colstruc['auto_assign'])
 			{
@@ -303,7 +303,7 @@ class Dbal_mysql extends Dbal
 				$rowssql .= ',';
 			if (is_array($vv))
 				$vv = $vv['value'];
-			$valuesql .= '\'' . _mysql_escape_string($vv) . '\'';
+			$valuesql .= _mysql_escape_string($vv);
 			if ($cid != $count)
 				$valuesql .= ',';
 			$cid++;
@@ -409,7 +409,7 @@ class Dbal_mysql extends Dbal
 		foreach ($newvalue as $key => $value)
 		{
 			if (is_array($value)) $value = $value['value'];
-			$newvalue[$key] = '`' . $key . '` = \'' . mysql_escape_string($value) . '\'';
+			$newvalue[$key] = '`' . $key . '` = ' . mysql_escape_string($value);
 		}
 		$sql .= implode(',', $newvalue);
 		$sql .= ' ';
@@ -515,10 +515,10 @@ class Dbal_mysql extends Dbal
 		$ret = @mysql_query($query, $this->linker);
 		if ($ret === FALSE)
 		{
+			$msg = __('SQL query error [query: %s]: %s', $query, $this->get_err_msg());
 			if ($this->in_transaction)
 				$this->transaction_rollback();
-			throw new Exc_db(__('SQL query error [query: %s]: %s',
-				$query, $this->get_err_msg()));
+			throw new Exc_db($msg);
 		}
 		return $ret;
 	}

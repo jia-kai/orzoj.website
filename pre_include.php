@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Tue Sep 28 23:58:38 2010 +0800
+ * $Date: Wed Sep 29 09:49:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -39,12 +39,23 @@ require_once $includes_path . 'exception.php';
 
 db_init();
 
-//TODO
 if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 {
-	foreach ($_GET as $key => $v)
+	$process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
+
+	while (list($key, $val) = each($process))
 	{
+		foreach ($val as $k => $v) {
+			unset($process[$key][$k]);
+			if (is_array($v)) {
+				$process[$key][stripslashes($k)] = $v;
+				$process[] = &$process[$key][stripslashes($k)];
+			} else {
+				$process[$key][stripslashes($k)] = stripslashes($v);
+			}
+		}
 	}
+	unset($process);
 }
 
 

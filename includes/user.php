@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Sep 29 00:09:06 2010 +0800
+ * $Date: Wed Sep 29 09:49:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,7 +26,7 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-require_once $includs_path . 'const.inc.php';
+require_once $includes_path . 'const.inc.php';
 
 /**
  * @ignore
@@ -35,12 +35,90 @@ class _User
 {
 	var $id, $username, $realname,
 		$avatar, // avatar file name, NULL if unavailable
-		$email, $self_desc, $tid,
+		$email, $self_desc, $tid, $plang, $wlang,
 		$view_gid, // array of gid who can view the user's source
-		$reg_time, $reg_ip, $plang, $wlang,
+		$reg_time, $reg_ip, $last_login_time, $last_login_ip,
+		$cnt_submit, $cnt_ac, $cnt_unac, $cnt_ce,
 		$groups, // array of id of groups that the user blongs to
 		$admin_groups, // array of id of groups where the user is an administrator
-		$is_admin; // whether the user is an administrator
+		$is_admin, // whether the user is an administrator
+		$is_locked; // whether this user is in the lock group
+
+	/**
+	 * set attributes in this class
+	 * @param int $uid user id
+	 * @return void
+	 * @exception Exc_inner if user id does not exist
+	 */
+	function set_val($uid)
+	{
+		global $db, $DBOP;
+		$row = $db->select_from('users', NULL,
+			array($DBOP['='], 'id', $uid));
+		if (count($row) != 1)
+			throw new Exc_inner(__('user id %d does not exist', $uid));
+
+		$VAL_SET = array('id', 'username', 'realname',
+			'email', 'self_desc', 'tid', 'plang', 'wlang',
+			'reg_time', 'reg_ip', 'last_login_time', 'last_login_ip',
+			'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce');
+
+		foreach ($VAL_SET as $val)
+			$this->$val = $row[$val];
+
+		$tmp = $db->select_from('user_avatars', 'file', array($DBOP['='], 'id', $row['aid']));
+		if (count($tmp) != 1)
+			$this->avatar = NULL;
+		else
+			$this->avatar = $tmp[0]['file'];
+
+		$this->view_gid = unserialize($row['view_gid']);
+
+		$tmp = $db->select_from('map_user_group', array('gid', 'admin'),
+			array($DBOP['&&'], $DBOP['='], 'uid', $uid, $DBOP['='], 'pending', 0));
+
+		$groups = array(GID_ALL);
+		$this->admin_groups = array();
+
+		$this->is_admin = FALSE;
+		$this->is_locked = FALSE;
+
+		$grp_set = array();
+
+		foreach ($tmp as $val)
+		{
+			$groups[] = $val['gid'];
+			if ($val['admin'])
+				$this->admin_groups[] = $val['gid'];
+
+			$grp_set[$val['gid']] = 1;
+
+			if ($val['gid'] == GID_ADMIN)
+				$this->is_admin = TRUE;
+
+			if ($val['gid' == GID_LOCK])
+				$this->is_locked = TRUE;
+		}
+
+		for ($i = 0; $i < count($groups); $i ++)
+		{
+			$tmp = $db->select_from('user_groups', 'pgid',
+				array($DBOP['='], 'id', $groups[$i]));
+			if (count($tmp) != 1)
+				continue;
+			$tmp = $tmp[0]['pgid'];
+			if (!isset($grp_set[$tmp]))
+			{
+				array_push($groups, $tmp);
+				$grp_set[$tmp] = 1;
+
+				if ($tmp == GID_LOCK)
+					$this->is_locked = TRUE;
+			}
+		}
+
+		$this->groups = $groups;
+	}
 }
 
 $user = NULL;
@@ -52,20 +130,18 @@ $user = NULL;
  */
 function user_check_login($cookie_time = NULL)
 {
-	global $user, $db, $DBOP;
+	global $user, $db, $DBOP, $action;
 	if ($user)
 		return TRUE;
-	$user = new _User();
-	if (isset($_GET['login']))
+	if (isset($action) && $action == 'login')
 	{
 		if (!isset($_POST['username']) || !isset($_POST['password']))
 			return FALSE;
-		strip_magic_quotes('username', 'password');
 		$user->username = $_POST['username'];
 		if (!user_check_name($user->username))
 			return FALSE;
 
-		$row = $db->select_from('users', NULL,
+		$row = $db->select_from('users', array('id', 'passwd'),
 			array($DBOP['=s'], 'username', $user->username));
 		if (count($row) != 1)
 			return FALSE;
@@ -86,66 +162,30 @@ function user_check_login($cookie_time = NULL)
 		cookie_set('uid', $row['id'], $cookie_time);
 		cookie_set('password', user_make_passwd($salt . $pwd_chk),
 			$cookie_time);
+
+		$uid = $row['id'];
 	}
 	else
 	{
 		$uid = intval(cookie_get('uid'));
 		$password = cookie_get('password');
-		$row = $db->select_from('users', NULL, array($DBOP['='], 'id', $uid));
+		if ($uid === FALSE || $password === FALSE)
+			return FALSE;
+		$row = $db->select_from('users', array('passwd', 'salt'),
+			array($DBOP['='], 'id', $uid));
 		if (count($row) != 1)
 			return FALSE;
 		$row = $row[0];
 
 		if ($password != user_make_passwd($row['salt'] . $row['passwd']))
 			return FALSE;
+
 	}
+	$db->update_data('users', array('last_login_time' => time(), 'last_login_ip' => get_remote_addr()),
+		array($DBOP['='], 'id', $uid));
 
-	$VAL_SET = array('id', 'username', 'realname', 'email', 'self_desc', 'tid',
-		'reg_time', 'reg_ip', 'plang', 'wlang');
-	foreach ($VAL_SET as $val)
-		$user->$val = $row[$val];
-
-	$tmp = $db->select_from('user_avatars', 'file', array($DBAL['='], 'id', $row['aid']));
-	if (count($tmp) != 1)
-		$user->avatar = NULL;
-	else
-		$user->avatar = $tmp[0]['file'];
-
-	$user->view_gid = unserialize($row['view_gid']);
-
-	$tmp = $db->select_from('map_user_group', array('gid', 'admin'),
-		array($DBAL['&&'], $DBAL['='], 'uid', $uid, $DBAL['='], 'pending', 0));
-	$groups = array();
-	$user->admin_groups = array();
-
-	$user->groups = array();
-	$user->is_admin = FALSE;
-
-	foreach ($tmp as $val)
-	{
-		$groups[] = $val['gid'];
-		if ($val['admin'])
-			$user->admin_groups[] = $val['gid'];
-		$user->groups[$val] = NULL;
-
-		if ($val == GID_ADMIN)
-			$user->is_admin = TRUE;
-	}
-
-	for ($i = 0; $i < count($groups); $i ++)
-	{
-		$tmp = $db->select_from('user_groups', 'pgid',
-			array($DBOP['='], 'id', $groups[$i]));
-		if (count($tmp) != 1)
-			continue;
-		$tmp = $tmp[0]['pgid'];
-		if (!isset($user->groups[$tmp]))
-		{
-			array_push($groups, $tmp);
-			$user->groups[$tmp] = NULL;
-		}
-	}
-
+	$user = new _User();
+	$user->set_val($uid);
 	return TRUE;
 }
 
@@ -155,6 +195,13 @@ function user_check_login($cookie_time = NULL)
  */
 function user_logout()
 {
+	global $user, $DBOP;
+	if ($user)
+	{
+		$db->update_data('users', array('salt' => user_make_salt()),
+			array($DBOP['='], 'id', $user->id));
+		$user = NULL;
+	}
 	cookie_set('uid', NULL, -1);
 	cookie_set('password', NULL, -1);
 }
@@ -187,7 +234,7 @@ function user_check_passwd($passwd, $passwd_encr)
  */
 function user_check_name($name)
 {
-	if (strlen($name) > USERNAME_LEN_MAX)
+	if (strlen($name) > USERNAME_LEN_MAX || strlen($name) < USERNAME_LEN_MIN)
 		return FALSE;
 }
 
@@ -211,11 +258,56 @@ function user_make_passwd($passwd)
 }
 
 /**
- * return a highly random string
+ * return a highly unpredictable string
  * @return string
  */
 function user_make_salt()
 {
 	return uniqid(mt_rand(), TRUE);
+}
+
+/**
+ * get user id by user name
+ * @param string $name user name
+ * @return bool|int FALSE if such user does not exist, user id otherwise
+ */
+function user_get_id_by_name($name)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('users', 'id',
+		array($DBOP['=s'], 'username', $name));
+	if (count($row) == 1)
+		return $row[0]['id'];
+	return FALSE;
+}
+
+/**
+ * add a user
+ * @param array $value see /install/tables.php, the 'users' table
+ * @param string $passwd plain password
+ * @return int user id, or 0 if user name exists or invalid user name
+ */
+function user_add($value, $passwd)
+{
+	if (!user_check_name($value['username']))
+		return 0;
+	if (user_get_id_by_name($value['username']))
+		return 0;
+	global $db, $DBOP;
+	$VAL_SET = array('username', 'realname', 'aid',
+		'email', 'self_desc', 'tid', 'plang', 'wlang');
+	$val = array();
+	foreach ($VAL_SET as $v)
+	{
+		if (!isset($value[$v]))
+			throw new Exc_inner(__('not enough parameters passed to user_add()'));
+		$val[$v] = $value[$v];
+	}
+	$val['passwd'] = user_make_passwd($passwd);
+	$val['view_gid'] = serialize(array());
+	$val['reg_time'] = time();
+	$val['reg_ip'] = get_remote_addr();
+
+	return $db->insert_into('users', $val);
 }
 
