@@ -1,12 +1,12 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Wed Sep 29 10:50:38 2010 +0800
+ * $Date: Wed Sep 29 14:28:07 2010 +0800
  */
 /**
- * package orzoj-website
- * subpackage dbal
- * license http://gnu.org/licenses/ GNU GPLv3
+ * @package orzoj-website
+ * @subpackage dbal
+ * @license http://gnu.org/licenses/ GNU GPLv3
  */
 /*
 	This file is part of orzoj
@@ -30,24 +30,19 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once $includes_path . 'db/dbal.php';
-/**
- * ignore
- */
+
 function _mysql_escape_string($string)
 {
 	return '\'' . mysql_escape_string($string) . '\'';
 }
 
-/**
- * ignore
- */
 function _mysql_escape_add_brck($str)
 {
 	return '(' . $str . ')';
 }
 
 /**
- * ignore
+ * where clause operators
  */
 class _Mysql_opt
 {
@@ -83,9 +78,6 @@ $DBOP['!'] = new _Mysql_opt(1, '! ', '_mysql_escape_add_brck');
 
 unset($tmp);
 
-/**
- * ignore
- */
 function _mysql_build_where_clause($whereclause)
 {
 	if (!is_array($whereclause))

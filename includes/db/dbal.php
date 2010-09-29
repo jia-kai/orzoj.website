@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Wed Sep 29 11:39:52 2010 +0800
+ * $Date: Wed Sep 29 14:16:17 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -74,29 +74,26 @@ abstract class Dbal
 
 	/**
 	 * create a table in the database
-	 * @param string $tablename name of a table
-	 * @param mixed $structure structure of a table
-	 *   details:
+	 * @param string $tablename name of the table
+	 * @param mixed $structure structure of the table <pre>
 	 *    array(
-	 *    'cols' => array(
-	 *     <col name> => array('type' => <coltype>:INT32|INT64|TEXT|TEXT200, 
-	 *						'default' => <default value> , 
-	 *						'auto_assign' => true|false)
+	 *    'cols' =&gt; array(
+	 *     &lt;col name&gt; =&gt; array('type' =&gt; &lt;coltype&gt;:INT32|INT64|TEXT|TEXT200, 
+	 *						'default' =&gt; &lt;default value&gt; , 
+	 *						'auto_assign' =&gt; true|false)
 	 *    ),
-	 *	 ['primary_key' => $keycolname,]
-	 *	 ['index' => array(
+	 *	 ['primary_key' =&gt; $keycolname,]
+	 *	 ['index' =&gt; array(
 	 *		 array(
-	 *			 ['type' => 'UNIQUE',]
-	 *			 'cols' => array(<col0 name>, <col1 name>, ...)
+	 *			 ['type' =&gt; 'UNIQUE',]
+	 *			 'cols' =&gt; array(&lt;col0 name&gt;, &lt;col1 name&gt;, ...)
 	 *		 )
 	 *	 ),
-	 *	 ['index_len' => array(
-	 *		 <col name> => <length of index on this col>
+	 *	 ['index_len' =&gt; array(
+	 *		 &lt;col name&gt; =&gt; &lt;length of index on this col&gt;
 	 *	 )]]
 	 *   for columns of type TEXT, length must be specified if you want to create an
-	 *	 index on it
-	 *	 @return boolean If succeeded, TRUE will be returned,otherwise, FALSE will 
-	 *	 be returned,and error infomation is set.
+	 *	 index on it </pre>
 	 * @return void
 	 */
 	abstract protected function create_table($tablename, $structure);
@@ -146,29 +143,29 @@ abstract class Dbal
 	 * select data from a table
 	 * @param string $tablename name of the table
 	 * @param mixed $cols array of column names or string of column name or NULL(means all columns)
-	 * @param array $whereclause array of tokens, in the form of prefix expression
+	 * @param array $whereclause array of tokens, in the form of prefix expression <pre>
 	 *		each element in the array  is either an operator or an operand
 	 *		valid operators:
 	 *		   '=,'!='		--	equality or inequality test for integer
 	 *							the seconde operand will be converted to int
 	 *							operands:
-	 *								<col name:string>, <value:string or int>
+	 *								&lt;col name:string&gt;, &lt;value:string or int&gt;
 	 *		   '=s','!=s'	--	equality or inequality test for string
 	 *							operands:
-	 *								<col name:string>, <value:string>
-	 *		   '>', '>=', '<', '<='
+	 *								&lt;col name:string&gt;, &lt;value:string&gt;
+	 *		   '&gt;', '&gt;=', '&lt;', '&lt;='
 	 *						--	greater than, greater than or equal to, less than, less than or equal to respectivelty
 	 *							the second operand will be converted to int
 	 *							operands:
-	 *								<col name:string>, <value:string or int>
+	 *								&lt;col name:string&gt;, &lt;value:string or int&gt;
 	 *			'&&', '||', '!'
 	 *						--	logical and, logical or, negates value respectively
 	 *							operands for '&&' and '||':
-	 *								<statement>, <statement>
+	 *								&lt;statement&gt;, &lt;statement&gt;
 	 *							operands for '!':
-	 *								<statement>
+	 *								&lt;statement&gt;
 	 *		use $DBOP[str] to get operator object named str
-	 *		example: array($DBOP["="], "id", "1") means "id = 1"
+	 *		example: array($DBOP["="], "id", "1") means "id = 1" </pre>
 	 * @param array $orderby array(<col name> => 'ASC'|'DESC') meaning how to sort the result.
 	 * @param int $offset meaning start from which.
 	 * @param int $amount meaning get how many

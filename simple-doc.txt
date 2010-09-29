@@ -19,6 +19,7 @@
 |	|--	const.inc.php	miscellaneous constants
 |	|--	message.php		user-to-user messages
 |	|--	exception.php	exception definitions
+|	|--	exe_status.inc.php	case execution status and case structure definitions
 |--	contest/
 |	|--	ctal.php		contest abstract layer
 |	|--	default.php		usual practice (judge immediately after submission, no rank)

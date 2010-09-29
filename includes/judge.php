@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Wed Sep 29 11:51:59 2010 +0800
+ * $Date: Wed Sep 29 14:15:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -60,7 +60,6 @@ function array2judge_info($judge_list)
 }
 /**
  * get all judges running on orzoj
- * @global $db
  * @return array of Judge_info
  */
 function get_judge_list()
@@ -72,7 +71,6 @@ function get_judge_list()
 
 /**
  * get online judges running on orzoj
- * @global $db
  * @return array of online judges, structure see install/tables.php
  */
 function get_online_judge()
@@ -84,7 +82,6 @@ function get_online_judge()
 
 /**
  * get offline judges running on orzoj
- * @global $db
  * @return array of online judges, structure see install/tables.php
  */
 function get_offline_judge()

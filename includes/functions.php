@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Sep 29 11:13:10 2010 +0800
+ * $Date: Wed Sep 29 14:20:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -100,7 +100,7 @@ function session_get($name)
 
 
 /**
- * translate HTML special chars and then change \n to <br />
+ * translate HTML special chars and then change \n to &lt;br /&gt;
  * @param string $text plain text
  * @param bool $replace_space whether to replace space to &nbsp;
  * @return string translated text
@@ -116,7 +116,7 @@ function htmlencode($text, $replace_space = FALSE)
 $db = NULL;
 /**
  * connect to the database and set global variable $db
- * @global $db
+ * @global Dbal $db
  * @return void
  */
 function db_init()

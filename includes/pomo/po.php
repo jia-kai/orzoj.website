@@ -1,10 +1,11 @@
 <?php
 /*
  * $File: po.php
- * $Date: Sun Sep 26 17:16:48 2010 +0800
+ * $Date: Wed Sep 29 14:25:48 2010 +0800
  */
 /**
  * @package orzoj-website
+ * @subpackage l10n
  * @license http://gnu.org/licenses/ GNU GPLv3
  */
 /*

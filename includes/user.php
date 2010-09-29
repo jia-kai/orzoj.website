@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Sep 29 12:05:32 2010 +0800
+ * $Date: Wed Sep 29 14:16:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -123,7 +123,7 @@ class User
 $user = NULL;
 /**
  * check user login and initialize $user structure
- * @global $user
+ * @global User $user
  * @param int $cookie_time see cookie_set() in functions.php
  * @return bool whether login successfully
  */
@@ -382,8 +382,15 @@ function user_update_info($uid, $value)
 }
 
 /**
+ * increase user statistics value
+ * @param int $uid user id
+ * @param array $filed the fileds need to be increased, which must be a subset
+ *		of array('submit', 'ac', 'unac', 'ce')
+ * @param int $delta
+ * @return void
+ * @exception Exc_inner if user id does not exist
  */
-function user_increase_statistics($uid, $field)
+function user_increase_statistics($uid, $field, $delta = 1)
 {
 }
 
