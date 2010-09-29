@@ -16,7 +16,6 @@
 |	|--	user.php		check user login and permissions, and get user data
 |	|--	record.inc.php	execution status constant definitions and record-related structures
 |	|-- judges.php		functions for dealing judge operations
-|	|-- msg_func.php	functions for dealing messages
 |	|--	const.inc.php	miscellaneous constants
 |	|--	message.php		user-to-user messages
 |	|--	exception.php	exception definitions
