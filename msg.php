@@ -1,7 +1,7 @@
 <?php
-/* TODO update user info!!!~
+/*
  * $File: msg.php
- * $Date: Wed Sep 29 13:32:57 2010 +0800
+ * $Date: Wed Sep 29 13:54:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,6 +25,7 @@
  */
 
 require_once 'pre_include.php';
+require_once $includes_path . 'user.php';
 
 define('MSG_VERSION', 1);
 
@@ -258,18 +259,13 @@ function no_task()
 
 /**
  * fetch a task which is to be executed (web request)
- * there are four request now:
- * "judge" : id, prob, lang, src, input, output
- * "get_src" : id
- * "get_data" : prob
- * "none" 
  * @return void
  */
 function fetch_task()
 {
+	sched_work();
 	try
 	{
-		sched_work();
 		get_request();
 		no_task();
 	}
@@ -322,6 +318,18 @@ function report_judge_waiting()
 }
 
 /**
+ * get uid by rid
+ * @param int $rid
+ * @return int uid
+ */
+function get_uid_by_rid($rid)
+{
+	global $db, $DBOP;
+	$ret = $db->select_from('records', array('uid'), array($DBOP['='], 'id', $rid));
+	return $ret[0]['uid'];
+}
+
+/**
  *  report to orzoj-website that the judge is compiling source
  *  @return void
  */
@@ -334,6 +342,7 @@ function report_compiling()
 					'jid' => $jid);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
+	user_increase_statistics(get_uid_by_rid($rid), array('submit'));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -362,6 +371,7 @@ function report_compile_failure()
 	$value = array('status' => RECORD_STATUS_COMPILE_FAILURE);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
+	user_increase_statistics(get_uid_by_rid($rid), array('ce'));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -410,9 +420,13 @@ function report_prob_result()
 	);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
+	if ($total_score == $full_score)
+		$result = 'ac';
+	else
+		$result = 'unac';
+	user_increase_statistics(get_uid_by_rid($rid), array($result));
 	msg_write(MSG_STATUS_OK, NULL);
 }
-
 
 /**
  * add a judge
