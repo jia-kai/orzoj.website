@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: msg.php
- * $Date: Wed Sep 29 13:54:07 2010 +0800
+ * $Date: Wed Sep 29 14:43:19 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -342,7 +342,7 @@ function report_compiling()
 					'jid' => $jid);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	user_increase_statistics(get_uid_by_rid($rid), array('submit'));
+	user_update_statistics(get_uid_by_rid($rid), array('submit'));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -371,7 +371,7 @@ function report_compile_failure()
 	$value = array('status' => RECORD_STATUS_COMPILE_FAILURE);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	user_increase_statistics(get_uid_by_rid($rid), array('ce'));
+	user_update_statistics(get_uid_by_rid($rid), array('ce'));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -424,7 +424,7 @@ function report_prob_result()
 		$result = 'ac';
 	else
 		$result = 'unac';
-	user_increase_statistics(get_uid_by_rid($rid), array($result));
+	user_update_statistics(get_uid_by_rid($rid), array($result));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -434,7 +434,6 @@ function report_prob_result()
  * @param string $lang_sup serialized array, 
  *			see $root_path . 'install/table.php'
  * @param string $query_ans serialized array,
- *			XXX ?? what is the structure of $query_ans ??
  * @return int new judge id
  */
 function judge_add($name,$lang_sup,$query_ans)
@@ -481,7 +480,7 @@ function judge_update($id, $name, $lang_sup, $query_ans)
  * set judge status
  * @param int $id
  * @param int $status see const.inc.php
- * @param $success_filter XXX what does this mean? successor?
+ * @param $success_filter 
  * @return void
  */
 function judge_set_status($id, $status, $success_filter)
