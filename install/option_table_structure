@@ -1,0 +1,1 @@
+msg_query_list : serialized array of what should be queried in msg.php : get_query_list, mainly are judge information.
