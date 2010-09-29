@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: exe_status.inc.php
- * $Date: Tue Sep 28 14:11:23 2010 +0800
+ * $Date: Tue Sep 28 23:03:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,3 +37,8 @@ define(EXESTS_SIGNAL, 6);
 define(EXESTS_ILLEGAL_CALL, 7);
 define(EXESTS_EXIT_NONZERO, 8);
 define(EXESTS_SYSTEM_ERROR, 9);
+
+class Case_result
+{
+	var $exe_status, $score, $time, $memory, $extra_info;
+}

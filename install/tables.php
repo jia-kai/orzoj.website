@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Sep 29 08:57:28 2010 +0800
+ * $Date: Wed Sep 29 10:20:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -261,10 +261,10 @@ $tables = array(
 			'jtime' => array('type' => 'INT64'), // time when it is judged
 			'ip' => array('type' => 'TEXT'), // from which ip it is submitted
 			'score' => array('type' => 'INT32'),
-			'fullscore' => array('type' => 'INT32'),
+			'full_score' => array('type' => 'INT32'),
 			'time' => array('type' => 'INT32'), // microsecond
 			'mem' => array('type' => 'INT32'), // maximal memory, kb
-			'detail' => array('type' => 'TEXT') // serialized array of case details. see includes/record.inc.php
+			'detail' => array('type' => 'TEXT') // serialized array of Case_result. see includes/exe_status.inc.php
 		),
 		'primary_key' => 'id',
 		'index' => array(
