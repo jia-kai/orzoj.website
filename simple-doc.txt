@@ -15,7 +15,7 @@
 |	|--	theme.php		API for themes
 |	|--	user.php		check user login and permissions, and get user data
 |	|--	record.inc.php	execution status constant definitions and record-related structures
-|	|-- judges.php		functions for dealing judge operations
+|	|-- judge.php		functions for fetch judge operations
 |	|--	const.inc.php	miscellaneous constants
 |	|--	message.php		user-to-user messages
 |	|--	exception.php	exception definitions

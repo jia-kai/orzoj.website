@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: msg.php
- * $Date: Wed Sep 29 10:48:43 2010 +0800
+ * $Date: Wed Sep 29 11:43:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -178,14 +178,14 @@ function report_error()
 
 /**
  * send out query list to orzoj-sever
- * query list is stored in 'options' table, which is a serialized array, key is 'query_list',.
+ * query list is stored in 'options' table, which is a serialized array, key is 'judge_info_list',.
  * @global $db
  * @return void
  */
 function get_query_list()
 {
 	global $db;
-	$where_clause = array('key' => 'query_list');
+	$where_clause = array('key' => 'judge_info_list');
 	$query_list = $db->select_from('options', array('value'), $where_clause);
 	$query_list = unserialize($query_list[0]['value']);
 	msg_write(MSG_STATUS_OK, $query_list);

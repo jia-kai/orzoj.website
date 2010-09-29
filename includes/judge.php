@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Tue Sep 28 16:47:50 2010 +0800
+ * $Date: Wed Sep 29 11:51:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,9 +27,69 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-
-// TODO
-function get_judge_list()
+/**
+ * Judge info class
+ */
+class Judge_info
 {
+	var $id, // int
+		$name, // string
+		$status, // see /includes/const.inc.php, consts with JUDGE_STATUS_ prefix
+		$lang_sup, // array of id of supperted languages
+		$detail; // array of info like 'cpu', 'mem', defined in table options:'judge_info_list'
 }
 
+/**
+ * transform query answer of judges from database to a array of Judge_info
+ * @param array $judge_list query answer from table : judges
+ * @return array array of Judge_info
+ */
+function array2judge_info($judge_list)
+{
+	$ret = array();
+	foreach ($judge_list as $key => $value)
+	{
+		$judge = new Judge_info();
+		$value = $value['value'];
+		$value = unserialize($value);
+		foreach (get_class_vars(get_class($judge)) as $var => $val)
+			$judge->$var = $value[$var];
+		$ret[] = $judge;
+	}
+	return $ret;
+}
+/**
+ * get all judges running on orzoj
+ * @global $db
+ * @return array of Judge_info
+ */
+function get_judge_list()
+{
+	global $db;
+	$judge_list = $db->select_from('judges');
+	return array2judge_info($judge_list);
+}
+
+/**
+ * get online judges running on orzoj
+ * @global $db
+ * @return array of online judges, structure see install/tables.php
+ */
+function get_online_judge()
+{
+	global $db;
+	$where_clause = array('status' => JUDGE_STATUS_ONLINE);
+	return array2judge_info($db->select_from('judges', NULL, $where_clause));
+}
+
+/**
+ * get offline judges running on orzoj
+ * @global $db
+ * @return array of online judges, structure see install/tables.php
+ */
+function get_offline_judge()
+{
+	global $db;
+	$where_clause = array('status' => JUDGE_STATUS_OFFLINE);
+	return array2judge_info($db->select_from('judges', NULL, $where_clause));
+}

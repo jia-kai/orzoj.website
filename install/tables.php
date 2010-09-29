@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Sep 29 10:20:28 2010 +0800
+ * $Date: Wed Sep 29 11:46:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -324,6 +324,10 @@ $tables = array(
 
 
 	/* options */
+	/* 
+	 * tetative rows:
+	 * judge_info_list : serialized array of information about judge want to get from sever
+	 */
 	'options' => array(
 		'cols' => array(
 			'key' => array('type' => 'TEXT200'),
