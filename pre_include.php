@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Wed Sep 29 11:28:22 2010 +0800
+ * $Date: Wed Sep 29 15:28:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,12 +33,19 @@ $root_path = dirname(__FILE__) . '/';
 $includes_path = $root_path . 'includes/';
 
 require_once $root_path . 'config.php';
+require_once $includes_path . 'const.inc.php';
 require_once $includes_path . 'l10n.php';
 require_once $includes_path . 'functions.php';
 require_once $includes_path . 'exception.php';
-require_once $includes_path . 'const.inc.php';
 
-db_init();
+try
+{
+	db_init();
+}
+catch (Exc_db $e)
+{
+	die(__('failed to connect to database'));
+}
 
 if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 {

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Sep 29 14:16:36 2010 +0800
+ * $Date: Wed Sep 29 14:42:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -382,7 +382,7 @@ function user_update_info($uid, $value)
 }
 
 /**
- * increase user statistics value
+ * update user statistics value
  * @param int $uid user id
  * @param array $filed the fileds need to be increased, which must be a subset
  *		of array('submit', 'ac', 'unac', 'ce')
@@ -390,7 +390,28 @@ function user_update_info($uid, $value)
  * @return void
  * @exception Exc_inner if user id does not exist
  */
-function user_increase_statistics($uid, $field, $delta = 1)
+function user_update_statistics($uid, $field, $delta = 1)
 {
+	global $db, $DBOP;
+	$VAL_SET = array('submit', 'ac', 'unac', 'ce');
+	$val = array();
+	foreach ($VAL_SET as $v)
+		if (isset($filed[$v]))
+			$val[$v] = $field[$v];
+
+	if (!count($val))
+		return;
+
+	$where = array($DBOP['='], 'id' ,$uid);
+	$val = $db->select_from('users', $val, $where);
+	if (!count($val))
+		throw new Exc_inner(__('user_increase_statistics: uid %d does not exist', $uid));
+
+	$val = $val[0];
+	foreach ($val as $k => $v)
+		$val[$k] += $delta;
+
+	$db->update_data('users', $val, $where);
 }
+
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Wed Sep 29 10:39:58 2010 +0800
+ * $Date: Wed Sep 29 15:10:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -42,4 +42,6 @@ define('GID_NONE', 4); // nobody should be in this group
 define('JUDGE_STATUS_OFFLINE',0);
 define('JUDGE_STATUS_ONLINE',1);
 define('JUDGE_STATUS_BUSY',2);
+
+define('DYNAMIC_PASSWORD_LIFETIME', 10); // in seconds
 

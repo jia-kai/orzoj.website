@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Wed Sep 29 14:28:07 2010 +0800
+ * $Date: Wed Sep 29 15:32:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -41,6 +41,11 @@ function _mysql_escape_add_brck($str)
 	return '(' . $str . ')';
 }
 
+function _mysql_escape_col_name($str)
+{
+	return '`' . $str . '`';
+}
+
 /**
  * where clause operators
  */
@@ -58,7 +63,7 @@ class _Mysql_opt
 
 }
 
-$tmp = array(NULL, 'intval');
+$tmp = array('_mysql_escape_col_name', 'intval');
 $DBOP['='] = new _Mysql_opt(2, '=', $tmp);
 $DBOP['!='] = new _Mysql_opt(2, '!=', $tmp);
 $DBOP['>'] = new _Mysql_opt(2, '>', $tmp);
@@ -66,7 +71,7 @@ $DBOP['>='] = new _Mysql_opt(2, '>=', $tmp);
 $DBOP['<'] = new _Mysql_opt(2, '<', $tmp);
 $DBOP['<='] = new _Mysql_opt(2, '<=', $tmp);
 
-$tmp = array(NULL, '_mysql_escape_string');
+$tmp = array('_mysql_escape_col_name', '_mysql_escape_string');
 $DBOP['=s'] = new _Mysql_opt(2, '=', $tmp);
 $DBOP['!=s'] = new _Mysql_opt(2, '!=', $tmp);
 

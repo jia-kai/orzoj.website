@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: msg.php
- * $Date: Wed Sep 29 14:51:58 2010 +0800
+ * $Date: Wed Sep 29 16:46:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,10 @@
 
 require_once 'pre_include.php';
 require_once $includes_path . 'user.php';
+require_once $includes_path . 'sched.php';
+require_once $includes_path . 'judge.php';
+require_once $includes_path . 'exe_status.inc.php';
+require_once $includes_path . 'plugin.php';
 
 define('MSG_VERSION', 1);
 
@@ -33,62 +37,82 @@ define('MSG_VERSION', 1);
 define('MSG_STATUS_OK', 0);
 define('MSG_STATUS_ERROR', 1);
 
+$static_password = option_get('static_password');
+if ($static_password === FALSE)
+	die(__('static password is not set'));
 
 if (isset($_REQUEST['action'])) // login
 {
-	if (!isset($_REQUEST['version'])) exit('0');
-	if (MSG_VERSION != $_REQUEST['version']) exit('0');
 	if ($_REQUEST['action'] == 'login1')
 	{
-		$tmp_dynamic_password = option_get('tmp_dynamic_password');
-		$dp = unserialize($tmp_dynamic_password);
-		if (is_array($dp) && time() - $dp['time']  < 10)
+		if (!isset($_REQUEST['version']))
+			exit('0');
+		if (MSG_VERSION != $_REQUEST['version'])
+			exit('0');
+		$dynamic_password_array = option_get('dynamic_password_with_time');
+		$dp = unserialize($dynamic_password_array);
+		if (is_array($dp) && time() - $dp['time']  < DYNAMIC_PASSWORD_LIFETIME)
 		{
 			exit($dp['password']);
 		}
 		else
 		{
 			mt_srand(time());
-			$password = (uniqid(mt_rand(),true));
-			$newpassword = array('time' => time(),'password' => $password);
-			option_set('tmp_dynamic_password',serialize($newpassword));
+			$password = (uniqid(mt_rand(), true));
+			$password_array = array('time' => time(), 'password' => $password);
+			option_set('dynamic_password_with_time', serialize($password_array));
 			exit($password);
 		}
 	}
 	else if ($_REQUEST['action'] == 'login2')
 	{
-		$tmp_dynamic_password = option_get('tmp_dynamic_password');
-		$dp = unserialize($tmp_dynamic_password);
+		if (!isset($_REQUEST['checksum']))
+			exit('0');
+		$dynamic_password_array = option_get('dynamic_password_with_time');
+
+		$dp = unserialize($dynamic_password_array);
+		if (!is_array($dp))
+			exit('0');
+
 		$stdchecksum = sha1(sha1($dp['password'] . $static_password));
-		if (!isset($_REQUEST['checksum'])) exit('0');
-		else
+		$verify = sha1(sha1($dp['password']) . $static_password);
+		if ($_REQUEST['checksum'] == $stdchecksum)
 		{
-			$verify = sha1(sha1($dp['password']) . $static_password);
-			if ($_REQUEST['checksum'] == $stdchecksum)
-			{
-				option_set('dynamic_password',$dp['password']);
-				exit($verify);
-			}
-			else exit('0');
+			option_set('dynamic_password', $dp['password']);
+			option_set('thread_req_id', serialize(array()));
+			exit($verify);
 		}
-	}
+		else exit('0');
+	} else exit('hello, world!');
 }
 
-
-call_func('report_error');
-
-if (isset($_REQUEST['data'])) // decode data from $_REQUEST
+// authentication and data decoding
+if (isset($_REQUEST['data']))
 {
 	$data = json_decode($_REQUEST['data']);
 	if (isset($data->thread_id) && isset($data->req_id) && isset($data->data) && isset($data->checksum))
 	{
 		$thread_id = $data->thread_id;
-		$rid = $data->req_id;
+		$req_id = $data->req_id;
 		$dynamic_password = option_get('dynamic_password');
-		// FIXME: check $rid increment
-		$stdchecksum = sha1($data->thread_id . $data-> req_id . sha1($dynamic_password . $static_password) . $data->data);
+
+		$db_rid = unserialize(option_get('thread_req_id'));
+		if (!is_array($db_rid))
+			exit('0');
+
+
+		if (!isset($db_rid[$thread_id]))
+			$db_rid[$thread_id] = 0;
+
+		if ($db_rid[$thread_id] != $req_id)
+			exit('0');
+
+		$stdchecksum = sha1($thread_id . $req_id . sha1($dynamic_password . $static_password) . $data->data);
 		if ($stdchecksum != $data->checksum)
 			exit('0');
+
+		$db_rid[$thread_id] ++;
+		option_set('thread_req_id', serialize($db_rid));
 	}
 	else
 		exit('0');
@@ -100,17 +124,12 @@ if (isset($_REQUEST['data'])) // decode data from $_REQUEST
 	call_func($func_param->action);
 }
 else
-	exit('1');
+	exit('what\'s going on?');
 
 
 /* -------------------------------------- */
 /* | All msg functions are listed below | */
 /* -------------------------------------- */
-
-require_once $includes_path . 'judges.php';
-require_once $includes_path . 'sched.php';
-require_once $includes_path . 'const.inc.php';
-require_once $includes_path . 'exe_status.inc.php';
 
 /**
  * write a massage to sever
@@ -190,14 +209,26 @@ function register_new_judge()
 	$judge_name = $func_param->judge;
 	$lang_sup = $func_param->lang_supported;
 	$query_ans = json_decode($func_param->query_ans, TRUE);
-	if ($ar = judge_search_by_name($judge_name))
-		judge_update($ar[0]['id'], $judge_name, $lang_supported, $query_ans);
+	if ($ret = judge_get_id_by_name($judge_name))
+		judge_update($ret, $judge_name, $lang_sup, $query_ans);
 	else
-	{
-		$ret = judge_add($judge_name, $lang_supported, $query_ans);
-		judge_online();
-		msg_write(STATUS_OK, array('id_num' => $ret));
-	}
+		$ret = judge_add($judge_name, $lang_sup, $query_ans);
+	judge_set_online($ret);
+	msg_write(MSG_STATUS_OK, array('id_num' => $ret));
+}
+
+/**
+ * search a judge by name
+ * @param string $name judge name
+ * @return int judge id, or 0 if no such judge
+ */
+function judge_get_id_by_name($name)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('judges', 'id', array($DBOP['=s'], 'name', $name));
+	if (count($row) != 1)
+		return 0;
+	return $row[0]['id'];
 }
 
 /**
@@ -206,13 +237,9 @@ function register_new_judge()
  */
 function remove_judge()
 {
-	global $func_param, $db, $DBOP;
-	$judge_id = $func_param->judge;
-	$where_clause = array($DBOP['='], 'id', $id);
-	if ($db->delete_item('judges', $where_clause) === FALSE)
-		msg_write(MSG_STATUS_ERROR, __("remove judge error."));
-	else
-		msg_write(MSG_STATUS_OK, NULL);
+	global $func_param;
+	judge_set_offline($func_param->judge);
+	msg_write(MSG_STATUS_OK, NULL);
 }
 
 /**
@@ -437,7 +464,7 @@ function judge_add($name,$lang_sup,$query_ans)
 	);
 	$db->transaction_begin();
 	$insert_id = $db->insert_into('judges',$content);
-	apply_filters('after_add_judge',true,$insert_id);
+	apply_filters('after_add_judge', true, $insert_id);
 	$db->transaction_commit();
 	return $insert_id;
 }
@@ -490,7 +517,7 @@ function judge_set_status($id, $status, $success_filter)
  */
 function judge_set_online($id)
 {
-	judge_set_status($id, JUDGE_STATUS_ONLINE, 'after_judge_online');
+	judge_set_status($id, JUDGE_STATUS_ONLINE, 'after_set_judge_online');
 }
 
 /**

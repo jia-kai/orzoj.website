@@ -1,2 +1,12 @@
-judge_info_list : serialized array of what should be queried in msg.php : get_query_list, mainly are judge information.a
+judge_info_list:
+	serialized array of what should be queried in msg.php : get_query_list()
+
+static_password:
+	set by website administrator (msg.php)
+
+dynamic_password, dynamic_password_with_time:
+	generated for orzoj-server authentication (msg.php)
+
+thread_req_id:
+	for orzoj-server authentication (msg.php)
 

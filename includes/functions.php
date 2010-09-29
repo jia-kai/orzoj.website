@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Sep 29 14:20:12 2010 +0800
+ * $Date: Wed Sep 29 15:28:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -62,7 +62,7 @@ function cookie_get($name)
 	if (isset($_COOKIE[$name]))
 		return $_COOKIE[$name];
 	else
-		return false;
+		return FALSE;
 }
 
 /**
@@ -73,11 +73,11 @@ function cookie_get($name)
 function session_set($name, $value)
 {
 	global $table_prefix;
-	static $session_started = false;
+	static $session_started = FALSE;
 	if (!$session_started)
 	{
 		session_start();
-		$session_started = true;
+		$session_started = TRUE;
 	}
 	$_SESSION[$table_prefix.$name] = $value;
 }
@@ -140,12 +140,12 @@ function db_init()
 function option_get($key)
 {
 	global $db, $DBOP;
-	$data = $db->select_from('options', NULL,
+	$data = $db->select_from('options', 'value',
 		array($DBOP['=s'], 'key', $key));
 	if ($data && count($data))
 		return $data[0]['value'];
 	else
-		return false;
+		return FALSE;
 }
 
 /**
@@ -157,9 +157,9 @@ function option_delete($key)
 {
 	global $db, $DBOP;
 	if ($db->delete_item('options', array($DBOP['=s'], 'key', $key)) !== FALSE)
-		return true;
+		return TRUE;
 	else
-		return false;
+		return FALSE;
 }
 
 /**
@@ -167,9 +167,12 @@ function option_delete($key)
  * @param string $key option key
  * @param string $value option value
  * @return bool whether succeed
+ * @exception Exc_inner if $key too long
  */
 function option_set($key, $value)
 {
+	if (strlen($key) > OPTION_KEY_LEN_MAX)
+		throw new Exc_inner('option key too long');
 	global $db, $DBOP;
 	$ndt  = array('key' => $key,
 		'value' => $value
@@ -177,16 +180,16 @@ function option_set($key, $value)
 	if (option_get($key) !== FALSE)
 	{
 		if ($db->update_data('options', $ndt, array($DBOP['=s'], 'key', $key)) !== FALSE)
-			return true;
+			return TRUE;
 		else
-			return false;
+			return FALSE;
 	}
 	else
 	{
 		if ($db->insert_into('options', $ndt) !== FALSE)
-			return true;
+			return TRUE;
 		else
-			return false;
+			return FALSE;
 	}
 }
 
