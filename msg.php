@@ -1,7 +1,7 @@
 <?php
-/* 
+/* TODO update user info!!!~
  * $File: msg.php
- * $Date: Wed Sep 29 11:43:12 2010 +0800
+ * $Date: Wed Sep 29 12:05:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -156,13 +156,11 @@ function call_func($name)
 
 /**
  * report error to website
- * @global $func_param parameters in a array, including 'task' and 'msg'
- * @global $db 
  * @return void
  */
 function report_error()
 {
-	global $func_param, $db;
+	global $func_param, $db, $DBOP;
 	$task_id = $func_param->task;
 	$msg = $func_param->msg;
 	$value_array = array(
@@ -179,7 +177,6 @@ function report_error()
 /**
  * send out query list to orzoj-sever
  * query list is stored in 'options' table, which is a serialized array, key is 'judge_info_list',.
- * @global $db
  * @return void
  */
 function get_query_list()
@@ -193,8 +190,6 @@ function get_query_list()
 
 /**
  * register a new judge
- * @global $func_param parameters in a array, including 'judge' and 'query_ans'
- * @global $db 
  * @return void
  */
 function register_new_judge()
@@ -215,13 +210,11 @@ function register_new_judge()
 
 /**
  * remove a judge
- * @global $func_param parameters in a array, including 'judge'
- * @global $db 
  * @return void
  */
 function remove_judge()
 {
-	global $func_param, $db;
+	global $func_param, $db, $DBOP;
 	$judge_id = $func_param->judge;
 	$where_clause = array($DBOP['='], 'id', $id);
 	if ($db->delete_item('judges', $where_clause) === FALSE)
@@ -240,7 +233,6 @@ class Exc_msg extends Exception
 
 /**
  * get a request from table 'msg_req'
- * @global $db
  */
 function get_request()
 {
@@ -289,11 +281,12 @@ function fetch_task()
  *  a specific language for a record
  *  @global $db
  *  @global $func_param
+ *  @global $DBOP
  *  @return void
  */
 function report_no_judge()
 {
-	global $db, $func_param;
+	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
 	$value = array('status' => RECORD_STATUS_LANGUAGE_NOT_SUPPORTED);
 	$where_clause = array($DBOP['='], 'id', $rid);
@@ -306,11 +299,12 @@ function report_no_judge()
  *  has the data of this problem
  *  @global $db
  *  @global $func_param
+ *  @global $DBOP
  *  @return void
  */
 function report_no_data()
 {
-	global $db, $func_param;
+	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
 	$value = array('status' => RECORD_STATUS_LANGUAGE_NOT_SUPPORTED);
 	$where_clause = array($DBOP['='], 'id', $rid);
@@ -323,11 +317,12 @@ function report_no_data()
  *  has the data of this problem
  *  @global $db
  *  @global $func_param
+ *  @global $DBOP
  *  @return void
  */
 function report_judge_waiting()
 {
-	global $db, $func_param;
+	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
 	$value = array('status' => RECORD_STATUS_JUDGE_BUSY);
 	$where_clause = array($DBOP['='], 'id', $rid);
@@ -343,7 +338,7 @@ function report_judge_waiting()
  */
 function report_compiling()
 {
-	global $db, $func_param;
+	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
 	$jid = $func_param->jid;
 	$value = array('status' => RECORD_STATUS_COMPILING,
@@ -361,7 +356,7 @@ function report_compiling()
  */
 function report_compile_success()
 {
-	global $db, $func_param;
+	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
 	$value = array('status' => RECORD_STATUS_COMPILE_SUCCESS);
 	$where_clause = array($DBOP['='], 'id', $rid);
@@ -377,7 +372,7 @@ function report_compile_success()
  */
 function report_compile_failure()
 {
-	global $db, $func_param;
+	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
 	$value = array('status' => RECORD_STATUS_COMPILE_FAILURE);
 	$where_clause = array($DBOP['='], 'id', $rid);
@@ -393,7 +388,7 @@ function report_compile_failure()
  */
 function report_case_result()
 {
-	global $db, $funca_param;
+	global $db, $funca_param, $DBOP;
 	$rid = $func_param->task;
 	$result = new Case_result();
 
@@ -423,7 +418,7 @@ function report_case_result()
  */
 function report_prob_result()
 {
-	global $db, $func_param;
+	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
 
 	$value = array(
@@ -473,7 +468,7 @@ function judge_add($name,$lang_sup,$query_ans)
  */
 function judge_update($id, $name, $lang_sup, $query_ans)
 {
-	global $db;
+	global $db, $DBOP;
 	$condition = array($DBOP['='], 'id', $id);
 	$content = array(
 		'name' => $name,
@@ -496,7 +491,7 @@ function judge_update($id, $name, $lang_sup, $query_ans)
  */
 function judge_set_status($id, $status, $success_filter)
 {	
-	global $db;
+	global $db, $DBOP;
 	$condition = array($DBOP['='], 'id', $id);
 	$content = array('status' => $status);
 	$db->update_data('judges', $content, $condition);
