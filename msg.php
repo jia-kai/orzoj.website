@@ -1,7 +1,7 @@
 <?php
 /* TODO update user info!!!~
  * $File: msg.php
- * $Date: Wed Sep 29 12:05:36 2010 +0800
+ * $Date: Wed Sep 29 13:32:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -279,9 +279,6 @@ function fetch_task()
 /**
  *  report to orzoj-website that no judges are available in
  *  a specific language for a record
- *  @global $db
- *  @global $func_param
- *  @global $DBOP
  *  @return void
  */
 function report_no_judge()
@@ -297,9 +294,6 @@ function report_no_judge()
 /**
  *  report to orzoj-website that none of the judges 
  *  has the data of this problem
- *  @global $db
- *  @global $func_param
- *  @global $DBOP
  *  @return void
  */
 function report_no_data()
@@ -315,9 +309,6 @@ function report_no_data()
 /**
  *  report to orzoj-website that none of the judges 
  *  has the data of this problem
- *  @global $db
- *  @global $func_param
- *  @global $DBOP
  *  @return void
  */
 function report_judge_waiting()
@@ -332,8 +323,6 @@ function report_judge_waiting()
 
 /**
  *  report to orzoj-website that the judge is compiling source
- *  @global $db
- *  @global $func_param
  *  @return void
  */
 function report_compiling()
@@ -350,8 +339,6 @@ function report_compiling()
 
 /**
  *  report to orzoj-website that the judge compiled successfully
- *  @global $db
- *  @global $func_param
  *  @return void
  */
 function report_compile_success()
@@ -366,8 +353,6 @@ function report_compile_success()
 
 /**
  *  report to orzoj-website that the judge has failed to compile
- *  @global $db
- *  @global $func_param
  *  @return void
  */
 function report_compile_failure()
@@ -382,8 +367,6 @@ function report_compile_failure()
 
 /**
  *  report to orzoj-website a single case result
- *  @global $db
- *  @global $func_param
  *  @return void
  */
 function report_case_result()
@@ -412,8 +395,6 @@ function report_case_result()
 
 /**
  *  report to orzoj-website a prob result
- *  @global $db
- *  @global $func_param
  *  @return void
  */
 function report_prob_result()
