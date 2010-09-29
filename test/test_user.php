@@ -4,18 +4,30 @@ require_once $includes_path . 'user.php';
 
 $VAL_SET = array('username', 'password', 'realname', 'aid',
 	'email', 'self_desc', 'tid', 'plang', 'wlang');
+
 ?>
 <html><body>
 <?php
 
-if (!isset($_GET['action']))
+try
 {
+	if (isset($_GET['action']))
+		$action = $_GET['action'];
+	if (user_check_login())
+		echo htmlencode("log in as:\n" . print_r($user, TRUE), TRUE);
+	else echo 'not log in <br /><br />';
+
+	if (isset($action) && $action == 'logout')
+		user_logout();
+
+	if (!isset($action) || $action != 'register')
+	{
 ?>
 register new user
 <form action="?action=register" method="POST">
 <?php
-	foreach ($VAL_SET as $val)
-		echo "$val:<input type='text' name='$val' /><br />\n";
+		foreach ($VAL_SET as $val)
+			echo "$val:<input type='text' name='$val' /><br />\n";
 ?>
 <input type='submit' />
 </form>
@@ -29,25 +41,17 @@ password:<input type='text' name='password' /><br />
 </form>
 
 <?php
+	}
+	else
+	{
+		if (!user_check_name($_POST['username']))
+			echo 'invalid user name';
+		else echo 'uid: ' . user_add($_POST, $_POST['password']);
+	}
 }
-else
+catch (Exc_orzoj $e)
 {
-	$action = $_GET['action'];
-	try
-	{
-		if ($action == 'register')
-			echo 'uid: ' . user_add($_POST, $_POST['password']);
-		else
-		{
-			if (!user_check_login())
-				echo 'login failed.';
-			else var_dump($user);
-		}
-	}
-	catch (Exc_orzoj $e)
-	{
-		echo 'error: <br />' . htmlencode($e->msg());
-	}
+	echo 'error: <br />' . htmlencode($e->msg());
 }
 
 ?>

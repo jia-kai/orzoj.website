@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Wed Sep 29 09:27:33 2010 +0800
+ * $Date: Wed Sep 29 10:50:38 2010 +0800
  */
 /**
  * package orzoj-website
@@ -409,7 +409,7 @@ class Dbal_mysql extends Dbal
 		foreach ($newvalue as $key => $value)
 		{
 			if (is_array($value)) $value = $value['value'];
-			$newvalue[$key] = '`' . $key . '` = ' . mysql_escape_string($value);
+			$newvalue[$key] = '`' . $key . '` = ' . _mysql_escape_string($value);
 		}
 		$sql .= implode(',', $newvalue);
 		$sql .= ' ';

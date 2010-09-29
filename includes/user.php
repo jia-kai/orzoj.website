@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Sep 29 09:49:10 2010 +0800
+ * $Date: Wed Sep 29 12:05:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,12 +26,10 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-require_once $includes_path . 'const.inc.php';
-
 /**
- * @ignore
+ * user structure
  */
-class _User
+class User
 {
 	var $id, $username, $realname,
 		$avatar, // avatar file name, NULL if unavailable
@@ -57,6 +55,7 @@ class _User
 			array($DBOP['='], 'id', $uid));
 		if (count($row) != 1)
 			throw new Exc_inner(__('user id %d does not exist', $uid));
+		$row = $row[0];
 
 		$VAL_SET = array('id', 'username', 'realname',
 			'email', 'self_desc', 'tid', 'plang', 'wlang',
@@ -137,20 +136,20 @@ function user_check_login($cookie_time = NULL)
 	{
 		if (!isset($_POST['username']) || !isset($_POST['password']))
 			return FALSE;
-		$user->username = $_POST['username'];
-		if (!user_check_name($user->username))
+		$_POST['password'] .= $_POST['username'];
+		if (!user_check_name($_POST['username']))
 			return FALSE;
 
 		$row = $db->select_from('users', array('id', 'passwd'),
-			array($DBOP['=s'], 'username', $user->username));
+			array($DBOP['=s'], 'username', $_POST['username']));
 		if (count($row) != 1)
 			return FALSE;
 
 		$row = $row[0];
 		$pwd_chk = user_check_passwd($_POST['password'], $row['passwd']);
-		if ($pwd_chk === FALSE)
+		if (!$pwd_chk)
 			return FALSE;
-		if (is_string($pwd_chk))
+		if ($pwd_chk != $row['passwd'])
 			$db->update_data('users', array('passwd' => $pwd_chk),
 				array($DBOP['='], 'id', $row['id']));
 
@@ -184,18 +183,18 @@ function user_check_login($cookie_time = NULL)
 	$db->update_data('users', array('last_login_time' => time(), 'last_login_ip' => get_remote_addr()),
 		array($DBOP['='], 'id', $uid));
 
-	$user = new _User();
+	$user = new User();
 	$user->set_val($uid);
 	return TRUE;
 }
 
 /**
- * clean cookies
+ * clean cookies about user login
  * @return void
  */
 function user_logout()
 {
-	global $user, $DBOP;
+	global $user, $db, $DBOP;
 	if ($user)
 	{
 		$db->update_data('users', array('salt' => user_make_salt()),
@@ -212,7 +211,7 @@ define('PASSWD_ENCRYPTION_VERSION', '01');
  * check user password
  * @param string $passwd plain password
  * @param string $passwd_encr encrypted password read from database
- * @return bool|string return the new password as string if password in the database needs updating
+ * @return NULL|string return the newest password as string if checking successfully, or NULL otherwise
  */
 function user_check_passwd($passwd, $passwd_encr)
 {
@@ -221,10 +220,8 @@ function user_check_passwd($passwd, $passwd_encr)
 	$func = 'user_make_passwd_v' . $version;
 	$ret = $func($passwd);
 	if ($ret != substr($passwd_encr, $pos + 1))
-		return FALSE;
-	if ($version != PASSWD_ENCRYPTION_VERSION)
-		return user_make_passwd($passwd);
-	return TRUE;
+		return NULL;
+	return user_make_passwd($passwd);
 }
 
 /**
@@ -236,6 +233,7 @@ function user_check_name($name)
 {
 	if (strlen($name) > USERNAME_LEN_MAX || strlen($name) < USERNAME_LEN_MIN)
 		return FALSE;
+	return count(preg_grep('#^[a-zA-Z][a-zA-Z0-9_.]*$#', array($name))) > 0;
 }
 
 /**
@@ -293,6 +291,7 @@ function user_add($value, $passwd)
 		return 0;
 	if (user_get_id_by_name($value['username']))
 		return 0;
+	$passwd .= $value['username'];
 	global $db, $DBOP;
 	$VAL_SET = array('username', 'realname', 'aid',
 		'email', 'self_desc', 'tid', 'plang', 'wlang');
@@ -309,5 +308,82 @@ function user_add($value, $passwd)
 	$val['reg_ip'] = get_remote_addr();
 
 	return $db->insert_into('users', $val);
+}
+
+/**
+ * delete a user and other information related to it. If the user does not exist, nothing happens
+ * @param int $uid user id
+ * @return void
+ */
+function user_del($uid)
+{
+	global $db, $DBOP;
+	$where = array($DBOP['='], 'id', $uid);
+	$db->delete_item('users', $where);
+
+	$where[1] = 'uid';
+
+	$db->delete_item('map_user_group', $where);
+	$db->delete_item('records', $where);
+
+	$db->delete_item('messages',
+		array($DBOP['||'],
+			$DBOP['='], 'uid_snd', $uid,
+			$DBOP['='], 'uid_rcv', $uid));
+}
+
+/**
+ * change user password
+ * @param int $uid user id
+ * @param string $oldpwd old password in plain text
+ * @param string $newpwd new password in plain text
+ * @return bool whether old password is correct
+ * @exception Exc_inner if $uid does not exist
+ */
+function user_chpasswd($uid, $oldpwd, $newpwd)
+{
+	global $db, $DBOP;
+	$where = array($DBOP['='], 'id', $uid);
+	$row = $db->select_from('users', array('username', 'passwd'), $where);
+	if (count($row) != 1)
+		throw new Exc_inner(__('user_chpasswd: uid %d does not exist', $uid));
+
+	$row = $row[0];
+	$oldpwd .= $row['username'];
+	$newpwd .= $row['username'];
+
+	if (!user_check_passwd($oldpwd, $row['passwd']))
+		return FALSE;
+
+	$db->update_data('users', array('passwd' => user_make_passwd($newpwd)),
+		$where);
+}
+
+/**
+ * update user info. If such user does not exist, nothing happens
+ * @param int $uid user id
+ * @param array $value array of values to be updated, whose valid fields are in
+ *			array('realname', 'aid', 'email', 'self_desc', 'tid', 'plang', 'wlang',
+ *				'view_gid')
+ * @return void
+ */
+function user_update_info($uid, $value)
+{
+	global $db, $DBOP;
+	$VAL_SET = array('realname', 'aid', 'email', 'self_desc', 'tid', 'plang', 'wlang',
+		'view_gid');
+
+	$val = array();
+	foreach ($VAL_SET as $v)
+		if (isset($value[$v]))
+			$val[$v] = $value[$v];
+
+	$db->update_data('users', $val, array($DBOP['='], 'id', $uid));
+}
+
+/**
+ */
+function user_increase_statistics($uid, $field)
+{
 }
 

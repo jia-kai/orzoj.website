@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Tue Sep 28 19:59:46 2010 +0800
+ * $Date: Wed Sep 29 11:39:52 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -128,7 +128,7 @@ abstract class Dbal
 	 * delete items from specified table
 	 * @param string $tablename name of a table
 	 * @param array whereclause the where clause array
-	 * @return int infected rows or TRUE
+	 * @return int numer of affected rows or TRUE
 	 * @see select_from
 	 */
 	abstract protected function delete_item($tablename, $whereclause = NULL);
@@ -182,7 +182,7 @@ abstract class Dbal
 	 * @param string $tablename name of table
 	 * @param array $newvalue new value array(row_name => VALUE);VALUE :: value OR array('type' => TYPE,'value' => value)
 	 * @param array $whereclause whereclause
-	 * @return int affected rows or TRUE
+	 * @return int number of affected rows or TRUE
 	 * @see select_from
 	 */
 	abstract protected function update_data($tablename, $newvalue, $whereclause = NULL);

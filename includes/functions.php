@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Sep 29 00:08:22 2010 +0800
+ * $Date: Wed Sep 29 11:13:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,7 +29,7 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'db/' . $db_type . '.php';
 
 /**
- * Set Cookie
+ * set cookie
  * @param string $name name of cookie,$table_prefix will be added at the beginning automatically
  * @param string $name name of cookie
  * @param string $value value of cookie
@@ -50,7 +50,7 @@ function cookie_set($name, $value, $lasttime = NULL)
 }
 
 /**
- * Get Cookie value
+ * get cookie value
  * @param string $name name of cookie,$table_prefix will be added at the beginning automatically
  * @param string $name name of cookie
  * @return bool|string If cookie exists,a string is returned. Otherwise,False is returned.
@@ -66,7 +66,7 @@ function cookie_get($name)
 }
 
 /**
- * Set Session with $table_prefix at the beginning of session name
+ * set session with $table_prefix at the beginning of session name
  * @param string $name name of sesssion
  * @param string $value value of sesssion
  */
@@ -83,7 +83,7 @@ function session_set($name, $value)
 }
 
 /**
- * Get Session value
+ * get session value
  * @param string $name name of session,$table_prefix will be added at the beginning automatically
  * @return bool|string If cookie exists,content is returned.Otherwise,False is returned.
  */
@@ -100,12 +100,16 @@ function session_get($name)
 
 
 /**
- * Translate HTML special chars and then change \n to <br>
+ * translate HTML special chars and then change \n to <br />
  * @param string $text plain text
+ * @param bool $replace_space whether to replace space to &nbsp;
  * @return string translated text
  */
-function htmlencode($text)
+function htmlencode($text, $replace_space = FALSE)
 {
+	if ($replace_space)
+		return nl2br(str_replace(' ', '&nbsp;',
+			htmlspecialchars($text)));
 	return nl2br(htmlspecialchars($text));
 }
 
