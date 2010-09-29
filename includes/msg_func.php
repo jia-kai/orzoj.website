@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: msg_func.php
- * $Date: Tue Sep 28 20:37:40 2010 +0800
+ * $Date: Tue Sep 28 23:55:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,6 +30,7 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'judges.php';
 require_once $includes_path . 'sched.php';
 require_once $includes_path . 'const.inc.php';
+require_once $includes_path . 'exe_status.inc.php';
 
 /**
  * write a massage to sever
@@ -93,7 +94,7 @@ function report_error()
 }
 
 /**
- * FIXME
+ * FIXME : I knows nothing
  */
 function get_query_list()
 {
@@ -153,6 +154,14 @@ class Exc_msg extends Exception
  */
 function get_request()
 {
+	global $db;
+	$req = $db->select_from('msg_req', NULL, NULL, NULL, NULL, 1);
+	if (count($req) > 0)
+	{
+		$req = $req[0];
+		msg_write(MSG_STATUS_OK, $req['data']);
+		throw new Exc_msg();
+	}
 }
 
 /**
@@ -189,13 +198,165 @@ function fetch_task()
  *  report to orzoj-website that no judges are available in
  *  a specific language for a record
  *  @global $db
+ *  @global $func_param
  *  @return void
  */
 function report_no_judge()
 {
-	$db->s
+	global $db, $func_param;
+	$rid = $func_param->task;
+	$value = array('status' => RECORD_STATUS_LANGUAGE_NOT_SUPPORTED);
+	$where_clause = array($DBOP['='], 'id', $rid);
+	$db->update_data('records', $value, $where_clause);
+	msg_write(MSG_STATUS_OK, NULL);
 }
 
+/**
+ *  report to orzoj-website that none of the judges 
+ *  has the data of this problem
+ *  @global $db
+ *  @global $func_param
+ *  @return void
+ */
+function report_no_data()
+{
+	global $db, $func_param;
+	$rid = $func_param->task;
+	$value = array('status' => RECORD_STATUS_LANGUAGE_NOT_SUPPORTED);
+	$where_clause = array($DBOP['='], 'id', $rid);
+	$db->update_data('records', $value, $where_clause);
+	msg_write(MSG_STATUS_OK, NULL);
+}
+
+/**
+ *  report to orzoj-website that none of the judges 
+ *  has the data of this problem
+ *  @global $db
+ *  @global $func_param
+ *  @return void
+ */
+function report_judge_waiting()
+{
+	global $db, $func_param;
+	$rid = $func_param->task;
+	$value = array('status' => RECORD_STATUS_JUDGE_BUSY);
+	$where_clause = array($DBOP['='], 'id', $rid);
+	$db->update_data('records', $value, $where_clause);
+	msg_write(MSG_STATUS_OK, NULL);
+}
+
+/**
+ *  report to orzoj-website that the judge is compiling source
+ *  @global $db
+ *  @global $func_param
+ *  @return void
+ */
+function report_compiling()
+{
+	global $db, $func_param;
+	$rid = $func_param->task;
+	$jid = $func_param->jid;
+	$value = array('status' => RECORD_STATUS_COMPILING,
+					'jid' => $jid);
+	$where_clause = array($DBOP['='], 'id', $rid);
+	$db->update_data('records', $value, $where_clause);
+	msg_write(MSG_STATUS_OK, NULL);
+}
+
+/**
+ *  report to orzoj-website that the judge compiled successfully
+ *  @global $db
+ *  @global $func_param
+ *  @return void
+ */
+function report_compile_success()
+{
+	global $db, $func_param;
+	$rid = $func_param->task;
+	$value = array('status' => RECORD_STATUS_COMPILE_SUCCESS);
+	$where_clause = array($DBOP['='], 'id', $rid);
+	$db->update_data('records', $value, $where_clause);
+	msg_write(MSG_STATUS_OK, NULL);
+}
+
+/**
+ *  report to orzoj-website that the judge has failed to compile
+ *  @global $db
+ *  @global $func_param
+ *  @return void
+ */
+function report_compile_failure()
+{
+	global $db, $func_param;
+	$rid = $func_param->task;
+	$value = array('status' => RECORD_STATUS_COMPILE_FAILURE);
+	$where_clause = array($DBOP['='], 'id', $rid);
+	$db->update_data('records', $value, $where_clause);
+	msg_write(MSG_STATUS_OK, NULL);
+}
+
+/**
+ *  report to orzoj-website a single case result
+ *  @global $db
+ *  @global $func_param
+ *  @return void
+ */
+function report_case_result()
+{
+	global $db, $funca_param;
+	$rid = $func_param->task;
+	$result = new Case_result();
+
+	foreach(get_class_vars(get_class($result)) as $key => $val)
+		$result->$key = $func_param->$key;
+
+	$col = array('detail');
+	$where_clause = array($DBOP['='], 'id', $rid);
+	$detail = $db->select_from('records', $col, $where_clause);
+	$detail = $detail[0]['detail'];
+	unserialize($detail);
+
+	$detail[] = $result;
+
+	$value = array('detail' => serialize($detail));
+	$db->update_data('records', $value, $where_clause);
+
+	msg_write(MSG_STATUS_OK, NULL);
+}
+
+
+/**
+ *  report to orzoj-website a prob result
+ *  @global $db
+ *  @global $func_param
+ *  @return void
+ */
+function report_prob_result()
+{
+	global $db, $func_param;
+	$rid = $func_param->task;
+
+	$value = array(
+		'score' => $func_param->total_score,
+		'full_score' => $func_param->full_score,
+		'time' => $func_param->total_time,
+		'mem' => $func_param->max_mem
+	);
+	$where_clause = array($DBOP['='], 'id', $rid);
+	$db->update_data('records', $value, $where_clause);
+	msg_write(MSG_STATUS_OK, NULL);
+}
+
+
+/**
+ * add a judge
+ * @param string $name
+ * @param string $lang_sup serialized array, 
+ *			see $root_path . 'install/table.php'
+ * @param string $query_ans serialized array,
+ *			XXX ?? what is the structure of $query_ans ??
+ * @return int new judge id
+ */
 function judge_add($name,$lang_sup,$query_ans)
 {
 	global $db;
@@ -211,7 +372,15 @@ function judge_add($name,$lang_sup,$query_ans)
 	return $insert_id;
 }
 
-
+/**
+ * update judge info
+ * @param int $id
+ * @param string $name
+ * @param string $lang_sup
+ * @param string $query_ans
+ * @return int judge id
+ * @see judge_add
+ */
 function judge_update($id, $name, $lang_sup, $query_ans)
 {
 	global $db;
@@ -228,7 +397,13 @@ function judge_update($id, $name, $lang_sup, $query_ans)
 	return $id;
 }
 
-
+/**
+ * set judge status
+ * @param int $id
+ * @param int $status see const.inc.php
+ * @param $success_filter XXX ???
+ * @return void
+ */
 function judge_set_status($id, $status, $success_filter)
 {	
 	global $db;
@@ -238,19 +413,33 @@ function judge_set_status($id, $status, $success_filter)
 	apply_filters($success_filter, TRUE, $id);
 }
 
+/**
+ * set judge status to online
+ * @param int $id
+ * @return void
+ */
 function judge_set_online($id)
 {
 	judge_set_status($id, JUDGE_STATUS_ONLINE, 'after_judge_online');
 }
 
-
+/**
+ * set judge status to offline
+ * @param int $id
+ * @return void
+ */
 function judge_set_offline($id)
 {
 	judge_set_status($id, JUDGE_STATUS_OFFLINE, 'after_judge_offline');
 }
 
-function judge_set_running($id)
+/**
+ * set judge status to busy
+ * @param int $id
+ * @return void
+ */
+function judge_set_busy($id)
 {
-	judge_set_status($id, JUDGE_STATUS_RUNNING, 'after_judge_running');
+	judge_set_status($id, JUDGE_STATUS_BUSY, 'after_judge_running');
 }
 
