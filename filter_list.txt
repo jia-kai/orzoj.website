@@ -10,3 +10,15 @@ after_set_judge_online:
 after_set_judge_offline:
 	file: msg.php
 	param: int judge id
+
+before_send_message:
+	file: includes/message.php
+	param: array value of message, described in install/tables.php
+
+after_read_message: (no iter)
+	file: includes/message.php
+	param: int message id
+
+after_delete_message: (no iter)
+	file: includes/message.php
+	param: int message id

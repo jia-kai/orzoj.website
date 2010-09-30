@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: plugin.php
- * $Date: Thu Sep 30 20:28:59 2010 +0800
+ * $Date: Thu Sep 30 21:53:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -73,7 +73,7 @@ function _filter_changed($hook_name)
 
 /**
  * add a filter (filter_add() should be called by plugins)
- * @param string $hook_name name of hook called by apply_filters(@see apply_filters) and do_action(@see do_action)
+ * @param string $hook_name name of hook called by filter_apply(@see filter_apply) and do_action(@see do_action)
  * @param string $file the file where the called function is defined (usually passing __FILE__)
  * @param callback $func the function to be called
  * @param int $priority priority of the function. The smaller, the earlier to be executed
