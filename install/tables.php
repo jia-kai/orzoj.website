@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Sep 29 22:02:28 2010 +0800
+ * $Date: Thu Sep 30 19:17:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -166,8 +166,9 @@ $tables = array(
 			'code' => array('type' => 'TEXT200'), // like the code on SPOJ
 			'slug' => array('type' => 'TEXT200'), // url friendly title.
 			'decription' => array('type' => 'TEXT'),
-			'grp_deny' => array('type' => 'TEXT'),  // serialized array of id groups disallowed to view this problem 
+			'grp_deny' => array('type' => 'TEXT'),  // serialized array of id of groups disallowed to view this problem 
 			'grp_allow' => array('type' => 'TEXT'),
+			'io' => array('type' => 'TEXT'), // serialized array of input/output file name, or empty string if using stdio
 
 			'cnt_submit' => array('type' => 'INT32', 'default' => 0),
 			'cnt_ac' => array('type' => 'INT32', 'default' => 0),
@@ -226,6 +227,47 @@ $tables = array(
 			array(
 				'type' => 'UNIQUE',
 				'cols' => array('gid'))
+		)
+	),
+
+	/* contests */
+	'contests' => array(
+		'cols' => array(
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'type' => array('type' => 'INT32'), // contest type, defined in /includes/contest/ctal.php
+			'name' => array('type' => 'TEXT'), // contest name
+			'desc' => array('type' => 'TEXT'), // description
+			'time_start' => array('type' => 'INT64'),
+			'time_end' => array('type' => 'INT64'),
+			'grp_deny' => array('type' => 'TEXT'), // see 'problems' table
+			'grp_allow' => array('type' => 'TEXT'),
+			'result_cache' => array('type' => 'TEXT') // result cache, maintained by specific contest types
+		),
+		'primary_key' => 'id',
+		'index' => array(
+			array('cols' => array('type', 'tid')),
+			array('cols' => array('time_start')),
+			array('cols' => array('time_end'))
+		)
+	),
+
+	/* map_prob_ct */
+	'map_prob_ct' => array( // map of problems and contests
+		'cols' => array(
+			'pid' => array('type' => 'INT32'),
+			'cid' => array('type' => 'INT32'),
+			'time_start' => array('type' => 'INT64'), // contest start time
+			'time_end' => array('type' => 'INT64') // contest end time
+		),
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('pid')),
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('cid')),
+			array(
+				'cols' => array('pid', 'time_start', 'time_end')),
 		)
 	),
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: msg.php
- * $Date: Thu Sep 30 11:16:42 2010 +0800
+ * $Date: Thu Sep 30 19:37:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -479,7 +479,7 @@ function judge_add($name,$lang_sup,$query_ans)
 	);
 	$db->transaction_begin();
 	$insert_id = $db->insert_into('judges',$content);
-	apply_filters('after_add_judge', true, $insert_id);
+	filter_apply('after_add_judge', true, $insert_id);
 	$db->transaction_commit();
 	return $insert_id;
 }
@@ -504,7 +504,7 @@ function judge_update($id, $name, $lang_sup, $query_ans)
 	);
 	$db->transaction_begin();
 	$db->update_data('judges', $content, $condition);
-	apply_filters('after_add_judge', true, $id);
+	filter_apply('after_add_judge', true, $id);
 	$db->transaction_commit();
 	return $id;
 }
@@ -522,7 +522,7 @@ function judge_set_status($id, $status, $success_filter)
 	$condition = array($DBOP['='], 'id', $id);
 	$content = array('status' => $status);
 	$db->update_data('judges', $content, $condition);
-	apply_filters($success_filter, TRUE, $id);
+	filter_apply($success_filter, TRUE, $id);
 }
 
 /**
@@ -543,15 +543,5 @@ function judge_set_online($id)
 function judge_set_offline($id)
 {
 	judge_set_status($id, JUDGE_STATUS_OFFLINE, 'after_judge_offline');
-}
-
-/**
- * set judge status to busy
- * @param int $id
- * @return void
- */
-function judge_set_busy($id)
-{
-	judge_set_status($id, JUDGE_STATUS_BUSY, 'after_judge_running');
 }
 

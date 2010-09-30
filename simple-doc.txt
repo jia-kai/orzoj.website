@@ -20,11 +20,10 @@
 |	|--	message.php		user-to-user messages
 |	|--	exception.php	exception definitions
 |	|--	exe_status.inc.php	case execution status and case structure definitions
-|--	contest/
-|	|--	ctal.php		contest abstract layer
-|	|--	default.php		usual practice (judge immediately after submission, no rank)
-|	|--	oi.php			implementation for OI rules of contest abstract layer
-|	|--	acm.php			implementation for ACM rules of contest abstract layer
+|--	|--contest/
+|	|	|--	ctal.php	contest abstract layer
+|	|	|--	oi.php		implementation for OI rules of contest abstract layer
+|	|	|--	acm.php		implementation for ACM rules of contest abstract layer
 |--	install/
 |	|--	index.php		install database tables and generate config.php
 |	|--	tables.php		database structure definitions
@@ -54,7 +53,14 @@ theme structure:
 /contents/themes/
 |--	<theme name>/
 	|--	index.php		will be included by /index.php, with global variable $action set properly
+	|--	functions.php	functions exported to the whole website
 	|--	...				theme specific files
+
+required functions for theme:
+
+get_attr($tag)
+// $tag is something like form/input/text, meaning the extra attributes to be put into 
+// "<form> <input type='text' />" tag
 
 
 all the pages accessed by user except those in install are in the top-level directory

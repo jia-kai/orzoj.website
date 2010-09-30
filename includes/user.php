@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Sep 29 14:42:02 2010 +0800
+ * $Date: Thu Sep 30 19:27:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -414,4 +414,12 @@ function user_update_statistics($uid, $field, $delta = 1)
 	$db->update_data('users', $val, $where);
 }
 
+
+/**
+ * get the user regster form
+ * @return string HTML register form
+ */
+function user_get_register_form()
+{
+}
 

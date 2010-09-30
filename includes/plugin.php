@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: plugin.php
- * $Date: Sun Sep 26 17:16:44 2010 +0800
+ * $Date: Thu Sep 30 20:28:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,144 +23,157 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-if (!defined('IN_ORZOJ')) exit;
+if (!defined('IN_ORZOJ'))
+	exit;
 
-
-$filters = array();
 
 /**
  * @ignore
  */
-function plugin_add_filter_cmp($a,$b)
+$_filters = array();
+
+/**
+ * @ignore
+ */
+function _filter_cmp_priority($a, $b)
 {
 	return $a['priority'] - $b['priority'];
 }
 
 /**
- * Add a filter
- * @param string $hook_name name of hook called by apply_filters(@see apply_filters) and do_action(@see do_action)
- * @param string $func_name name of function to call
- * @param int $priority priority of the function.If it's smaller,it will be executed first
- * @param int $accepted_args the number of accepted_args
- * @return bool success true,otherwise false
+ * @ignore
  */
-function add_filter($hook_name,$func_name,$priority = 10,$accepted_args = 1)
+$_filter_need_sort = array();
+
+/**
+ * @ignore
+ */
+function _filter_sort($hook_name)
 {
-	global $filters;
-	if (has_filter($hook_name,$func_name)) return false;
-	$thisfilter = array(
-		'func_name' => $func_name,
-		'priority' => $priority,
-		'accepted_args' => $accepted_args
-	);
-	if (!isset($filters[$hook_name])) $filters[$hook_name] = array();
-	array_push($filters[$hook_name],$thisfilter);
-	usort($filters[$hook_name],'plugin_add_filter_cmp');
-	return true;
+	global $_filter_need_sort, $_filters;
+	if (isset($_filter_need_sort[$hook_name]))
+	{
+		unset($_filter_need_sort[$hook_name]);
+		usort($_filters[$hook_name], '_filter_cmp_priority');
+	}
 }
 
 /**
- * Check whether a function added to a hook
+ * @ignore
+ */
+function _filter_changed($hook_name)
+{
+	global $_filter_need_sort;
+	$_filter_need_sort[$hook_name] = TRUE;
+}
+
+/**
+ * @ignore
+ */
+
+/**
+ * add a filter (filter_add() should be called by plugins)
+ * @param string $hook_name name of hook called by apply_filters(@see apply_filters) and do_action(@see do_action)
+ * @param string $file the file where the called function is defined (usually passing __FILE__)
+ * @param callback $func the function to be called
+ * @param int $priority priority of the function. The smaller, the earlier to be executed
+ * @return void
+ */
+function filter_add($hook_name, $file, $func, $priority = 0)
+{
+	$file = substr(realpath($file), strlen($root_path));
+	global $_filters;
+	$thisfilter = array(
+		'file' => $file,
+		'func' => $func,
+		'priority' => $priority,
+	);
+	if (!isset($_filters[$hook_name]))
+		$_filters[$hook_name] = array();
+	array_push($_filters[$hook_name], $thisfilter);
+
+	_filter_changed($hook_name);
+}
+
+/**
+ * Check whether a function has been added to a hook
  * @param string $hook_name name of hook
  * @param string $func_name name of function to check
- * @return bool if exists,TRUE is returned otherwise false
- */
-function has_filter($hook_name,$func_name)
-{
-	global $filters;
-	if (!isset($filters[$hook_name])) return false;
-	foreach ($filters[$hook_name] as $id => $func)
-		if ($func['func_name'] == $func_name) return true;
-	return false;
-}
-
-
-/**
- * Apply filters
- * @param string $hook_name is the name of hook you want to execute
- * @param mixed $value a value
- * @param mixed more_param more param is supported,for parameters to call function in the hook
- * @return mixed the new value of $value
- */
-function apply_filters($hook_name,$value)
-{
-	global $filters;
-	$args = func_get_args();
-	if (isset($filters[$hook_name]) && is_array($filters[$hook_name]))
-	{
-		foreach ($filters[$hook_name] as $id => $filter)
-		{
-			$value = call_user_func_array($filter['func_name'],array_slice($args,1,(int)($filter['accepted_args'])));
-		}
-	}
-	return $value;
-}
-
-/**
- * Delete a filter
- * @param string $hook_name which hook to search function
- * @param string $func_name what function to delete
- * @return bool if success,TRUE,else FALSE
- */
-function remove_filter($hook_name,$func_name)
-{
-	global $filters;
-	foreach ($filters[$hook_name] as $id => $func)
-	{
-		if ($func['func_name'] == $func_name)
-		{
-			unset($filters[$hook_name][$id]);
-			return true;
-		}
-	}
-	return false;
-}
-
-/**
- * @see add_filter
  * @return bool 
  */
-function add_action()
+function filter_exists($hook_name,$func_name)
 {
-	$args = func_get_args();
-	return call_user_func_array('add_filter',$args);
+	global $_filters;
+	if (!isset($_filters[$hook_name]))
+		return FALSE;
+	foreach ($_filters[$hook_name] as $func)
+		if ($func['func_name'] == $func_name)
+			return TRUE;
+	return FALSE;
 }
 
 /**
- * @see has_filter
- * @return bool
+ * delete a filter
+ * @param string $hook_name 
+ * @param callback $func
+ * @return bool whether succeed
  */
-function has_action()
+function filter_remove($hook_name, $func)
 {
-	$args = func_get_args();
-	return call_user_func_array('has_filter',$args);
-}
-
-/**
- * @see remove_filter
- * @return bool
- */
-function remove_action()
-{
-	$args = func_get_args();
-	return call_user_func_array('remove_filter',$args);
-}
-
-/**
- * Apply filters but do not change value(compared to apply_filter)
- * @param string name of hook
- * @param mixed more_param more parameters are supported to call functions
- * @return bool TRUE
- */
-function do_action($hook_name)
-{
-	global $filters;
-	$args = func_get_args();
-	foreach ($filters[$hook_name] as $id => $filter)
+	global $_filters;
+	if (!isset($_filters[$hook_name]))
+		return FALSE;
+	foreach ($_filters[$hook_name] as $id => $ft)
 	{
-		call_user_func_array($filter['func_name'],array_slice($args,1,(int)($filter['accepted_args'])));
+		if ($ft['func'] == $func)
+		{
+			unset($_filters[$hook_name][$id]);
+			_filter_changed($hook_name);
+			return TRUE;
+		}
 	}
-	return true;
+	return FALSE;
+}
+
+/**
+ * apply filters and iterate on $value
+ * @param string $hook_name is the name of hook to be called
+ * @param mixed $value
+ * @param mixed more_param more param is supported, which will be passed to functions in the hook
+ * @return mixed the final value after iteration
+ */
+
+function filter_apply($hook_name, $value)
+{
+	_filter_sort($hook_name);
+	global $_filters;
+	$args = array_slice(func_get_args(), 1);
+	if (isset($_filters[$hook_name]))
+		foreach ($_filters[$hook_name] as $id => $filter)
+		{
+			require_once($root_path . $filter['file']);
+			$args[0] = call_user_func_array($filter['func'], $args);
+		}
+	return $args[0];
+}
+
+/**
+ * apply filters without iterating
+ * @param string name of the hook
+ * @param mixed more_param
+ * @return void
+ */
+function filter_apply_no_iter($hook_name)
+{
+	_filter_sort($hook_name);
+	global $_filters;
+	$args = array_slice(func_get_args(), 1);
+	if (isset($_filters[$hook_name]))
+		foreach ($_filters[$hook_name] as $id => $filter)
+		{
+			require_once($root_path . $filter['file']);
+			call_user_func_array($filter['func'], $args);
+		}
 }
 
 

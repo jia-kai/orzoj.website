@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: sched.php
- * $Date: Tue Sep 28 23:44:31 2010 +0800
+ * $Date: Thu Sep 30 19:53:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,10 +31,9 @@ if (!defined('IN_ORZOJ'))
  * add a scheduled task
  * @param int $time task executing time (seconds since the Epoch)
  * @param string $file which file $func is (it's usually __FILE__) must be in orzoj-website direcotry
- * @param string $func the function to be called. It should not return NULL on success
+ * @param callback $func the function to be called. It should not return NULL on success
  * @param array $args
- * @return int|bool id or FALSE if failed
- * @see instert_into
+ * @return int job id
  */
 function sched_add($time, $file, $func, $args)
 {
@@ -46,13 +45,13 @@ function sched_add($time, $file, $func, $args)
 		'func' => $func,
 		'args' => serialize($args)
 		);
-	return $db->insert_into('jobs', $value_array);
+	$db->insert_into('jobs', $value_array);
 }
 
 /**
  * remove a scheduled task
  * @param int $id 
- * @return bool TRUE if succeed, otherwise FALSE
+ * @return void
  */
 function sched_remove($id)
 {
@@ -60,14 +59,13 @@ function sched_remove($id)
 	$where_clause = array(
 		$DBOP['='], 'id', $id
 		);
-	return $db->delete_item('jobs', $where_clause);
+	$db->delete_item('jobs', $where_clause);
 }
 
 /**
  * modify a scheduled task
  * @param int $id
  * @param int $time
- * @return bool TRUE if succeed, otherwise FALSE
  */
 function sched_update($id, $time)
 {
@@ -78,14 +76,15 @@ function sched_update($id, $time)
 	$where_clause = array(
 		$DBOP['='], 'id', $id
 	);
-	return $db->update_data('jobs', $value, $where_clause);
+	$db->update_data('jobs', $value, $where_clause);
 }
 
 /**
  * 
  * find and execute jobs that should be executed now 
  * this function should be guaranteed to be executed frequently and regularly
- * @return int number of executed jobs, or -1 on error
+ * @return int number of executed jobs
+ * @exception Exc_orzoj if failed to call the function (maybe it returns NULL?)
  */
 function sched_work()
 {
@@ -100,9 +99,9 @@ function sched_work()
 		require_once $root_path . $row['file'];
 		$func = $row['func'];
 		$args = unserialize($row['args']);
+		sched_remove($row['id']);
 		if (call_user_func_array($func, $args) === NULL)
 			throw new Exc_orzoj(__('failed to call user function'));
-		sched_remove($row['id']);
 		$cnt ++;
 	}
 	return $cnt;

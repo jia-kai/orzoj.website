@@ -13,7 +13,6 @@ int main()
 	int a, b;
 	scanf("%d %d", &a, &b);
 	printf("%d\\n", a + b);
-while(1);
 }
 
 _EOF_;
