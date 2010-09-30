@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Sep 29 15:28:48 2010 +0800
+ * $Date: Wed Sep 29 17:02:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -202,4 +202,19 @@ function get_remote_addr()
 	return $_SERVER['REMOTE_ADDR'];
 }
 
+
+/**
+ * get language id by name
+ * @param string $name language name
+ * @return int id, or 0 if no such language
+ */
+function lang_get_id_by_name($name)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('plang', 'id',
+		array($DBOP['=s'], 'name', $name));
+	if (count($row) != 1)
+		return 0;
+	return $row[0]['id'];
+}
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Sep 29 11:46:18 2010 +0800
+ * $Date: Wed Sep 29 22:02:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -233,18 +233,36 @@ $tables = array(
 	'plang' => array( // programming language
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'name' => array('type' => 'TEXT')
+			'name' => array('type' => 'TEXT200')
 		),
-		'primary_key' => 'id'
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('name')
+			)
+		),
+		'index_len' => array(
+			'name' => PLANG_NAME_LEN_MAX
+		),
 	),
 
 	/* wlang */
 	'wlang' => array( // website language
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'name' => array('type' => 'TEXT') // language name, also the file name in /contents/lang/
+			'name' => array('type' => 'TEXT200') // language name, also the file name in /contents/lang/
 		),
-		'primary_key' => 'id'
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('name')
+			)
+		),
+		'index_len' => array(
+			'name' => WLANG_NAME_LEN_MAX
+		),
 	),
 
 	/* records */
@@ -253,18 +271,20 @@ $tables = array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'uid' => array('type' => 'INT32'), // user id
 			'pid' => array('type' => 'INT32'), // problem id
-			'jid' => array('type' => 'INT32'), // judge id
+			'jid' => array('type' => 'INT32', 'default' => 0), // judge id
 			'lid' => array('type' => 'INT32'), // language id
 			'src_len' => array('type' => 'INT32'), // source length in bytes
 			'status' => array('type' => 'INT32'), // see includes/record.inc.php
 			'stime' => array('type' => 'INT64'), // submission time
-			'jtime' => array('type' => 'INT64'), // time when it is judged
+			'jtime' => array('type' => 'INT64', 'default' => 0), // time when it is judged
 			'ip' => array('type' => 'TEXT'), // from which ip it is submitted
-			'score' => array('type' => 'INT32'),
-			'full_score' => array('type' => 'INT32'),
-			'time' => array('type' => 'INT32'), // microsecond
-			'mem' => array('type' => 'INT32'), // maximal memory, kb
-			'detail' => array('type' => 'TEXT') // serialized array of Case_result. see includes/exe_status.inc.php
+			'score' => array('type' => 'INT32', 'default' => 0),
+			'full_score' => array('type' => 'INT32', 'default' => 0),
+			'time' => array('type' => 'INT32', 'default' => 0), // microsecond
+			'mem' => array('type' => 'INT32', 'default' => 0), // maximal memory, kb
+			'detail' => array('type' => 'TEXT', 'default' => '')
+			// serialized array of Case_result. see includes/exe_status.inc.php
+			// or error info if judge process not started
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -349,7 +369,9 @@ $tables = array(
 	'msg_req' => array( // requests to orzoj-server in msg.php
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'data' => array('type' => 'TEXT'), // serialized array of request data
+			'data' => array('type' => 'TEXT'),
+			// serialized array of request data, see orzoj-server/web.py:fetch_task()
+			// if type=src, src is not set and should be found in 'sources' table
 		),
 		'primary_key' => 'id'
 	)

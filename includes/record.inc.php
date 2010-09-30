@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.inc.php
- * $Date: Tue Sep 28 23:19:19 2010 +0800
+ * $Date: Wed Sep 29 18:20:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -43,7 +43,6 @@ define('RECORD_STATUS_WRONG_ANSWER', $cnt ++);
 define('RECORD_STATUS_TIME_LIMIT_EXCEED', $cnt ++);
 define('RECORD_STATUS_MEMORY_LIMIT_EXCEED', $cnt ++);
 define('RECORD_STATUS_RUNTIME_ERROR', $cnt ++);
-define('RECORD_STATUS_LANGUAGE_NOT_SUPPORTED', $cnt ++);
 define('RECORD_STATUS_DATA_NOT_FOUND', $cnt ++);
 define('RECORD_STATUS_JUDGE_BUSY', $cnt ++);
 define('RECORD_STATUS_ERROR', $cnt ++);

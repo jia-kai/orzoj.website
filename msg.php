@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: msg.php
- * $Date: Wed Sep 29 16:46:51 2010 +0800
+ * $Date: Thu Sep 30 11:16:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,6 +30,7 @@ require_once $includes_path . 'sched.php';
 require_once $includes_path . 'judge.php';
 require_once $includes_path . 'exe_status.inc.php';
 require_once $includes_path . 'plugin.php';
+require_once $includes_path . 'record.inc.php';
 
 define('MSG_VERSION', 1);
 
@@ -98,24 +99,24 @@ if (isset($_REQUEST['data']))
 
 		$db_rid = unserialize(option_get('thread_req_id'));
 		if (!is_array($db_rid))
-			exit('0');
+			exit('1');
 
 
 		if (!isset($db_rid[$thread_id]))
 			$db_rid[$thread_id] = 0;
 
-		if ($db_rid[$thread_id] != $req_id)
-			exit('0');
-
 		$stdchecksum = sha1($thread_id . $req_id . sha1($dynamic_password . $static_password) . $data->data);
 		if ($stdchecksum != $data->checksum)
-			exit('0');
+			exit('relogin');
+
+		if ($db_rid[$thread_id] != $req_id)
+			exit('relogin');
 
 		$db_rid[$thread_id] ++;
 		option_set('thread_req_id', serialize($db_rid));
 	}
 	else
-		exit('0');
+		exit('4');
 
 	$func_param = json_decode($data->data);
 
@@ -255,12 +256,28 @@ class Exc_msg extends Exception
  */
 function get_request()
 {
-	global $db;
+	global $db, $DBOP;
 	$req = $db->select_from('msg_req', NULL, NULL, NULL, NULL, 1);
 	if (count($req) > 0)
 	{
 		$req = $req[0];
-		msg_write(MSG_STATUS_OK, $req['data']);
+		$db->delete_item('msg_req', array($DBOP['='], 'id', $req['id']));
+
+		$req = unserialize($req['data']);
+		if ($req['type'] == 'src')
+		{
+			$src = $db->select_from('sources', 'src',
+				array($DBOP['='], 'rid', $req['id']));
+			if (count($src) != 1)
+				throw new Exc_inner(__('source not found'));
+			$req['src'] = $src[0]['src'];
+			$db->update_data('records', array('status' => RECORD_STATUS_WAITING_ON_SERVER),
+				array($DBOP['='], 'id', $req['id']));
+			$db->update_data('sources', array('sent' => 1),
+				array($DBOP['='], 'rid', $req['id']));
+		}
+
+		msg_write(MSG_STATUS_OK, $req);
 		throw new Exc_msg();
 	}
 }
@@ -291,21 +308,6 @@ function fetch_task()
 }
 
 /**
- *  report to orzoj-website that no judges are available in
- *  a specific language for a record
- *  @return void
- */
-function report_no_judge()
-{
-	global $db, $func_param, $DBOP;
-	$rid = $func_param->task;
-	$value = array('status' => RECORD_STATUS_LANGUAGE_NOT_SUPPORTED);
-	$where_clause = array($DBOP['='], 'id', $rid);
-	$db->update_data('records', $value, $where_clause);
-	msg_write(MSG_STATUS_OK, NULL);
-}
-
-/**
  *  report to orzoj-website that none of the judges 
  *  has the data of this problem
  *  @return void
@@ -314,7 +316,7 @@ function report_no_data()
 {
 	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
-	$value = array('status' => RECORD_STATUS_LANGUAGE_NOT_SUPPORTED);
+	$value = array('status' => RECORD_STATUS_DATA_NOT_FOUND);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
 	msg_write(MSG_STATUS_OK, NULL);
@@ -355,9 +357,11 @@ function report_compiling()
 {
 	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
-	$jid = $func_param->jid;
-	$value = array('status' => RECORD_STATUS_COMPILING,
-					'jid' => $jid);
+	$jid = $func_param->judge;
+	$value = array(
+		'status' => RECORD_STATUS_COMPILING,
+		'jid' => $jid,
+		'jtime' => time());
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
 	user_update_statistics(get_uid_by_rid($rid), array('submit'));
@@ -386,7 +390,8 @@ function report_compile_failure()
 {
 	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
-	$value = array('status' => RECORD_STATUS_COMPILE_FAILURE);
+	$value = array('status' => RECORD_STATUS_COMPILE_FAILURE,
+		'detail' => $func_param->info);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
 	user_update_statistics(get_uid_by_rid($rid), array('ce'));
@@ -399,7 +404,7 @@ function report_compile_failure()
  */
 function report_case_result()
 {
-	global $db, $funca_param, $DBOP;
+	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
 	$result = new Case_result();
 
@@ -410,7 +415,10 @@ function report_case_result()
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$detail = $db->select_from('records', $col, $where_clause);
 	$detail = $detail[0]['detail'];
-	unserialize($detail);
+
+	$detail = @unserialize($detail);
+	if (!is_array($detail))
+		$detail = array();
 
 	$detail[] = $result;
 
@@ -436,12 +444,19 @@ function report_prob_result()
 		'time' => $func_param->total_time,
 		'mem' => $func_param->max_mem
 	);
+	if ($func_param->total_score == $func_param->full_score && $func_param->total_score)
+	{
+		$result = 'ac';
+		$value['status'] = RECORD_STATUS_ACCEPTED;
+	}
+	else
+	{
+		$result = 'unac';
+		$value['status'] = RECORD_STATUS_WRONG_ANSWER;
+	}
+
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	if ($total_score == $full_score)
-		$result = 'ac';
-	else
-		$result = 'unac';
 	user_update_statistics(get_uid_by_rid($rid), array($result));
 	msg_write(MSG_STATUS_OK, NULL);
 }
