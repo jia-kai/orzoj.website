@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Thu Sep 30 19:17:37 2010 +0800
+ * $Date: Thu Sep 30 20:45:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -139,23 +139,6 @@ $tables = array(
 			'file' => array('type' => 'TEXT') // in the /contents/uploads directory
 		),
 		'primary_key' => 'id'
-	),
-
-	/* messages */
-	'messages' => array(
-		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'time' => array('type' => 'INT64'),
-			'uid_snd' => array('type' => 'INT32'), // sender's user id
-			'uid_rcv' => array('type' => 'INT32'), // receiver's user id
-			'content' => array('type' => 'TEXT'),
-			'read' => array('type' => 'INT32'), // whether this message has been read
-		),
-		'primary_key' => 'id',
-		'index' => array(
-			array('cols' => array('uid_snd')),
-			array('cols' => array('uid_rcv', 'read'))
-		)
 	),
 
 	/* problems */
@@ -416,6 +399,28 @@ $tables = array(
 			// if type=src, src is not set and should be found in 'sources' table
 		),
 		'primary_key' => 'id'
+	)
+
+	/* messages */
+	'messages' => array( // user-to-user messages
+		'cols' => array(
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'time' => array('type' => 'INT64'),
+			'uid_snd' => array('type' => 'INT32'),
+			'uid_rcv' => array('type' => 'INT32'),
+			'title' => array('type' => 'TEXT'),
+			'content' => array('type' => 'TEXT'),
+			'is_read' => array('type' => 'INT32', 'default' => 0)
+		),
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'cols' => array('uid_snd')
+			),
+			array(
+				'cols' => array('uid_rcv')
+			)
+		)
 	)
 );
 
