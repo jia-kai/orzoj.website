@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: message.php
- * $Date: Thu Sep 30 21:55:10 2010 +0800
+ * $Date: Thu Sep 30 21:58:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -107,8 +107,8 @@ function _where_and_eql(&$where, $col, $val)
 
 /**
  * get messages of a specific user satisfying some requirements
- * @param NULL|int $uid_snd the user id of sender, or NULL if unsecific
  * @param NULL|int $uid_rcv the user id of receiver, or NULL if unsecific
+ * @param NULL|int $uid_snd the user id of sender, or NULL if unsecific
  * @param NULL|bool $read_flag if NULL, read and unread messages are returned; otherwise return as required
  * @param NULL|array $fields fields needing to be set, must be a subset of attributes of class Message. NULL means all
  * @param NULL|int $offset
@@ -116,7 +116,7 @@ function _where_and_eql(&$where, $col, $val)
  * @param string $sort_way the way to sort message by time ('DESC'|'ASC')
  * @return array array of class Message
  */
-function message_get($uid_snd, $uid_rcv = NULL, $read_flag = NULL,
+function message_get($uid_rcv, $uid_snd = NULL, $read_flag = NULL,
 	$fields = array('id'), $offset = NULL, $cnt = NULL, $sort_way = 'DESC')
 {
 	global $db, $DBOP;
@@ -151,7 +151,7 @@ function message_get($uid_snd, $uid_rcv = NULL, $read_flag = NULL,
  * @see message_get
  * @return int
  */
-function message_get_amount($uid_snd, $uid_rcv = NULL, $read_flag = NULL)
+function message_get_amount($uid_rcv, $uid_snd = NULL, $read_flag = NULL)
 {
 	global $db, $DBOP;
 	$where = NULL;
