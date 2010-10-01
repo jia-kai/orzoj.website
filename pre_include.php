@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Wed Sep 29 15:28:56 2010 +0800
+ * $Date: Thu Sep 30 23:55:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,6 +24,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* TODO
+ *		处理用户配置: lang
+ */
 ob_start();
 date_default_timezone_set('GMT');
 error_reporting(E_ALL);

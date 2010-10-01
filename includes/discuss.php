@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: discuss.php
- * $Date: Thu Sep 30 16:40:02 2010 +0800
+ * $Date: Thu Sep 30 23:49:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,3 +26,22 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+/**
+ * Called by theme when form submitted
+ * parse the form data 
+ * @return int|string post id or error information if failed
+ */
+function discuss_add_post()
+{
+}
+
+/**
+ *
+ */
+function discuss_
+
+del
+tree
+form
+

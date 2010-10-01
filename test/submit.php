@@ -35,7 +35,7 @@ $db->insert_into('sources',
 
 echo 'record id: ' . $id . "\n";
 
-$reqid = $db->insert_into('msg_req',
+$reqid = $db->insert_into('orz_req',
 	array('data' => serialize(array(
 		'type' => 'src',
 		'id' => $id,
@@ -46,5 +46,5 @@ $reqid = $db->insert_into('msg_req',
 		'output' => 'a+b.out'
 	))));
 
-echo 'msg_req id: ' . $reqid . "\n";
+echo 'orz_req id: ' . $reqid . "\n";
 

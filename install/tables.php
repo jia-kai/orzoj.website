@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Thu Sep 30 21:41:55 2010 +0800
+ * $Date: Fri Oct 01 00:24:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -46,7 +46,7 @@ $tables = array(
 	// only users in  ADMIN group can add or remove groups
 	// group administrators can add or remove non-administrator members
 
-	/* users */
+	/* users */ 
 	'users' => array( // related file: /includes/user.php
 		'cols' => array(
 			'username' => array('type' => 'TEXT200'),
@@ -390,8 +390,8 @@ $tables = array(
 		)
 	),
 
-	/* msg_req */
-	'msg_req' => array( // requests to orzoj-server in msg.php
+	/* orz_req */
+	'orz_req' => array( // requests to orzoj-server in orz.php
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'data' => array('type' => 'TEXT'),
@@ -421,6 +421,28 @@ $tables = array(
 			),
 			array(
 				'cols' => array('uid_rcv', 'rm_rcv')
+			)
+		)
+	)
+
+	/* discusses */
+	'discusses' => array( // we manage discusses as a forest, each discuss has at most one parent(father) node
+		'cols' => array(
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'time' => array('type' => 'INT64'),
+			'uid' => array('type' => 'INT32'), // user id
+			'fid' => array('type' => 'INT32'), // father id
+			'pid' => array('type' => 'INT32'), // related problem id
+			'title' => array('type' => 'TEXT'),
+			'content' => array('type' => 'TEXT'),
+		),
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'cols' => array('id' => 'fid')
+			),
+			array(
+				'cols' => array('fid' => 'id')
 			)
 		)
 	)

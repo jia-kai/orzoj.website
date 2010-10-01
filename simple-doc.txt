@@ -14,13 +14,17 @@
 |	|--	discuss.php		functions for managing discussion posts
 |	|--	theme.php		API for themes
 |	|--	user.php		check user login and permissions, and get user data
-|	|--	record.inc.php	execution status constant definitions and record-related structures
-|	|-- judge.php		functions for fetch judge operations
-|	|--	const.inc.php	miscellaneous constants
+|	|--	judge.php		functions for fetch judge operations
 |	|--	message.php		user-to-user messages
 |	|--	exception.php	exception definitions
+|	|--	problem.php		problem operations
+|	|--	submit.php		functions for submitting source files
+|	|--	record.php		get record
+|	|--	announcement.php	get announcement
 |	|--	exe_status.inc.php	case execution status and case structure definitions
-|--	|--contest/
+|	|--	const.inc.php	miscellaneous constants
+|	|--	record.inc.php	execution status constant definitions and record-related structures
+|	|--	contest/
 |	|	|--	ctal.php	contest abstract layer
 |	|	|--	oi.php		implementation for OI rules of contest abstract layer
 |	|	|--	acm.php		implementation for ACM rules of contest abstract layer
@@ -34,11 +38,11 @@
 |	|	|--	...
 |	|--	uploads/		store uploaded data such as images (permission: 777)
 |	|	|--	...
-|	|--	lang/			.mo files for variuos languages
+|	|--	lang/			.mo files for various languages
 |	|	|-- *.mo
 |--	admin/				
 |	|--	index.php		website administation
-|--	msg.php				communicate with orzoj-server
+|--	orz.php				communicate with orzoj-server
 |--	index.php			parse options and call theme functions
 
 
@@ -58,7 +62,7 @@ theme structure:
 
 required functions for theme:
 
-get_attr($tag)
+tf_get_attr($tag)
 // $tag is something like form/input/text, meaning the extra attributes to be put into 
 // "<form> <input type='text' />" tag
 

@@ -1,7 +1,8 @@
 <?php
 /* 
+ * FIXME: function names
  * $File: judge.php
- * $Date: Wed Sep 29 14:15:10 2010 +0800
+ * $Date: Fri Oct 01 00:04:50 2010 +0800
  */
 /**
  * @package orzoj-website

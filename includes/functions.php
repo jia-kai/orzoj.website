@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Sep 29 17:02:16 2010 +0800
+ * $Date: Fri Oct 01 00:03:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -204,6 +204,7 @@ function get_remote_addr()
 
 
 /**
+ * FIXME: should be moved away
  * get language id by name
  * @param string $name language name
  * @return int id, or 0 if no such language

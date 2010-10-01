@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: msg.php
- * $Date: Thu Sep 30 20:42:59 2010 +0800
+ * $File: orz.php
+ * $Date: Thu Sep 30 22:48:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -121,16 +121,15 @@ if (isset($_REQUEST['data']))
 	$func_param = json_decode($data->data);
 
 	// use $func_param as a global variable
-	// calling functions are in msg_function.php
 	call_func($func_param->action);
 }
 else
 	exit('what\'s going on?');
 
 
-/* -------------------------------------- */
-/* | All msg functions are listed below | */
-/* -------------------------------------- */
+/* ----------------------------------------- */
+/* | All called functions are listed below  |*/
+/* ----------------------------------------- */
 
 /**
  * write a massage to sever
@@ -252,16 +251,16 @@ class Exc_msg extends Exception
 }
 
 /**
- * get a request from table 'msg_req'
+ * get a request from table 'orz_req'
  */
 function get_request()
 {
 	global $db, $DBOP;
-	$req = $db->select_from('msg_req', NULL, NULL, NULL, NULL, 1);
+	$req = $db->select_from('orz_req', NULL, NULL, NULL, NULL, 1);
 	if (count($req) > 0)
 	{
 		$req = $req[0];
-		$db->delete_item('msg_req', array($DBOP['='], 'id', $req['id']));
+		$db->delete_item('orz_req', array($DBOP['='], 'id', $req['id']));
 
 		$req = unserialize($req['data']);
 		if ($req['type'] == 'src')

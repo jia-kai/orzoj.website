@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Sep 30 19:27:33 2010 +0800
+ * $Date: Fri Oct 01 00:14:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -208,6 +208,7 @@ function user_logout()
 define('PASSWD_ENCRYPTION_VERSION', '01');
 
 /**
+ * FIXME: some functions are private, please 加下划线
  * check user password
  * @param string $passwd plain password
  * @param string $passwd_encr encrypted password read from database
@@ -330,6 +331,7 @@ function user_del($uid)
 		array($DBOP['||'],
 			$DBOP['='], 'uid_snd', $uid,
 			$DBOP['='], 'uid_rcv', $uid));
+	// TODO: dicussion
 }
 
 /**
@@ -423,3 +425,4 @@ function user_get_register_form()
 {
 }
 
+// TODO: team, avatar

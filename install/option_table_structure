@@ -1,12 +1,12 @@
 judge_info_list:
-	serialized array of what should be queried in msg.php : get_query_list()
+	serialized array of what should be queried in orz.php : get_query_list()
 
 static_password:
-	set by website administrator (msg.php)
+	set by website administrator (orz.php)
 
 dynamic_password, dynamic_password_with_time:
-	generated for orzoj-server authentication (msg.php)
+	generated for orzoj-server authentication (orz.php)
 
 thread_req_id:
-	for orzoj-server authentication (msg.php)
+	for orzoj-server authentication (orz.php)
 

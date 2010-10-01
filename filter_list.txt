@@ -1,14 +1,14 @@
 after_add_judge:
-	file: msg.php
+	file: orz.php
 	param: int judge id
 	executed when a new judge is added
 
 after_set_judge_online:
-	file: msg.php
+	file: orz.php
 	param: int judge id
 
 after_set_judge_offline:
-	file: msg.php
+	file: orz.php
 	param: int judge id
 
 before_send_message:
