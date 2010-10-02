@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: config.php
- * $Date: Mon Sep 27 01:12:36 2010 +0800
+ * $File: config-sample.php
+ * $Date: Sat Oct 02 11:35:53 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,4 +31,5 @@ $db_port = NULL;
 $db_user = 'root';
 $db_password = 'admin888';
 $db_dbname = 'orzoj';
+$website_root = '/orzoj';
 

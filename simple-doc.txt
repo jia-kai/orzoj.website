@@ -11,7 +11,7 @@
 |	|	|--	mo.php		mo reader
 |	|--	plugin.php		functions for handling plugins
 |	|--	sched.php		manage scheduled tasks
-|	|--	discuss.php		functions for managing discussion posts
+|	|--	post.php		functions for managing posts
 |	|--	theme.php		API for themes
 |	|--	user.php		check user login and permissions, and get user data
 |	|--	judge.php		functions for fetch judge operations
@@ -20,7 +20,7 @@
 |	|--	problem.php		problem operations
 |	|--	submit.php		functions for submitting source files
 |	|--	record.php		get record
-|	|--	announcement.php	get announcement
+|	|--	announcement.php	publish and get announcements
 |	|--	exe_status.inc.php	case execution status and case structure definitions
 |	|--	const.inc.php	miscellaneous constants
 |	|--	record.inc.php	execution status constant definitions and record-related structures
@@ -60,11 +60,8 @@ theme structure:
 	|--	functions.php	functions exported to the whole website
 	|--	...				theme specific files
 
-required functions for theme:
 
-tf_get_attr($tag)
-// $tag is something like form/input/text, meaning the extra attributes to be put into 
-// "<form> <input type='text' />" tag
+for required functions for theme, see theme-functions-template.php
 
 
 all the pages accessed by user except those in install are in the top-level directory

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: sched.php
- * $Date: Thu Sep 30 19:53:37 2010 +0800
+ * $Date: Fri Oct 01 16:07:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,7 +31,7 @@ if (!defined('IN_ORZOJ'))
  * add a scheduled task
  * @param int $time task executing time (seconds since the Epoch)
  * @param string $file which file $func is (it's usually __FILE__) must be in orzoj-website direcotry
- * @param callback $func the function to be called. It should not return NULL on success
+ * @param callback $func the function to be called. It should not return NULL on success, and should not print anyting
  * @param array $args
  * @return int job id
  */
@@ -45,7 +45,7 @@ function sched_add($time, $file, $func, $args)
 		'func' => $func,
 		'args' => serialize($args)
 		);
-	$db->insert_into('jobs', $value_array);
+	$db->insert_into('scheds', $value_array);
 }
 
 /**
@@ -59,7 +59,7 @@ function sched_remove($id)
 	$where_clause = array(
 		$DBOP['='], 'id', $id
 		);
-	$db->delete_item('jobs', $where_clause);
+	$db->delete_item('scheds', $where_clause);
 }
 
 /**
@@ -76,7 +76,7 @@ function sched_update($id, $time)
 	$where_clause = array(
 		$DBOP['='], 'id', $id
 	);
-	$db->update_data('jobs', $value, $where_clause);
+	$db->update_data('scheds', $value, $where_clause);
 }
 
 /**
@@ -92,7 +92,7 @@ function sched_work()
 	$where_clause = array(
 		$DBOP['<='], 'time', time()
 		);
-	$ret = $db->select_from('jobs', NULL, $where_clause);
+	$ret = $db->select_from('scheds', NULL, $where_clause);
 	$cnt = 0;
 	foreach ($ret as $row)
 	{

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: message.php
- * $Date: Thu Sep 30 21:58:32 2010 +0800
+ * $Date: Fri Oct 01 18:04:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,7 +34,7 @@ require_once $includes_path . 'plugin.php';
  */
 class Message
 {
-	var $id, $time, $uid_snd, $uid_rcv, $title, $content, $is_read;
+	var $id, $time, $uid_snd, $uid_rcv, $subject, $content, $is_read;
 
 	/**
 	 * set attributes in this class
@@ -62,18 +62,18 @@ class Message
  * Send a message from user to user
  * @param int $uid_snd
  * @param int $uid_rcv
- * @param string $title
+ * @param string $subject
  * @param string $content
  * @return void
  */
-function message_send($uid_snd, $uid_rcv, $title, $content)
+function message_send($uid_snd, $uid_rcv, $subject, $content)
 {
 	global $db;
 	$value = array(
 		'time' => time(),
 		'uid_snd' => $uid_snd,
 		'uid_rcv' => $uid_rcv,
-		'title' => $title,
+		'subject' => $subject,
 		'content' => $content
 	);
 	$value = filter_apply('before_send_message', $value);

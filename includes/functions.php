@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Fri Oct 01 00:03:36 2010 +0800
+ * $Date: Sat Oct 02 11:36:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -202,9 +202,20 @@ function get_remote_addr()
 	return $_SERVER['REMOTE_ADDR'];
 }
 
+/**
+ * get the URL pointing to $file
+ * @param string $file file path
+ * @return string the URL
+ */
+function get_page_url($file)
+{
+	global $website_root, $root_path;
+	$file = realpath($file);
+	return $website_root . substr($file, strlen($root_path));
+}
 
 /**
- * FIXME: should be moved away
+ * FIXME: this function should be moved away
  * get language id by name
  * @param string $name language name
  * @return int id, or 0 if no such language

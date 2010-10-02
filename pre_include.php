@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Thu Sep 30 23:55:44 2010 +0800
+ * $Date: Sat Oct 02 11:34:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,7 +32,7 @@ date_default_timezone_set('GMT');
 error_reporting(E_ALL);
 define('IN_ORZOJ', true);
 
-$root_path = dirname(__FILE__) . '/';
+$root_path = realpath(dirname(__FILE__) . '/');
 $includes_path = $root_path . 'includes/';
 
 require_once $root_path . 'config.php';

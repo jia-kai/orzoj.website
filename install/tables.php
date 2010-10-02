@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Fri Oct 01 00:24:32 2010 +0800
+ * $Date: Sat Oct 02 12:15:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,8 +30,8 @@ if (!defined('IN_ORZOJ'))
 require_once realpath('..') . '/includes/const.inc.php';
 
 $tables = array(
-	/* jobs */
-	'jobs'=> array(
+	/* scheds */
+	'scheds'=> array( //  scheduled tasks
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'time' => array('type' => 'INT64'),
@@ -49,21 +49,21 @@ $tables = array(
 	/* users */ 
 	'users' => array( // related file: /includes/user.php
 		'cols' => array(
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'username' => array('type' => 'TEXT200'),
-			'realname' => array('type' => 'TEXT'),
+			'realname' => array('type' => 'TEXT'), // only visiable by administrator
+			'nickname' => array('type' => 'TEXT'), // display name
+			'passwd' => array('type' => 'TEXT200'),
+			'salt' => array('type' => 'TEXT200', 'default' => ''),
 			'aid' => array('type' => 'INT32'), // avatar id
 			'email' => array('type' => 'TEXT'),
 			'self_desc' => array('type' => 'TEXT'), // self description
-			'tid' => array('type' => 'INT32'), // team id
 			'plang' => array('type' => 'INT32'), // preferred programming language 
 			'wlang' => array('type' => 'INT32'), // preferred website language
-			// callers of user.php:user_add() should pass an array as $value containing
-			// the above coloumns and their corresponding values
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'passwd' => array('type' => 'TEXT200'),
-			'salt' => array('type' => 'TEXT200', 'default' => ''),
 			'view_gid' => array('type' => 'TEXT'),
 				// serialized array of group id who can view the user's source
+			'theme_id' => array('type' => 'INT32'), // current website theme
+			'tid' => array('type' => 'INT32'), // team id
 			'reg_time' => array('type' => 'INT64'), // register time
 			'reg_ip' => array('type' => 'TEXT'), // register ip
 			'last_login_time' => array('type' => 'INT64', 'default' => 0),
@@ -228,8 +228,7 @@ $tables = array(
 		),
 		'primary_key' => 'id',
 		'index' => array(
-			array('cols' => array('type', 'tid')),
-			array('cols' => array('time_start')),
+			array('cols' => array('time_start', 'time_end')),
 			array('cols' => array('time_end'))
 		)
 	),
@@ -399,7 +398,7 @@ $tables = array(
 			// if type=src, src is not set and should be found in 'sources' table
 		),
 		'primary_key' => 'id'
-	)
+	),
 
 	/* messages */
 	'messages' => array( // user-to-user messages
@@ -408,9 +407,9 @@ $tables = array(
 			'time' => array('type' => 'INT64'),
 			'uid_snd' => array('type' => 'INT32'),
 			'uid_rcv' => array('type' => 'INT32'),
-			'title' => array('type' => 'TEXT'),
+			'subject' => array('type' => 'TEXT'),
 			'content' => array('type' => 'TEXT'),
-			'is_read' => array('type' => 'INT32', 'default' => 0)
+			'is_read' => array('type' => 'INT32', 'default' => 0),
 			'rm_snd' => array('type' => 'INT32'), // whether the message is deleted by sender
 			'rm_rcv' => array('type' => 'INT32') // whether the message is deleted by receiver
 		),
@@ -423,27 +422,25 @@ $tables = array(
 				'cols' => array('uid_rcv', 'rm_rcv')
 			)
 		)
-	)
+	),
 
-	/* discusses */
-	'discusses' => array( // we manage discusses as a forest, each discuss has at most one parent(father) node
+	/* posts */
+	'posts' => array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'time' => array('type' => 'INT64'),
 			'uid' => array('type' => 'INT32'), // user id
-			'fid' => array('type' => 'INT32'), // father id
-			'pid' => array('type' => 'INT32'), // related problem id
-			'title' => array('type' => 'TEXT'),
-			'content' => array('type' => 'TEXT'),
+			'pid' => array('type' => 'INT32'),
+				// if > 0, it's the related problem id; if < 0, it's the negated parent post id;
+				// otherwise it is a root post without relating to any problem
+			'subject' => array('type' => 'TEXT'),
+			'content' => array('type' => 'TEXT')
 		),
 		'primary_key' => 'id',
 		'index' => array(
 			array(
-				'cols' => array('id' => 'fid')
+				'cols' => array('pid')
 			),
-			array(
-				'cols' => array('fid' => 'id')
-			)
 		)
 	)
 );

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Fri Oct 01 00:14:58 2010 +0800
+ * $Date: Sat Oct 02 12:15:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,7 +31,7 @@ if (!defined('IN_ORZOJ'))
  */
 class User
 {
-	var $id, $username, $realname,
+	var $id, $username, $realname, $nickname,
 		$avatar, // avatar file name, NULL if unavailable
 		$email, $self_desc, $tid, $plang, $wlang,
 		$view_gid, // array of gid who can view the user's source
@@ -45,10 +45,11 @@ class User
 	/**
 	 * set attributes in this class
 	 * @param int $uid user id
+	 * @param NULL|aray $fields_not_need the attributes not needed to be set
 	 * @return void
 	 * @exception Exc_inner if user id does not exist
 	 */
-	function set_val($uid)
+	function set_val($uid, $fields_not_need = NULL)
 	{
 		global $db, $DBOP;
 		$row = $db->select_from('users', NULL,
@@ -57,7 +58,13 @@ class User
 			throw new Exc_inner(__('user id %d does not exist', $uid));
 		$row = $row[0];
 
-		$VAL_SET = array('id', 'username', 'realname',
+		$tmp = $fields_not_need;
+		$fields_not_need = array();
+		if (is_array($tmp))
+			foreach ($tmp as $f)
+				$fields_not_need[$f] = NULL;
+
+		$VAL_SET = array('id', 'username', 'realname', 'nickname',
 			'email', 'self_desc', 'tid', 'plang', 'wlang',
 			'reg_time', 'reg_ip', 'last_login_time', 'last_login_ip',
 			'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce');
@@ -65,58 +72,67 @@ class User
 		foreach ($VAL_SET as $val)
 			$this->$val = $row[$val];
 
-		$tmp = $db->select_from('user_avatars', 'file', array($DBOP['='], 'id', $row['aid']));
-		if (count($tmp) != 1)
-			$this->avatar = NULL;
-		else
-			$this->avatar = $tmp[0]['file'];
+		if (!isset($fields_not_need['avatar']))
+		{
+			$tmp = $db->select_from('user_avatars', 'file', array($DBOP['='], 'id', $row['aid']));
+			if (count($tmp) != 1)
+				$this->avatar = NULL;
+			else
+				$this->avatar = $tmp[0]['file'];
+		}
 
 		$this->view_gid = unserialize($row['view_gid']);
 
-		$tmp = $db->select_from('map_user_group', array('gid', 'admin'),
-			array($DBOP['&&'], $DBOP['='], 'uid', $uid, $DBOP['='], 'pending', 0));
-
-		$groups = array(GID_ALL);
-		$this->admin_groups = array();
-
-		$this->is_admin = FALSE;
-		$this->is_locked = FALSE;
-
-		$grp_set = array();
-
-		foreach ($tmp as $val)
+		if (!isset($fields_not_need['groups']) ||
+			!isset($fields_not_need['admin_groups']) ||
+			!isset($fields_not_need['is_admin']) ||
+			!isset($fields_not_need['is_locked']))
 		{
-			$groups[] = $val['gid'];
-			if ($val['admin'])
-				$this->admin_groups[] = $val['gid'];
+			$tmp = $db->select_from('map_user_group', array('gid', 'admin'),
+				array($DBOP['&&'], $DBOP['='], 'uid', $uid, $DBOP['='], 'pending', 0));
 
-			$grp_set[$val['gid']] = 1;
+			$groups = array(GID_ALL);
+			$this->admin_groups = array();
 
-			if ($val['gid'] == GID_ADMIN)
-				$this->is_admin = TRUE;
+			$this->is_admin = FALSE;
+			$this->is_locked = FALSE;
 
-			if ($val['gid' == GID_LOCK])
-				$this->is_locked = TRUE;
-		}
+			$grp_set = array();
 
-		for ($i = 0; $i < count($groups); $i ++)
-		{
-			$tmp = $db->select_from('user_groups', 'pgid',
-				array($DBOP['='], 'id', $groups[$i]));
-			if (count($tmp) != 1)
-				continue;
-			$tmp = $tmp[0]['pgid'];
-			if (!isset($grp_set[$tmp]))
+			foreach ($tmp as $val)
 			{
-				array_push($groups, $tmp);
-				$grp_set[$tmp] = 1;
+				$groups[] = $val['gid'];
+				if ($val['admin'])
+					$this->admin_groups[] = $val['gid'];
 
-				if ($tmp == GID_LOCK)
+				$grp_set[$val['gid']] = 1;
+
+				if ($val['gid'] == GID_ADMIN)
+					$this->is_admin = TRUE;
+
+				if ($val['gid' == GID_LOCK])
 					$this->is_locked = TRUE;
 			}
-		}
 
-		$this->groups = $groups;
+			for ($i = 0; $i < count($groups); $i ++)
+			{
+				$tmp = $db->select_from('user_groups', 'pgid',
+					array($DBOP['='], 'id', $groups[$i]));
+				if (count($tmp) != 1)
+					continue;
+				$tmp = $tmp[0]['pgid'];
+				if (!isset($grp_set[$tmp]))
+				{
+					array_push($groups, $tmp);
+					$grp_set[$tmp] = 1;
+
+					if ($tmp == GID_LOCK)
+						$this->is_locked = TRUE;
+				}
+			}
+
+			$this->groups = $groups;
+		}
 	}
 }
 
@@ -124,42 +140,42 @@ $user = NULL;
 /**
  * check user login and initialize $user structure
  * @global User $user
+ * @param string|NULL $username the user name, or NULL if read from cookie
+ * @param string|NULL $password the password in plain text, or NULL if read from cookie
  * @param int $cookie_time see cookie_set() in functions.php
  * @return bool whether login successfully
  */
-function user_check_login($cookie_time = NULL)
+function user_check_login($username = NULL, $password = NULL, $cookie_time = NULL)
 {
 	global $user, $db, $DBOP, $action;
 	if ($user)
 		return TRUE;
-	if (isset($action) && $action == 'login')
+	if (is_string($username) && is_string($password))
 	{
-		if (!isset($_POST['username']) || !isset($_POST['password']))
+		if (!user_check_name($username))
 			return FALSE;
-		$_POST['password'] .= $_POST['username'];
-		if (!user_check_name($_POST['username']))
-			return FALSE;
+		$password .= $username;
 
 		$row = $db->select_from('users', array('id', 'passwd'),
-			array($DBOP['=s'], 'username', $_POST['username']));
+			array($DBOP['=s'], 'username', $username));
 		if (count($row) != 1)
 			return FALSE;
 
 		$row = $row[0];
-		$pwd_chk = user_check_passwd($_POST['password'], $row['passwd']);
+		$pwd_chk = _user_check_passwd($password, $row['passwd']);
 		if (!$pwd_chk)
 			return FALSE;
 		if ($pwd_chk != $row['passwd'])
 			$db->update_data('users', array('passwd' => $pwd_chk),
 				array($DBOP['='], 'id', $row['id']));
 
-		$salt = user_make_salt();
+		$salt = _user_make_salt();
 
 		$db->update_data('users', array('salt' => $salt),
 			array($DBOP['='], 'id', $row['id']));
 
 		cookie_set('uid', $row['id'], $cookie_time);
-		cookie_set('password', user_make_passwd($salt . $pwd_chk),
+		cookie_set('password', _user_make_passwd($salt . $pwd_chk),
 			$cookie_time);
 
 		$uid = $row['id'];
@@ -176,7 +192,7 @@ function user_check_login($cookie_time = NULL)
 			return FALSE;
 		$row = $row[0];
 
-		if ($password != user_make_passwd($row['salt'] . $row['passwd']))
+		if ($password != _user_make_passwd($row['salt'] . $row['passwd']))
 			return FALSE;
 
 	}
@@ -195,9 +211,9 @@ function user_check_login($cookie_time = NULL)
 function user_logout()
 {
 	global $user, $db, $DBOP;
-	if ($user)
+	if (user_check_login())
 	{
-		$db->update_data('users', array('salt' => user_make_salt()),
+		$db->update_data('users', array('salt' => _user_make_salt()),
 			array($DBOP['='], 'id', $user->id));
 		$user = NULL;
 	}
@@ -205,24 +221,26 @@ function user_logout()
 	cookie_set('password', NULL, -1);
 }
 
-define('PASSWD_ENCRYPTION_VERSION', '01');
+define('_USER_PASSWD_ENCRYPTION_VERSION', '01');
 
 /**
- * FIXME: some functions are private, please 加下划线
+ * @ignore
+ */
+/*
  * check user password
  * @param string $passwd plain password
  * @param string $passwd_encr encrypted password read from database
  * @return NULL|string return the newest password as string if checking successfully, or NULL otherwise
  */
-function user_check_passwd($passwd, $passwd_encr)
+function _user_check_passwd($passwd, $passwd_encr)
 {
 	$pos = strpos($passwd_encr, ':');
 	$version = substr($passwd_encr, 0, $pos);
-	$func = 'user_make_passwd_v' . $version;
+	$func = '_user_make_passwd_v' . $version;
 	$ret = $func($passwd);
 	if ($ret != substr($passwd_encr, $pos + 1))
 		return NULL;
-	return user_make_passwd($passwd);
+	return _user_make_passwd($passwd);
 }
 
 /**
@@ -240,27 +258,24 @@ function user_check_name($name)
 /**
  * @ignore
  */
-function user_make_passwd_v01($passwd)
+function _user_make_passwd_v01($passwd)
 {
 	return sha1(md5($passwd) . $passwd . sha1($passwd));
 }
 
 /**
- * encrypt the password
- * @param string $passwd original password
- * @return string encrypted password
+ * @ignore
  */
-function user_make_passwd($passwd)
+function _user_make_passwd($passwd)
 {
-	$func = 'user_make_passwd_v' . PASSWD_ENCRYPTION_VERSION;
-	return PASSWD_ENCRYPTION_VERSION . ':' . $func($passwd);
+	$func = '_user_make_passwd_v' . _USER_PASSWD_ENCRYPTION_VERSION;
+	return _USER_PASSWD_ENCRYPTION_VERSION . ':' . $func($passwd);
 }
 
 /**
- * return a highly unpredictable string
- * @return string
+ * @ignore
  */
-function user_make_salt()
+function _user_make_salt()
 {
 	return uniqid(mt_rand(), TRUE);
 }
@@ -278,6 +293,40 @@ function user_get_id_by_name($name)
 	if (count($row) == 1)
 		return $row[0]['id'];
 	return FALSE;
+}
+
+$_user_checker_id = tf_register_checker('user_check_name_string_output');
+
+/**
+ * check whether the user name is a valid one
+ * @param string $name user name
+ * @return string a human readable string describing the result
+ */
+function user_check_name_string_output($name)
+{
+	if (strlen($name) < USERNAME_LEN_MIN)
+		return __('user name should not be shorter than %d characters', USERNAME_LEN_MIN);
+	if (strlen($name) > USERNAME_LEN_MIN)
+		return __('user name should not be longer than %d characters', USERNAME_LEN_MAX);
+	if (count(preg_grep('#^[a-zA-Z][a-zA-Z0-9_.]*$#', array($name))) != 1)
+		return __('user name should begin with a letter and only contain letters, digits, dots(.) or underlines(_)');
+	if (user_get_id_by_name($name))
+		return __('user name %s already exists', $name);
+	return __('OK');
+}
+
+/**
+ * get user register form fields
+ * @return string register form fields in HTML
+ */
+function user_register_get_form_fields()
+{
+	$str = 
+		tf_get_form_input_with_checker(__('User name'), 'username', $_user_checker_id) . 
+		tf_get_form_input(__('Real name'), 'realname') .
+		tf_get_form_input(__('Nick name'), 'nickname') .
+		tf_get_form_passwd_with_verifier('password') .
+		tf_get_form_input(),
 }
 
 /**
@@ -303,7 +352,7 @@ function user_add($value, $passwd)
 			throw new Exc_inner(__('not enough parameters passed to user_add()'));
 		$val[$v] = $value[$v];
 	}
-	$val['passwd'] = user_make_passwd($passwd);
+	$val['passwd'] = _user_make_passwd($passwd);
 	$val['view_gid'] = serialize(array());
 	$val['reg_time'] = time();
 	$val['reg_ip'] = get_remote_addr();
@@ -331,7 +380,7 @@ function user_del($uid)
 		array($DBOP['||'],
 			$DBOP['='], 'uid_snd', $uid,
 			$DBOP['='], 'uid_rcv', $uid));
-	// TODO: dicussion
+	$db->delete_item('');
 }
 
 /**
@@ -354,10 +403,10 @@ function user_chpasswd($uid, $oldpwd, $newpwd)
 	$oldpwd .= $row['username'];
 	$newpwd .= $row['username'];
 
-	if (!user_check_passwd($oldpwd, $row['passwd']))
+	if (!_user_check_passwd($oldpwd, $row['passwd']))
 		return FALSE;
 
-	$db->update_data('users', array('passwd' => user_make_passwd($newpwd)),
+	$db->update_data('users', array('passwd' => _user_make_passwd($newpwd)),
 		$where);
 }
 
@@ -396,16 +445,18 @@ function user_update_statistics($uid, $field, $delta = 1)
 {
 	global $db, $DBOP;
 	$VAL_SET = array('submit', 'ac', 'unac', 'ce');
-	$val = array();
-	foreach ($VAL_SET as $v)
-		if (isset($filed[$v]))
-			$val[$v] = $field[$v];
+	$val = array_intersect($field, $VAL_SET);
 
 	if (!count($val))
 		return;
 
+	foreach ($val as $k => $v)
+		$val[$k] = 'cnt_' . $v;
+
 	$where = array($DBOP['='], 'id' ,$uid);
+
 	$val = $db->select_from('users', $val, $where);
+
 	if (!count($val))
 		throw new Exc_inner(__('user_increase_statistics: uid %d does not exist', $uid));
 

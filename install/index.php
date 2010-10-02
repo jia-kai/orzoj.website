@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Tue Sep 28 15:58:08 2010 +0800
+ * $Date: Sat Oct 02 11:32:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,6 +34,7 @@ function conf_file_generate($db_layer,$db_host,$db_port,$db_username,$db_passwor
 	$db_password = addslashes($db_password);
 	$db_name = addslashes($db_name);
 	$table_prefix = addslashes($table_prefix);
+	$website_root = addslashes(urlencode(rtrim($website_root, '/') . '/'));
 	$str = <<<EOF
 <?php
 \$db_type = '$db_layer';
@@ -43,6 +44,7 @@ function conf_file_generate($db_layer,$db_host,$db_port,$db_username,$db_passwor
 \$db_password = '$db_password';
 \$db_dbname = '$db_name';
 \$table_prefix = '$table_prefix';
+\$website_root = '$website_root';
 EOF;
 	$fptr = fopen("config.php", "w");
 	if ($fptr)
@@ -85,14 +87,15 @@ case 1:
 </head>
 <body>
 <form name="install" method="post" action="?step=2">
-Database Type:<select name="db_layer"><option value="mysql">MySQL(&gt;5.0)</option><option value="postgresql">PostgreSQL</option></select>More database layer is around the cornor<br />
-Database Host Address:<input name="db_host" type="text"><br />
-Database Host Port:<input name="db_port" type="text"><br />
-Database Username:<input name="db_username" type="text"><br />
-Database Password:<input name="db_password" type="password"><br />
-Database Name:<input name="db_name" type="text"><br />
-Table Prefix:<input name="table_prefix" type="text"><br />
-<input name="submit" type="submit" value="Go to the next step">
+Database Type:<select name="db_layer"><option value="mysql">MySQL(&gt;5.0)</option><option value="postgresql">PostgreSQL</option></select><br />
+Database Host Address:<input name="db_host" type="text" /><br />
+Database Host Port:<input name="db_port" type="text" /><br />
+Database Username:<input name="db_username" type="text" /><br />
+Database Password:<input name="db_password" type="password" /><br />
+Database Name:<input name="db_name" type="text" /><br />
+Table Prefix:<input name="table_prefix" type="text" /><br />
+Website Root:<input name="website_root" type="text" value="/orzoj" /><br />
+<input name="submit" type="submit" value="Go to the next step" />
 </form>
 <?php
 	break;

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: plugin.php
- * $Date: Thu Sep 30 21:53:00 2010 +0800
+ * $Date: Fri Oct 01 15:22:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -74,17 +74,14 @@ function _filter_changed($hook_name)
 /**
  * add a filter (filter_add() should be called by plugins)
  * @param string $hook_name name of hook called by filter_apply(@see filter_apply) and do_action(@see do_action)
- * @param string $file the file where the called function is defined (usually passing __FILE__)
  * @param callback $func the function to be called
  * @param int $priority priority of the function. The smaller, the earlier to be executed
  * @return void
  */
-function filter_add($hook_name, $file, $func, $priority = 0)
+function filter_add($hook_name, $func, $priority = 0)
 {
-	$file = substr(realpath($file), strlen($root_path));
 	global $_filters;
 	$thisfilter = array(
-		'file' => $file,
 		'func' => $func,
 		'priority' => $priority,
 	);
@@ -150,10 +147,7 @@ function filter_apply($hook_name, $value)
 	$args = array_slice(func_get_args(), 1);
 	if (isset($_filters[$hook_name]))
 		foreach ($_filters[$hook_name] as $id => $filter)
-		{
-			require_once($root_path . $filter['file']);
 			$args[0] = call_user_func_array($filter['func'], $args);
-		}
 	return $args[0];
 }
 
@@ -170,10 +164,7 @@ function filter_apply_no_iter($hook_name)
 	$args = array_slice(func_get_args(), 1);
 	if (isset($_filters[$hook_name]))
 		foreach ($_filters[$hook_name] as $id => $filter)
-		{
-			require_once($root_path . $filter['file']);
 			call_user_func_array($filter['func'], $args);
-		}
 }
 
 

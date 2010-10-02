@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Wed Sep 29 15:32:15 2010 +0800
+ * $Date: Fri Oct 01 15:53:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,23 +31,32 @@ if (!defined('IN_ORZOJ'))
 
 require_once $includes_path . 'db/dbal.php';
 
+/**
+ * @ignore
+ */
 function _mysql_escape_string($string)
 {
 	return '\'' . mysql_escape_string($string) . '\'';
 }
 
+/**
+ * @ignore
+ */
 function _mysql_escape_add_brck($str)
 {
 	return '(' . $str . ')';
 }
 
+/**
+ * @ignore
+ */
 function _mysql_escape_col_name($str)
 {
 	return '`' . $str . '`';
 }
 
 /**
- * where clause operators
+ * @ignore
  */
 class _Mysql_opt
 {
@@ -83,6 +92,9 @@ $DBOP['!'] = new _Mysql_opt(1, '! ', '_mysql_escape_add_brck');
 
 unset($tmp);
 
+/**
+ * @ignore
+ */
 function _mysql_build_where_clause($whereclause)
 {
 	if (!is_array($whereclause))
@@ -471,7 +483,7 @@ class Dbal_mysql extends Dbal
 	 */
 	private function fetch_row($resource)
 	{
-		return @mysql_fetch_array($resource);
+		return @mysql_fetch_array($resource, MYSQL_ASSOC);
 	}
 
 	/**
