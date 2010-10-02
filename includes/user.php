@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sat Oct 02 12:15:16 2010 +0800
+ * $Date: Sat Oct 02 21:53:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -154,6 +154,7 @@ function user_check_login($username = NULL, $password = NULL, $cookie_time = NUL
 	{
 		if (!user_check_name($username))
 			return FALSE;
+		$username = strtolower($username);
 		$password .= $username;
 
 		$row = $db->select_from('users', array('id', 'passwd'),
@@ -318,41 +319,57 @@ function user_check_name_string_output($name)
 /**
  * get user register form fields
  * @return string register form fields in HTML
+ * @see user_register
  */
 function user_register_get_form_fields()
 {
+	global $db;
+	foreach (array('plang', 'wlang') as $lang)
+	{
+		$tmp = $db->select_from($lang, array('id', 'name'));
+		$$lang = array();
+		foreach ($tmp as $row)
+			$$lang[$row['name']] = $row['id'];
+	}
 	$str = 
-		tf_get_form_input_with_checker(__('User name'), 'username', $_user_checker_id) . 
-		tf_get_form_input(__('Real name'), 'realname') .
-		tf_get_form_input(__('Nick name'), 'nickname') .
+		tf_get_form_text_input(__('User name'), 'username', $_user_checker_id) . 
 		tf_get_form_passwd_with_verifier('password') .
-		tf_get_form_input(),
+		tf_get_form_text_input(__('Real name'), 'realname') .
+		tf_get_form_text_input(__('Nick name'), 'nickname') .
+		tf_get_form_text_input(__('E-mail', 'email')) .
+		tf_get_avatar_browser(__('Avatar', 'avatar')) .
+		tf_get_form_select(__('Preferred programming language'), 'plang', $plang) .
+		tf_get_form_select(__('Preferred website language'), 'wlang', $wlang) .
+		tf_get_form_long_text_input(__('Self description'), 'self_desc');
+	return filter_apply('after_user_register_form', $str);
 }
 
 /**
- * add a user
- * @param array $value see /install/tables.php, the 'users' table
- * @param string $passwd plain password
- * @return int user id, or 0 if user name exists or invalid user name
+ * register a user, using the data posted by the user register form
+ * @return int|string user id, or a string describing the reason of failure
+ * @see user_register_get_form_fields
  */
-function user_add($value, $passwd)
+function user_register()
 {
-	if (!user_check_name($value['username']))
-		return 0;
-	if (user_get_id_by_name($value['username']))
-		return 0;
-	$passwd .= $value['username'];
-	global $db, $DBOP;
-	$VAL_SET = array('username', 'realname', 'aid',
-		'email', 'self_desc', 'tid', 'plang', 'wlang');
+	$VAL_SET = array('username', 'password', 'realname', 'nickname', 'email',
+		'avatar', 'plang', 'wlang', 'self_desc');
 	$val = array();
 	foreach ($VAL_SET as $v)
 	{
-		if (!isset($value[$v]))
-			throw new Exc_inner(__('not enough parameters passed to user_add()'));
-		$val[$v] = $value[$v];
+		if (!isset($_POST[$v]))
+			return 'incomplete post';
+		$val[$v] = $_POST[$v];
 	}
-	$val['passwd'] = _user_make_passwd($passwd);
+	if (!user_check_name($_POST['username']))
+		return __('invalid user name');
+	if (user_get_id_by_name($_POST['username']))
+		return __('user name already exists');
+
+	$val['username'] = strtolower($val['username']);
+	$val['password'] .= $val['username'];
+	$val['passwd'] = _user_make_passwd($val['password']);
+	unset($val['password']);
+	$val['self_desc'] = htmlencode($val['self_desc']);
 	$val['view_gid'] = serialize(array());
 	$val['reg_time'] = time();
 	$val['reg_ip'] = get_remote_addr();

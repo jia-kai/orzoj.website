@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sat Oct 02 12:15:27 2010 +0800
+ * $Date: Sat Oct 02 21:54:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -63,7 +63,7 @@ $tables = array(
 			'view_gid' => array('type' => 'TEXT'),
 				// serialized array of group id who can view the user's source
 			'theme_id' => array('type' => 'INT32'), // current website theme
-			'tid' => array('type' => 'INT32'), // team id
+			'tid' => array('type' => 'INT32', 'default' => 0), // team id
 			'reg_time' => array('type' => 'INT64'), // register time
 			'reg_ip' => array('type' => 'TEXT'), // register ip
 			'last_login_time' => array('type' => 'INT64', 'default' => 0),
@@ -275,7 +275,8 @@ $tables = array(
 	'wlang' => array( // website language
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'name' => array('type' => 'TEXT200') // language name, also the file name in /contents/lang/
+			'name' => array('type' => 'TEXT200'), // language name
+			'file' => array('type' => 'TEXT') // the .mo file name in /contents/lang/
 		),
 		'primary_key' => 'id',
 		'index' => array(

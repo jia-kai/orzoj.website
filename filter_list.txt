@@ -22,3 +22,8 @@ after_read_message: (no iter)
 after_delete_message: (no iter)
 	file: includes/message.php
 	param: int message id
+
+after_user_register_form:
+	file: includes/user.php
+	param: string register form in HTML
+	executed when the user register form is just generated

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Sat Oct 02 12:12:11 2010 +0800
+ * $Date: Sat Oct 02 21:23:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,39 +26,40 @@
 
 
 /**
- * register a checker to be used by tf_get_form_input_with_checker()
+ * register a checker to be used by tf_get_form_text_input()
  * @param callback $func the checker function, which takes a string of user input as argument
  *		and return the checking result as a string
  * @return int checker id
- * @see tf_get_form_input_with_checker
+ * @see tf_get_form_text_input
  */
 function tf_register_checker($func)
 {
 }
 
 /**
- * get a form input field of text type with a checker
+ * get a form input field of text type 
  * @param string $prompt the prompt (the text displayed with this field)
  * @param string $post_name the index in the $_POST array containing the user input
- * @param int $checked the id of checker returned by tf_register_checker
+ * @param int|NULL $checked the id of checker returned by tf_register_checker, or NULL if no checker needed
  * @return string the HTML code of this field
  * @see tf_register_checker
  */
-function tf_get_form_input_with_checker($prompt, $post_name, $checker)
+function tf_get_form_text_input($prompt, $post_name, $checker = NULL)
 {
 }
 
 /**
- * get a form input field of text type
- * @see tf_get_form_input_with_checker
+ * get a form input field for inputing long text
+ * @see tf_get_form_text_input
  */
-function tf_get_form_input($prompt, $post_name)
+function tf_get_form_long_text_input($prompt, $post_name)
 {
 }
+
 
 /**
  * get an avatar browser, which will post the id of chosen avatar with $post_name
- * @see tf_get_form_input_with_checker
+ * @see tf_get_form_text_input
  */
 function tf_get_form_avatar_browser($prompt, $post_name)
 {
@@ -66,9 +67,20 @@ function tf_get_form_avatar_browser($prompt, $post_name)
 
 /**
  * get a poassword form input, which requires a user confirm of the password
- * @see tf_get_form_input_with_checker
+ * @see tf_get_form_text_input
  */
 function tf_get_form_passwd_with_verifier($post_name)
+{
+}
+
+/**
+ * get a selction list
+ * @param string $prompt
+ * @param string $post_name
+ * @param array $options in the format array(&lt;display name&rt; => &lt;option value&rt;)
+ * @return string the HTML code
+ */
+function tf_get_form_select($prompt, $post_name, $options)
 {
 }
 
