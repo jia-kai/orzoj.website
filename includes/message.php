@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: message.php
- * $Date: Sun Oct 03 18:08:37 2010 +0800
+ * $Date: Sun Oct 03 19:12:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -54,11 +54,9 @@ class Message
 	}
 }
 
-// TODO: use get form and parse $_POST mechanism
-
 /**
- * Send a message from user to user, using the data posted by the message send form
- * @return int message id or throw an Exception Exc_runtime containning error info.
+ * send a message using data posted
+ * @return void
  */
 function message_send()
 {
@@ -81,7 +79,8 @@ function message_send()
 }
 
 /**
- *
+ * get a form for sending messages
+ * @return string
  */
 function message_send_get_form()
 {

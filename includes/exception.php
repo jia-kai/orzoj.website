@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: exception.php
- * $Date: Sun Oct 03 15:33:43 2010 +0800
+ * $Date: Sun Oct 03 17:10:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,10 +52,14 @@ class Exc_inner extends Exc_orzoj
 }
 
 /**
- * runtime error, often thrown by plugins
+ * runtime exceptions (often errors caused by user, not unexpected exceptions)
  */
 class Exc_runtime extends Exc_orzoj
 {
+	public function msg()
+	{
+		return $this->getMessage();
+	}
 }
 
 

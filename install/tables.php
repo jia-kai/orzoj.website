@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sat Oct 02 21:54:05 2010 +0800
+ * $Date: Sun Oct 03 19:07:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -411,8 +411,8 @@ $tables = array(
 			'subject' => array('type' => 'TEXT'),
 			'content' => array('type' => 'TEXT'),
 			'is_read' => array('type' => 'INT32', 'default' => 0),
-			'rm_snd' => array('type' => 'INT32'), // whether the message is deleted by sender
-			'rm_rcv' => array('type' => 'INT32') // whether the message is deleted by receiver
+			'rm_snd' => array('type' => 'INT32', 'default' => 0), // whether the message is deleted by sender
+			'rm_rcv' => array('type' => 'INT32', 'default' => 0) // whether the message is deleted by receiver
 		),
 		'primary_key' => 'id',
 		'index' => array(

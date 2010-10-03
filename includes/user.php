@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sun Oct 03 15:51:04 2010 +0800
+ * $Date: Sun Oct 03 19:09:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,6 +37,7 @@ class User
 		$avatar, // avatar file name, NULL if unavailable
 		$email, $self_desc, $tid, $plang, $wlang,
 		$view_gid, // array of gid who can view the user's source
+		$theme_id,
 		$reg_time, $reg_ip, $last_login_time, $last_login_ip,
 		$cnt_submit, $cnt_ac, $cnt_unac, $cnt_ce,
 		$groups, // array of id of groups that the user blongs to
@@ -47,11 +48,12 @@ class User
 	/**
 	 * set attributes in this class
 	 * @param int $uid user id
-	 * @param NULL|aray $fields_not_need the attributes not needed to be set
+	 * @param bool $set_grp_info whether to set $this->groups, $this->admin_groups, $this->is_admin, $this->is_locked
+	 *		(because these operations may take some time)
 	 * @return void
 	 * @exception Exc_inner if user id does not exist
 	 */
-	function set_val($uid, $fields_not_need = NULL)
+	function set_val($uid, $set_grp_info = TRUE)
 	{
 		global $db, $DBOP;
 		$row = $db->select_from('users', NULL,
@@ -60,35 +62,23 @@ class User
 			throw new Exc_inner(__('user id %d does not exist', $uid));
 		$row = $row[0];
 
-		$tmp = $fields_not_need;
-		$fields_not_need = array();
-		if (is_array($tmp))
-			foreach ($tmp as $f)
-				$fields_not_need[$f] = NULL;
-
 		$VAL_SET = array('id', 'username', 'realname', 'nickname',
-			'email', 'self_desc', 'tid', 'plang', 'wlang',
+			'email', 'self_desc', 'tid', 'plang', 'wlang', 'theme_id',
 			'reg_time', 'reg_ip', 'last_login_time', 'last_login_ip',
 			'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce');
 
 		foreach ($VAL_SET as $val)
 			$this->$val = $row[$val];
 
-		if (!isset($fields_not_need['avatar']))
-		{
-			$tmp = $db->select_from('user_avatars', 'file', array($DBOP['='], 'id', $row['aid']));
-			if (count($tmp) != 1)
-				$this->avatar = NULL;
-			else
-				$this->avatar = $tmp[0]['file'];
-		}
+		$tmp = $db->select_from('user_avatars', 'file', array($DBOP['='], 'id', $row['aid']));
+		if (count($tmp) != 1)
+			$this->avatar = NULL;
+		else
+			$this->avatar = $tmp[0]['file'];
 
 		$this->view_gid = unserialize($row['view_gid']);
 
-		if (!isset($fields_not_need['groups']) ||
-			!isset($fields_not_need['admin_groups']) ||
-			!isset($fields_not_need['is_admin']) ||
-			!isset($fields_not_need['is_locked']))
+		if ($set_grp_info)
 		{
 			$tmp = $db->select_from('map_user_group', array('gid', 'admin'),
 				array($DBOP['&&'], $DBOP['='], 'uid', $uid, $DBOP['='], 'pending', 0));
@@ -151,7 +141,7 @@ function user_check_login($cookie_time = NULL)
 	static $result = NULL;
 	if (is_bool($result))
 		return $result;
-	if (isset($_POST['username'] && isset($_POST['password'])))
+	if (isset($_POST['username']) && isset($_POST['password']))
 	{
 		filter_apply_no_iter('before_user_login');
 		$username = $_POST['username'];
@@ -216,7 +206,7 @@ function user_check_login($cookie_time = NULL)
  * get user login form
  * @return string HTML login form
  */	
-function user_get_login_form()
+function user_check_login_get_form()
 {
 	$str = 
 		tf_form_get_text_input(__('Username:'), 'username') .
@@ -307,6 +297,7 @@ function _user_make_salt()
  */
 function user_get_id_by_name($name)
 {
+	$name = strtolower($name);
 	global $db, $DBOP;
 	$row = $db->select_from('users', 'id',
 		array($DBOP['=s'], 'username', $name));
@@ -335,38 +326,49 @@ function user_check_name_string_output($name)
 	return __('OK');
 }
 
+
 /**
- * get user register form fields
- * @return string register form fields in HTML
- * @see user_register
+ * @ignore
  */
-function user_register_get_form_fields()
+function _user_init_plang_wlang()
 {
-	global $db;
 	foreach (array('plang', 'wlang') as $lang)
 	{
 		$tmp = $db->select_from($lang, array('id', 'name'));
-		$$lang = array();
+		$var = '_user_' . $lang;
+		global $$var = array();
 		foreach ($tmp as $row)
-			$$lang[$row['name']] = $row['id'];
+			$$var[$row['name']] = $row['id'];
 	}
+}
+
+/**
+ * get user register form 
+ * @return string register form fields in HTML
+ * @see user_register
+ */
+function user_register_get_form()
+{
+	_user_init_plang_wlang();
+	global $db, $_user_plang, $_user_wlang;
 	$str = 
 		tf_form_get_text_input(__('Username (for loggin in):'), 'username', $_user_checker_id) . 
-		tf_form_get_passwd_with_verifier('password') .
+		tf_form_get_passwd(__('Password:'), 'password', __('Confirm password:')) .
 		tf_form_get_text_input(__('Real name (only seen by the administrator):'), 'realname') .
-		tf_form_get_text_input(__('Nick name (display name):'), 'nickname') .
-		tf_form_get_text_input(__('E-mail:', 'email')) .
-		tf_form_get_avatar_browser(__('Avatar:', 'avatar')) .
-		tf_form_get_select(__('Preferred programming language:'), 'plang', $plang) .
-		tf_form_get_select(__('Preferred website language:'), 'wlang', $wlang) .
+		tf_form_get_text_input(__('Nickname (display name):'), 'nickname') .
+		tf_form_get_text_input(__('E-mail:'), 'email') .
+		tf_form_get_avatar_browser(__('Avatar:'), 'avatar') .
+		tf_form_get_select(__('Preferred programming language:'), 'plang', $_user_plang) .
+		tf_form_get_select(__('Preferred website language:'), 'wlang', $_user_wlang) .
 		tf_form_get_long_text_input(__('Self description:'), 'self_desc');
 	return filter_apply('after_user_register_form', $str);
 }
 
 /**
  * register a user, using the data posted by the user register form
- * @return int|string user id, or a string describing the reason of failure
+ * @return int user id
  * @see user_register_get_form_fields
+ * @exception Exc_runtime if failed
  */
 function user_register()
 {
@@ -376,13 +378,13 @@ function user_register()
 	foreach ($VAL_SET as $v)
 	{
 		if (!isset($_POST[$v]))
-			return 'incomplete post';
+			throw new Exc_runtime('incomplete post');
 		$val[$v] = $_POST[$v];
 	}
 	if (!user_check_name($_POST['username']))
-		return __('invalid username');
+		throw new Exc_runtime(__('invalid username'));
 	if (user_get_id_by_name($_POST['username']))
-		return __('username already exists');
+		throw new Exc_runtime(__('username already exists'));
 
 	$val['username'] = strtolower($val['username']);
 	$val['password'] .= $val['username'];
@@ -445,19 +447,42 @@ function user_chpasswd($uid, $oldpwd, $newpwd)
 		$where);
 }
 
+
 /**
- * update user info. If such user does not exist, nothing happens
- * @param int $uid user id
- * @param array $value array of values to be updated, whose valid fields are in
- *			array('realname', 'aid', 'email', 'self_desc', 'tid', 'plang', 'wlang',
- *				'view_gid')
+ * get a form for updating user information
+ * @return string
+ */
+function user_update_info_get_form()
+{
+	if (!user_check_login())
+		throw new Exc_runtime(__('Not logged in'));
+	_user_init_plang_wlang();
+	global $user, $_user_plang, $_user_wlang;
+	$str = 
+		tf_form_get_text_input(__('Real name'), 'realname', $user->realname) .
+		tf_form_get_text_input(__('Nickname'), 'nickname', $user->nickname) .
+		tf_form_get_text_input(__('E-mail:'), 'email', $user->email) .
+		tf_form_get_avatar_browser(__('Avatar:'), 'avatar') .
+		tf_form_get_select(__('Preferred programming language:'), 'plang', $_user_plang, $user->plang) .
+		tf_form_get_select(__('Preferred website language:'), 'wlang', $_user_wlang, $user->wlang) .
+		tf_form_get_theme_browser(__('Preferred website theme:'), 'theme_id', $user->theme_id) .
+		tf_form_get_gid_selector(__('User groups who can view your source:'), 'view_gid', $user->view_gid) .
+		tf_form_get_team_selector(__('Your team:'), 'tid', $user->tid) .
+		tf_form_get_long_text_input(__('Self description:'), 'self_desc');
+
+	return filter_apply('after_user_update_info_form', $str);
+}
+
+/**
  * @return void
  */
-function user_update_info($uid, $value)
+function user_update_info()
 {
-	global $db, $DBOP;
-	$VAL_SET = array('realname', 'aid', 'email', 'self_desc', 'tid', 'plang', 'wlang',
-		'view_gid');
+	if (!user_check_login())
+		throw new Exc_runtime(__('Not logged in'));
+	global $db, $DBOP, $user;
+	$VAL_SET = array('realname', 'nickname', 'email', 'avatar', 'plang', 'wlang', 'theme_id',
+		'', );
 
 	$val = array();
 	foreach ($VAL_SET as $v)

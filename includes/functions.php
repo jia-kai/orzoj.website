@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 02 11:36:40 2010 +0800
+ * $Date: Sun Oct 03 19:09:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -213,6 +213,83 @@ function get_page_url($file)
 	$file = realpath($file);
 	return $website_root . substr($file, strlen($root_path));
 }
+
+/**
+ * check html tags
+ * @param string $text 
+ * @return bool whether $text is valid HTML
+ */
+function html_checktags($text)
+{
+	for ($cnt = 0, $i = 0, $len = strlen($text); $i < $len; $i ++)
+		if ($text[$i] == '<')
+			$cnt ++;
+		else if ($text[$i] == '>')
+			if ((-- $cnt) < 0)
+				return FALSE;
+	if ($cnt)
+		return FALSE;
+	$single_tags = array('meta','img','br','link','area');
+	preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $text, $res);
+	$tags_opened = array();
+	$tmp = $res[1];
+	foreach ($tmp as $v)
+	{
+		$v = strtolower($v);
+		if (!in_array($v, $single_tags))
+		{
+			if (isset($tags_opened[$v]))
+				$tags_opened[$v] ++;
+			else $tags_opened[$v] = 1;
+		}
+	}
+	preg_match_all('#</([a-z]+)>#U', $text, $res);
+	$tags_closed = array();
+	$tmp = $res[1];
+	foreach ($tmp as $v)
+	{
+		$v = strtolower($v);
+		if (in_array($v, $single_tags))
+			return FALSE;
+		if (isset($tags_closed[$v]))
+			$tags_closed[$v] ++;
+		else $tags_closed[$v] = 1;
+	}
+
+	f
+
+	foreach ($openedtags as $key => $v)
+	{
+		$openedtags[$key] = strtolower($v);
+	}
+	preg_match_all('#</([a-z]+)>#U',$text,$rs);
+	$closedtags = $rs[1];
+	foreach ($closedtags as $key => $v)
+	{
+		$closedtags[$key] = strtolower($v);
+	}
+	$openedtags = array_reverse($openedtags);
+	$len = count($openedtags);
+	for ($i=0;$i < $len;$i++)
+	{
+		if (!in_array($openedtags[$i], $single_tags))
+		{
+			if (!in_array($openedtags[$i],$closedtags))
+			{
+				if (isset($openedtags[$i+1]) && $next_tag = $openedtags[$i+1])
+				{
+					$text = preg_replace('#</'.$next_tag.'#iU','</'.$openedtags[$i].'></'.$next_tag,$text);
+				}
+				else
+				{
+					$text .= '</'.$openedtags[$i].'>';
+				}
+			}
+		}
+	}
+	return $text;
+}
+
 
 /**
  * FIXME: this function should be moved away

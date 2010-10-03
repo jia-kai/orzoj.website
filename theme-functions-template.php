@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Sun Oct 03 15:37:48 2010 +0800
+ * $Date: Sun Oct 03 17:48:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -40,7 +40,7 @@ function tf_form_register_checker($func)
  * get a form input field of text type 
  * @param string $prompt the prompt (the text displayed with this field)
  * @param string $post_name the index in the $_POST array containing the user input
- * @param int|NULL $checked the id of checker returned by tf_register_checker, or NULL if no checker needed
+ * @param int|NULL $checker the id of checker returned by tf_register_checker, or NULL if no checker needed
  * @param string|NULL $default the initial value to be displayed in the box (plain
  *		text, not HTML encoded), or NULL if not needed
  * @return string the HTML code of this field
@@ -80,21 +80,66 @@ function tf_form_get_editor_data($editor_name)
 {
 }
 
+/**
+ * get a theme browser, which will post the id of chosen theme to $post_name
+ * @return string
+ */
+function tf_form_get_theme_browser($prompt, $post_name, $default = NULL)
+{
+}
+
+/**
+ * get a team selector
+ * @param int|NULL $default default team id if not NULL
+ * @see tf_form_get_team_selector_value
+ */
+function tf_form_get_team_selector($prompt, $selector_name, $default = NULL)
+{
+}
+
+/**
+ * @return int selected team id, or 0 if none
+ * @see tf_form_get_team_selector
+ */
+function tf_form_get_team_selector_value($selector_name)
+{
+}
+
+/**
+ * get a selector for group id
+ * @param string $prompt
+ * @param string $selector_name
+ * @param NULL|array $default if not NULL, the array of default group ids
+ * @return string
+ * @see tf_form_get_gid_selector_value
+ */
+function tf_form_get_gid_selector($prompt, $selector_name, $default = NULL)
+{
+}
+
+/**
+ * get the value of a gid selector
+ * @return array selected group ids
+ * @see tf_form_get_gid_selector
+ */
+function tf_form_get_gid_selector_value($selector_name)
+{
+}
 
 /**
  * get an avatar browser, which will post the id of chosen avatar with $post_name
  * @see tf_form_get_text_input
  */
-function tf_form_get_avatar_browser($prompt, $post_name)
+function tf_form_get_avatar_browser($prompt, $post_name, $default = NULL)
 {
 }
 
 /**
  * get a poassword form input
- * @param bool|string $confirm_input if not FALSE, it should be the prompt for confirming password input
+ * @param NULL|string $confirm_input if not NULL, it should be the prompt for confirming password input
  * @see tf_form_get_text_input
  */
-function tf_form_get_passwd($prompt, $post_name, $confirm_input = FALSE)
+function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL)
 {
 }
 
@@ -103,9 +148,10 @@ function tf_form_get_passwd($prompt, $post_name, $confirm_input = FALSE)
  * @param string $prompt
  * @param string $post_name
  * @param array $options in the format array(&lt;display name&rt; => &lt;option value&rt;)
+ * @param string $default the value of defaultly selected option
  * @return string the HTML code
  */
-function tf_form_get_select($prompt, $post_name, $options)
+function tf_form_get_select($prompt, $post_name, $options, $default = NULL)
 {
 }
 
