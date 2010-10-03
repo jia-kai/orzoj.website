@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: message.php
- * $Date: Sun Oct 03 19:12:49 2010 +0800
+ * $Date: Sun Oct 03 19:44:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -60,8 +60,10 @@ class Message
  */
 function message_send()
 {
-	global $db;
-	$VAL_SET = array('uid_rcv', 'subject', 'content');
+	if (!user_check_login())
+		throw new Exc_runtime(__('Not logged in'));
+	global $db, $user;
+	$VAL_SET = array('uid_rcv', 'subject');
 	$val = array();
 	foreach ($VAL_SET as $v)
 	{
@@ -69,12 +71,12 @@ function message_send()
 			throw new Exc_runtime(__('incomplete post'));
 		$val[$v] = $_POST[$v];
 	}
-	if (!user_get_id_by_name($_POST['username']))
+	if (!($val['uid_rcv'] = user_get_id_by_name($val['uid_rcv'])))
 		throw new Exc_runtime(__('username does not exsists.'));
-	$val = filter_apply('before_message_send', $val);
-	$val['uid_snd'] = $_POST['username'];
+	$val['content'] = tf_form_get_editor_data('content');
+	$val['uid_snd'] = $user->id;
 	$val['time'] = time();
-	filter_apply('before_message_send', $val);
+	$val = filter_apply('before_message_send', $val);
 	$db->insert_into('messages', $val);
 }
 
@@ -87,7 +89,7 @@ function message_send_get_form()
 	$str = 
 		tf_form_get_text_input(__('Receiver:'), 'uid_rcv') .
 		tf_form_get_text_input(__('Title:'), 'subject') .
-		tf_form_get_text_input(__('Content: '), 'content');
+		tf_form_get_rich_text_editor(__('Content:'), 'content');
 	return filter_apply('after_message_send_form', $str);
 }
 

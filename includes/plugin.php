@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: plugin.php
- * $Date: Fri Oct 01 15:22:46 2010 +0800
+ * $Date: Sun Oct 03 19:36:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -75,11 +75,13 @@ function _filter_changed($hook_name)
  * add a filter (filter_add() should be called by plugins)
  * @param string $hook_name name of hook called by filter_apply(@see filter_apply) and do_action(@see do_action)
  * @param callback $func the function to be called
- * @param int $priority priority of the function. The smaller, the earlier to be executed
+ * @param int $priority priority of the function. The smaller, the earlier to be executed (must be within [-10, 10])
  * @return void
  */
 function filter_add($hook_name, $func, $priority = 0)
 {
+	if ($priority < -10 || $priority > 10)
+		throw new Exc_inner(__('invalid priority: %d', $priority));
 	global $_filters;
 	$thisfilter = array(
 		'func' => $func,

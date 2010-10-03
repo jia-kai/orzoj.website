@@ -46,6 +46,11 @@ before_user_login: (no iter)
 	param: None
 	executed when user login form is submitted, before checking username and password
 
+after_user_login: (no iter)
+	file: includes/user.php
+	param: int user id
+	executed when username and password is verified (both new user login and cookie login)
+
 after_user_update_info_form:
 	file: includes/user.php
 	param: string the form in HTML
@@ -53,11 +58,6 @@ after_user_update_info_form:
 before_user_update_info:
 	file: includes/user.php
 	param: array the value to be inserted into the database
-
-after_user_login: (no iter)
-	file: includes/user.php
-	param: int user id
-	executed when username and password is verified (both new user login and cookie login)
 
 after_post_add_form:
 	file: includes/post.php

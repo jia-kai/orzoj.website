@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sun Oct 03 19:09:22 2010 +0800
+ * $Date: Sun Oct 03 19:31:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -451,6 +451,7 @@ function user_chpasswd($uid, $oldpwd, $newpwd)
 /**
  * get a form for updating user information
  * @return string
+ * @see user_update_info
  */
 function user_update_info_get_form()
 {
@@ -474,22 +475,31 @@ function user_update_info_get_form()
 }
 
 /**
+ * update user info
  * @return void
+ * @see user_update_info_get_form
  */
 function user_update_info()
 {
 	if (!user_check_login())
 		throw new Exc_runtime(__('Not logged in'));
 	global $db, $DBOP, $user;
-	$VAL_SET = array('realname', 'nickname', 'email', 'avatar', 'plang', 'wlang', 'theme_id',
-		'', );
+	$VAL_SET = array('realname', 'nickname', 'email', 'avatar',
+		'plang', 'wlang', 'theme_id', 'self_desc');
 
 	$val = array();
 	foreach ($VAL_SET as $v)
-		if (isset($value[$v]))
-			$val[$v] = $value[$v];
+	{
+		if (!isset($_POST[$v]))
+			throw new Exc_runtime('incomplete post');
+		$val[$v] = $_POST[$v];
+	}
+	$val['view_gid'] = tf_form_get_gid_selector_value('view_gid');
+	$val['tid'] = tf_form_get_team_selector_value('tid');
 
-	$db->update_data('users', $val, array($DBOP['='], 'id', $uid));
+	$val = filter_apply('before_user_update_info', $val);
+
+	$db->update_data('users', $val, array($DBOP['='], 'id', $user->id));
 }
 
 /**

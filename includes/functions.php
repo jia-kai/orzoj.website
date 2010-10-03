@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sun Oct 03 19:09:12 2010 +0800
+ * $Date: Sun Oct 03 19:18:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -230,6 +230,7 @@ function html_checktags($text)
 	if ($cnt)
 		return FALSE;
 	$single_tags = array('meta','img','br','link','area');
+
 	preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $text, $res);
 	$tags_opened = array();
 	$tmp = $res[1];
@@ -243,6 +244,7 @@ function html_checktags($text)
 			else $tags_opened[$v] = 1;
 		}
 	}
+
 	preg_match_all('#</([a-z]+)>#U', $text, $res);
 	$tags_closed = array();
 	$tmp = $res[1];
@@ -256,38 +258,15 @@ function html_checktags($text)
 		else $tags_closed[$v] = 1;
 	}
 
-	f
+	foreach ($tags_opened as $tag => $cnt)
+	{
+		if (!isset($tags_closed[$tag]) ||
+			$tags_closed[$tag] != $cnt)
+			return FALSE;
+		unset($tags_closed[$tag]);
+	}
 
-	foreach ($openedtags as $key => $v)
-	{
-		$openedtags[$key] = strtolower($v);
-	}
-	preg_match_all('#</([a-z]+)>#U',$text,$rs);
-	$closedtags = $rs[1];
-	foreach ($closedtags as $key => $v)
-	{
-		$closedtags[$key] = strtolower($v);
-	}
-	$openedtags = array_reverse($openedtags);
-	$len = count($openedtags);
-	for ($i=0;$i < $len;$i++)
-	{
-		if (!in_array($openedtags[$i], $single_tags))
-		{
-			if (!in_array($openedtags[$i],$closedtags))
-			{
-				if (isset($openedtags[$i+1]) && $next_tag = $openedtags[$i+1])
-				{
-					$text = preg_replace('#</'.$next_tag.'#iU','</'.$openedtags[$i].'></'.$next_tag,$text);
-				}
-				else
-				{
-					$text .= '</'.$openedtags[$i].'>';
-				}
-			}
-		}
-	}
-	return $text;
+	return count($tags_closed) == 0;
 }
 
 
