@@ -9,11 +9,11 @@
 |	|-- pomo/
 |	|	|--	po.php		po reader
 |	|	|--	mo.php		mo reader
-|	|--	plugin.php		functions for handling plugins
+|	|--	plugin.php		functions for handling plugins (implemented as filter_ functions)
 |	|--	sched.php		manage scheduled tasks
 |	|--	post.php		functions for managing posts
 |	|--	theme.php		API for themes
-|	|--	user.php		check user login and permissions, and get user data
+|	|--	user.php		check user login and permissions, and get/modify user data
 |	|--	judge.php		functions for fetch judge operations
 |	|--	message.php		user-to-user messages
 |	|--	exception.php	exception definitions
@@ -61,8 +61,8 @@ theme structure:
 	|--	...				theme specific files
 
 
-for required functions for theme, see theme-functions-template.php
-
-
-all the pages accessed by user except those in install are in the top-level directory
+Note:
+	1. for required functions for theme, see theme-functions-template.php
+	2. see also filter_list.txt
+	3. all the pages accessed by user except those in install are in the top-level directory
 

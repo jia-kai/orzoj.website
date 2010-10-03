@@ -1,8 +1,7 @@
 <?php
 /* 
- * FIXME: function names
  * $File: judge.php
- * $Date: Fri Oct 01 00:04:50 2010 +0800
+ * $Date: Sun Oct 03 20:15:03 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,65 +28,59 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 /**
- * Judge info class
+ * judge info structure
  */
-class Judge_info
+class Judge
 {
 	var $id, // int
 		$name, // string
 		$status, // see /includes/const.inc.php, consts with JUDGE_STATUS_ prefix
-		$lang_sup, // array of id of supperted languages
+		$lang_sup, // array of name of supported languages
 		$detail; // array of info like 'cpu', 'mem', defined in table options:'judge_info_list'
 }
 
 /**
- * transform query answer of judges from database to a array of Judge_info
- * @param array $judge_list query answer from table : judges
- * @return array array of Judge_info
+ * get judges satisfying given conditions
+ * @param NULL|int $id if not NULL, specifies the id of the wanted judge
+ * @param NULL|bool $online only return online/offline judges if it is bool
+ * @return array array of Judge
  */
-function array2judge_info($judge_list)
+function judge_get_list($id = NULL, $online = NULL)
 {
-	$ret = array();
-	foreach ($judge_list as $key => $value)
+	global $db, $DBOP;
+	$where = NULL;
+	if (is_bool($online))
+		$where = array($DBOP['='], 'status', $online ? JUDGE_STATUS_ONLINE : JUDGE_STATUS_OFFLINE);
+	if (is_int($id))
 	{
-		$judge = new Judge_info();
-		$value = $value['value'];
-		$value = unserialize($value);
-		foreach (get_class_vars(get_class($judge)) as $var => $val)
-			$judge->$var = $value[$var];
+		$tmp = array($DBOP['&&'], $DBOP['='], 'id', $id);
+		if (is_array($where))
+			$where = array_merge($tmp, $where);
+		else $where = $tmp;
+	}
+	$judge_list = $db->select_from('judges', NULL, $where);
+
+	$ret = array();
+	foreach ($judge_list as $row)
+	{
+		$row['lang_sup'] = unserialize($row['lang_sup']);
+		$row['detail'] = unserialize($row['detail']);
+		$judge = new Judge();
+		foreach((get_class_vars(get_class($judge)) as $key => $val)
+			$judge->$key = $val;
 		$ret[] = $judge;
 	}
 	return $ret;
 }
-/**
- * get all judges running on orzoj
- * @return array of Judge_info
- */
-function get_judge_list()
-{
-	global $db;
-	$judge_list = $db->select_from('judges');
-	return array2judge_info($judge_list);
-}
 
 /**
- * get online judges running on orzoj
- * @return array of online judges, structure see install/tables.php
+ * remove a judge
+ * @param int $id judge id
+ * @return void
  */
-function get_online_judge()
+function judge_remove($id)
 {
-	global $db;
-	$where_clause = array('status' => JUDGE_STATUS_ONLINE);
-	return array2judge_info($db->select_from('judges', NULL, $where_clause));
+	global $db, $DBOP;
+	$db->delete_item('judges', array($DBOP['='], 'id', $id));
 }
 
-/**
- * get offline judges running on orzoj
- * @return array of online judges, structure see install/tables.php
- */
-function get_offline_judge()
-{
-	global $db;
-	$where_clause = array('status' => JUDGE_STATUS_OFFLINE);
-	return array2judge_info($db->select_from('judges', NULL, $where_clause));
-}
