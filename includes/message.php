@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: message.php
- * $Date: Sun Oct 03 11:31:23 2010 +0800
+ * $Date: Sun Oct 03 18:08:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -57,25 +57,39 @@ class Message
 // TODO: use get form and parse $_POST mechanism
 
 /**
- * Send a message from user to user
- * @param int $uid_snd
- * @param int $uid_rcv
- * @param string $subject
- * @param string $content
- * @return void
+ * Send a message from user to user, using the data posted by the message send form
+ * @return int message id or throw an Exception Exc_runtime containning error info.
  */
-function message_send($uid_snd, $uid_rcv, $subject, $content)
+function message_send()
 {
 	global $db;
-	$value = array(
-		'time' => time(),
-		'uid_snd' => $uid_snd,
-		'uid_rcv' => $uid_rcv,
-		'subject' => $subject,
-		'content' => $content
-	);
-	$value = filter_apply('before_message_send', $value);
-	$db->insert_into('messages', $value);
+	$VAL_SET = array('uid_rcv', 'subject', 'content');
+	$val = array();
+	foreach ($VAL_SET as $v)
+	{
+		if (!isset($_POST[$v]))
+			throw new Exc_runtime(__('incomplete post'));
+		$val[$v] = $_POST[$v];
+	}
+	if (!user_get_id_by_name($_POST['username']))
+		throw new Exc_runtime(__('username does not exsists.'));
+	$val = filter_apply('before_message_send', $val);
+	$val['uid_snd'] = $_POST['username'];
+	$val['time'] = time();
+	filter_apply('before_message_send', $val);
+	$db->insert_into('messages', $val);
+}
+
+/**
+ *
+ */
+function message_send_get_form()
+{
+	$str = 
+		tf_form_get_text_input(__('Receiver:'), 'uid_rcv') .
+		tf_form_get_text_input(__('Title:'), 'subject') .
+		tf_form_get_text_input(__('Content: '), 'content');
+	return filter_apply('after_message_send_form', $str);
 }
 
 /**
