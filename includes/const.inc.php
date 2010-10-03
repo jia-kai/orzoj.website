@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Sat Oct 02 11:22:39 2010 +0800
+ * $Date: Sun Oct 03 11:01:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -35,6 +35,7 @@ define('USERNAME_LEN_MAX', 20);
 define('USERNAME_LEN_MIN', 3);
 define('PLANG_NAME_LEN_MAX', 20);
 define('WLANG_NAME_LEN_MAX', 20);
+define('POST_SUBJECT_LEN_MAX', 255);
 
 define('DEFAULT_THEME_ID', 1);
 

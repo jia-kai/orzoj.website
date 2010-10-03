@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: discuss.php
- * $Date: Thu Sep 30 23:49:47 2010 +0800
+ * $File: post.php
+ * $Date: Sun Oct 03 11:13:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,19 +27,51 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-/**
- * Called by theme when form submitted
- * parse the form data 
- * @return int|string post id or error information if failed
- */
-function discuss_add_post()
+class Post
 {
+	var $id, $time, $uid, $pid, $subject, $content;
 }
 
 /**
+ * add a post, using the data posted by the form
+ * @param int $pid problem id or parent post id, @see install/tables.php
+ * @return int|string the new post id, or a human readable string describing the failure reason
+ */
+function post_add($pid)
+{
+	if (!user_check_login())
+		return __('Please log in first');
+	if (!isset($_POST['subject']))
+		return __('No post subject');
+	if (strlen($_POST['subject']) > POST_SUBJECT_LEN_MAX)
+		return __('Subject is too long');
+	$content = tf_form_get_editor_data('content');
+	if ($content === NULL)
+		return __('No post content');
+
+	global $user;
+	$val = array('subject' => $_POST['subject'],
+		'content' => $content, 'time' => time(), 'uid' => $user->id,
+		'pid' => $pid);
+	return $db->insert_into('posts', filter_apply('before_post_add', $val));
+}
+
+/**
+ * get the new post form
+ * @return string HTML code
+ */
+function post_add_get_form()
+{
+	$str =
+		tf_form_get_text_input(__('Subject:'), 'subject') .
+		tf_form_get_rich_text_editor(__('Message:'), 'content');
+	return filter_apply('after_post_add_form', $str);
+}
+
+/**
+ * get post list
  *
  */
-function discuss_
 
 del
 tree

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sat Oct 02 21:53:44 2010 +0800
+ * $Date: Sun Oct 03 15:51:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,6 +25,8 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+
+require_once $includes_path . 'message.php';
 
 /**
  * user structure
@@ -140,32 +142,34 @@ $user = NULL;
 /**
  * check user login and initialize $user structure
  * @global User $user
- * @param string|NULL $username the user name, or NULL if read from cookie
- * @param string|NULL $password the password in plain text, or NULL if read from cookie
  * @param int $cookie_time see cookie_set() in functions.php
  * @return bool whether login successfully
  */
-function user_check_login($username = NULL, $password = NULL, $cookie_time = NULL)
+function user_check_login($cookie_time = NULL)
 {
 	global $user, $db, $DBOP, $action;
-	if ($user)
-		return TRUE;
-	if (is_string($username) && is_string($password))
+	static $result = NULL;
+	if (is_bool($result))
+		return $result;
+	if (isset($_POST['username'] && isset($_POST['password'])))
 	{
+		filter_apply_no_iter('before_user_login');
+		$username = $_POST['username'];
+		$password = $_POST['password'];
 		if (!user_check_name($username))
-			return FALSE;
+			return $result = FALSE;
 		$username = strtolower($username);
 		$password .= $username;
 
 		$row = $db->select_from('users', array('id', 'passwd'),
 			array($DBOP['=s'], 'username', $username));
 		if (count($row) != 1)
-			return FALSE;
+			return $result = FALSE;
 
 		$row = $row[0];
 		$pwd_chk = _user_check_passwd($password, $row['passwd']);
 		if (!$pwd_chk)
-			return FALSE;
+			return $result = FALSE;
 		if ($pwd_chk != $row['passwd'])
 			$db->update_data('users', array('passwd' => $pwd_chk),
 				array($DBOP['='], 'id', $row['id']));
@@ -186,23 +190,38 @@ function user_check_login($username = NULL, $password = NULL, $cookie_time = NUL
 		$uid = intval(cookie_get('uid'));
 		$password = cookie_get('password');
 		if ($uid === FALSE || $password === FALSE)
-			return FALSE;
+			return $result = FALSE;
 		$row = $db->select_from('users', array('passwd', 'salt'),
 			array($DBOP['='], 'id', $uid));
 		if (count($row) != 1)
-			return FALSE;
+			return $result = FALSE;
 		$row = $row[0];
 
 		if ($password != _user_make_passwd($row['salt'] . $row['passwd']))
-			return FALSE;
+			return $result = FALSE;
 
 	}
+
+	filter_apply_no_iter('after_user_login', $uid);
+
 	$db->update_data('users', array('last_login_time' => time(), 'last_login_ip' => get_remote_addr()),
 		array($DBOP['='], 'id', $uid));
 
 	$user = new User();
 	$user->set_val($uid);
-	return TRUE;
+	return $result = TRUE;
+}
+
+/**
+ * get user login form
+ * @return string HTML login form
+ */	
+function user_get_login_form()
+{
+	$str = 
+		tf_form_get_text_input(__('Username:'), 'username') .
+		tf_form_get_passwd(__('Password:'), 'password');
+	return filter_apply('after_user_login_form', $str);
 }
 
 /**
@@ -245,8 +264,8 @@ function _user_check_passwd($passwd, $passwd_encr)
 }
 
 /**
- * check whether the user name is a valid one
- * @param string $name user name
+ * check whether the username is a valid one
+ * @param string $name username
  * @return bool
  */
 function user_check_name($name)
@@ -282,8 +301,8 @@ function _user_make_salt()
 }
 
 /**
- * get user id by user name
- * @param string $name user name
+ * get user id by username
+ * @param string $name username
  * @return bool|int FALSE if such user does not exist, user id otherwise
  */
 function user_get_id_by_name($name)
@@ -296,23 +315,23 @@ function user_get_id_by_name($name)
 	return FALSE;
 }
 
-$_user_checker_id = tf_register_checker('user_check_name_string_output');
+$_user_checker_id = tf_form_register_checker('user_check_name_string_output');
 
 /**
- * check whether the user name is a valid one
- * @param string $name user name
+ * check whether the username is a valid one
+ * @param string $name username
  * @return string a human readable string describing the result
  */
 function user_check_name_string_output($name)
 {
 	if (strlen($name) < USERNAME_LEN_MIN)
-		return __('user name should not be shorter than %d characters', USERNAME_LEN_MIN);
+		return __('username should not be shorter than %d characters', USERNAME_LEN_MIN);
 	if (strlen($name) > USERNAME_LEN_MIN)
-		return __('user name should not be longer than %d characters', USERNAME_LEN_MAX);
+		return __('username should not be longer than %d characters', USERNAME_LEN_MAX);
 	if (count(preg_grep('#^[a-zA-Z][a-zA-Z0-9_.]*$#', array($name))) != 1)
-		return __('user name should begin with a letter and only contain letters, digits, dots(.) or underlines(_)');
+		return __('username should begin with a letter and only contain letters, digits, dots(.) or underlines(_)');
 	if (user_get_id_by_name($name))
-		return __('user name %s already exists', $name);
+		return __('username %s already exists', $name);
 	return __('OK');
 }
 
@@ -332,15 +351,15 @@ function user_register_get_form_fields()
 			$$lang[$row['name']] = $row['id'];
 	}
 	$str = 
-		tf_get_form_text_input(__('User name'), 'username', $_user_checker_id) . 
-		tf_get_form_passwd_with_verifier('password') .
-		tf_get_form_text_input(__('Real name'), 'realname') .
-		tf_get_form_text_input(__('Nick name'), 'nickname') .
-		tf_get_form_text_input(__('E-mail', 'email')) .
-		tf_get_avatar_browser(__('Avatar', 'avatar')) .
-		tf_get_form_select(__('Preferred programming language'), 'plang', $plang) .
-		tf_get_form_select(__('Preferred website language'), 'wlang', $wlang) .
-		tf_get_form_long_text_input(__('Self description'), 'self_desc');
+		tf_form_get_text_input(__('Username (for loggin in):'), 'username', $_user_checker_id) . 
+		tf_form_get_passwd_with_verifier('password') .
+		tf_form_get_text_input(__('Real name (only seen by the administrator):'), 'realname') .
+		tf_form_get_text_input(__('Nick name (display name):'), 'nickname') .
+		tf_form_get_text_input(__('E-mail:', 'email')) .
+		tf_form_get_avatar_browser(__('Avatar:', 'avatar')) .
+		tf_form_get_select(__('Preferred programming language:'), 'plang', $plang) .
+		tf_form_get_select(__('Preferred website language:'), 'wlang', $wlang) .
+		tf_form_get_long_text_input(__('Self description:'), 'self_desc');
 	return filter_apply('after_user_register_form', $str);
 }
 
@@ -361,9 +380,9 @@ function user_register()
 		$val[$v] = $_POST[$v];
 	}
 	if (!user_check_name($_POST['username']))
-		return __('invalid user name');
+		return __('invalid username');
 	if (user_get_id_by_name($_POST['username']))
-		return __('user name already exists');
+		return __('username already exists');
 
 	$val['username'] = strtolower($val['username']);
 	$val['password'] .= $val['username'];
@@ -374,6 +393,7 @@ function user_register()
 	$val['reg_time'] = time();
 	$val['reg_ip'] = get_remote_addr();
 
+	$val = filter_apply('before_user_register', $val);
 	return $db->insert_into('users', $val);
 }
 
@@ -392,12 +412,10 @@ function user_del($uid)
 
 	$db->delete_item('map_user_group', $where);
 	$db->delete_item('records', $where);
+	$db->delete_item('posts', $where);
 
-	$db->delete_item('messages',
-		array($DBOP['||'],
-			$DBOP['='], 'uid_snd', $uid,
-			$DBOP['='], 'uid_rcv', $uid));
-	$db->delete_item('');
+	message_del_by_sender($uid);
+	message_del_by_receiver($uid);
 }
 
 /**
@@ -475,7 +493,7 @@ function user_update_statistics($uid, $field, $delta = 1)
 	$val = $db->select_from('users', $val, $where);
 
 	if (!count($val))
-		throw new Exc_inner(__('user_increase_statistics: uid %d does not exist', $uid));
+		throw new Exc_inner(__('user_update_statistics: uid %d does not exist', $uid));
 
 	$val = $val[0];
 	foreach ($val as $k => $v)
@@ -485,12 +503,3 @@ function user_update_statistics($uid, $field, $delta = 1)
 }
 
 
-/**
- * get the user regster form
- * @return string HTML register form
- */
-function user_get_register_form()
-{
-}
-
-// TODO: team, avatar

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Sat Oct 02 21:23:22 2010 +0800
+ * $Date: Sun Oct 03 15:37:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,13 +26,13 @@
 
 
 /**
- * register a checker to be used by tf_get_form_text_input()
+ * register a checker to be used by tf_form_get_text_input()
  * @param callback $func the checker function, which takes a string of user input as argument
  *		and return the checking result as a string
  * @return int checker id
- * @see tf_get_form_text_input
+ * @see tf_form_get_text_input
  */
-function tf_register_checker($func)
+function tf_form_register_checker($func)
 {
 }
 
@@ -41,35 +41,60 @@ function tf_register_checker($func)
  * @param string $prompt the prompt (the text displayed with this field)
  * @param string $post_name the index in the $_POST array containing the user input
  * @param int|NULL $checked the id of checker returned by tf_register_checker, or NULL if no checker needed
+ * @param string|NULL $default the initial value to be displayed in the box (plain
+ *		text, not HTML encoded), or NULL if not needed
  * @return string the HTML code of this field
  * @see tf_register_checker
  */
-function tf_get_form_text_input($prompt, $post_name, $checker = NULL)
+function tf_form_get_text_input($prompt, $post_name, $checker = NULL, $default = NULL)
 {
 }
 
 /**
  * get a form input field for inputing long text
- * @see tf_get_form_text_input
+ * @see tf_form_get_text_input
  */
-function tf_get_form_long_text_input($prompt, $post_name)
+function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
+{
+}
+
+/**
+ * get a rich text editor
+ * @param string $prompt
+ * @param string $editor_name the editor name, used for retrieving data
+ * @param string|NULL $default
+ * @return string the HTML code
+ * @see tf_form_get_editor_data
+ */
+function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
+{
+}
+
+/**
+ * get the data (HTML code) from the rich text editor
+ * @param string $editor_name editor name
+ * @return string|NULL return NULL on error
+ * @see tf_form_get_rich_text_editor
+ */
+function tf_form_get_editor_data($editor_name)
 {
 }
 
 
 /**
  * get an avatar browser, which will post the id of chosen avatar with $post_name
- * @see tf_get_form_text_input
+ * @see tf_form_get_text_input
  */
-function tf_get_form_avatar_browser($prompt, $post_name)
+function tf_form_get_avatar_browser($prompt, $post_name)
 {
 }
 
 /**
- * get a poassword form input, which requires a user confirm of the password
- * @see tf_get_form_text_input
+ * get a poassword form input
+ * @param bool|string $confirm_input if not FALSE, it should be the prompt for confirming password input
+ * @see tf_form_get_text_input
  */
-function tf_get_form_passwd_with_verifier($post_name)
+function tf_form_get_passwd($prompt, $post_name, $confirm_input = FALSE)
 {
 }
 
@@ -80,7 +105,7 @@ function tf_get_form_passwd_with_verifier($post_name)
  * @param array $options in the format array(&lt;display name&rt; => &lt;option value&rt;)
  * @return string the HTML code
  */
-function tf_get_form_select($prompt, $post_name, $options)
+function tf_form_get_select($prompt, $post_name, $options)
 {
 }
 

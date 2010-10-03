@@ -11,15 +11,15 @@ after_set_judge_offline:
 	file: orz.php
 	param: int judge id
 
-before_send_message:
+before_message_send:
 	file: includes/message.php
 	param: array value of message, described in install/tables.php
 
-after_read_message: (no iter)
+after_message_read: (no iter)
 	file: includes/message.php
 	param: int message id
 
-after_delete_message: (no iter)
+after_message_delete: (no iter)
 	file: includes/message.php
 	param: int message id
 
@@ -27,3 +27,30 @@ after_user_register_form:
 	file: includes/user.php
 	param: string register form in HTML
 	executed when the user register form is just generated
+
+before_user_register:
+	file: includes/user.php
+	param: array the value to be inserted into the database
+	executed when user register form is parsed while database has not been updated
+
+after_user_login_form:
+	file: includes/user.php
+	param: string user login form in HTML
+
+before_user_login: (no iter)
+	file: includes/user.php
+	param: None
+	executed when user login form is submitted, before checking username and password
+
+after_user_login: (no iter)
+	file: includes/user.php
+	param: int user id
+	executed when username and password is verified (both new user login and cookie login)
+
+after_post_add_form:
+	file: includes/post.php
+	param: string adding post form in HTML
+
+before_post_add:
+	file: includes/post.php
+	param: array the value to be inserted into the database

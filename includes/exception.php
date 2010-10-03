@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: exception.php
- * $Date: Tue Sep 28 15:36:42 2010 +0800
+ * $Date: Sun Oct 03 15:33:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -50,6 +50,14 @@ class Exc_inner extends Exc_orzoj
 			$this->getTraceAsString());
 	}
 }
+
+/**
+ * runtime error, often thrown by plugins
+ */
+class Exc_runtime extends Exc_orzoj
+{
+}
+
 
 /**
  * database exception

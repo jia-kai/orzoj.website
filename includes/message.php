@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: message.php
- * $Date: Fri Oct 01 18:04:59 2010 +0800
+ * $Date: Sun Oct 03 11:31:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,26 +37,24 @@ class Message
 	var $id, $time, $uid_snd, $uid_rcv, $subject, $content, $is_read;
 
 	/**
-	 * set attributes in this class
-	 * $id must be valid
-	 * @param array|NULL $fields the fileds needed to be set, or NULL if all
+	 * set $this->content
+	 * $this->id must be already set
 	 * @return void
-	 * @exception Exc_inner if $id is not valid
+	 * @exception Exc_inner if $this->id not valid
 	 */
-	function set_val($fields)
+	function set_content()
 	{
 		global $db, $DBOP;
-		$row = $db->select_from('messages', $fields,
+		$row = $db->select_from('messages', 'content',
 			array($DBOP['='], 'id', $this->id));
 		if (count($row) != 1)
 			throw new Exc_inner(__('attempt to read non-existent message'));
 
-		$row = $row[0];
-
-		foreach ($fields as $f)
-			$this->$f = $row[$f];
+		$this->content = $row[0]['content'];
 	}
 }
+
+// TODO: use get form and parse $_POST mechanism
 
 /**
  * Send a message from user to user
@@ -76,7 +74,7 @@ function message_send($uid_snd, $uid_rcv, $subject, $content)
 		'subject' => $subject,
 		'content' => $content
 	);
-	$value = filter_apply('before_send_message', $value);
+	$value = filter_apply('before_message_send', $value);
 	$db->insert_into('messages', $value);
 }
 
@@ -92,7 +90,7 @@ function message_set_read($id)
 		array('is_read' => TRUE),
 		array($DBOP['='], 'id', $id)
 	);
-	filter_apply_no_iter('after_read_message', $id);
+	filter_apply_no_iter('after_message_read', $id);
 }
 
 /**
@@ -110,14 +108,13 @@ function _where_and_eql(&$where, $col, $val)
  * @param NULL|int $uid_rcv the user id of receiver, or NULL if unsecific
  * @param NULL|int $uid_snd the user id of sender, or NULL if unsecific
  * @param NULL|bool $read_flag if NULL, read and unread messages are returned; otherwise return as required
- * @param NULL|array $fields fields needing to be set, must be a subset of attributes of class Message. NULL means all
  * @param NULL|int $offset
  * @param NULL|int $cnt
  * @param string $sort_way the way to sort message by time ('DESC'|'ASC')
- * @return array array of class Message
+ * @return array array of class Message, but 'content' is not set
  */
 function message_get($uid_rcv, $uid_snd = NULL, $read_flag = NULL,
-	$fields = array('id'), $offset = NULL, $cnt = NULL, $sort_way = 'DESC')
+	$offset = NULL, $cnt = NULL, $sort_way = 'DESC')
 {
 	global $db, $DBOP;
 	$where = NULL;
@@ -134,6 +131,7 @@ function message_get($uid_rcv, $uid_snd = NULL, $read_flag = NULL,
 	if (is_bool($read_flag))
 		_where_and_eql($where, 'is_read', $read_flag ? 1 : 0);
 
+	$fields = array('id', 'time', 'uid_snd', 'uid_rcv', 'subject', 'is_read');
 	$ret = $db->select_from('messages', $fields, $where, array('time' => $sort_way), $offset, $cnt);
 	$result = array();
 	foreach ($ret as $row)
@@ -141,6 +139,7 @@ function message_get($uid_rcv, $uid_snd = NULL, $read_flag = NULL,
 		$msg = new Message();
 		foreach ($fields as $field)
 			$msg->$field = $row[$field];
+		unset($msg->content);
 		$result[] = $msg;
 	}
 	return $result;
@@ -186,7 +185,7 @@ function message_del_by_sender($id)
 	if ($row[0]['rm_rcv'] == 1)
 	{
 		$db->delete_item('messages', $where);
-		filter_apply_no_iter('after_delete_message', $id);
+		filter_apply_no_iter('after_message_delete', $id);
 	}
 	else $db->update_data('messages', array('rm_snd' => 1), $where);
 }
@@ -206,7 +205,7 @@ function message_del_by_receiver($id)
 	if ($row[0]['rm_snd'] == 1)
 	{
 		$db->delete_item('messages', $where);
-		filter_apply_no_iter('after_delete_message', $id);
+		filter_apply_no_iter('after_message_delete', $id);
 	}
 	else $db->update_data('messages', array('rm_rcv' => 1), $where);
 }
