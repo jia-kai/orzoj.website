@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: message.php
- * $Date: Sun Oct 03 19:44:40 2010 +0800
+ * $Date: Sun Oct 03 21:37:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -73,7 +73,8 @@ function message_send()
 	}
 	if (!($val['uid_rcv'] = user_get_id_by_name($val['uid_rcv'])))
 		throw new Exc_runtime(__('username does not exsists.'));
-	$val['content'] = tf_form_get_editor_data('content');
+	$val['subject'] = htmlencode($val['subject']);
+	$val['content'] = tf_form_get_rich_text_editor_data('content');
 	$val['uid_snd'] = $user->id;
 	$val['time'] = time();
 	$val = filter_apply('before_message_send', $val);

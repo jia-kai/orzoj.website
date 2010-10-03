@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Sun Oct 03 15:38:33 2010 +0800
+ * $Date: Sun Oct 03 22:00:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,6 +28,13 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 /**
- * Add a problem 
+ * check whether a user has permission for a problem
+ * @param User $user
+ * @param array|string $grp_deny array or serialized array of denied group ids or
+ * @param array|string $grp_allow array or serialized array of allowed group ids or
+ * @return bool
  */
+function prob_check_perm($user, $grp_deny, $grp_allow)
+{
+}
 

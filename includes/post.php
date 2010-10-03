@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Sun Oct 03 11:13:38 2010 +0800
+ * $Date: Sun Oct 03 21:37:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -45,12 +45,12 @@ function post_add($pid)
 		return __('No post subject');
 	if (strlen($_POST['subject']) > POST_SUBJECT_LEN_MAX)
 		return __('Subject is too long');
-	$content = tf_form_get_editor_data('content');
+	$content = tf_form_get_rich_text_editor_data('content');
 	if ($content === NULL)
 		return __('No post content');
 
 	global $user;
-	$val = array('subject' => $_POST['subject'],
+	$val = array('subject' => htmlencode($_POST['subject']),
 		'content' => $content, 'time' => time(), 'uid' => $user->id,
 		'pid' => $pid);
 	return $db->insert_into('posts', filter_apply('before_post_add', $val));

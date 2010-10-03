@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Thu Sep 30 20:37:35 2010 +0800
+ * $Date: Sun Oct 03 20:43:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -45,21 +45,21 @@ abstract class Ctal
 
 	/**
 	 * called when user tries to view a problem in this contest
-	 * @param array $ctinfo a row described in the 'contests' table containing information about this contest
+	 * @param int $cid contest id
 	 * @param array $pinfo a row described in the 'problems' table containing information about this problem
 	 * @return array|NULL modified problem information or NULL if problem not allowed to be accessed
 	 */
-	abstract protected function show_prob($ctinfo, $pinfo);
+	abstract protected function show_prob($cid, $pinfo);
 
 	/**
 	 * deal with user submissions for problems in this contest
-	 * @param array $ctinfo a row described in the 'contests' table containing information about this contest
+	 * @param int $cid contest id
 	 * @param int $pid problem id
 	 * @param int $lid programming language id
 	 * @param string $src source
 	 * @return void
 	 */
-	abstract protected function user_submit($ctinfo, $pid, $lid, $src);
+	abstract protected function user_submit($cid, $pid, $lid, $src);
 
 	/**
 	 * get final rank list of the problem

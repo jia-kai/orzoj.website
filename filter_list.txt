@@ -67,3 +67,11 @@ before_post_add:
 	file: includes/post.php
 	param: array the value to be inserted into the database
 
+after_submit_form:
+	file: includes/submit.php
+	param: string the HTML code
+
+before_submit: (no iter)
+	file: includes/submit.php
+	param: None
+	executed when the source submission form is just posted, before actually doing anything

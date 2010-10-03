@@ -18,8 +18,9 @@
 |	|--	message.php		user-to-user messages
 |	|--	exception.php	exception definitions
 |	|--	problem.php		problem operations
-|	|--	submit.php		functions for submitting source files
+|	|--	submit.php		functions for submitting source files and getting judge results
 |	|--	record.php		get record
+|	|--	team.php		functions for managing user teams
 |	|--	announcement.php	publish and get announcements
 |	|--	exe_status.inc.php	case execution status and case structure definitions
 |	|--	const.inc.php	miscellaneous constants
@@ -28,6 +29,7 @@
 |	|	|--	ctal.php	contest abstract layer
 |	|	|--	oi.php		implementation for OI rules of contest abstract layer
 |	|	|--	acm.php		implementation for ACM rules of contest abstract layer
+|	|	|--	func.php	functions for managing contests
 |--	install/
 |	|--	index.php		install database tables and generate config.php
 |	|--	tables.php		database structure definitions

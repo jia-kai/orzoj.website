@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sun Oct 03 19:31:54 2010 +0800
+ * $Date: Sun Oct 03 21:52:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -378,8 +378,8 @@ function user_register()
 	foreach ($VAL_SET as $v)
 	{
 		if (!isset($_POST[$v]))
-			throw new Exc_runtime('incomplete post');
-		$val[$v] = $_POST[$v];
+			throw new Exc_runtime(__('incomplete post'));
+		$val[$v] = htmlencode($_POST[$v]);
 	}
 	if (!user_check_name($_POST['username']))
 		throw new Exc_runtime(__('invalid username'));
@@ -390,7 +390,6 @@ function user_register()
 	$val['password'] .= $val['username'];
 	$val['passwd'] = _user_make_passwd($val['password']);
 	unset($val['password']);
-	$val['self_desc'] = htmlencode($val['self_desc']);
 	$val['view_gid'] = serialize(array());
 	$val['reg_time'] = time();
 	$val['reg_ip'] = get_remote_addr();
@@ -491,8 +490,8 @@ function user_update_info()
 	foreach ($VAL_SET as $v)
 	{
 		if (!isset($_POST[$v]))
-			throw new Exc_runtime('incomplete post');
-		$val[$v] = $_POST[$v];
+			throw new Exc_runtime(__('incomplete post'));
+		$val[$v] = htmlencode($_POST[$v]);
 	}
 	$val['view_gid'] = tf_form_get_gid_selector_value('view_gid');
 	$val['tid'] = tf_form_get_team_selector_value('tid');

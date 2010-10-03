@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Sun Oct 03 17:48:12 2010 +0800
+ * $Date: Sun Oct 03 21:34:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,6 +24,8 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+if (!defined('IN_ORZOJ'))
+	exit;
 
 /**
  * register a checker to be used by tf_form_get_text_input()
@@ -41,8 +43,7 @@ function tf_form_register_checker($func)
  * @param string $prompt the prompt (the text displayed with this field)
  * @param string $post_name the index in the $_POST array containing the user input
  * @param int|NULL $checker the id of checker returned by tf_register_checker, or NULL if no checker needed
- * @param string|NULL $default the initial value to be displayed in the box (plain
- *		text, not HTML encoded), or NULL if not needed
+ * @param string|NULL $default the initial value to be displayed in the box (HTML encoded), or NULL if not needed
  * @return string the HTML code of this field
  * @see tf_register_checker
  */
@@ -73,10 +74,10 @@ function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
 /**
  * get the data (HTML code) from the rich text editor
  * @param string $editor_name editor name
- * @return string|NULL return NULL on error
+ * @return string the HTML encoded data
  * @see tf_form_get_rich_text_editor
  */
-function tf_form_get_editor_data($editor_name)
+function tf_form_get_rich_text_editor_data($editor_name)
 {
 }
 
@@ -123,6 +124,24 @@ function tf_form_get_gid_selector($prompt, $selector_name, $default = NULL)
  * @see tf_form_get_gid_selector
  */
 function tf_form_get_gid_selector_value($selector_name)
+{
+}
+
+/**
+ * get a editor for editing source
+ * @param string $prompt
+ * @param string $name editor name
+ * @param string $default
+ * @return string
+ */
+function tf_form_get_source_editor($prompt, $name, $default = NULL)
+{
+}
+
+/**
+ * @return string the non-HTML-encoded source 
+ */
+function tf_form_get_source_editor_data($name)
 {
 }
 
