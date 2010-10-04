@@ -1,7 +1,8 @@
 <?php
+// FIXME: update problem statistics
 /*
  * $File: orz.php
- * $Date: Thu Sep 30 22:48:54 2010 +0800
+ * $Date: Mon Oct 04 21:55:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -363,7 +364,8 @@ function report_compiling()
 		'jtime' => time());
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	user_update_statistics(get_uid_by_rid($rid), array('submit'));
+	table_update_numeric_value('users',
+		array($DBOP['='], 'id', get_uid_by_rid($rid)), array('cnt_submit'));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -393,7 +395,8 @@ function report_compile_failure()
 		'detail' => $func_param->info);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	user_update_statistics(get_uid_by_rid($rid), array('ce'));
+	table_update_numeric_value('users',
+		array($DBOP['='], 'id', get_uid_by_rid($rid)), array('cnt_ce'));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -445,18 +448,19 @@ function report_prob_result()
 	);
 	if ($func_param->total_score == $func_param->full_score && $func_param->total_score)
 	{
-		$result = 'ac';
+		$result = 'cnt_ac';
 		$value['status'] = RECORD_STATUS_ACCEPTED;
 	}
 	else
 	{
-		$result = 'unac';
+		$result = 'cnt_unac';
 		$value['status'] = RECORD_STATUS_WRONG_ANSWER;
 	}
 
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	user_update_statistics(get_uid_by_rid($rid), array($result));
+	table_update_numeric_value('users',
+		array($DBOP['='], 'id', get_uid_by_rid($rid)), array($result));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 

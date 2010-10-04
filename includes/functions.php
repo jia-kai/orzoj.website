@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sun Oct 03 19:18:52 2010 +0800
+ * $Date: Mon Oct 04 21:54:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -269,20 +269,31 @@ function html_checktags($text)
 	return count($tags_closed) == 0;
 }
 
-
 /**
- * FIXME: this function should be moved away
- * get language id by name
- * @param string $name language name
- * @return int id, or 0 if no such language
+ * update table numeric value
+ * @param string $table table name
+ * @param array $where where clause
+ * @param string|array $fileds the fileds need to be increased
+ * @param int $delta
+ * @return void
+ * @exception Exc_inner if the row id does not exist
  */
-function lang_get_id_by_name($name)
+function table_update_numeric_value($table, $where, $fields, $delta = 1)
 {
 	global $db, $DBOP;
-	$row = $db->select_from('plang', 'id',
-		array($DBOP['=s'], 'name', $name));
-	if (count($row) != 1)
-		return 0;
-	return $row[0]['id'];
+
+	if (is_string($fields))
+		$fields = array($fields);
+
+	$val = $db->select_from($tables, $fields, $where);
+
+	if (!count($val))
+		throw new Exc_inner(__('no such row'));
+
+	$val = $val[0];
+	foreach ($val as $k => $v)
+		$val[$k] += $delta;
+
+	$db->update_data($table, $val, $where);
 }
 

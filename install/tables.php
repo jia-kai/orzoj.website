@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sun Oct 03 19:07:25 2010 +0800
+ * $Date: Mon Oct 04 21:51:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,6 +28,7 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once realpath('..') . '/includes/const.inc.php';
+require_once realpath('..') . '/includes/record.inc.php';
 
 $tables = array(
 	/* scheds */
@@ -148,9 +149,27 @@ $tables = array(
 			'title' => array('type' => 'TEXT'),
 			'code' => array('type' => 'TEXT200'), // like the code on SPOJ
 			'slug' => array('type' => 'TEXT200'), // url friendly title.
-			'decription' => array('type' => 'TEXT'),
-			'grp_deny' => array('type' => 'TEXT'),  // serialized array of id of groups disallowed to view this problem 
-			'grp_allow' => array('type' => 'TEXT'),
+			'desc' => array('type' => 'TEXT'),
+				// serialized array of (<field name> => <value>)
+				// e.g. array('time'=>'1s', 'memory'=>'256MB', 'desc'=>'...')
+				// see simple-doc.txt
+			'perm' => array('type' => 'TEXT'),
+			// serialized array (order, no_match, grp_allow, grp_deny),
+			// order = 0: allow, deny
+			// order = 1: deny, allow
+			// grp_deny, grp_allow: array of ids of corresponding groups 
+			// 
+			// |---------------------------------------------------------------------
+			// |     Match			| allow, deny result	| deny, allow result	|
+			// |--------------------+-----------------------+-----------------------|
+			// | Match allow only	| request allowed		| request allowed		|
+			// |--------------------+-----------------------+-----------------------|
+			// | Match deny only	| request denied		| request denied		|
+			// |--------------------+-----------------------+-----------------------|
+			// | No match			| request denied iff no_match = 0				|
+			// |--------------------+-----------------------+-----------------------|
+			// | Match both			| final match: denied	| final match: allowed	|
+			// |--------------------------------------------------------------------|
 			'io' => array('type' => 'TEXT'), // serialized array of input/output file name, or empty string if using stdio
 
 			'cnt_submit' => array('type' => 'INT32', 'default' => 0),
@@ -174,11 +193,6 @@ $tables = array(
 			'slug' => PROB_SLUG_LEN_MAX
 		)
 	),
-
-	// let S be the set of groups of a certain user belonging to, D and A be the sets of
-	// denied gid or allowed gid of a certain problem, E is the empty set, * is the intersection of two sets,
-	// then the user can access the problem iff:
-	//     S * D == E and S * A != E
 
 	/* prob_groups */
 	'prob_groups' => array( // classification of problems
@@ -222,9 +236,8 @@ $tables = array(
 			'desc' => array('type' => 'TEXT'), // description
 			'time_start' => array('type' => 'INT64'),
 			'time_end' => array('type' => 'INT64'),
-			'grp_deny' => array('type' => 'TEXT'), // see 'problems' table
-			'grp_allow' => array('type' => 'TEXT'),
-			'result_cache' => array('type' => 'TEXT') // result cache, maintained by specific contest types
+			'perm' => array('type' => 'TEXT'), // see 'problems' table
+			'result_cache' => array('type' => 'TEXT') // result cache, maintained by specific contest type
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -299,7 +312,7 @@ $tables = array(
 			'jid' => array('type' => 'INT32', 'default' => 0), // judge id
 			'lid' => array('type' => 'INT32'), // language id
 			'src_len' => array('type' => 'INT32'), // source length in bytes
-			'status' => array('type' => 'INT32'), // see includes/record.inc.php
+			'status' => array('type' => 'INT32', 'default'), // see includes/record.inc.php
 			'stime' => array('type' => 'INT64'), // submission time
 			'jtime' => array('type' => 'INT64', 'default' => 0), // time when it is judged
 			'ip' => array('type' => 'TEXT'), // from which ip it is submitted

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sun Oct 03 21:52:05 2010 +0800
+ * $Date: Mon Oct 04 21:47:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -336,7 +336,8 @@ function _user_init_plang_wlang()
 	{
 		$tmp = $db->select_from($lang, array('id', 'name'));
 		$var = '_user_' . $lang;
-		global $$var = array();
+		global $$var;
+		$$var = array();
 		foreach ($tmp as $row)
 			$$var[$row['name']] = $row['id'];
 	}
@@ -501,39 +502,5 @@ function user_update_info()
 	$db->update_data('users', $val, array($DBOP['='], 'id', $user->id));
 }
 
-/**
- * update user statistics value
- * @param int $uid user id
- * @param array $filed the fileds need to be increased, which must be a subset
- *		of array('submit', 'ac', 'unac', 'ce')
- * @param int $delta
- * @return void
- * @exception Exc_inner if user id does not exist
- */
-function user_update_statistics($uid, $field, $delta = 1)
-{
-	global $db, $DBOP;
-	$VAL_SET = array('submit', 'ac', 'unac', 'ce');
-	$val = array_intersect($field, $VAL_SET);
-
-	if (!count($val))
-		return;
-
-	foreach ($val as $k => $v)
-		$val[$k] = 'cnt_' . $v;
-
-	$where = array($DBOP['='], 'id' ,$uid);
-
-	$val = $db->select_from('users', $val, $where);
-
-	if (!count($val))
-		throw new Exc_inner(__('user_update_statistics: uid %d does not exist', $uid));
-
-	$val = $val[0];
-	foreach ($val as $k => $v)
-		$val[$k] += $delta;
-
-	$db->update_data('users', $val, $where);
-}
 
 

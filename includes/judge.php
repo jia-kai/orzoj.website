@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Sun Oct 03 20:15:03 2010 +0800
+ * $Date: Mon Oct 04 21:46:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -66,7 +66,7 @@ function judge_get_list($id = NULL, $online = NULL)
 		$row['lang_sup'] = unserialize($row['lang_sup']);
 		$row['detail'] = unserialize($row['detail']);
 		$judge = new Judge();
-		foreach((get_class_vars(get_class($judge)) as $key => $val)
+		foreach(get_class_vars(get_class($judge)) as $key => $val)
 			$judge->$key = $val;
 		$ret[] = $judge;
 	}

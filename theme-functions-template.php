@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Sun Oct 03 21:34:54 2010 +0800
+ * $Date: Mon Oct 04 21:39:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -171,6 +171,15 @@ function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL)
  * @return string the HTML code
  */
 function tf_form_get_select($prompt, $post_name, $options, $default = NULL)
+{
+}
+
+/**
+ * convert problem information to HTML code
+ * @param array $pinfo as $PROB_VIEW_PINFO described in problem.php
+ * @return string
+ */
+function tf_get_prob_html($pinfo)
 {
 }
 

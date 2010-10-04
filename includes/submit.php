@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Sun Oct 03 22:05:15 2010 +0800
+ * $Date: Mon Oct 04 21:53:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,60 +28,154 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once $includes_path . 'problem.php';
+require_once $includes_path . 'contests/ctal.php';
 
 /**
  * get a form for submitting source code
  * @param int $pid default problem id
  * @return string
  */
-function submit_get_form($pid)
+function submit_src_get_form($pid)
 {
 	if (!user_check_login())
 		throw new Exc_runtime(__('Not logged in'));
 	global $db, $user;
 	$plang = array();
 	foreach ($db->select_from('plang') as $row)
-		$plang[$row['name']] => $row['id'];
+		$plang[$row['name']] = $row['id'];
 	if (!is_int($pid))
 		$pid = '';
 	$str = 
 		tf_form_get_text_input(__('Problem id:'), 'pid', $pid) .
 		tf_form_get_select(__('Programming language:'), 'plang', $plang, $user->plang) .
 		tf_form_get_source_editor(__('Source:'), 'src');
-	return filter_apply('after_submit_form', $str);
+	return filter_apply('after_submit_src_form', $str);
 }
 
 /**
  * parse posted data and submit the source
  * @return void
  */
-function submit()
+function submit_src()
 {
 	if (!user_check_login())
 		throw new Exc_runtime(__('Not logged in'));
-	filter_apply_no_iter('before_submit');
+	filter_apply_no_iter('before_submit_src');
 	if (!isset($_POST['pid']) || !isset($_POST['plang']))
 		throw new Exc_runtime(__('incomplete post'));
 	global $db, $DBOP, $user;
 	$pid = intval($_POST['pid']);
-	$row = $db->select_from('problems', array('grp_deny', 'grp_allow'),
+	$plang = intval($_POST['plang']);
+	$row = $db->select_from('problems', $PROB_SUBMIT_PINFO,
 		array($DBOP['='], 'id', $pid));
 	if (count($row) != 1)
 		throw new Exc_runtime(__('No such problem'));
 	$row = $row[0];
 
-	if (!prob_check_perm($user, $row['grp_deny'], $row['grp_allow'])
+	if (!prob_check_perm($user->groups, $row['perm']))
 		throw new Exc_runtime(__('Permission denied for this problem'));
 
-	$now = time();
-	$row = $db->select_from('map_prob_ct', 'cid',
-		array($DBOP['&&'], $DBOP['&&'], $DBOP['&&'],
-		$DBOP['='], 'pid', $pid,
-		$DBOP['<='], 'time_start', $now
-		$DBOP['>='], 'time_end', $now));
-	if (count($row))
+	$src = tf_form_get_source_editor_data('src');
+
+	$ct = ctal_get_class($pid);
+	if ($ct)
+		$ct->user_submit($row, $plang, $src);
+	else
 	{
-		$row = $row[0];
+		if (is_string($row['io']) && strlen($row['io']))
+			$io = unserialize($row['io']);
+		else $io = array('', '');
+		$rid = submit_add_record($pid, $plang, $src);
+		submit_add_judge_req($rid, $io[0], $io[1]);
 	}
+}
+
+/**
+ * insert the record into the database
+ * @param int $pid problem id
+ * @param int $lang programming language id
+ * @param string $src the source
+ * @param int $status the initial status for this record
+ * @return int record id
+ */
+function submit_add_record($pid, $lang, $src,
+	$status = RECORD_STATUS_WAITING_TO_BE_FETCHED)
+{
+	if (!user_check_login())
+		throw new Exc_inner(__('Not logged in'));
+	global $db, $DBOP, $user;
+	$db->transaction_begin();
+	$rid = $db->insert_into('records',
+		array(
+			'uid' => $user->id,
+			'pid' => $pid,
+			'lid' => $lang,
+			'src_len' => strlen($src),
+			'stime' => time(),
+			'ip' => get_remote_addr()
+		));
+	$db->insert_into('sources',
+		array(
+			'rid' => $rid,
+			'src' => $src,
+			'time' => time()
+		));
+	$db->transaction_commit();
+	table_update_numeric_value('problems',
+		array($DBOP['='], 'id', $pid), 'cnt_submit');
+	return $rid;
+}
+
+/**
+ * add a judge request so that the source will be judged soon
+ * @param int $rid record id
+ * @param string $input input file name, or empty string to use stdin
+ * @param string $output output file name, or empty string to use stdout
+ * @return void
+ */
+function submit_add_judge_req($rid, $input, $output)
+{
+	global $db, $DBOP;
+	$err_msg = NULL;
+	$row = $db->select_from('records', array('pid', 'lid'),
+		array($DBOP['='], 'id', $rid));
+	if (count($row) != 1)
+		throw new Exc_inner(__('No such record #%d', $rid));
+	$row = $row[0];
+	$pcode = $db->select_from('problems', 'code',
+		array($DBOP['='], 'id', $row['pid']));
+	if (count($pcode) != 1)
+	{
+		$db->update_data('records',
+			array(
+				'status' => RECORD_STATUS_ERROR,
+				'detail' => __('No such problem #%d', $row['pid'])
+			), array($DBOP['='], 'id', $rid));
+		return;
+	}
+	$pcode = $pcode[0]['code'];
+
+	$lang = $db->select_from('plang', 'name',
+		array($DBOP['='], 'id', $row['lid']));
+	if (count($lang) != 1)
+	{
+		$db->update_data('records',
+			array(
+				'status' => RECORD_STATUS_ERROR,
+				'detail' => __('No such programming language #%d', $row['lid'])
+			), array($DBOP['='], 'id', $rid));
+		return;
+	}
+	$lang = $lang[0]['name'];
+
+	$db->insert_into('orz_req', array(
+		'data' => serialize(array(
+			'type' => 'src',
+			'id' => $rid,
+			'prob' => $pcode,
+			'lang' => $lang,
+			'input' => $input,
+			'output' => $output
+		))));
 }
 

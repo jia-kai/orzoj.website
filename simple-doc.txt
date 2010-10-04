@@ -62,6 +62,15 @@ theme structure:
 	|--	functions.php	functions exported to the whole website
 	|--	...				theme specific files
 
+problem description in the database is a serialized array of (<field name> => <value>)
+standard field names:
+	time: time limit
+	memory: memory limit
+	desc: problem description
+	range: data range
+	source: where the problem is originally published
+	hint: some hints?
+these fields are parsed and converted to HTML by themes
 
 Note:
 	1. for required functions for theme, see theme-functions-template.php

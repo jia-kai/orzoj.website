@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Sun Oct 03 20:43:08 2010 +0800
+ * $Date: Mon Oct 04 21:45:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,44 +31,92 @@
 abstract class Ctal
 {
 	/**
+	 * @ignore
+	 */
+	protected $data;
+
+	/**
+	 * construction function
+	 * @param int|array|NULL $data contest id, row in the database describing the contest or NULL,
+	 *		depening on the function you will call
+	 */
+	public function __construct($data)
+	{
+		$this->data = $data;
+	}
+
+	/**
 	 * get contest-type specific form fields when adding a new contest
+	 * $data in __construct: NULL
 	 * @return NULL|string NULL if no extra fields, or form fileds to be added in HTML
 	 */
 	abstract protected function get_form_fields();
 
 	/**
 	 * add a new contest of a specific type
-	 * @param int $id contest id in the 'contests' table (the row is already inserted) (in transaction)
+	 * $data in __construct: contst id
 	 * @return void
 	 */
-	abstract protected function add_contest($id);
+	abstract protected function add_contest();
 
 	/**
 	 * called when user tries to view a problem in this contest
-	 * @param int $cid contest id
-	 * @param array $pinfo a row described in the 'problems' table containing information about this problem
-	 * @return array|NULL modified problem information or NULL if problem not allowed to be accessed
+	 * $data in __construct: database row
+	 * @param array $groups the ids of groups the user belonging to
+	 * @param array $pinfo problem information, containing $PROB_VIEW_PINFO (defined in problem.php)
+	 *		may be modified
+	 * @return void
+	 * @exception Exc_runtime if permission denied
 	 */
-	abstract protected function show_prob($cid, $pinfo);
+	abstract protected function prob_view($groups, &$pinfo);
 
 	/**
 	 * deal with user submissions for problems in this contest
-	 * @param int $cid contest id
-	 * @param int $pid problem id
+	 * $data in __construct: database row
+	 * @param array $pinfo problem information, containing $PROB_SUBMIT_PINFO (defined in problem.php)
 	 * @param int $lid programming language id
 	 * @param string $src source
 	 * @return void
 	 */
-	abstract protected function user_submit($cid, $pid, $lid, $src);
+	abstract protected function user_submit($pinfo, $lid, $src);
 
 	/**
 	 * get final rank list of the problem
-	 * @param int $cid contest id
+	 * $data in __construct: contest id
 	 * @param array|NULL $users if not NULL, specify the ids of users needed to be ranked
 	 * @return array|NULL a 2-dimension array representing a complete table of the final rank list (including table headers)
 	 */
-	abstract protected function get_rank_list($cid, $users);
+	abstract protected function get_rank_list($users);
 }
 
-$CONTEST_ID2CLASS = array('oi', 'acm');
+$CONTEST_TYPE2CLASS = array('oi', 'acm');
+
+
+/**
+ * get the ctal class related to the problem
+ * @param int $pid problem id
+ * @return Ctal|NULL a Ctal instance or NULL if the problem does not belong to a problem
+ */
+function ctal_get_class($pid)
+{
+	$now = time();
+	$row = $db->select_from('map_prob_ct', 'cid',
+		array($DBOP['&&'], $DBOP['&&'], $DBOP['&&'],
+		$DBOP['='], 'pid', $pid,
+		$DBOP['<='], 'time_start', $now,
+		$DBOP['>='], 'time_end', $now));
+	if (count($row))
+	{
+		$row = $db->select_from('contests', NULL,
+			array($DBOP['='], 'id', $row[0]['cid']));
+		if (count($row) != 1)
+			throw new Exc_inner(__('contest not found'));
+		$row = $row[0];
+		$type = $CONTEST_TYPE2CLASS[$row['type']];
+		require_once $includes_path . "contest/$type.php";
+		$type = "Ctal_$type";
+		return new $type($row);
+	} 
+	return NULL;
+}
 

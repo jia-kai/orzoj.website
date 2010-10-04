@@ -67,11 +67,17 @@ before_post_add:
 	file: includes/post.php
 	param: array the value to be inserted into the database
 
-after_submit_form:
+after_submit_src_form:
 	file: includes/submit.php
 	param: string the HTML code
 
-before_submit: (no iter)
+before_submit_src: (no iter)
 	file: includes/submit.php
 	param: None
 	executed when the source submission form is just posted, before actually doing anything
+
+after_prob_html:
+	file: includes/problem.php
+	param: string HTML; int problem id
+	executed when the HTML code for this problem is just generated
+
