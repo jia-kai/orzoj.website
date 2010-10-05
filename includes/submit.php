@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Mon Oct 04 21:53:44 2010 +0800
+ * $Date: Tue Oct 05 14:34:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -121,8 +121,6 @@ function submit_add_record($pid, $lang, $src,
 			'time' => time()
 		));
 	$db->transaction_commit();
-	table_update_numeric_value('problems',
-		array($DBOP['='], 'id', $pid), 'cnt_submit');
 	return $rid;
 }
 

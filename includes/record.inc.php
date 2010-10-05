@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.inc.php
- * $Date: Wed Sep 29 18:20:12 2010 +0800
+ * $Date: Tue Oct 05 15:24:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -47,4 +47,27 @@ define('RECORD_STATUS_DATA_NOT_FOUND', $cnt ++);
 define('RECORD_STATUS_JUDGE_BUSY', $cnt ++);
 define('RECORD_STATUS_ERROR', $cnt ++);
 unset($cnt);
+
+
+/**
+ * translate record status to human readable text
+ */
+$RECORD_STATUS_TEXT = array(
+	RECORD_STATUS_WAITING_TO_BE_FETCHED => __('Waiting to be fetched'),
+	RECORD_STATUS_WAITING_FOR_CONTEST => __('Waiting for contest'),
+	RECORD_STATUS_WAITING_ON_SERVER => __('Waiting on orzoj-server'),
+
+	RECORD_STATUS_COMPILING => __('Compiling'),
+	RECORD_STATUS_COMPILE_SUCCESS => __('Succesfully compiled'),
+	RECORD_STATUS_COMPILE_FAILURE => __('Compilation error'),
+	RECORD_STATUS_RUNNING => __('Running'),
+	RECORD_STATUS_ACCEPTED => __('Accepted'),
+	RECORD_STATUS_WRONG_ANSWER => __('Wrong answer'),
+	RECORD_STATUS_TIME_LIMIT_EXCEED => __('Time limit exceeded'),
+	RECORD_STATUS_MEMORY_LIMIT_EXCEED => __('Memory limit exceeded'),
+	RECORD_STATUS_RUNTIME_ERROR => __('Runtime error'),
+	RECORD_STATUS_DATA_NOT_FOUND => __('Data not found'),
+	RECORD_STATUS_JUDGE_BUSY => __('Judge is busy'),
+	RECORD_STATUS_ERROR => __('Error'),
+);
 

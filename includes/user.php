@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Mon Oct 04 21:47:05 2010 +0800
+ * $Date: Tue Oct 05 17:36:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -40,15 +40,52 @@ class User
 		$theme_id,
 		$reg_time, $reg_ip, $last_login_time, $last_login_ip,
 		$cnt_submit, $cnt_ac, $cnt_unac, $cnt_ce,
-		$groups, // array of id of groups that the user blongs to
-		$admin_groups, // array of id of groups where the user is an administrator
-		$is_admin, // whether the user is an administrator
-		$is_locked; // whether this user is in the lock group
+		$groups, // array of ids of groups that the user blongs to
+		$admin_groups; // array of ids of groups where the user is an administrator
+
+	/**
+	 * @ignore
+	 */
+	private static function bsearch($a, $key)
+	{
+		$left = 0;
+		$right = count($a) - 1;
+		while ($left != $right)
+		{
+			$mid = ($left + $right) >> 1;
+			if ($a[$mid] == $key)
+				return TRUE;
+			if ($a[$mid] < $key)
+				$left = $mid + 1;
+			else $right = $mid;
+		}
+		return $a[$left] == $key;
+	}
+	
+	/**
+	 * test whether the user belongs to a specific group
+	 * @param int $gid group id
+	 * @return bool
+	 */
+	function is_grp_member($gid)
+	{
+		return User::bsearch($this->groups, $gid);
+	}
+
+	/**
+	 * test whether the user is a group administrator of the given group
+	 * @param int $gid group id
+	 * @return bool
+	 */
+	function has_admin_perm($gid)
+	{
+		return User::bsearch($this->admin_groups, $gid);
+	}
 
 	/**
 	 * set attributes in this class
 	 * @param int $uid user id
-	 * @param bool $set_grp_info whether to set $this->groups, $this->admin_groups, $this->is_admin, $this->is_locked
+	 * @param bool $set_grp_info whether to set $this->groups, $this->admin_groups
 	 *		(because these operations may take some time)
 	 * @return void
 	 * @exception Exc_inner if user id does not exist
@@ -86,9 +123,6 @@ class User
 			$groups = array(GID_ALL);
 			$this->admin_groups = array();
 
-			$this->is_admin = FALSE;
-			$this->is_locked = FALSE;
-
 			$grp_set = array();
 
 			foreach ($tmp as $val)
@@ -98,12 +132,6 @@ class User
 					$this->admin_groups[] = $val['gid'];
 
 				$grp_set[$val['gid']] = 1;
-
-				if ($val['gid'] == GID_ADMIN)
-					$this->is_admin = TRUE;
-
-				if ($val['gid' == GID_LOCK])
-					$this->is_locked = TRUE;
 			}
 
 			for ($i = 0; $i < count($groups); $i ++)
@@ -117,13 +145,18 @@ class User
 				{
 					array_push($groups, $tmp);
 					$grp_set[$tmp] = 1;
-
-					if ($tmp == GID_LOCK)
-						$this->is_locked = TRUE;
 				}
 			}
 
 			$this->groups = $groups;
+
+			sort($this->groups, SORT_NUMERIC);
+			sort($this->admin_groups, SORT_NUMERIC);
+		}
+		else
+		{
+			unset($this->groups);
+			unset($this->admin_groups);
 		}
 	}
 }
@@ -423,14 +456,14 @@ function user_del($uid)
 /**
  * change user password
  * @param int $uid user id
- * @param string $oldpwd old password in plain text
+ * @param string $oldpwd old password in plain text (if logged in as administrator, $oldpwd is ignored)
  * @param string $newpwd new password in plain text
  * @return bool whether old password is correct
  * @exception Exc_inner if $uid does not exist
  */
 function user_chpasswd($uid, $oldpwd, $newpwd)
 {
-	global $db, $DBOP;
+	global $db, $DBOP, $user;
 	$where = array($DBOP['='], 'id', $uid);
 	$row = $db->select_from('users', array('username', 'passwd'), $where);
 	if (count($row) != 1)
@@ -440,8 +473,11 @@ function user_chpasswd($uid, $oldpwd, $newpwd)
 	$oldpwd .= $row['username'];
 	$newpwd .= $row['username'];
 
-	if (!_user_check_passwd($oldpwd, $row['passwd']))
-		return FALSE;
+	if (!user_check_login() || !$user->is_grp_member(GID_ADMIN_USER))
+	{
+		if (!_user_check_passwd($oldpwd, $row['passwd']))
+			return FALSE;
+	}
 
 	$db->update_data('users', array('passwd' => _user_make_passwd($newpwd)),
 		$where);
@@ -502,5 +538,58 @@ function user_update_info()
 	$db->update_data('users', $val, array($DBOP['='], 'id', $user->id));
 }
 
+/**
+ * @ignore
+ */
+function _user_get_name_by_id($uid)
+{
+	static $cache = array();
+	if (isset($cache[$uid]))
+		return $cache[$uio];
+	global $db, $DBOP;
+	$row = $db->select_from('users', array('username', 'realname', 'nickname'),
+		array($DBOP['='], 'id', $uid));
+	if (count($row) != 1)
+		return $cache[$uid] = NULL;
+	return $cache[$uid] = $row[0];
+}
 
+/**
+ * get username by user id
+ * @param int $uid user id
+ * @return array|NULL the username, or NULL if no such user
+ */
+function user_get_username_by_id($uid)
+{
+	$ret = _user_get_name_by_id($uid);
+	if (!$ret)
+		return NULL;
+	return $ret['username']
+}
+
+/**
+ * get nickname by user id
+ * @param int $uid user id
+ * @return array|NULL the nickname, or NULL if no such user
+ */
+function user_get_nickname_by_id($uid)
+{
+	$ret = _user_get_name_by_id($uid);
+	if (!$ret)
+		return NULL;
+	return $ret['nickname']
+}
+
+/**
+ * get real name by user id
+ * @param int $uid user id
+ * @return array|NULL the real name, or NULL if no such user
+ */
+function user_get_realname_by_id($uid)
+{
+	$ret = _user_get_name_by_id($uid);
+	if (!$ret)
+		return NULL;
+	return $ret['realname']
+}
 

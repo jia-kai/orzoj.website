@@ -19,7 +19,6 @@
 |	|--	exception.php	exception definitions
 |	|--	problem.php		problem operations
 |	|--	submit.php		functions for submitting source files and getting judge results
-|	|--	record.php		get record
 |	|--	team.php		functions for managing user teams
 |	|--	announcement.php	publish and get announcements
 |	|--	exe_status.inc.php	case execution status and case structure definitions

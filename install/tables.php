@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Oct 04 21:51:13 2010 +0800
+ * $Date: Tue Oct 05 15:39:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,8 +52,8 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'username' => array('type' => 'TEXT200'),
-			'realname' => array('type' => 'TEXT'), // only visiable by administrator
-			'nickname' => array('type' => 'TEXT'), // display name
+			'realname' => array('type' => 'TEXT200'), // only visiable by administrator
+			'nickname' => array('type' => 'TEXT200'), // display name
 			'passwd' => array('type' => 'TEXT200'),
 			'salt' => array('type' => 'TEXT200', 'default' => ''),
 			'aid' => array('type' => 'INT32'), // avatar id
@@ -124,11 +124,12 @@ $tables = array(
 	),
 
 	/* user_teams */
-	'user_teams' => array(
+	'user_teams' => array( // managed by administrators
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'title' => array('type' => 'TEXT'),
-			'desc' => array('type' => 'TEXT')
+			'desc' => array('type' => 'TEXT'),
+			'image_file' => array('type' => 'TEXT')
 		),
 		'primary_key' => 'id'
 	),
@@ -137,7 +138,7 @@ $tables = array(
 	'user_avatars' => array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'file' => array('type' => 'TEXT') // in the /contents/uploads directory
+			'file' => array('type' => 'TEXT') // related to the /contents/uploads directory
 		),
 		'primary_key' => 'id'
 	),

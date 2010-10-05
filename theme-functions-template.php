@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Mon Oct 04 21:39:52 2010 +0800
+ * $Date: Tue Oct 05 15:39:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -171,6 +171,16 @@ function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL)
  * @return string the HTML code
  */
 function tf_form_get_select($prompt, $post_name, $options, $default = NULL)
+{
+}
+
+/**
+ * get a hidden field for posting values
+ * @param string $post_name
+ * @param string $post_value
+ * @return string
+ */
+function tf_form_get_hidden($post_name, $post_value)
 {
 }
 

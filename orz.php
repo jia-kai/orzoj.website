@@ -1,8 +1,7 @@
 <?php
-// FIXME: update problem statistics
 /*
  * $File: orz.php
- * $Date: Mon Oct 04 21:55:41 2010 +0800
+ * $Date: Tue Oct 05 14:35:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -338,15 +337,22 @@ function report_judge_waiting()
 }
 
 /**
- * get uid by rid
- * @param int $rid
- * @return int uid
+ * increase statistics value in the database
+ * @param int $rid record id
+ * @param array|string $fields
+ * @return void
  */
-function get_uid_by_rid($rid)
+function increase_statistics_value($rid, $fields)
 {
 	global $db, $DBOP;
-	$ret = $db->select_from('records', array('uid'), array($DBOP['='], 'id', $rid));
-	return $ret[0]['uid'];
+	$row = $db->select_from('records', array('uid', 'pid'), array($DBOP['='], 'id', $rid));
+	if (count($row) != 1)
+		throw new Exc_inner(__('No such record #%d', $rid));
+	$row = $row[0];
+	table_update_numeric_value('users',
+		array($DBOP['='], 'id', $row['uid']), $fields);
+	table_update_numeric_value('problems',
+		array($DBOP['='], 'id', $row['pid']), $fields);
 }
 
 /**
@@ -364,8 +370,7 @@ function report_compiling()
 		'jtime' => time());
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	table_update_numeric_value('users',
-		array($DBOP['='], 'id', get_uid_by_rid($rid)), array('cnt_submit'));
+	increase_statistics_value($rid, 'cnt_submit');
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -395,8 +400,7 @@ function report_compile_failure()
 		'detail' => $func_param->info);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	table_update_numeric_value('users',
-		array($DBOP['='], 'id', get_uid_by_rid($rid)), array('cnt_ce'));
+	increase_statistics_value($rid, 'cnt_ce');
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -459,8 +463,7 @@ function report_prob_result()
 
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	table_update_numeric_value('users',
-		array($DBOP['='], 'id', get_uid_by_rid($rid)), array($result));
+	increase_statistics_value($rid, $result);
 	msg_write(MSG_STATUS_OK, NULL);
 }
 

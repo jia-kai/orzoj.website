@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Mon Oct 04 21:00:51 2010 +0800
+ * $Date: Tue Oct 05 16:31:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -40,11 +40,18 @@ define('MESSAGE_SUBJECT_LEN_MAX', 127);
 
 define('DEFAULT_THEME_ID', 1);
 
-define('GID_ADMIN', 1); // admin group id
-define('GID_LOCK', 2); // locked group id
-define('GID_ALL', 3); // every registered user should be in this group
-define('GID_NONE', 4); // nobody should be in this group
-define('GID_GUEST', 5);
+$cnt = 1;
+define('GID_ADMIN_USER', $cnt ++); // manage users (lock a user, change password, etc)
+define('GID_ADMIN_GROUP', $cnt ++);  // manage user groups (add, remove groups and assign group administrators)
+define('GID_ADMIN_TEAM', $cnt ++); // manage user teams
+define('GID_ADMIN_PROB', $cnt ++); // manage problems
+define('GID_ADMIN_CONTEST', $cnt ++);  // manage contests
+define('GID_ADMIN_POST', $cnt ++); // manage posts
+define('GID_LOCK', $cnt ++); // locked group id
+define('GID_ALL', $cnt ++); // every registered user should be in this group
+define('GID_NONE', $cnt ++); // nobody should be in this group
+define('GID_GUEST', $cnt ++);
+unset $cnt;
 
 define('JUDGE_STATUS_OFFLINE',0);
 define('JUDGE_STATUS_ONLINE',1);
