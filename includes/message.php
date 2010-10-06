@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: message.php
- * $Date: Sun Oct 03 21:37:52 2010 +0800
+ * $Date: Wed Oct 06 11:17:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -112,7 +112,7 @@ function message_set_read($id)
 /**
  * @ignore
  */
-function _where_and_eql(&$where, $col, $val)
+function _msg_where_and_eql(&$where, $col, $val)
 {
 	if (is_array($where))
 		$where = array_merge(array($DBOP['&&'], $DBOP['='], $col, $val), $where);
@@ -136,16 +136,16 @@ function message_get($uid_rcv, $uid_snd = NULL, $read_flag = NULL,
 	$where = NULL;
 	if (is_int($uid_snd))
 	{
-		_where_and_eql($where, 'uid_snd', $uid_snd);
-		_where_and_eql($where, 'rm_snd', 0);
+		_msg_where_and_eql($where, 'uid_snd', $uid_snd);
+		_msg_where_and_eql($where, 'rm_snd', 0);
 	}
 	if (is_int($uid_rcv))
 	{
-		_where_and_eql($where, 'uid_rcv', $uid_rcv);
-		_where_and_eql($where, 'rm_rcv', 0);
+		_msg_where_and_eql($where, 'uid_rcv', $uid_rcv);
+		_msg_where_and_eql($where, 'rm_rcv', 0);
 	}
 	if (is_bool($read_flag))
-		_where_and_eql($where, 'is_read', $read_flag ? 1 : 0);
+		_msg_where_and_eql($where, 'is_read', $read_flag ? 1 : 0);
 
 	$fields = array('id', 'time', 'uid_snd', 'uid_rcv', 'subject', 'is_read');
 	$ret = $db->select_from('messages', $fields, $where, array('time' => $sort_way), $offset, $cnt);
@@ -172,16 +172,16 @@ function message_get_amount($uid_rcv, $uid_snd = NULL, $read_flag = NULL)
 	$where = NULL;
 	if (is_int($uid_snd))
 	{
-		_where_and_eql($where, 'uid_snd', $uid_snd);
-		_where_and_eql($where, 'rm_snd', 0);
+		_msg_where_and_eql($where, 'uid_snd', $uid_snd);
+		_msg_where_and_eql($where, 'rm_snd', 0);
 	}
 	if (is_int($uid_rcv))
 	{
-		_where_and_eql($where, 'uid_rcv', $uid_rcv);
-		_where_and_eql($where, 'rm_rcv', 0);
+		_msg_where_and_eql($where, 'uid_rcv', $uid_rcv);
+		_msg_where_and_eql($where, 'rm_rcv', 0);
 	}
 	if (is_bool($read_flag))
-		_where_and_eql($where, 'is_read', $read_flag ? 1 : 0);
+		_msg_where_and_eql($where, 'is_read', $read_flag ? 1 : 0);
 
 	return $db->get_numer_of_rows('messages', $where);
 }
