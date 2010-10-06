@@ -38,6 +38,8 @@
 |	|--	themes/			store themes
 |	|	|--	...
 |	|--	uploads/		store uploaded data such as images (permission: 777)
+|	|	|--	user_avatar/	user avatars
+|	|	|--	team_image/	team images
 |	|	|--	...
 |	|--	lang/			.mo files for various languages
 |	|	|-- *.mo
@@ -75,4 +77,6 @@ Note:
 	1. for required functions for theme, see theme-functions-template.php
 	2. see also filter_list.txt
 	3. all the pages accessed by user except those in install are in the top-level directory
+	4. themes should not operate on database directly except when quering for records (because record queries
+		are usually highly customized, so no API is provided)
 

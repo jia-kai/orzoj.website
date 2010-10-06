@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Oct 05 15:39:45 2010 +0800
+ * $Date: Wed Oct 06 11:01:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -81,6 +81,7 @@ $tables = array(
 				'type' => 'UNIQUE',
 				'cols' => array('username')
 			)
+			array('cols' => array('tid'))
 		),
 		'index_len' => array(
 			'username' => USERNAME_LEN_MAX)
@@ -127,18 +128,24 @@ $tables = array(
 	'user_teams' => array( // managed by administrators
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'title' => array('type' => 'TEXT'),
+			'name' => array('type' => 'TEXT200'),
 			'desc' => array('type' => 'TEXT'),
-			'image_file' => array('type' => 'TEXT')
+			'img' => array('type' => 'TEXT')  // image file path related to /contents/uploads/team_image
 		),
-		'primary_key' => 'id'
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('name'))
+		),
+		'index_len' => array('name' => TEAM_NAME_LEN_MAX)
 	),
 
 	/* user_avatars */
 	'user_avatars' => array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'file' => array('type' => 'TEXT') // related to the /contents/uploads directory
+			'file' => array('type' => 'TEXT') // related to /contents/uploads/user_avatar
 		),
 		'primary_key' => 'id'
 	),
@@ -173,6 +180,10 @@ $tables = array(
 			// |--------------------------------------------------------------------|
 			'io' => array('type' => 'TEXT'), // serialized array of input/output file name, or empty string if using stdio
 
+			'hidden' => array('type' => 'INT32'), // whether this problem is hidden
+
+			'time' => array('type' => 'INT64'), // when this problem is added
+
 			'cnt_submit' => array('type' => 'INT32', 'default' => 0),
 			'cnt_ac' => array('type' => 'INT32', 'default' => 0),
 			'cnt_unac' => array('type' => 'INT32', 'default' => 0),
@@ -187,7 +198,8 @@ $tables = array(
 			array(
 				'type' => 'UNIQUE',
 				'cols' => array('slug')
-			)
+			),
+			array('cols' => array('hidden', 'time'))
 		),
 		'index_len' => array(
 			'code' => PROB_CODE_LEN_MAX,

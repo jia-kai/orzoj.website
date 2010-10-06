@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Wed Sep 29 14:16:17 2010 +0800
+ * $Date: Wed Oct 06 09:58:35 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -153,6 +153,9 @@ abstract class Dbal
 	 *		   '=s','!=s'	--	equality or inequality test for string
 	 *							operands:
 	 *								&lt;col name:string&gt;, &lt;value:string&gt;
+	 *		   'like'		--	pattern matching, an underscore (_) in pattern stands for (matches)
+	 *							any single character; a percent sign (%) matches any
+	 *							string of zero or more characters. 
 	 *		   '&gt;', '&gt;=', '&lt;', '&lt;='
 	 *						--	greater than, greater than or equal to, less than, less than or equal to respectivelty
 	 *							the second operand will be converted to int

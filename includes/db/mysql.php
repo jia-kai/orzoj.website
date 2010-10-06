@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Fri Oct 01 15:53:44 2010 +0800
+ * $Date: Wed Oct 06 10:00:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -83,6 +83,7 @@ $DBOP['<='] = new _Mysql_opt(2, '<=', $tmp);
 $tmp = array('_mysql_escape_col_name', '_mysql_escape_string');
 $DBOP['=s'] = new _Mysql_opt(2, '=', $tmp);
 $DBOP['!=s'] = new _Mysql_opt(2, '!=', $tmp);
+$DBOP['like'] = new _Mysql_opt(2, ' LIKE ', $tmp);
 
 $tmp = array('_mysql_escape_add_brck', '_mysql_escape_add_brck');
 $DBOP['&&'] = new _Mysql_opt(2, ' && ', $tmp);

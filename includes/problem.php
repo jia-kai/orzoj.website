@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Mon Oct 04 21:43:11 2010 +0800
+ * $Date: Wed Oct 06 11:10:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,7 +30,8 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'contest/ctal.php';
 
 $PROB_SUBMIT_PINFO = array('id', 'code', 'perm', 'io');
-$PROB_VIEW_PINFO = array('id', 'title', 'code', 'desc', 'perm', 'io');
+$PROB_VIEW_PINFO = array('id', 'title', 'code', 'desc', 'perm', 'io', 'time',
+	'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce');
 
 /**
  * check whether a user has permission for a problem
@@ -82,5 +83,31 @@ function prob_view($pid)
 	$str = tf_get_prob_html($row);
 
 	return filter_apply('after_prob_html', $str, $pid);
+}
+
+/**
+ * get the number of problems
+ * @return int
+ */
+function prob_get_amount()
+{
+	global $db, $DBOP;
+	return $db->get_number_of_rows('problems',
+		array($DBP['='], 'hidden', 0));
+}
+
+/**
+ * get problem list
+ * @param array $fields the fields needed, which should be a subset of $PROB_VIEW_PINFO
+ * @param bool $time_asc order by time ASC(TRUE) or DESC(FALSE)
+ * @param int|NULL $offset
+ * @param int|NULL $cnt
+ */
+function prob_get_list($fields, $time_asc = TRUE, $offset = NULL, $cnt = NULL)
+{
+	global $db, $DBOP;
+	return $db->select_from('problems',
+		$fields, array($DBOP['='], 'hidden', 0),
+		array('time' => $time_asc ? 'ASC' : 'DESC'));
 }
 
