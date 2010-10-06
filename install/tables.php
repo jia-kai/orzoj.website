@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Oct 06 11:01:54 2010 +0800
+ * $Date: Wed Oct 06 11:22:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -457,18 +457,22 @@ $tables = array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'time' => array('type' => 'INT64'),
 			'uid' => array('type' => 'INT32'), // user id
-			'pid' => array('type' => 'INT32'),
-				// if > 0, it's the related problem id; if < 0, it's the negated parent post id;
-				// otherwise it is a root post without relating to any problem
+			'pid' => array('type' => 'INT32', 'default' => 0), // less than 0 means related problem id, greater than 0 means parent id, 0 means no related problem
+			'rid' => array('type' => 'INT32'), // root post id
+			'last_reply_time' => array('type' => 'INT64'),
+			'last_reply_user' => array('type' => 'INT32'), // user id
 			'subject' => array('type' => 'TEXT'),
-			'content' => array('type' => 'TEXT')
+			'content' => array('type' => 'TEXT'),
+			'last_modify_time' => array('type' => 'INT32', 'default' => '-1'), // -1 means no body has modified this post yet
+			'last_modify_user' => array('type' => 'INT32', 'default' => '-1') // user id, -1 see above
 		),
 		'primary_key' => 'id',
 		'index' => array(
 			array(
 				'cols' => array('pid')
-			),
+			)
 		)
 	)
 );
+
 

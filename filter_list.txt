@@ -67,6 +67,18 @@ before_post_add:
 	file: includes/post.php
 	param: array the value to be inserted into the database
 
+before_post_modify:
+	file: includes/post.php
+	param: array the value to be modified.
+
+after_post_list:
+	file: includes/post.php
+	param: array a recursive array of post
+
+before_post_delete:
+	file: includes/post.php
+	param: int $id post id
+
 after_submit_src_form:
 	file: includes/submit.php
 	param: string the HTML code
@@ -75,9 +87,3 @@ before_submit_src: (no iter)
 	file: includes/submit.php
 	param: None
 	executed when the source submission form is just posted, before actually doing anything
-
-after_prob_html:
-	file: includes/problem.php
-	param: string HTML; int problem id
-	executed when the HTML code for this problem is just generated
-
