@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Mon Oct 04 21:48:14 2010 +0800
+ * $Date: Wed Oct 06 13:24:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,6 +34,8 @@ define('IN_ORZOJ', true);
 
 $root_path = realpath(dirname(__FILE__)) . '/';
 $includes_path = $root_path . 'includes/';
+
+$ORZOJ_VERSION = '0.0.1 alpha';
 
 require_once $root_path . 'config.php';
 require_once $includes_path . 'const.inc.php';

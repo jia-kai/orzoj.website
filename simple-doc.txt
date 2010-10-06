@@ -76,7 +76,7 @@ these fields are parsed and converted to HTML by themes
 Note:
 	1. for required functions for theme, see theme-functions-template.php
 	2. see also filter_list.txt
-	3. all the pages accessed by user except those in install are in the top-level directory
+	3. all the pages accessed by user except those in install are in / and /admin
 	4. themes should not operate on database directly except when quering for records (because record queries
 		are usually highly customized, so no API is provided)
 
