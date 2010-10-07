@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Oct 06 09:59:19 2010 +0800
+ * $Date: Thu Oct 07 20:42:26 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -564,7 +564,7 @@ function user_get_username_by_id($uid)
 	$ret = _user_get_name_by_id($uid);
 	if (!$ret)
 		return NULL;
-	return $ret['username']
+	return $ret['username'];
 }
 
 /**
@@ -577,7 +577,7 @@ function user_get_nickname_by_id($uid)
 	$ret = _user_get_name_by_id($uid);
 	if (!$ret)
 		return NULL;
-	return $ret['nickname']
+	return $ret['nickname'];
 }
 
 /**
@@ -590,6 +590,6 @@ function user_get_realname_by_id($uid)
 	$ret = _user_get_name_by_id($uid);
 	if (!$ret)
 		return NULL;
-	return $ret['realname']
+	return $ret['realname'];
 }
 

@@ -87,3 +87,11 @@ before_submit_src: (no iter)
 	file: includes/submit.php
 	param: None
 	executed when the source submission form is just posted, before actually doing anything
+
+after_html_head:
+	file: includes/theme.php
+	param: string the contents in HTML head tag
+
+after_footer:
+	file: includes/theme.php
+	param: string

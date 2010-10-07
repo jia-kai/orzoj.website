@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Thu Oct 07 13:15:49 2010 +0800
+ * $Date: Thu Oct 07 17:37:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,14 +26,32 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-$ORZOJ_PAGE_VARS = array(
-	'title' => $web_site_name,
-	'html_head' => <<<EOF
-	<meta name="description" content="$web_site_name" />
+/**
+ * get contents to be put in the html head tag
+ * @return string
+ */
+function t_get_html_head()
+{
+	global $website_name;
+	$str = <<<EOF
+	<meta name="description" content="$website_name" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="keywords" content="oj, orz, oi, acm, online judge, ioi, noi, noip, apio, ctsc, poi, boi, ceoi" />
 EOF
-	,
-	
-	'footer' => "Powerd by <a href='http://code.google.com/p/orzoj/'>Orz Online Judge $ORZOJ_VERSION</a>"
-);
+	return filter_apply('after_html_head', $str);
+}
+
+/**
+ * get footer
+ * @return string
+ */
+function t_get_footer()
+{
+	global $db;
+	$str = "<br />" .
+		__('%d database queries | page execution time: %d milliseconds |' .
+	   ' powerd by <a href="http://code.google.com/p/orzoj/">Orz Online Judge</a>%s<br />', $db->get_query_amount(),
+			(microtime(TRUE) - $PAGE_START_TIME) * 1000, $ORZOJ_VERSION);
+	return filter_apply('after_footer', $str);
+}
 

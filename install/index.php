@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Thu Oct 07 13:14:44 2010 +0800
+ * $Date: Thu Oct 07 17:17:26 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,7 +38,7 @@ function conf_file_generate($website_name, $db_layer,$db_host,$db_port,$db_usern
 	$website_root = addslashes(urlencode(rtrim($website_root, '/') . '/'));
 	$str = <<<EOF
 <?php
-\$web_site_name = '$web_site_name';
+\$website_name = '$website_name';
 \$db_type = '$db_layer';
 \$db_host = '$db_host';
 \$db_port = '$db_port';

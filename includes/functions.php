@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Oct 04 21:54:07 2010 +0800
+ * $Date: Thu Oct 07 20:34:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -212,61 +212,6 @@ function get_page_url($file)
 	global $website_root, $root_path;
 	$file = realpath($file);
 	return $website_root . substr($file, strlen($root_path));
-}
-
-/**
- * check html tags
- * @param string $text 
- * @return bool whether $text is valid HTML
- */
-function html_checktags($text)
-{
-	for ($cnt = 0, $i = 0, $len = strlen($text); $i < $len; $i ++)
-		if ($text[$i] == '<')
-			$cnt ++;
-		else if ($text[$i] == '>')
-			if ((-- $cnt) < 0)
-				return FALSE;
-	if ($cnt)
-		return FALSE;
-	$single_tags = array('meta','img','br','link','area');
-
-	preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $text, $res);
-	$tags_opened = array();
-	$tmp = $res[1];
-	foreach ($tmp as $v)
-	{
-		$v = strtolower($v);
-		if (!in_array($v, $single_tags))
-		{
-			if (isset($tags_opened[$v]))
-				$tags_opened[$v] ++;
-			else $tags_opened[$v] = 1;
-		}
-	}
-
-	preg_match_all('#</([a-z]+)>#U', $text, $res);
-	$tags_closed = array();
-	$tmp = $res[1];
-	foreach ($tmp as $v)
-	{
-		$v = strtolower($v);
-		if (in_array($v, $single_tags))
-			return FALSE;
-		if (isset($tags_closed[$v]))
-			$tags_closed[$v] ++;
-		else $tags_closed[$v] = 1;
-	}
-
-	foreach ($tags_opened as $tag => $cnt)
-	{
-		if (!isset($tags_closed[$tag]) ||
-			$tags_closed[$tag] != $cnt)
-			return FALSE;
-		unset($tags_closed[$tag]);
-	}
-
-	return count($tags_closed) == 0;
 }
 
 /**

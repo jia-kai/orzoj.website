@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Wed Oct 06 13:24:17 2010 +0800
+ * $Date: Thu Oct 07 20:45:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,10 +23,6 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/* TODO
- *		处理用户配置: lang
- */
 ob_start();
 date_default_timezone_set('GMT');
 error_reporting(E_ALL);
@@ -38,6 +34,8 @@ $includes_path = $root_path . 'includes/';
 $ORZOJ_VERSION = '0.0.1 alpha';
 
 require_once $root_path . 'config.php';
+//XXX: this is for testing
+require_once $root_path . 'theme-functions-template.php';
 require_once $includes_path . 'const.inc.php';
 require_once $includes_path . 'l10n.php';
 require_once $includes_path . 'functions.php';
@@ -72,4 +70,5 @@ if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 	unset($process);
 }
 
+$PAGE_START_TIME = microtime(TRUE);
 
