@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Wed Oct 06 09:49:19 2010 +0800
+ * $Date: Thu Oct 07 11:37:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -59,3 +59,5 @@ define('JUDGE_STATUS_ONLINE',1);
 
 define('DYNAMIC_PASSWORD_LIFETIME', 10); // in seconds
 
+define('ST_PROB_USER_UNAC', 0);
+define('ST_PROB_USER_AC', 1);

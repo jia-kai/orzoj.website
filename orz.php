@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Tue Oct 05 14:35:21 2010 +0800
+ * $Date: Thu Oct 07 11:37:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -146,7 +146,7 @@ function msg_write($status, $data)
 		'status' => $status,
 		'data' => $data,
 		'checksum' => sha1($thread_id . $req_id . sha1($dynamic_password . $static_password) . $status . $data)
-		));
+	));
 }
 
 
@@ -337,6 +337,16 @@ function report_judge_waiting()
 }
 
 /**
+ * @ignore
+ */
+function _get_prob_user_status($status)
+{
+	if ($status == 'cnt_submit') return ST_PROB_USER_UNAC;
+	if ($status == 'cnt_unac') return ST_PROB_USER_UNAC;
+	if ($statsu == 'cnt_ac') return ST_PROB_USER_AC;
+	throw new Exc_inner('Unknown cnt status.');
+}
+/**
  * increase statistics value in the database
  * @param int $rid record id
  * @param array|string $fields
@@ -353,6 +363,21 @@ function increase_statistics_value($rid, $fields)
 		array($DBOP['='], 'id', $row['uid']), $fields);
 	table_update_numeric_value('problems',
 		array($DBOP['='], 'id', $row['pid']), $fields);
+
+
+	$where = array($DBOP['&&'], $DBOP['='], 'uid', $row['uid'], $DBOP['='], 'pid', $row['pid']);
+	$st = $db->select_from('sts_prob_user', array('status'), $where);
+	$status = _get_prob_user_status($fields);
+	if (count($st) == 0)
+		$db->insert_into('sts_prob_user',
+			array('uid' => $row['uid'], 'pid' => $row['pid'], 'status' => $status)
+		);
+	else
+	{
+		$st = $st[0];
+		if ($st['status'] == ST_PROB_USER_UNAC && $status == ST_PROB_USER_AC)
+			$db->update_data('sts_prob_user', array('status' => ST_PROB_USER_AC), $where);
+	}
 }
 
 /**
