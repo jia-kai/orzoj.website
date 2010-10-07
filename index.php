@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Mon Sep 27 00:52:12 2010 +0800
+ * $Date: Thu Oct 07 14:15:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,3 @@
 
 require_once 'pre_include.php';
 
-echo "<br />sched test <br />";
-require_once $includes_path . 'sched.php';
-sched_work();

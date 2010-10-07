@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Thu Oct 07 12:05:57 2010 +0800
+ * $Date: Thu Oct 07 13:14:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,8 +28,9 @@ ob_start();
 define('IN_ORZOJ',true);
 header('Content-type:text/html;charset=utf-8');
 
-function conf_file_generate($db_layer,$db_host,$db_port,$db_username,$db_password,$db_name,$table_prefix)
+function conf_file_generate($website_name, $db_layer,$db_host,$db_port,$db_username,$db_password,$db_name,$table_prefix)
 {
+	$website_name = addslashes($website_name);
 	$db_username = addslashes($db_username);
 	$db_password = addslashes($db_password);
 	$db_name = addslashes($db_name);
@@ -37,6 +38,7 @@ function conf_file_generate($db_layer,$db_host,$db_port,$db_username,$db_passwor
 	$website_root = addslashes(urlencode(rtrim($website_root, '/') . '/'));
 	$str = <<<EOF
 <?php
+\$web_site_name = '$web_site_name';
 \$db_type = '$db_layer';
 \$db_host = '$db_host';
 \$db_port = '$db_port';
@@ -87,6 +89,7 @@ case 1:
 </head>
 <body>
 <form name="install" method="post" action="?step=2">
+Website name:<input name="website_name" type="text" /> <br />
 Database Type:<select name="db_layer"><option value="mysql">MySQL(&gt;5.0)</option><option value="postgresql">PostgreSQL</option></select><br />
 Database Host Address:<input name="db_host" type="text" /><br />
 Database Host Port:<input name="db_port" type="text" /><br />
@@ -105,6 +108,7 @@ case 2:
 </head>
 <body>
 <?php
+	$website_name = $_POST['website_name'];
 	$db_host = $_POST['db_host'];
 	$db_layer = $_POST['db_layer'];
 	$db_port = $_POST['db_port'];
@@ -122,7 +126,7 @@ case 2:
 		require_once $includes_path . 'db/'.$db_layer.'.php';
 		require_once 'tables.php';
 
-		conf_file_generate($db_layer, $db_host, $db_port, $db_username,
+		conf_file_generate($website_name, $db_layer, $db_host, $db_port, $db_username,
 			$db_password, $db_name, $table_prefix);
 
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Oct 07 12:40:28 2010 +0800
+ * $Date: Thu Oct 07 14:13:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,7 +23,5 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-define('IN_ORZOJ', true);
 ?>
 

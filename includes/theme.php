@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Wed Oct 06 13:27:05 2010 +0800
+ * $Date: Thu Oct 07 13:15:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,9 +27,9 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 $ORZOJ_PAGE_VARS = array(
-	'title' => __('Orz Online Judge'),
+	'title' => $web_site_name,
 	'html_head' => <<<EOF
-	<meta name="description" content="Orz Online Judge" />
+	<meta name="description" content="$web_site_name" />
 	<meta name="keywords" content="oj, orz, oi, acm, online judge, ioi, noi, noip, apio, ctsc, poi, boi, ceoi" />
 EOF
 	,
