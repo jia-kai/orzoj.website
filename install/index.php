@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Sat Oct 02 11:32:29 2010 +0800
+ * $Date: Thu Oct 07 12:05:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -141,8 +141,7 @@ case 2:
 			echo 'Table "'. $name . '" created successfully<br />';
 			ob_flush();
 		}
-		echo 'Installation completed. Please move install/config.php to the top direcotry of orzoj-website ' .
-			'and delete "install" directory.';
+		echo __('Installation completed. Please move install/config.php to the top direcotry of orzoj-website and delete "install" directory.');
 	}
 	catch (Exc_orzoj $e)
 	{

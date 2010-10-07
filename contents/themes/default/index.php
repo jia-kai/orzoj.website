@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Oct 07 11:39:24 2010 +0800
+ * $Date: Thu Oct 07 12:40:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,5 +25,5 @@
  */
 
 define('IN_ORZOJ', true);
-
+?>
 
