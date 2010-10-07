@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Oct 06 11:22:18 2010 +0800
+ * $Date: Thu Oct 07 11:37:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -161,7 +161,7 @@ $tables = array(
 				// serialized array of (<field name> => <value>)
 				// e.g. array('time'=>'1s', 'memory'=>'256MB', 'desc'=>'...')
 				// see simple-doc.txt
-			'perm' => array('type' => 'TEXT'),
+			'perm' => array('type' => 'TEXT'), // permission
 			// serialized array (order, no_match, grp_allow, grp_deny),
 			// order = 0: allow, deny
 			// order = 1: deny, allow
@@ -473,6 +473,19 @@ $tables = array(
 			)
 		)
 	)
-);
 
+	/* sts_prob_user */
+	'sts_prob_user' => array( // the user status of a specific problem
+		'cols' => array(
+			'uid' => array('type' => 'INT32'),
+			'pid' => array('type' => 'INT32'),
+			'status' => array('type' => '')
+		)
+		'index' => array(
+			array(
+				'cols' => array('uid', 'pid');
+			)
+		)
+	)
+);
 
