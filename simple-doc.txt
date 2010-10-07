@@ -43,6 +43,7 @@
 |	|	|--	...
 |	|--	lang/			.mo files for various languages
 |	|	|-- *.mo
+|	|--	editors/		system-wide editors (shared by themes)
 |--	admin/				
 |	|--	index.php		website administation
 |--	orz.php				communicate with orzoj-server
