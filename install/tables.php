@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Fri Oct 08 10:19:06 2010 +0800
+ * $Date: 五 10月 08 18:56:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -80,7 +80,7 @@ $tables = array(
 			array(
 				'type' => 'UNIQUE',
 				'cols' => array('username')
-			),
+			)
 			array('cols' => array('tid'))
 		),
 		'index_len' => array(
@@ -156,7 +156,6 @@ $tables = array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'title' => array('type' => 'TEXT'),
 			'code' => array('type' => 'TEXT200'), // like the code on SPOJ
-			'slug' => array('type' => 'TEXT200'), // url friendly title.
 			'desc' => array('type' => 'TEXT'),
 				// serialized array of (<field name> => <value>)
 				// e.g. array('time'=>'1s', 'memory'=>'256MB', 'desc'=>'...')
@@ -195,15 +194,10 @@ $tables = array(
 				'type' => 'UNIQUE',
 				'cols' => array('code')
 			),
-			array(
-				'type' => 'UNIQUE',
-				'cols' => array('slug')
-			),
 			array('cols' => array('hidden', 'time'))
 		),
 		'index_len' => array(
-			'code' => PROB_CODE_LEN_MAX,
-			'slug' => PROB_SLUG_LEN_MAX
+			'code' => PROB_CODE_LEN_MAX
 		)
 	),
 

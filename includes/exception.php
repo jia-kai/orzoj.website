@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: exception.php
- * $Date: Sun Oct 03 17:10:40 2010 +0800
+ * $Date: Fri Oct 08 13:25:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -67,6 +67,13 @@ class Exc_runtime extends Exc_orzoj
  * database exception
  */
 class Exc_db extends Exc_orzoj
+{
+}
+
+/**
+ * XHTML validator exception
+ */
+class Exc_xhtml extends Exc_runtime
 {
 }
 

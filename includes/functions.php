@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Fri Oct 08 13:46:55 2010 +0800
+ * $Date: Fri Oct 08 19:25:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -240,5 +240,61 @@ function table_update_numeric_value($table, $where, $fields, $delta = 1)
 		$val[$k] += $delta;
 
 	$db->update_data($table, $val, $where);
+}
+
+/**
+ * @ignore
+ */
+$_xhtml_error = NULL;
+
+/**
+ * @ignore
+ */
+function _xhtml_error_handler($errno, $msg)
+{
+	global $_xhtml_error;
+	$_xhtml_error = $msg;
+}
+
+define('_XHTML_ROOT', 'orzoj-xhtml');
+
+/**
+ * check user posted XHTML data
+ * @param string $text
+ * @return void
+ * @exception Exc_xhtml on error
+ */
+function xhtml_validate($text)
+{
+	$text = '<' . _XHTML_ROOT . '>' . $text . '</' . _XHTML_ROOT . '>';
+	global $_xhtml_error, $root_path;
+	$_xhtml_error = NULL;
+	set_error_handler('_xhtml_error_handler');
+
+	$old = new DOMDocument;
+	$old->loadXML($text);
+
+	if (is_null($_xhtml_error))
+	{
+		$creator = new DOMImplementation;
+		$doctype = $creator->createDocumentType(_XHTML_ROOT, NULL,
+		   $root_path . 'contents/' . _XHTML_ROOT . '.dtd');
+		$new = $creator->createDocument(NULL, NULL, $doctype);
+		$new->encoding = "utf-8";
+
+		$new->strictErrorChecking = FALSE;
+		// setting $new->strictErrorChecking to TRUE seems not to work on my system
+
+		$new->appendChild(
+			$new->importNode(
+				$old->getElementsByTagName(_XHTML_ROOT)->item(0), TRUE));
+
+		$new->validate();
+	}
+
+	restore_error_handler();
+
+	if (!is_null($_xhtml_error))
+		throw new Exc_xhtml($_xhtml_error);
 }
 

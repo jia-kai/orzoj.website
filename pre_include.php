@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Fri Oct 08 15:50:35 2010 +0800
+ * $Date: 五 10月 08 18:58:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,16 +24,15 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 $PAGE_START_TIME = microtime(TRUE);
-
 ob_start();
 date_default_timezone_set('GMT');
 error_reporting(E_ALL);
 define('IN_ORZOJ', true);
 
-$root_path = realpath(dirname(__FILE__)) . '/';
+$root_path = rtrim(realpath(dirname(__FILE__)), '/') . '/';
 $includes_path = $root_path . 'includes/';
 
-$ORZOJ_VERSION = '0.0.1 alpha';
+$ORZOJ_VERSION = '0.0.1-alpha';
 
 require_once $root_path . 'config.php';
 require_once $includes_path . 'const.inc.php';

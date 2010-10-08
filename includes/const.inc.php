@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Thu Oct 07 20:42:08 2010 +0800
+ * $Date: Fri Oct 08 14:22:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,7 +30,6 @@ if (!defined('IN_ORZOJ'))
 define('OPTION_KEY_LEN_MAX', 30);
 define('JUDGE_NAME_LEN_MAX', 20);
 define('PROB_CODE_LEN_MAX', 25);
-define('PROB_SLUG_LEN_MAX', 100);
 define('USERNAME_LEN_MAX', 20);
 define('USERNAME_LEN_MIN', 3);
 define('PLANG_NAME_LEN_MAX', 20);

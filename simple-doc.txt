@@ -44,6 +44,7 @@
 |	|--	lang/			.mo files for various languages
 |	|	|-- *.mo
 |	|--	editors/		system-wide editors (shared by themes)
+|	|-- orzoj-xhtml.dtd DTD for allowed XHTML tags in user posted data
 |--	admin/				
 |	|--	index.php		website administation
 |--	orz.php				communicate with orzoj-server
