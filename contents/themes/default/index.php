@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri Oct 08 19:55:07 2010 +0800
+ * $Date: Fri Oct 08 22:04:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,7 +27,7 @@
 /**
  * @ignore
  */
-function get_url($file)
+function _url($file)
 {
 	global $theme_path;
 	echo get_page_url($theme_path . $file);
@@ -37,12 +37,15 @@ function get_url($file)
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<?php echo t_get_html_head(); ?>
-<link rel="stylesheet" type="text/css" href="<?php get_url('style.css'); ?>" />
+	<link rel="stylesheet" type="text/css" href="<?php _url('style.css'); ?>" />
+	<link rel="icon" type="image/vnd.microsoft.icon" href="<? _url('images/favicon.ico'); ?>">
+	<link rel="icon" type="image/jpeg" href="<? _url('images/favicon.jpg'); ?>">
+
 </head>
 <body>
 	<div id="left">
 		<div id="logo">
-			<img src="<?php get_url('images/logo.png'); ?>" alt="Logo"/>
+			<img src="<?php _url('images/logo.png'); ?>" alt="Logo"/>
 		</div>
 		<div id="sidebar">
 			<div id="login">
