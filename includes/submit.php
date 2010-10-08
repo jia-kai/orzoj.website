@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Tue Oct 05 14:34:28 2010 +0800
+ * $Date: Fri Oct 08 19:48:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,9 +31,9 @@ require_once $includes_path . 'problem.php';
 require_once $includes_path . 'contests/ctal.php';
 
 /**
- * get a form for submitting source code
+ * echo fileds in the form for submitting source code
  * @param int $pid default problem id
- * @return string
+ * @return void
  */
 function submit_src_get_form($pid)
 {
@@ -49,7 +49,7 @@ function submit_src_get_form($pid)
 		tf_form_get_text_input(__('Problem id:'), 'pid', $pid) .
 		tf_form_get_select(__('Programming language:'), 'plang', $plang, $user->plang) .
 		tf_form_get_source_editor(__('Source:'), 'src');
-	return filter_apply('after_submit_src_form', $str);
+	echo filter_apply('after_submit_src_form', $str);
 }
 
 /**

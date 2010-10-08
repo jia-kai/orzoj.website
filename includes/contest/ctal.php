@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Mon Oct 04 21:45:47 2010 +0800
+ * $Date: Fri Oct 08 19:45:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -46,9 +46,9 @@ abstract class Ctal
 	}
 
 	/**
-	 * get contest-type specific form fields when adding a new contest
+	 * echo contest-type specific form fields when adding a new contest
 	 * $data in __construct: NULL
-	 * @return NULL|string NULL if no extra fields, or form fileds to be added in HTML
+	 * @return void
 	 */
 	abstract protected function get_form_fields();
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Fri Oct 08 15:52:37 2010 +0800
+ * $Date: Fri Oct 08 20:07:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,8 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+// TODO: checker
 
 /**
  * @ignore
@@ -57,7 +59,7 @@ function tf_form_register_checker($func)
  */
 function tf_form_get_text_input($prompt, $post_name, $checker = NULL, $default = NULL)
 {
-	return sprintf('%s<input name="%s" %s %s /><br />',
+	return sprintf('<label>%s<input type="text" name="%s" %s %s /><br /></label>' . "\n",
 		$prompt, $post_name,
 		is_null($default) ? '' : sprintf('value="%s"', htmlcode($default)),
 		'');
@@ -69,6 +71,10 @@ function tf_form_get_text_input($prompt, $post_name, $checker = NULL, $default =
  */
 function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
 {
+	if (is_null($default))
+		$default = '';
+	else $default = htmlencode($default);
+	return "<label>$prompt<textarea name=\"$post_name\">$default</textarea><br /></label>\n";
 }
 
 /**
@@ -172,6 +178,8 @@ function tf_form_get_avatar_browser($prompt, $post_name, $default = NULL)
  */
 function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL)
 {
+	if (is_null($confirm_input))
+		return "<label>$prompt<input type=\"password\" name=\"$post_name\" /></label>\n";
 }
 
 /**

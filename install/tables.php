@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: 五 10月 08 18:56:57 2010 +0800
+ * $Date: Fri Oct 08 19:41:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -80,7 +80,7 @@ $tables = array(
 			array(
 				'type' => 'UNIQUE',
 				'cols' => array('username')
-			)
+			),
 			array('cols' => array('tid'))
 		),
 		'index_len' => array(

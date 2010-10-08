@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Wed Oct 06 11:59:31 2010 +0800
+ * $Date: Fri Oct 08 19:46:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -87,15 +87,15 @@ function post_add($pid)
 }
 
 /**
- * get the new post form
- * @return string HTML code
+ * echo form fileds for adding a new post
+ * @return void
  */
 function post_add_get_form()
 {
 	$str =
 		tf_form_get_text_input(__('Subject:'), 'subject') .
 		tf_form_get_rich_text_editor(__('Content:'), 'content');
-	return filter_apply('after_post_add_form', $str);
+	echo filter_apply('after_post_add_form', $str);
 }
 
 /**
@@ -227,9 +227,9 @@ function post_modify_post()
 }
 
 /**
- *  get the post modify form
+ *  echo form fields for modifying a post
  *  @param int $id post id
- *  @return string HTML code
+ *  @return void
  */
 function post_modify_post_get_form($id)
 {
@@ -237,6 +237,6 @@ function post_modify_post_get_form($id)
 		tf_form_get_text_input(__('Subject:'), 'subject') .
 		tf_form_get_rich_text_editor(__('Content:'), 'content') .
 		tf_form_get_hidden('post_id', $id);
-	return filter_apply('after_post_modify_form', $str);
+	echo filter_apply('after_post_modify_form', $str);
 }
 

@@ -7,7 +7,21 @@ body
 	min-width: 800px;
 	width: 80%;
 	margin: auto;
-	font: 12px Verdana, Arial, sans-serif;
+	font: 0.85em Verdana, Arial, sans-serif;
+}
+
+input[type="text"]:hover, input[type="password"]:hover, textarea:hover
+{
+	border-color: green;
+	border-style: dotted;
+}
+
+input[type="text"], input[type="password"], textarea
+{
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	margin: 2px;
 }
 
 #left
@@ -31,7 +45,7 @@ body
 
 #logo
 {
-	width: 100%
+	width: 100%;
 	padding: 5px;
 	margin: 3px;
 }

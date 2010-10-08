@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Fri Oct 08 15:50:14 2010 +0800
+ * $Date: Fri Oct 08 19:48:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -236,15 +236,15 @@ function user_check_login($cookie_time = NULL)
 }
 
 /**
- * get user login form
- * @return string HTML login form
+ * echo fileds in user login form
+ * @return void
  */	
 function user_check_login_get_form()
 {
 	$str = 
 		tf_form_get_text_input(__('Username:'), 'username') .
 		tf_form_get_passwd(__('Password:'), 'password');
-	return filter_apply('after_user_login_form', $str);
+	echo filter_apply('after_user_login_form', $str);
 }
 
 /**
@@ -387,8 +387,8 @@ function _user_init_plang_wlang()
 }
 
 /**
- * get user register form 
- * @return string register form fields in HTML
+ * echo fields in user register form 
+ * @return void
  * @see user_register
  */
 function user_register_get_form()
@@ -405,7 +405,7 @@ function user_register_get_form()
 		tf_form_get_select(__('Preferred programming language:'), 'plang', $_user_plang) .
 		tf_form_get_select(__('Preferred website language:'), 'wlang', $_user_wlang) .
 		tf_form_get_long_text_input(__('Self description:'), 'self_desc');
-	return filter_apply('after_user_register_form', $str);
+	echo filter_apply('after_user_register_form', $str);
 }
 
 /**
@@ -495,8 +495,8 @@ function user_chpasswd($uid, $oldpwd, $newpwd)
 
 
 /**
- * get a form for updating user information
- * @return string
+ * echo fields in the form for updating user information
+ * @return void
  * @see user_update_info
  */
 function user_update_info_get_form()
@@ -517,7 +517,7 @@ function user_update_info_get_form()
 		tf_form_get_team_selector(__('Your team:'), 'tid', $user->tid) .
 		tf_form_get_long_text_input(__('Self description:'), 'self_desc');
 
-	return filter_apply('after_user_update_info_form', $str);
+	echo filter_apply('after_user_update_info_form', $str);
 }
 
 /**

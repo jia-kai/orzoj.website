@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: message.php
- * $Date: Wed Oct 06 11:17:05 2010 +0800
+ * $Date: Fri Oct 08 19:45:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -82,8 +82,8 @@ function message_send()
 }
 
 /**
- * get a form for sending messages
- * @return string
+ * echo form fields for sending messages
+ * @return void
  */
 function message_send_get_form()
 {
@@ -91,7 +91,7 @@ function message_send_get_form()
 		tf_form_get_text_input(__('Receiver:'), 'uid_rcv') .
 		tf_form_get_text_input(__('Title:'), 'subject') .
 		tf_form_get_rich_text_editor(__('Content:'), 'content');
-	return filter_apply('after_message_send_form', $str);
+	echo filter_apply('after_message_send_form', $str);
 }
 
 /**

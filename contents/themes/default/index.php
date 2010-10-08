@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri Oct 08 15:34:37 2010 +0800
+ * $Date: Fri Oct 08 19:55:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -46,8 +46,8 @@ function get_url($file)
 		</div>
 		<div id="sidebar">
 			<div id="login">
+				<?php user_check_login_get_form();?>
 			</div>
-				<?php echo user_check_login_get_form();?>
 			<div id="toprank">
 			</div>
 		</div>
