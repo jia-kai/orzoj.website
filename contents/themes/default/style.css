@@ -1,0 +1,62 @@
+body
+{
+	background-color: #3f7fff;
+	padding: 0;
+	border: 0;
+	text-align: center;
+	min-width: 800px;
+	width: 80%;
+	margin: auto;
+	font: 12px Verdana, Arial, sans-serif;
+}
+
+#left
+{
+	width: 30%;
+	float: left;
+}
+
+#right
+{
+	width: 70%;
+	float: right;
+}
+
+#footer
+{
+	clear: both;
+}
+
+
+
+#logo
+{
+	width: 100%
+	padding: 5px;
+	margin: 3px;
+}
+
+#sidebar
+{
+	padding: 5px;
+}
+
+#login
+{
+	padding: 2px;
+	margin: 2px;
+}
+
+#toprank
+{
+	padding: 2px;
+	margin: 2px;
+}
+
+#guidance
+{
+}
+
+#content
+{
+}

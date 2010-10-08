@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Oct 07 20:42:26 2010 +0800
+ * $Date: Fri Oct 08 15:50:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -339,7 +339,17 @@ function user_get_id_by_name($name)
 	return FALSE;
 }
 
-$_user_checker_id = tf_form_register_checker('user_check_name_string_output');
+$_user_checker_id = NULL;
+
+/**
+ * initialize user check id
+ * @return void
+ */
+function user_init_form()
+{
+	global $_user_checker_id;
+	$_user_checker_id = tf_form_register_checker('user_check_name_string_output');
+}
 
 /**
  * check whether the username is a valid one
@@ -356,7 +366,7 @@ function user_check_name_string_output($name)
 		return __('username should begin with a letter and only contain letters, digits, dots(.) or underscores(_)');
 	if (user_get_id_by_name($name))
 		return __('username %s already exists', $name);
-	return __('OK');
+	return __('Username avaliable');
 }
 
 

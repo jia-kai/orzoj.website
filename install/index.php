@@ -1,7 +1,10 @@
 <?php
+/* TODO
+ * Add Default theme and users and some other things
+ */
 /* 
  * $File: index.php
- * $Date: Thu Oct 07 17:17:26 2010 +0800
+ * $Date: Fri Oct 08 13:53:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,14 +31,14 @@ ob_start();
 define('IN_ORZOJ',true);
 header('Content-type:text/html;charset=utf-8');
 
-function conf_file_generate($website_name, $db_layer,$db_host,$db_port,$db_username,$db_password,$db_name,$table_prefix)
+function conf_file_generate($db_layer,$db_host,$db_port,$db_username,$db_password,$db_name,$table_prefix)
 {
-	$website_name = addslashes($website_name);
+	$website_name = addslashes($_POST['website_name']);
 	$db_username = addslashes($db_username);
 	$db_password = addslashes($db_password);
 	$db_name = addslashes($db_name);
 	$table_prefix = addslashes($table_prefix);
-	$website_root = addslashes(urlencode(rtrim($website_root, '/') . '/'));
+	$website_root = str_replace('%2F', '/', addslashes(urlencode(rtrim($_POST['website_root'], '/') . '/')));
 	$str = <<<EOF
 <?php
 \$website_name = '$website_name';
@@ -108,7 +111,6 @@ case 2:
 </head>
 <body>
 <?php
-	$website_name = $_POST['website_name'];
 	$db_host = $_POST['db_host'];
 	$db_layer = $_POST['db_layer'];
 	$db_port = $_POST['db_port'];
@@ -126,7 +128,7 @@ case 2:
 		require_once $includes_path . 'db/'.$db_layer.'.php';
 		require_once 'tables.php';
 
-		conf_file_generate($website_name, $db_layer, $db_host, $db_port, $db_username,
+		conf_file_generate($db_layer, $db_host, $db_port, $db_username,
 			$db_password, $db_name, $table_prefix);
 
 

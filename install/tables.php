@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Thu Oct 07 11:37:36 2010 +0800
+ * $Date: Fri Oct 08 10:19:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -80,7 +80,7 @@ $tables = array(
 			array(
 				'type' => 'UNIQUE',
 				'cols' => array('username')
-			)
+			),
 			array('cols' => array('tid'))
 		),
 		'index_len' => array(
@@ -472,20 +472,29 @@ $tables = array(
 				'cols' => array('pid')
 			)
 		)
-	)
+	),
 
 	/* sts_prob_user */
 	'sts_prob_user' => array( // the user status of a specific problem
 		'cols' => array(
 			'uid' => array('type' => 'INT32'),
 			'pid' => array('type' => 'INT32'),
-			'status' => array('type' => '')
-		)
+			'status' => array('type' => 'INT32')
+		),
 		'index' => array(
 			array(
-				'cols' => array('uid', 'pid');
+				'cols' => array('uid', 'pid')
 			)
 		)
+	),
+
+	/* themes */
+	'themes' => array(
+		'cols' => array(
+			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'name' => array('type' => 'TEXT')
+		),
+		'primary_key' => 'id'
 	)
 );
 
