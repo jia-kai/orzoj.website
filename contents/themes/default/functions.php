@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Fri Oct 08 20:07:21 2010 +0800
+ * $Date: Sat Oct 09 21:39:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -59,8 +59,10 @@ function tf_form_register_checker($func)
  */
 function tf_form_get_text_input($prompt, $post_name, $checker = NULL, $default = NULL)
 {
-	return sprintf('<label>%s<input type="text" name="%s" %s %s /><br /></label>' . "\n",
-		$prompt, $post_name,
+	$id = "input_$post_name";
+	return sprintf('<tr><td><label  for="%s">%s</label></td>
+		<td><input type="text" id="%s" name="%s" %s %s /></td></tr>' . "\n",
+		$id, $prompt, $id, $post_name,
 		is_null($default) ? '' : sprintf('value="%s"', htmlcode($default)),
 		'');
 }
@@ -74,7 +76,9 @@ function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
 	if (is_null($default))
 		$default = '';
 	else $default = htmlencode($default);
-	return "<label>$prompt<textarea name=\"$post_name\">$default</textarea><br /></label>\n";
+	return "<tr><td><label class=\"in-form\" for=\"input_$post_name\">$prompt</label></td>
+		<td><textarea name=\"$post_name\" id=\"input_$post_name\"></td></tr>
+		$default</textarea><br />\n";
 }
 
 /**
@@ -179,7 +183,8 @@ function tf_form_get_avatar_browser($prompt, $post_name, $default = NULL)
 function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL)
 {
 	if (is_null($confirm_input))
-		return "<label>$prompt<input type=\"password\" name=\"$post_name\" /></label>\n";
+		return "<tr><td><label for=\"input_$post_name\" class=\"in-form\">$prompt</label></td>
+		<td><input type=\"password\" name=\"$post_name\" id=\"input_$post_name\" /></td></tr>\n";
 }
 
 /**

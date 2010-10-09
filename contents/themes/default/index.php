@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri Oct 08 22:04:11 2010 +0800
+ * $Date: Sat Oct 09 22:05:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,38 +32,126 @@ function _url($file)
 	global $theme_path;
 	echo get_page_url($theme_path . $file);
 }
+
+$PAGES = array(
+	// <page name> => array(<display name>, <file>)
+	'home' => array(__('Home'), 'home.php'),
+	'problem' => array(__('Problems'), 'problem.php'),
+	'status' => array(__('Status'), 'status.php'),
+	'rank' => array(__('Rank'), 'rank.php'),
+	'contest' => array(__('Contest'), 'contest.php'),
+	'discuss' => array(__('Discuss'), 'discuss.php'),
+	'team' => array(__('User Teams'), 'team.php'),
+	'judge' => array(__('Judges'), 'judge.php'),
+	'faq' => array(__('FAQ'), 'faq.php')
+);
+
+if (!isset($cur_page) || !isset($PAGES[$cur_page]))
+	die('unknown page');
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<?php echo t_get_html_head(); ?>
+	<?php t_get_html_head(); ?>
+	<title>Orz Online Judge</title>
 	<link rel="stylesheet" type="text/css" href="<?php _url('style.css'); ?>" />
-	<link rel="icon" type="image/vnd.microsoft.icon" href="<? _url('images/favicon.ico'); ?>">
-	<link rel="icon" type="image/jpeg" href="<? _url('images/favicon.jpg'); ?>">
+	<link rel="icon" type="image/vnd.microsoft.icon" href="<? _url('images/favicon.ico'); ?>" />
+	<link rel="icon" type="image/jpeg" href="<?php _url('images/favicon.jpg'); ?>" />
+
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta http-equiv="expires" content="Wed, 23 Aug 2006 12:40:27 UTC" />
+
+	<link href="<?php _url('scripts/jquery/ui-css/ui.custom.css'); ?>" rel="stylesheet" type="text/css" />
+	<link href="<?php _url('scripts/jquery/fancybox/jquery.fancybox-1.3.1.css'); ?>" rel="stylesheet" type="text/css" />
+
+	<script type="text/javascript" src="<?php _url('scripts/jquery/jquery.js');?>"></script>
+	<script type="text/javascript" src="<?php _url('scripts/jquery/ui.js');?>"></script>
+	<script type="text/javascript" src="<?php _url('scripts/jquery/fancybox/jquery.mousewheel-3.0.2.pack.js');?>"></script>
+	<script type="text/javascript" src="<?php _url('scripts/jquery/fancybox/jquery.fancybox-1.3.1.pack.js');?>"></script>
+
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var h = $("#content").height() + 10;
+			$("img.bgleft").height(h);
+			$("img.bgright").height(h);
+			$("#navigator").buttonset();
+			$("button").button();
+			$("#user-register").fancybox();
+		});
+	</script>
 
 </head>
 <body>
-	<div id="left">
-		<div id="logo">
-			<img src="<?php _url('images/logo.png'); ?>" alt="Logo"/>
-		</div>
-		<div id="sidebar">
-			<div id="login">
-				<?php user_check_login_get_form();?>
+
+	<div style="margin:10px;"></div>
+	<div id="page">
+		<div id="header">
+			<img src="<?php _url('images/banner.gif');?>" class="banner" alt="banner" />
+			<div class="banner-right">
+				<form action="?login" id="login-form" method="POST">
+					<table class="in-form" border="0">
+						<?php user_check_login_get_form(); ?>
+					</table>
+					<a href="<?php _url('user_register.php'); ?>" id="user-register">
+						<button type="button" class="in-form" ><?php echo __('Register'); ?></button>
+					</a>
+					<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
+				</form>
 			</div>
-			<div id="toprank">
+		</div>
+
+		<div class="clearer"></div>
+
+		<div class="navigator">
+			<div id="navigator">
+			<form action="#">
+<?php
+
+foreach ($PAGES as $name => $value)
+{
+	$id = "nav_$name";
+	echo "<input type=\"radio\" name=\"navigator\" class=\"navigator\" id=\"$id\" ";
+	if ($name == $cur_page)
+		echo ' checked="checked" ';
+	echo "/><label for=\"$id\" class=\"navigator\">$value[0]</label>\n";
+}
+
+?>
+			</form>
 			</div>
 		</div>
-	</div>
-	<div id="right">
-		<div id="guidance">
-		</div>
+		<div class="clearer"></div>
+
+		<img src="<?php _url('images/bg_cornerul.jpg');?>" alt="corner" class="bgcornerl" />
+		<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgtop" />
+		<img src="<?php _url('images/bg_cornerur.jpg');?>" alt="corner" class="bgcornerr" />
+		<div class="clearer"></div>
+
+		<div  class="bgleft" ></div>
+		<img src="<?php _url('images/empty.gif'); ?>" alt="left" class="bgleft" />
 		<div id="content">
+			dfjioasjfiojsd iojdsof joasidj osdafjo fjsoda
+			<br />
+			<br />
+			<br />
+			<br />
+			<br />
+			<br />
+			<br />
+			<br />
 		</div>
-	</div>
-	<div id="footer">
-	<?php echo t_get_footer(); ?>
-	</div>
+		<img src="<?php _url('images/empty.gif'); ?>" alt="right" class="bgright" />
+	
+		<div class="clearer"></div>
+		<img src="<?php _url('images/bg_cornerdl.jpg');?>" alt="corner" class="bgcornerl" />
+		<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgbottom" />
+		<img src="<?php _url('images/bg_cornerdr.jpg');?>" alt="corner" class="bgcornerr" />
+
+		<?php t_get_footer(); ?>
+	</div> <!-- id: page -->
+
 </body>
 </html>
 

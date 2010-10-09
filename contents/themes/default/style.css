@@ -1,13 +1,29 @@
+/*
+ * $File: style.css
+ * $Date: Sat Oct 09 21:47:31 2010 +0800
+
+ This file is part of orzoj
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 body
 {
-	background-color: #3f7fff;
 	padding: 0;
 	border: 0;
-	text-align: center;
-	min-width: 800px;
-	width: 80%;
-	margin: auto;
-	font: 0.85em Verdana, Arial, sans-serif;
+	margin: 0;
+	font: 16px Verdana, Arial, sans-serif;
+	background-color: black; 
 }
 
 input[type="text"]:hover, input[type="password"]:hover, textarea:hover
@@ -22,55 +38,118 @@ input[type="text"], input[type="password"], textarea
 	border-width: 1px;
 	border-color: black;
 	margin: 2px;
-}
-
-#left
-{
-	width: 30%;
+	height: 16px;
 	float: left;
 }
 
-#right
+div
 {
-	width: 70%;
-	float: right;
+	border: 0;
+	margin: 0;
+	padding: 0;
 }
 
-#footer
+div#page
+{
+	width: 960px;
+	margin: auto;
+	border: 0;
+	padding: 0px;
+	color: white;
+	text-align: center;
+}
+
+img
+{
+	float: left;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+img.bgcornerl
+{
+	width: 50px;
+	height: 50px;
+}
+
+img.bgcornerr
+{
+	float: right;
+	width: 50px;
+	height: 50px;
+}
+
+img.bgtop
+{
+	height: 50px;
+	width: 860px;
+	background: url('images/bg_top.jpg') repeat-x;
+}
+
+img.bgbottom
+{
+	height: 50px;
+	width: 860px;
+	background: url('images/bg_bottom.jpg') repeat-x;
+}
+
+img.bgleft
+{
+	width: 50px;
+	background: url('images/bg_left.jpg') repeat-y;
+}
+
+img.bgright
+{
+	float: right;
+	width: 50px;
+	background: url('images/bg_right.jpg') repeat-y;
+}
+
+img.banner
+{
+	margin: 10px;
+}
+
+div#content
+{
+	float: left;
+	border: 0;
+	margin: 0;
+	padding: 5px;
+	width: 850px;
+}
+
+div.banner-right
+{
+	float: left;
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+div.navigator
+{
+	max-width: 960px;
+}
+
+label.navigator
+{
+	margin: 5px;
+	font-size: 16px;
+}
+
+div.clearer
 {
 	clear: both;
+	padding: 0;
+	margin: 0;
+	border: 0;
 }
 
-
-
-#logo
+button.in-form
 {
-	width: 100%;
-	padding: 5px;
-	margin: 3px;
+	font-size: 12px;
 }
 
-#sidebar
-{
-	padding: 5px;
-}
-
-#login
-{
-	padding: 2px;
-	margin: 2px;
-}
-
-#toprank
-{
-	padding: 2px;
-	margin: 2px;
-}
-
-#guidance
-{
-}
-
-#content
-{
-}

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Fri Oct 08 19:42:49 2010 +0800
+ * $Date: Sat Oct 09 20:17:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -53,6 +53,11 @@ _index_set_theme(user_check_login() ? $user->theme_id : NULL);
 require_once $theme_path. 'functions.php';
 
 user_init_form();
+
+/**
+ * XXX: just for test
+ */
+$cur_page = 'home';
 
 require_once  $theme_path . 'index.php';
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Fri Oct 08 15:43:48 2010 +0800
+ * $Date: Sat Oct 09 20:36:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,27 +28,27 @@ if (!defined('IN_ORZOJ'))
 
 
 /**
- * get contents to be put in the html head tag
- * @return string
+ * echo contents to be put in the html head tag
+ * @return void
  */
 function t_get_html_head()
 {
 	global $website_name;
 	$str = <<<EOF
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 	<meta name="description" content="$website_name" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="keywords" content="oj, orz, oi, acm, online judge, ioi, noi, noip, apio, ctsc, poi, boi, ceoi" />
 	<meta name="robots" content="all" />
 	<meta name="MSSmartTagsPreventParsing" content="true" />
 	<meta http-equiv="imagetoolbar" content="false" />
 EOF
 	;
-	return filter_apply('after_html_head', $str);
+	echo filter_apply('after_html_head', $str);
 }
 
 /**
- * get footer
- * @return string
+ * echo footer
+ * @return void
  */
 function t_get_footer()
 {
@@ -57,9 +57,11 @@ function t_get_footer()
 		__('%d database queries | Page execution time: %d milliseconds |' .
 	   ' Powerd by <a href="http://code.google.com/p/orzoj/">Orz Online Judge</a> %s<br />', $db->get_query_amount(),
 			(microtime(TRUE) - $PAGE_START_TIME) * 1000, $ORZOJ_VERSION);
-	return filter_apply('after_footer', $str);
+	echo filter_apply('after_footer', $str);
 }
 
 /**
- * get logo address
+ * image directory of default theme
  */
+$T_DEFAULT_IMG_PATH = get_page_url($root_path . 'contents/theme/default/images/');
+
