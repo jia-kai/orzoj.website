@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sun Oct 10 15:46:22 2010 +0800
+ * $Date: Sun Oct 10 20:36:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -57,7 +57,8 @@ $PAGES = array(
  */
 $PAGES_AJAX = array(
 	// <page name> => <file>
-	'ajax-register' => 'ajax/register.php'
+	'ajax-register' => 'ajax/register.php',
+	'ajax-form-checker' => 'ajax/form_checker.php'
 );
 
 /**
@@ -170,6 +171,7 @@ if (isset($PAGES_ACTION[$cur_page]))
 			t.removeClass("ui-button-disabled");
 			t.removeClass("ui-state-disabled");
 			$("button").button();
+
 <?php
 if (!user_check_login())
 	echo '$("#user-register").fancybox();';
@@ -191,6 +193,41 @@ EOF;
 }
 ?>
 		});
+
+		function form_checker(checker_id, input_id, result_div_id)
+		{
+			input_id = "#" + input_id;
+			result_div_id = '#' + result_div_id;
+			$(result_div_id).css("display", "inline");
+			$.fancybox.resize();
+			$(result_div_id).html("<img alt=\"loading\" src=\"<?php _url('images/loading.gif');?>\" />");
+			$.ajax({
+				"type": "post",
+				"cache": false,
+				"url":  "<?php t_get_link('ajax-form-checker');?>",
+				"data": ({"checker" : checker_id, "val" : $(input_id).val()}),
+				"success": function(data)
+				{
+					$(result_div_id).html(data);
+					$.fancybox.resize();
+				}
+			});
+		}
+
+		function form_verify_passwd(pwd1_id, pwd2_id, result_div_id)
+		{
+			result_div_id = '#' + result_div_id;
+			if ($("#" + pwd1_id).val() != $("#" + pwd2_id).val())
+			{
+				$(result_div_id).css("display", "inline");
+				$(result_div_id).html("<?php echo __('Passwords do not match');?>");
+				$.fancybox.resize();
+			} else
+			{
+				$(result_div_id).css("display", "none");
+				$.fancybox.resize();
+			}
+		}
 	</script>
 
 </head>
@@ -200,20 +237,21 @@ EOF;
 		<div id="banner">
 			<img src="<?php _url('images/banner.gif');?>" class="banner" alt="banner" />
 			<div id="banner-right">
+				<div id="user-info">
 <?php
 if (!user_check_login())
 {
 ?>
-				<form action="<?php t_get_link('action-login') ?>" method="post">
-					<table class="in-form" border="0">
-						<?php user_check_login_get_form(); ?>
-					</table>
-					<a href="<?php t_get_link('ajax-register'); ?>" id="user-register"><button type="button" class="in-form" ><?php echo __('Register'); ?></button></a>
-					<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
-				</form>
+					<form action="<?php t_get_link('action-login') ?>" method="post">
+						<?php _tf_form_generate_body('user_check_login_get_form'); ?>
+						<a href="<?php t_get_link('ajax-register'); ?>"
+						id="user-register"><button type="button" class="in-form" ><?php echo __('Register'); ?></button></a>
+						<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
+					</form>
+				</div> <!-- id: user-info -->
 			</div> <!-- id: banner-right -->
 <?php
-}
+} // TODO: display user info
 ?>
 		</div> <!-- id: banner -->
 
@@ -240,15 +278,7 @@ foreach ($PAGES as $name => $value)
 		<img src="<?php _url('images/bg_cornerur.jpg');?>" alt="corner" class="bgcornerr" />
 
 		<div id="content">
-			Hello World
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
-			<br />
+<?php require_once($PAGES[$cur_page][1]); ?>
 		</div>
 	
 		<img src="<?php _url('images/bg_cornerdl.jpg');?>" alt="corner" class="bgcornerl" />

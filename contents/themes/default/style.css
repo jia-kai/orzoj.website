@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sun Oct 10 11:48:02 2010 +0800
+ * $Date: Sun Oct 10 20:38:36 2010 +0800
 
  This file is part of orzoj
 
@@ -114,6 +114,19 @@ div#banner
 	margin: 10px 0;
 }
 
+div#banner-right
+{
+	float: right;
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+div#user-info
+{
+	float: right;
+}
+
 div#content
 {
 	clear: both;
@@ -123,14 +136,6 @@ div#content
 	padding: 5px 55px;
 	width: 850px;
 	background: url('images/bg_content.gif') repeat-y;
-}
-
-div#banner-right
-{
-	float: left;
-	border: 0;
-	margin: 0;
-	padding: 0;
 }
 
 div.navigator
@@ -143,6 +148,8 @@ div.navigator
 button.in-form
 {
 	font-size: 12px;
+	clear: both;
+	margin: auto;
 }
 
 div.dialog-button
@@ -151,4 +158,12 @@ div.dialog-button
 	clear: both;
 	float: right;
 }
+
+div.form-checker-result
+{
+	float: left;
+	display: none;
+	color: red;
+}
+
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sun Oct 10 11:22:22 2010 +0800
+ * $Date: Sun Oct 10 20:16:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,12 +27,11 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-// TODO: checker
-
 /**
  * @ignore
  */
 $_tf_checker = array();
+$_tf_cur_checker_div = NULL;
 
 /**
  * register a checker to be used by tf_form_get_text_input()
@@ -44,8 +43,9 @@ $_tf_checker = array();
 function tf_form_register_checker($func)
 {
 	global $_tf_checker;
-	array_push($_tf_checker, $func);
-	return count($_tf_checker) - 1;
+	$id = sha1(serialize($func));
+	$_tf_checker[$id] = $func;
+	return $id;
 }
 
 /**
@@ -59,12 +59,19 @@ function tf_form_register_checker($func)
  */
 function tf_form_get_text_input($prompt, $post_name, $checker = NULL, $default = NULL)
 {
-	$id = "input_$post_name";
+	global $_tf_checker, $_tf_cur_checker_div;
+	$id = _tf_get_random_id();
+	if (!is_null($checker))
+	{
+		$checker = <<<EOF
+onblur='form_checker("$checker", "$id", "$_tf_cur_checker_div")'
+EOF;
+	} else $checker = '';
 	return sprintf('<tr><td><label  for="%s">%s</label></td>
 		<td><input type="text" id="%s" name="%s" %s %s /></td></tr>' . "\n",
 		$id, $prompt, $id, $post_name,
 		is_null($default) ? '' : sprintf('value="%s"', htmlcode($default)),
-		'');
+		$checker);
 }
 
 /**
@@ -76,8 +83,9 @@ function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
 	if (is_null($default))
 		$default = '';
 	else $default = htmlencode($default);
-	return "<tr><td><label class=\"in-form\" for=\"input_$post_name\">$prompt</label></td><td>
-		<textarea name=\"$post_name\" id=\"input_$post_name\">$default</textarea>
+	$id = _tf_get_random_id();
+	return "<tr><td><label for=\"$id\">$prompt</label></td><td>
+		<textarea name=\"$post_name\" id=\"$id\">$default</textarea>
 		<br /></td></tr>\n";
 }
 
@@ -91,6 +99,7 @@ function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
  */
 function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
 {
+	return "<tr><td></td><td>this is an editor</td></tr>";
 }
 
 /**
@@ -182,9 +191,20 @@ function tf_form_get_avatar_browser($prompt, $post_name, $default = NULL)
  */
 function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL)
 {
-	if (is_null($confirm_input))
-		return "<tr><td><label for=\"input_$post_name\" class=\"in-form\">$prompt</label></td>
-		<td><input type=\"password\" name=\"$post_name\" id=\"input_$post_name\" /></td></tr>\n";
+	$id = _tf_get_random_id();
+	$str = "<tr><td><label for=\"$id\">$prompt</label></td>
+		<td><input type=\"password\" name=\"$post_name\" id=\"$id\" /></td></tr>\n";
+	if (is_string($confirm_input))
+	{
+		global $_tf_cur_checker_div;
+		$id1 = _tf_get_random_id();
+		$str .= <<<EOF
+<tr><td><label for="$id1">$confirm_input</label></td><td>
+<input id="$id1" type="password" onblur='form_verify_passwd("$id", "$id1", "$_tf_cur_checker_div")' />
+</td></tr>
+EOF;
+	}
+	return $str;
 }
 
 /**
@@ -216,5 +236,27 @@ function tf_form_get_hidden($post_name, $post_value)
  */
 function tf_get_prob_html($pinfo)
 {
+}
+
+/**
+ * @ignore
+ */
+function _tf_form_generate_body($gen_func)
+{
+	global $_tf_cur_checker_div;
+	$ckid = _tf_get_random_id();
+	$_tf_cur_checker_div = $ckid;
+	echo "<div class=\"form-checker-result\" id=\"$ckid\">place holder</div>\n";
+	echo '<table border="0" style="clear:both">';
+	$gen_func();
+	echo '</table>';
+}
+
+/**
+ * @ignore
+ */
+function _tf_get_random_id()
+{
+	return md5(uniqid(mt_rand(), TRUE));
 }
 

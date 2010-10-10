@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sun Oct 10 11:23:11 2010 +0800
+ * $Date: Sun Oct 10 19:24:03 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -360,7 +360,7 @@ function user_check_name_string_output($name)
 {
 	if (strlen($name) < USERNAME_LEN_MIN)
 		return __('username should not be shorter than %d characters', USERNAME_LEN_MIN);
-	if (strlen($name) > USERNAME_LEN_MIN)
+	if (strlen($name) > USERNAME_LEN_MAX)
 		return __('username should not be longer than %d characters', USERNAME_LEN_MAX);
 	if (count(preg_grep('#^[a-zA-Z][a-zA-Z0-9_.]*$#', array($name))) != 1)
 		return __('username should begin with a letter and only contain letters, digits, dots(.) or underscores(_)');

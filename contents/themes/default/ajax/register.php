@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: register.php
- * $Date: Sun Oct 10 11:18:01 2010 +0800
+ * $Date: Sun Oct 10 19:47:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,11 +26,38 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+if ($page_arg == 'do')
+{
+	try
+	{
+		$id = user_register();
+		die(__("Congratulations! You has successfully registered, and your user id is %d", $id));
+	}
+	catch (Exc_orzoj $e)
+	{
+		die(__('Failed to register:') . $e->msg());
+	}
+}
+
 ?>
 
-<form action="#">
-<table class="in-form" border="0">
-	<?php user_register_get_form(); ?>
-</table>
+<form action="#" id="register-form">
+<?php _tf_form_generate_body('user_register_get_form'); ?>
+<button id="register-button" type="submit" class="in-form" style="float:right"><?php echo __('Register!'); ?></button>
 </form>
+
+<script type="text/javascript">
+$("#register-button").button();
+$("#register-form").bind("submit", function(){
+	$.ajax({
+		"type": "post",
+		"cache": false,
+		"url": "<?php t_get_link($cur_page, 'do');?>",
+		"data": $(this).serializeArray(),
+		success: function(data) {
+			$.fancybox(data);
+		}
+	});
+});
+</script>
 
