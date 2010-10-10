@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sun Oct 10 11:36:21 2010 +0800
+ * $Date: Sun Oct 10 15:46:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -208,9 +208,7 @@ if (!user_check_login())
 					<table class="in-form" border="0">
 						<?php user_check_login_get_form(); ?>
 					</table>
-					<a href="<?php t_get_link('ajax-register'); ?>" id="user-register">
-						<button type="button" class="in-form" ><?php echo __('Register'); ?></button>
-					</a>
+					<a href="<?php t_get_link('ajax-register'); ?>" id="user-register"><button type="button" class="in-form" ><?php echo __('Register'); ?></button></a>
 					<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
 				</form>
 			</div> <!-- id: banner-right -->
@@ -242,7 +240,7 @@ foreach ($PAGES as $name => $value)
 		<img src="<?php _url('images/bg_cornerur.jpg');?>" alt="corner" class="bgcornerr" />
 
 		<div id="content">
-			dfjioasjfiojsd iojdsof joasidj osdafjo fjsoda
+			Hello World
 			<br />
 			<br />
 			<br />
