@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Sat Oct 09 20:36:08 2010 +0800
+ * $Date: Sat Oct 09 23:33:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -64,4 +64,23 @@ function t_get_footer()
  * image directory of default theme
  */
 $T_DEFAULT_IMG_PATH = get_page_url($root_path . 'contents/theme/default/images/');
+
+/**
+ * echo a URL to visit the page
+ *
+ * before including index.php in a theme, global variable $cur_page and $page_arg
+ * will be set according to the link
+ * @param string $page
+ * @param string|NULL $arg
+ * @return void
+ */
+function t_get_link($page, $arg = NULL)
+{
+	// TODO: rewrite
+	global $root_path;
+	$str = get_page_url($root_path . 'index.php') . '?page=' . urlencode($page);
+	if (is_string($arg))
+		$str .= '&arg=' . urlencode($arg);
+	echo $str;
+}
 

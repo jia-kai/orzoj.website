@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 09 21:39:22 2010 +0800
+ * $Date: Sun Oct 10 11:22:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -76,9 +76,9 @@ function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
 	if (is_null($default))
 		$default = '';
 	else $default = htmlencode($default);
-	return "<tr><td><label class=\"in-form\" for=\"input_$post_name\">$prompt</label></td>
-		<td><textarea name=\"$post_name\" id=\"input_$post_name\"></td></tr>
-		$default</textarea><br />\n";
+	return "<tr><td><label class=\"in-form\" for=\"input_$post_name\">$prompt</label></td><td>
+		<textarea name=\"$post_name\" id=\"input_$post_name\">$default</textarea>
+		<br /></td></tr>\n";
 }
 
 /**

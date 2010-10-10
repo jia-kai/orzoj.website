@@ -2,4 +2,4 @@ config.php
 install/config.php
 web.py
 contents/editors/ckeditor
-contents/themes/default/scripts/jquery/
+contents/themes/default/scripts/jquery/orig

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sat Oct 09 22:05:17 2010 +0800
+ * $Date: Sun Oct 10 11:36:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,6 +24,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+if (!defined('IN_ORZOJ'))
+	exit;
+
 /**
  * @ignore
  */
@@ -33,6 +36,9 @@ function _url($file)
 	echo get_page_url($theme_path . $file);
 }
 
+/*
+ * pages for user accessing
+ */
 $PAGES = array(
 	// <page name> => array(<display name>, <file>)
 	'home' => array(__('Home'), 'home.php'),
@@ -46,8 +52,96 @@ $PAGES = array(
 	'faq' => array(__('FAQ'), 'faq.php')
 );
 
-if (!isset($cur_page) || !isset($PAGES[$cur_page]))
-	die('unknown page');
+/*
+ * pages for AJAX
+ */
+$PAGES_AJAX = array(
+	// <page name> => <file>
+	'ajax-register' => 'ajax/register.php'
+);
+
+/**
+ * pages for an action
+ */
+$PAGES_ACTION = array(
+	// <page name> => <callback function>
+	// return value of <callback function>:
+	//  NULL|string string if some message needed to be told to the user
+	'action-login' => '_action_login',
+	'action-logout' => '_action_logout'
+);
+
+if ($cur_page == 'index')
+	$cur_page = 'home';
+
+if (!isset($PAGES[$cur_page]) && !isset($PAGES_AJAX[$cur_page]) &&
+	!isset($PAGES_ACTION[$cur_page]))
+	die("unknown page: $cur_page");
+
+if (isset($PAGES_AJAX[$cur_page]))
+{
+	require_once $PAGES_AJAX[$cur_page];
+	exit;
+}
+
+if (isset($PAGES[$cur_page]))
+	cookie_set('last_page', serialize(array($cur_page, $page_arg)));
+
+/*
+ * @ignore
+ */
+function _restore_page()
+{
+	global $cur_page, $page_arg, $PAGES;
+	$page_arg = NULL;
+	$cur_page = cookie_get('last_page');
+	if (is_null($cur_page))
+		$cur_page = 'home';
+	else list($cur_page, $page_arg) = unserialize($cur_page);
+
+	if (!is_string($cur_page) || !isset($PAGES[$cur_page]))
+		die("unknown page: $cur_page");
+}
+
+/**
+ * @ignore
+ */
+function _action_login()
+{
+	_restore_page();
+	try
+	{
+		if (!user_check_login())
+			return __('Failed to login');
+	}
+	catch (Exc_orzoj $e)
+	{
+		return __('Failed to login: ') . $e->msg();
+	}
+}
+
+/**
+ * @ignore
+ */
+function _action_logout()
+{
+	_restore_page();
+	try
+	{
+		user_logout();
+	}
+	catch (Exc_orzoj $e)
+	{
+		return __('Error while logging out: ') . $e->msg();
+	}
+}
+
+if (isset($PAGES_ACTION[$cur_page]))
+{
+	$msg = $PAGES_ACTION[$cur_page]();
+	if (is_string($msg))
+		$startup_msg = htmlencode($msg);
+}
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -59,78 +153,94 @@ if (!isset($cur_page) || !isset($PAGES[$cur_page]))
 	<link rel="icon" type="image/vnd.microsoft.icon" href="<? _url('images/favicon.ico'); ?>" />
 	<link rel="icon" type="image/jpeg" href="<?php _url('images/favicon.jpg'); ?>" />
 
-	<meta http-equiv="pragma" content="no-cache" />
-	<meta http-equiv="expires" content="Wed, 23 Aug 2006 12:40:27 UTC" />
-
 	<link href="<?php _url('scripts/jquery/ui-css/ui.custom.css'); ?>" rel="stylesheet" type="text/css" />
-	<link href="<?php _url('scripts/jquery/fancybox/jquery.fancybox-1.3.1.css'); ?>" rel="stylesheet" type="text/css" />
-
 	<script type="text/javascript" src="<?php _url('scripts/jquery/jquery.js');?>"></script>
 	<script type="text/javascript" src="<?php _url('scripts/jquery/ui.js');?>"></script>
+
+	<link href="<?php _url('scripts/jquery/fancybox/jquery.fancybox-1.3.1.css'); ?>" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="<?php _url('scripts/jquery/fancybox/jquery.mousewheel-3.0.2.pack.js');?>"></script>
 	<script type="text/javascript" src="<?php _url('scripts/jquery/fancybox/jquery.fancybox-1.3.1.pack.js');?>"></script>
-
 	
 	<script type="text/javascript">
 		$(document).ready(function(){
-			var h = $("#content").height() + 10;
-			$("img.bgleft").height(h);
-			$("img.bgright").height(h);
 			$("#navigator").buttonset();
+			var t=$("#nav_<?php echo $cur_page?>");
+			t.button("disable");
+			t.addClass("ui-state-active");
+			t.removeClass("ui-button-disabled");
+			t.removeClass("ui-state-disabled");
 			$("button").button();
-			$("#user-register").fancybox();
+<?php
+if (!user_check_login())
+	echo '$("#user-register").fancybox();';
+if (isset($startup_msg))
+{
+	$OK = __("OK");
+	echo <<<EOF
+$("#dialog-startup-msg").dialog({
+			"modal": true,
+			"buttons": {
+				"$OK": function() {
+					$(this).dialog("close");
+				}
+			},
+			"show": "scale",
+			"hide": "scale"
+		});
+EOF;
+}
+?>
 		});
 	</script>
 
 </head>
 <body>
 
-	<div style="margin:10px;"></div>
 	<div id="page">
-		<div id="header">
+		<div id="banner">
 			<img src="<?php _url('images/banner.gif');?>" class="banner" alt="banner" />
-			<div class="banner-right">
-				<form action="?login" id="login-form" method="POST">
+			<div id="banner-right">
+<?php
+if (!user_check_login())
+{
+?>
+				<form action="<?php t_get_link('action-login') ?>" method="post">
 					<table class="in-form" border="0">
 						<?php user_check_login_get_form(); ?>
 					</table>
-					<a href="<?php _url('user_register.php'); ?>" id="user-register">
+					<a href="<?php t_get_link('ajax-register'); ?>" id="user-register">
 						<button type="button" class="in-form" ><?php echo __('Register'); ?></button>
 					</a>
 					<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
 				</form>
-			</div>
-		</div>
-
-		<div class="clearer"></div>
+			</div> <!-- id: banner-right -->
+<?php
+}
+?>
+		</div> <!-- id: banner -->
 
 		<div class="navigator">
 			<div id="navigator">
-			<form action="#">
 <?php
 
 foreach ($PAGES as $name => $value)
 {
-	$id = "nav_$name";
-	echo "<input type=\"radio\" name=\"navigator\" class=\"navigator\" id=\"$id\" ";
+	echo '<a href="';
 	if ($name == $cur_page)
-		echo ' checked="checked" ';
-	echo "/><label for=\"$id\" class=\"navigator\">$value[0]</label>\n";
+		echo '#';
+	else
+		t_get_link($name);
+	echo "\" id=\"nav_$name\">$value[0]</a>\n";
 }
 
 ?>
-			</form>
 			</div>
 		</div>
-		<div class="clearer"></div>
 
 		<img src="<?php _url('images/bg_cornerul.jpg');?>" alt="corner" class="bgcornerl" />
 		<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgtop" />
 		<img src="<?php _url('images/bg_cornerur.jpg');?>" alt="corner" class="bgcornerr" />
-		<div class="clearer"></div>
 
-		<div  class="bgleft" ></div>
-		<img src="<?php _url('images/empty.gif'); ?>" alt="left" class="bgleft" />
 		<div id="content">
 			dfjioasjfiojsd iojdsof joasidj osdafjo fjsoda
 			<br />
@@ -142,9 +252,7 @@ foreach ($PAGES as $name => $value)
 			<br />
 			<br />
 		</div>
-		<img src="<?php _url('images/empty.gif'); ?>" alt="right" class="bgright" />
 	
-		<div class="clearer"></div>
 		<img src="<?php _url('images/bg_cornerdl.jpg');?>" alt="corner" class="bgcornerl" />
 		<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgbottom" />
 		<img src="<?php _url('images/bg_cornerdr.jpg');?>" alt="corner" class="bgcornerr" />
@@ -152,6 +260,14 @@ foreach ($PAGES as $name => $value)
 		<?php t_get_footer(); ?>
 	</div> <!-- id: page -->
 
+<?php
+if (isset($startup_msg))
+{
+	$title = __('Message');
+	echo " <div id=\"dialog-startup-msg\" title=\"$title\">$startup_msg
+		</div>";
+}
+?>
+
 </body>
 </html>
-

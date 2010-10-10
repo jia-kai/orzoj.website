@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Fri Oct 08 19:48:28 2010 +0800
+ * $Date: Sun Oct 10 11:23:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -375,6 +375,7 @@ function user_check_name_string_output($name)
  */
 function _user_init_plang_wlang()
 {
+	global $db;
 	foreach (array('plang', 'wlang') as $lang)
 	{
 		$tmp = $db->select_from($lang, array('id', 'name'));
@@ -393,13 +394,14 @@ function _user_init_plang_wlang()
  */
 function user_register_get_form()
 {
+	global $_user_checker_id;
 	_user_init_plang_wlang();
 	global $db, $_user_plang, $_user_wlang;
 	$str = 
-		tf_form_get_text_input(__('Username (for loggin in):'), 'username', $_user_checker_id) . 
+		tf_form_get_text_input(__('Username:'), 'username', $_user_checker_id) . 
 		tf_form_get_passwd(__('Password:'), 'password', __('Confirm password:')) .
-		tf_form_get_text_input(__('Real name (only seen by the administrator):'), 'realname') .
-		tf_form_get_text_input(__('Nickname (display name):'), 'nickname') .
+		tf_form_get_text_input(__('Real name:'), 'realname') .
+		tf_form_get_text_input(__('Nickname:'), 'nickname') .
 		tf_form_get_text_input(__('E-mail:'), 'email') .
 		tf_form_get_avatar_browser(__('Avatar:'), 'avatar') .
 		tf_form_get_select(__('Preferred programming language:'), 'plang', $_user_plang) .

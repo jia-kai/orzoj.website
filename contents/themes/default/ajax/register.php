@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: user_register.php
- * $Date: Sat Oct 09 22:06:18 2010 +0800
+ * $File: register.php
+ * $Date: Sun Oct 10 11:18:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,9 +23,14 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+if (!defined('IN_ORZOJ'))
+	exit;
+
 ?>
 
-<form>
-<?php user_register_get_form(); ?>
+<form action="#">
+<table class="in-form" border="0">
+	<?php user_register_get_form(); ?>
+</table>
 </form>
 

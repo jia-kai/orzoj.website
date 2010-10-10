@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Fri Oct 08 19:25:54 2010 +0800
+ * $Date: Sat Oct 09 23:35:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -53,7 +53,7 @@ function cookie_set($name, $value, $lasttime = NULL)
  * get cookie value
  * @param string $name name of cookie,$table_prefix will be added at the beginning automatically
  * @param string $name name of cookie
- * @return bool|string If cookie exists,a string is returned. Otherwise,False is returned.
+ * @return NULL|string return the cookie value or NULL if it does not exist
  */
 function cookie_get($name)
 {

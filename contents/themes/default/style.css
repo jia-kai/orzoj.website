@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sat Oct 09 21:47:31 2010 +0800
+ * $Date: Sun Oct 10 11:48:02 2010 +0800
 
  This file is part of orzoj
 
@@ -39,7 +39,13 @@ input[type="text"], input[type="password"], textarea
 	border-color: black;
 	margin: 2px;
 	height: 16px;
+	width: 150px;
 	float: left;
+}
+
+textarea
+{
+	height: 200px;
 }
 
 div
@@ -69,6 +75,7 @@ img
 
 img.bgcornerl
 {
+	clear: both;
 	width: 50px;
 	height: 50px;
 }
@@ -94,34 +101,31 @@ img.bgbottom
 	background: url('images/bg_bottom.jpg') repeat-x;
 }
 
-img.bgleft
-{
-	width: 50px;
-	background: url('images/bg_left.jpg') repeat-y;
-}
-
-img.bgright
-{
-	float: right;
-	width: 50px;
-	background: url('images/bg_right.jpg') repeat-y;
-}
-
 img.banner
 {
 	margin: 10px;
 }
 
+div#banner
+{
+	clear: both;
+	float: left;
+	width: 960px;
+	margin: 10px 0;
+}
+
 div#content
 {
+	clear: both;
 	float: left;
 	border: 0;
 	margin: 0;
-	padding: 5px;
+	padding: 5px 55px;
 	width: 850px;
+	background: url('images/bg_content.gif') repeat-y;
 }
 
-div.banner-right
+div#banner-right
 {
 	float: left;
 	border: 0;
@@ -131,25 +135,20 @@ div.banner-right
 
 div.navigator
 {
-	max-width: 960px;
-}
-
-label.navigator
-{
-	margin: 5px;
-	font-size: 16px;
-}
-
-div.clearer
-{
 	clear: both;
-	padding: 0;
-	margin: 0;
-	border: 0;
+	max-width: 960px;
+	margin: 10px auto;
 }
 
 button.in-form
 {
 	font-size: 12px;
+}
+
+div.dialog-button
+{
+	font-size: 12px;
+	clear: both;
+	float: right;
 }
 
