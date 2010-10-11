@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Oct 11 15:53:57 2010 +0800
+ * $Date: Mon Oct 11 20:04:45 2010 +0800
 
  This file is part of orzoj
 
@@ -178,8 +178,6 @@ div#avatar-browser
 	border-width: 1px;
 	border-color: green;
 	z-index: 5001;
-	max-width: 600px;
-	min-width: 400px;
 	overflow: auto;
 }
 
@@ -233,6 +231,7 @@ div.avatar-browser-nav
 	clear: both;
 	float: right;
 	margin: 10px;
+	font-size: 12px;
 }
 
 div.clearer

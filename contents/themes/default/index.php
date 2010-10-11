@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Mon Oct 11 15:57:40 2010 +0800
+ * $Date: Mon Oct 11 20:55:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -176,7 +176,7 @@ if (isset($PAGES_ACTION[$cur_page]))
 
 <?php
 if (!user_check_login())
-	echo '$("#user-register").fancybox();';
+	echo '$("#user-register").fancybox({"enableEscapeButton": false});';
 if (isset($startup_msg))
 {
 	$OK = __("OK");

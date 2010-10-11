@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: avatar_browser.php
- * $Date: Mon Oct 11 15:43:09 2010 +0800
+ * $Date: Mon Oct 11 18:14:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -39,9 +39,13 @@ $img_id = $_POST['img_id'];
 $pgnum = intval($_POST['pgnum']);
 
 $tot = avatar_get_amount();
+$page_cnt = (int)(($tot - 1) / PAGE_SIZE + 1);
+if ($pgnum < 0)
+	$pgnum = 0;
+if ($pgnum >= $page_cnt)
+	$pgnum = $page_cnt - 1;
+
 $offset = PAGE_SIZE *  $pgnum;
-if ($offset >= $tot)
-	die('pgnum too large');
 
 $cnt = PAGE_SIZE;
 if ($cnt + $offset > $tot)
@@ -84,7 +88,6 @@ EOF;
 }
 
 $pgnum ++;
-$page_cnt = (int)(($tot - 1) / PAGE_SIZE + 1);
 echo __('Page %d of %d', $pgnum, $page_cnt);
 
 if ($pgnum < $page_cnt)
@@ -94,6 +97,18 @@ if ($pgnum < $page_cnt)
  | <a href="#" onclick="avatar_browser('$input_id', '$img_id', '$pgnum')">$p</a>
 EOF;
 }
+
+echo '<br />';
+$p = __('Go to page:');
+$p1 = __('Go');
+echo <<<EOF
+<form action="#">
+<div style="float:left">$p</div>
+<div style="float:left"><input type="text" id="pgnum" style="width:32px" /></div>
+<div style="float:left"><button onclick="avatar_browser('$input_id', '$img_id', parseInt($('#pgnum').val()) - 1)">$p1</div>
+</button>
+</form>
+EOF;
 
 echo '</div>';
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: register.php
- * $Date: Mon Oct 11 14:37:23 2010 +0800
+ * $Date: Mon Oct 11 20:50:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -35,7 +35,7 @@ if ($page_arg == 'do')
 	}
 	catch (Exc_orzoj $e)
 	{
-		die(__('Failed to register:') . $e->msg());
+		die(__('Failed to register: ') . $e->msg());
 	}
 }
 
@@ -44,11 +44,12 @@ if ($page_arg == 'do')
 <form action="#" id="register-form">
 <?php _tf_form_generate_body('user_register_get_form'); ?>
 <div style="text-align: right">
-	<button id="register-button" type="submit" class="in-form"><?php echo __('Register!'); ?></button>
+	<button id="register-button" type="submit" class="in-form" ><?php echo __('Register!'); ?></button>
 </div>
 </form>
 
 <script type="text/javascript">
+
 $("#register-button").button();
 $("#register-form").bind("submit", function(){
 	$.fancybox.showActivity();
@@ -56,11 +57,12 @@ $("#register-form").bind("submit", function(){
 		"type": "post",
 		"cache": false,
 		"url": "<?php t_get_link($cur_page, 'do');?>",
-		"data": $(this).serializeArray(),
+		"data": $("#register-form").serializeArray(),
 		success: function(data) {
 			$.fancybox(data);
 		}
 	});
+	return false;
 });
 </script>
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Mon Oct 11 11:07:49 2010 +0800
+ * $Date: Mon Oct 11 19:15:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -383,8 +383,9 @@ function _user_init_plang_wlang()
 		$var = '_user_' . $lang;
 		global $$var;
 		$$var = array();
+		$t = &$$var;
 		foreach ($tmp as $row)
-			$$var[$row['name']] = $row['id'];
+			$t[$row['name']] = $row['id'];
 	}
 }
 
@@ -404,10 +405,10 @@ function user_register_get_form()
 		tf_form_get_text_input(__('Real name:'), 'realname') .
 		tf_form_get_text_input(__('Nickname:'), 'nickname') .
 		tf_form_get_text_input(__('E-mail:'), 'email') .
-		tf_form_get_avatar_browser(__('Avatar:'), 'avatar') .
+		tf_form_get_avatar_browser(__('Avatar:'), 'aid') .
 		tf_form_get_select(__('Preferred programming language:'), 'plang', $_user_plang) .
 		tf_form_get_select(__('Preferred website language:'), 'wlang', $_user_wlang) .
-		tf_form_get_long_text_input(__('Self description:'), 'self_desc');
+		tf_form_get_long_text_input(__('Self description(XHTML):'), 'self_desc');
 	echo filter_apply('after_user_register_form', $str);
 }
 
@@ -420,18 +421,26 @@ function user_register_get_form()
 function user_register()
 {
 	$VAL_SET = array('username', 'password', 'realname', 'nickname', 'email',
-		'avatar', 'plang', 'wlang', 'self_desc');
+		'aid', 'plang', 'wlang', 'self_desc');
 	$val = array();
 	foreach ($VAL_SET as $v)
 	{
 		if (!isset($_POST[$v]))
-			throw new Exc_runtime(__('incomplete post'));
-		$val[$v] = htmlencode($_POST[$v]);
+			throw new Exc_runtime(__('incomplete post: required field "%s" not found', $v));
+		$val[$v] = $_POST[$v];
 	}
 	if (!user_check_name($_POST['username']))
 		throw new Exc_runtime(__('invalid username'));
 	if (user_get_id_by_name($_POST['username']))
 		throw new Exc_runtime(__('username already exists'));
+
+	try
+	{
+		xhtml_validate($val['self_desc']);
+	} catch (Exc_orzoj $e)
+	{
+		throw new Exc_runtime(__('Error while validating self description: %s', $e->msg()));
+	}
 
 	$val['username'] = strtolower($val['username']);
 	$val['password'] .= $val['username'];
@@ -442,6 +451,7 @@ function user_register()
 	$val['reg_ip'] = get_remote_addr();
 
 	$val = filter_apply('before_user_register', $val);
+	global $db;
 	return $db->insert_into('users', $val);
 }
 

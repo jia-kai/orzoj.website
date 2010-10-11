@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Oct 11 12:07:10 2010 +0800
+ * $Date: Mon Oct 11 19:18:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -187,14 +187,14 @@ function tf_form_get_avatar_browser($prompt, $post_name, $default = NULL)
 	$idi = _tf_get_random_id();
 	if (is_null($default))
 		$default = 0;
-	$default = avatar_get_url($default);
+	$default_file = avatar_get_url($default);
 	$browse = array(get_page_url($theme_path . 'images/browse_avatar.gif'), __('Browse'));
 	return <<<EOF
 <tr>
 <td>$prompt</td>
 <td>
 	<input type="hidden" name="$post_name" value="$default" id="$id" />
-	<img src="$default" alt="avatar" id="$idi" />
+	<img src="$default_file" alt="avatar" id="$idi" />
 	<a href="#" onclick="avatar_browser('$id', '$idi', 0)" style="float:right">
 		<img src="$browse[0]" alt="browse" width="16" height="16" />$browse[1]
 	</a>
@@ -236,6 +236,18 @@ EOF;
  */
 function tf_form_get_select($prompt, $post_name, $options, $default = NULL)
 {
+	$id = _tf_get_random_id();
+	$str = "<tr><td><label for=\"$id\">$prompt</label></td>
+		<td><select name=\"$post_name\" id=\"$id\">";
+	foreach ($options as $name => $value)
+	{
+		$str .= "<option value=\"$value\" ";
+		if ($value == $default)
+			$str .= 'selected="selected"';
+		$str .= ">$name</option>\n";
+	}
+	$str .= "</select></td></tr>\n";
+	return $str;
 }
 
 /**
