@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Wed Oct 06 10:00:00 2010 +0800
+ * $Date: Mon Oct 11 12:08:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -391,7 +391,7 @@ class Dbal_mysql extends Dbal
 					$orderway = 'DESC';
 				else
 					$orderway = 'ASC';
-				$sql .= '`' . $filedname . '` ' . $orderway;
+				$sql .= '`' . $filedname . '` ' . $orderway . ' ';
 				if ($cid != $ordercount)
 					$sql .= ',';
 				$cid++;

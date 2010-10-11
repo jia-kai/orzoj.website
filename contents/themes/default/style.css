@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sun Oct 10 20:38:36 2010 +0800
+ * $Date: Mon Oct 11 15:53:57 2010 +0800
 
  This file is part of orzoj
 
@@ -112,6 +112,7 @@ div#banner
 	float: left;
 	width: 960px;
 	margin: 10px 0;
+	position: relative;
 }
 
 div#banner-right
@@ -120,11 +121,15 @@ div#banner-right
 	border: 0;
 	margin: 0;
 	padding: 0;
+	position: absolute;
+	bottom: 0;
+	right: 0;
 }
 
 div#user-info
 {
 	float: right;
+	margin: 20px;
 }
 
 div#content
@@ -166,4 +171,75 @@ div.form-checker-result
 	color: red;
 }
 
+div#avatar-browser
+{
+	display: none;
+	position: absolute;
+	border-width: 1px;
+	border-color: green;
+	z-index: 5001;
+	max-width: 600px;
+	min-width: 400px;
+	overflow: auto;
+}
+
+div#avatar-browser-container
+{
+	float: left;
+	min-width: 400px;
+	max-width: 600px;
+}
+
+div#avatar-browser-overlay
+{
+	display: none;
+	background-color: black;
+	position: absolute;
+	left: 0;
+	top: 0;
+	/* for IE */
+	filter:alpha(opacity=80);
+	/* CSS3 standard */
+	opacity: 0.8;
+	z-index: 5000;
+}
+
+div.avatar-img-outline
+{
+	display: inline;
+	border: none;
+	margin: 10px;
+	width: 65px;
+	height: 65px;
+	float: left;
+	text-align: center;
+}
+
+div.avatar-img
+{
+	height: 50px;
+	width: 50px;
+}
+
+div.avatar-img:hover
+{
+	border: 1px solid #0000ff;
+	height: 55px;
+	width: 55px;
+}
+
+div.avatar-browser-nav
+{
+	clear: both;
+	float: right;
+	margin: 10px;
+}
+
+div.clearer
+{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	clear: both;
+}
 

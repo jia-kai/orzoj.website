@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sun Oct 10 20:16:04 2010 +0800
+ * $Date: Mon Oct 11 12:07:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -182,6 +182,25 @@ function tf_form_get_source_editor_data($name)
  */
 function tf_form_get_avatar_browser($prompt, $post_name, $default = NULL)
 {
+	global $theme_path;
+	$id = _tf_get_random_id();
+	$idi = _tf_get_random_id();
+	if (is_null($default))
+		$default = 0;
+	$default = avatar_get_url($default);
+	$browse = array(get_page_url($theme_path . 'images/browse_avatar.gif'), __('Browse'));
+	return <<<EOF
+<tr>
+<td>$prompt</td>
+<td>
+	<input type="hidden" name="$post_name" value="$default" id="$id" />
+	<img src="$default" alt="avatar" id="$idi" />
+	<a href="#" onclick="avatar_browser('$id', '$idi', 0)" style="float:right">
+		<img src="$browse[0]" alt="browse" width="16" height="16" />$browse[1]
+	</a>
+</td>
+</tr>
+EOF;
 }
 
 /**

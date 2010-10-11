@@ -10,6 +10,7 @@
 |	|	|--	po.php		po reader
 |	|	|--	mo.php		mo reader
 |	|--	plugin.php		functions for handling plugins (implemented as filter_ functions)
+|	|--	avatar.php		get information about user avatars
 |	|--	sched.php		manage scheduled tasks
 |	|--	post.php		functions for managing posts
 |	|--	theme.php		API for themes
@@ -38,7 +39,7 @@
 |	|--	themes/			store themes
 |	|	|--	...
 |	|--	uploads/		store uploaded data such as images (permission: 777)
-|	|	|--	user_avatar/	user avatars
+|	|	|--	user_avatars/	user avatars
 |	|	|--	team_image/	team images
 |	|	|--	...
 |	|--	lang/			.mo files for various languages

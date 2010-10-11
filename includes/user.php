@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sun Oct 10 19:24:03 2010 +0800
+ * $Date: Mon Oct 11 11:07:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,7 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once $includes_path . 'message.php';
+require_once $includes_path . 'avatar.php';
 
 /**
  * user structure
