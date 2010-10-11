@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Mon Oct 11 20:55:16 2010 +0800
+ * $Date: Mon Oct 11 22:00:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -160,9 +160,8 @@ if (isset($PAGES_ACTION[$cur_page]))
 	<script type="text/javascript" src="<?php _url('scripts/jquery/jquery.js');?>"></script>
 	<script type="text/javascript" src="<?php _url('scripts/jquery/ui.js');?>"></script>
 
-	<link href="<?php _url('scripts/jquery/fancybox/jquery.fancybox-1.3.1.css'); ?>" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="<?php _url('scripts/jquery/fancybox/jquery.mousewheel-3.0.2.pack.js');?>"></script>
-	<script type="text/javascript" src="<?php _url('scripts/jquery/fancybox/jquery.fancybox-1.3.1.pack.js');?>"></script>
+	<link href="<?php _url('scripts/jquery/colorbox/colorbox.css'); ?>" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="<?php _url('scripts/jquery/colorbox/colorbox-min.js');?>"></script>
 	
 	<script type="text/javascript">
 		$(document).ready(function(){
@@ -176,7 +175,7 @@ if (isset($PAGES_ACTION[$cur_page]))
 
 <?php
 if (!user_check_login())
-	echo '$("#user-register").fancybox({"enableEscapeButton": false});';
+	echo '$("#user-register").colorbox({"escKey": false, "arrowKey": false});';
 if (isset($startup_msg))
 {
 	$OK = __("OK");
@@ -201,7 +200,7 @@ EOF;
 			input_id = "#" + input_id;
 			result_div_id = '#' + result_div_id;
 			$(result_div_id).css("display", "inline");
-			$.fancybox.resize();
+			$.colorbox.resize();
 			$(result_div_id).html("<img alt=\"loading\" src=\"<?php _url('images/loading.gif');?>\" />");
 			$.ajax({
 				"type": "post",
@@ -211,7 +210,7 @@ EOF;
 				"success": function(data)
 				{
 					$(result_div_id).html(data);
-					$.fancybox.resize();
+					$.colorbox.resize();
 				}
 			});
 		}
@@ -225,7 +224,7 @@ EOF;
 				$(result_div_id).html("<?php echo __('Passwords do not match');?>");
 			} else
 				$(result_div_id).css("display", "none");
-			$.fancybox.resize();
+			$.colorbox.resize();
 		}
 
 		function resize_avatar_browser(size, animate)
@@ -330,11 +329,28 @@ if (!user_check_login())
 						id="user-register"><button type="button" class="in-form" ><?php echo __('Register'); ?></button></a>
 						<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
 					</form>
+<?php
+}
+else
+{
+	$p = __('Submission/AC: %d/%d', $user->cnt_submit, $user->cnt_ac);
+	echo <<<EOF
+<div style="float: left">
+<img src="$user->avatar" alt="avatar" style="max-height: 128px; max-width: 128px;" />
+</div>
+<div style="float: left; margin: 5px">
+$user->username <br />
+$p <br />
+EOF;
+	echo '<a href="';
+	t_get_link('user-info');
+	echo '">&lt;' . __('User info.') . '&gt;</a> <a href="';
+	t_get_link('action-logout');
+	echo '">&lt;' . __('Logout') . '&gt;</a></div>';
+}
+?>
 				</div> <!-- id: user-info -->
 			</div> <!-- id: banner-right -->
-<?php
-} // TODO: display user info
-?>
 		</div> <!-- id: banner -->
 
 		<div class="navigator">

@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Oct 11 20:04:45 2010 +0800
+ * $Date: Mon Oct 11 21:56:23 2010 +0800
 
  This file is part of orzoj
 
@@ -24,6 +24,18 @@ body
 	margin: 0;
 	font: 16px Verdana, Arial, sans-serif;
 	background-color: black; 
+}
+
+a:link, a:visited
+{
+	color: #FFFF00;
+	text-decoration: none;
+}
+
+a:hover
+{
+	color: #FF00FF;
+	text-decoration: underline;
 }
 
 input[type="text"]:hover, input[type="password"]:hover, textarea:hover

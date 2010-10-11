@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: register.php
- * $Date: Mon Oct 11 20:50:17 2010 +0800
+ * $Date: Mon Oct 11 21:11:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,14 +52,13 @@ if ($page_arg == 'do')
 
 $("#register-button").button();
 $("#register-form").bind("submit", function(){
-	$.fancybox.showActivity();
 	$.ajax({
 		"type": "post",
 		"cache": false,
 		"url": "<?php t_get_link($cur_page, 'do');?>",
 		"data": $("#register-form").serializeArray(),
 		success: function(data) {
-			$.fancybox(data);
+			$.colorbox({"html": data});
 		}
 	});
 	return false;

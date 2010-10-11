@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Mon Oct 11 19:15:14 2010 +0800
+ * $Date: Mon Oct 11 22:04:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -35,7 +35,7 @@ require_once $includes_path . 'avatar.php';
 class User
 {
 	var $id, $username, $realname, $nickname,
-		$avatar, // avatar file name, NULL if unavailable
+		$avatar, // avatar URL
 		$email, $self_desc, $tid, $plang, $wlang,
 		$view_gid, // array of gid who can view the user's source
 		$theme_id,
@@ -108,11 +108,7 @@ class User
 		foreach ($VAL_SET as $val)
 			$this->$val = $row[$val];
 
-		$tmp = $db->select_from('user_avatars', 'file', array($DBOP['='], 'id', $row['aid']));
-		if (count($tmp) != 1)
-			$this->avatar = NULL;
-		else
-			$this->avatar = $tmp[0]['file'];
+		$this->avatar = avatar_get_url($row['aid']);
 
 		$this->view_gid = unserialize($row['view_gid']);
 
@@ -163,6 +159,7 @@ class User
 }
 
 $user = NULL;
+$_user_check_login_result = NULL;
 /**
  * check user login and initialize $user structure
  * @global User $user
@@ -171,29 +168,28 @@ $user = NULL;
  */
 function user_check_login($cookie_time = NULL)
 {
-	global $user, $db, $DBOP, $action;
-	static $result = NULL;
-	if (is_bool($result))
-		return $result;
+	global $user, $db, $DBOP, $action, $_user_check_login_result;
+	if (is_bool($_user_check_login_result))
+		return $_user_check_login_result;
 	if (isset($_POST['username']) && isset($_POST['password']))
 	{
 		filter_apply_no_iter('before_user_login');
 		$username = $_POST['username'];
 		$password = $_POST['password'];
 		if (!user_check_name($username))
-			return $result = FALSE;
+			return $_user_check_login_result = FALSE;
 		$username = strtolower($username);
 		$password .= $username;
 
 		$row = $db->select_from('users', array('id', 'passwd'),
 			array($DBOP['=s'], 'username', $username));
 		if (count($row) != 1)
-			return $result = FALSE;
+			return $_user_check_login_result = FALSE;
 
 		$row = $row[0];
 		$pwd_chk = _user_check_passwd($password, $row['passwd']);
 		if (!$pwd_chk)
-			return $result = FALSE;
+			return $_user_check_login_result = FALSE;
 		if ($pwd_chk != $row['passwd'])
 			$db->update_data('users', array('passwd' => $pwd_chk),
 				array($DBOP['='], 'id', $row['id']));
@@ -214,15 +210,15 @@ function user_check_login($cookie_time = NULL)
 		$uid = intval(cookie_get('uid'));
 		$password = cookie_get('password');
 		if ($uid === FALSE || $password === FALSE)
-			return $result = FALSE;
+			return $_user_check_login_result = FALSE;
 		$row = $db->select_from('users', array('passwd', 'salt'),
 			array($DBOP['='], 'id', $uid));
 		if (count($row) != 1)
-			return $result = FALSE;
+			return $_user_check_login_result = FALSE;
 		$row = $row[0];
 
 		if ($password != _user_make_passwd($row['salt'] . $row['passwd']))
-			return $result = FALSE;
+			return $_user_check_login_result = FALSE;
 
 	}
 
@@ -233,7 +229,7 @@ function user_check_login($cookie_time = NULL)
 
 	$user = new User();
 	$user->set_val($uid);
-	return $result = TRUE;
+	return $_user_check_login_result = TRUE;
 }
 
 /**
@@ -254,7 +250,7 @@ function user_check_login_get_form()
  */
 function user_logout()
 {
-	global $user, $db, $DBOP;
+	global $user, $db, $DBOP, $_user_check_login_result;
 	if (user_check_login())
 	{
 		$db->update_data('users', array('salt' => _user_make_salt()),
@@ -263,6 +259,7 @@ function user_logout()
 	}
 	cookie_set('uid', NULL, -1);
 	cookie_set('password', NULL, -1);
+	$_user_check_login_result = FALSE;
 }
 
 define('_USER_PASSWD_ENCRYPTION_VERSION', '01');
