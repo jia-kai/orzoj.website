@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Tue Oct 12 11:40:54 2010 UTC
+ * $Date: Tue Oct 12 11:53:42 2010 UTC
  */
 /**
  * @package orzoj-website
@@ -23,7 +23,6 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-define('IN_ORZOJ',true);
 if (!defined('IN_ORZOJ'))
 	exit;
 
