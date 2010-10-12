@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Oct 11 19:18:07 2010 +0800
+ * $Date: Tue Oct 12 10:57:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -288,6 +288,6 @@ function _tf_form_generate_body($gen_func)
  */
 function _tf_get_random_id()
 {
-	return md5(uniqid(mt_rand(), TRUE));
+	return 'i' . md5(uniqid(mt_rand(), TRUE));
 }
 

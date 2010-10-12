@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Tue Oct 12 10:52:06 2010 +0800
+ * $Date: Tue Oct 12 11:05:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -162,7 +162,7 @@ if (isset($PAGES_ACTION[$cur_page]))
 
 	<link href="<?php _url('scripts/jquery/colorbox/colorbox.css'); ?>" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="<?php _url('scripts/jquery/colorbox/colorbox-min.js');?>"></script>
-
+	
 	<script type="text/javascript">
 		var TREE_MENU_IMG_OPEN = "<?php _url('scripts/simpletree/open.gif'); ?>";
 		var TREE_MENU_IMG_CLOSED = "<?php _url('scripts/simpletree/closed.gif'); ?>"
@@ -207,120 +207,6 @@ EOF;
 }
 ?>
 		});
-
-		function form_checker(checker_id, input_id, result_div_id)
-		{
-			input_id = "#" + input_id;
-			result_div_id = '#' + result_div_id;
-			$(result_div_id).css("display", "inline");
-			$.colorbox.resize();
-			$(result_div_id).html("<img alt=\"loading\" src=\"<?php _url('images/loading.gif');?>\" />");
-			$.ajax({
-				"type": "post",
-				"cache": false,
-				"url":  "<?php t_get_link('ajax-form-checker');?>",
-				"data": ({"checker" : checker_id, "val" : $(input_id).val()}),
-				"success": function(data)
-				{
-					$(result_div_id).html(data);
-				}
-			});
-		}
-
-		function form_verify_passwd(pwd1_id, pwd2_id, result_div_id)
-		{
-			result_div_id = '#' + result_div_id;
-			if ($("#" + pwd1_id).val() != $("#" + pwd2_id).val())
-			{
-				$(result_div_id).css("display", "inline");
-				$(result_div_id).html("<?php echo __('Passwords do not match');?>");
-			} else
-				$(result_div_id).css("display", "none");
-			$.colorbox.resize();
-		}
-
-		function resize_avatar_browser(size, animate)
-		{
-			var ol = $("#avatar-browser-overlay");
-			ol.width($(document).width());
-			ol.height($(document).height());
-			ol = $("#avatar-browser");
-			var ww = $(window).width();
-			var wh = $(window).height();
-			if (size == -1)
-			{
-				var ct = $("#avatar-browser-container");
-				w = ct.width();
-				if (w < 400)
-					ct.width(400); // can not IE see min-width in CSS ?!
-				w = ct.width();
-				h = ct.height();
-			} else
-			{
-				var w = size;
-				var h = size;
-			}
-			if (w > ww - 100)
-				w = ww - 100;
-			if (h > wh - 100)
-				h = wh - 100;
-			if (animate)
-				ol.animate({"width": w, "height": h,
-					"left": (ww - w) / 2, "top": (wh - h) / 2}, "slow");
-			else
-			{
-				ol.offset({
-					"left": (ww - w) / 2,
-					"top": (wh - h) / 2});
-				ol.width(w);
-				ol.height(h);
-			}
-		}
-
-		var resize_avatar_browser_handler = function(){resize_avatar_browser(-1, true);};
-		var avatar_browser_init_done = false;
-
-		function avatar_browser(input_id, img_id, pgnum)
-		{
-			var ol = $("#avatar-browser");
-			if (!avatar_browser_init_done)
-			{
-				$("#avatar-browser-overlay").css("display", "inline");
-				ol.css("display", "inline");
-				$(document).resize(resize_avatar_browser_handler);
-				$(window).resize(resize_avatar_browser_handler);
-				avatar_browser_init_done = true;
-			}
-			resize_avatar_browser(16, false);
-			ol.css("background-color", "transparent");
-			ol.css("border-style", "none");
-			ol.html("<img src=\"<?php _url('images/loading.gif');?>\" alt=\"loading\" />");
-
-			$.ajax({
-				"type": "post",
-				"cache": false,
-				"url":  "<?php t_get_link('ajax-avatar-browser');?>",
-				"data": ({"input_id": input_id, "img_id" : img_id, "pgnum" : pgnum}),
-				"success": function(data)
-				{
-					ol.html(data);
-					ol.css("background-color", "white");
-					ol.css("border-style", "solid");
-					resize_avatar_browser(-1, true);
-				}
-			});
-		}
-
-		function avatar_set(img_id, file, input_id, aid)
-		{
-			$("#" + img_id).attr("src", file);
-			$("#" + input_id).val(aid);
-			$("#avatar-browser").css("display", "none");
-			$("#avatar-browser-overlay").css("display", "none");
-			$(document).unbind("resize", resize_avatar_browser_handler);
-			$(window).unbind("resize", resize_avatar_browser_handler);
-			avatar_browser_init_done = false;
-		}
 	</script>
 
 </head>
@@ -412,5 +298,123 @@ if (isset($startup_msg))
 }
 ?>
 
+	<script type="text/javascript">
+
+		function form_checker(checker_id, input_id, result_div_id)
+		{
+			input_id = "#" + input_id;
+			result_div_id = '#' + result_div_id;
+			$(result_div_id).css("display", "inline");
+			$.colorbox.resize();
+			$(result_div_id).html('<img alt="loading" src="<?php _url('images/loading.gif');?>" />');
+			$.ajax({
+				"type": "post",
+				"cache": false,
+				"url":  "<?php t_get_link('ajax-form-checker');?>",
+				"data": ({"checker" : checker_id, "val" : $(input_id).val()}),
+				"success": function(data)
+				{
+					$(result_div_id).html(data);
+				}
+			});
+		}
+
+		function form_verify_passwd(pwd1_id, pwd2_id, result_div_id)
+		{
+			result_div_id = '#' + result_div_id;
+			if ($("#" + pwd1_id).val() != $("#" + pwd2_id).val())
+			{
+				$(result_div_id).css("display", "inline");
+				$(result_div_id).html("<?php echo __('Passwords do not match');?>");
+			} else
+				$(result_div_id).css("display", "none");
+			$.colorbox.resize();
+		}
+
+		function resize_avatar_browser(size, animate)
+		{
+			var ol = $("#avatar-browser-overlay");
+			ol.width($(document).width());
+			ol.height($(document).height());
+			ol = $("#avatar-browser");
+			var ww = $(window).width();
+			var wh = $(window).height();
+			if (size == -1)
+			{
+				var ct = $("#avatar-browser-container");
+				w = ct.width();
+				if (w < 400)
+					ct.width(400); // can not IE see min-width in CSS ?!
+				w = ct.width();
+				h = ct.height();
+			} else
+			{
+				var w = size;
+				var h = size;
+			}
+			if (w > ww - 100)
+				w = ww - 100;
+			if (h > wh - 100)
+				h = wh - 100;
+			if (animate)
+				ol.animate({"width": w, "height": h,
+					"left": (ww - w) / 2, "top": (wh - h) / 2}, "slow");
+			else
+			{
+				ol.offset({
+					"left": (ww - w) / 2,
+					"top": (wh - h) / 2});
+				ol.width(w);
+				ol.height(h);
+			}
+		}
+
+		var resize_avatar_browser_handler = function(){resize_avatar_browser(-1, true);};
+		var avatar_browser_init_done = false;
+
+		function avatar_browser(input_id, img_id, pgnum)
+		{
+			var ol = $("#avatar-browser");
+			if (!avatar_browser_init_done)
+			{
+				$("#avatar-browser-overlay").css("display", "inline");
+				ol.css("display", "inline");
+				$(document).resize(resize_avatar_browser_handler);
+				$(window).resize(resize_avatar_browser_handler);
+				avatar_browser_init_done = true;
+			}
+			resize_avatar_browser(16, false);
+			ol.css("background-color", "transparent");
+			ol.css("border-style", "none");
+			ol.html('<img src="<?php _url('images/loading.gif');?>" alt="loading" />');
+
+			$.ajax({
+				"type": "post",
+				"cache": false,
+				"url":  "<?php t_get_link('ajax-avatar-browser');?>",
+				"data": ({"input_id": input_id, "img_id" : img_id, "pgnum" : pgnum}),
+				"success": function(data)
+				{
+					ol.html(data);
+					ol.css("background-color", "white");
+					ol.css("border-style", "solid");
+					resize_avatar_browser(-1, true);
+				}
+			});
+		}
+
+		function avatar_set(img_id, file, input_id, aid)
+		{
+			$("#" + img_id).attr("src", file);
+			$("#" + input_id).val(aid);
+			$("#avatar-browser").css("display", "none");
+			$("#avatar-browser-overlay").css("display", "none");
+			$(document).unbind("resize", resize_avatar_browser_handler);
+			$(window).unbind("resize", resize_avatar_browser_handler);
+			avatar_browser_init_done = false;
+		}
+	</script>
+
 </body>
+
 </html>

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Fri Oct 08 19:45:55 2010 +0800
+ * $Date: Tue Oct 12 10:13:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,6 +24,8 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+if (!defined('IN_ORZOJ'))
+	exit;
 
 /**
  * contest abstract layer
@@ -53,7 +55,8 @@ abstract class Ctal
 	abstract protected function get_form_fields();
 
 	/**
-	 * add a new contest of a specific type
+	 * this function is called when a new contest of a this type is added
+	 * and data in the 'contests' table are inserted
 	 * $data in __construct: contst id
 	 * @return void
 	 */

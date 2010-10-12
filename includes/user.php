@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Tue Oct 12 09:19:00 2010 +0800
+ * $Date: Tue Oct 12 09:32:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -199,7 +199,7 @@ function user_check_login($cookie_time = NULL)
 			array($DBOP['='], 'id', $row['id']));
 
 		cookie_set('uid', $row['id'], $cookie_time);
-		cookie_set('password', _user_make_passwd($salt . $pwd_chk),
+		cookie_set('password', _user_make_passwd($row['id'], $salt . $pwd_chk),
 			$cookie_time);
 
 		$uid = $row['id'];
