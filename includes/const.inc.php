@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Tue Oct 12 10:16:44 2010 +0800
+ * $Date: Tue Oct 12 11:50:15 2010 UTC
  */
 /**
  * @package orzoj-website
@@ -61,3 +61,20 @@ define('DYNAMIC_PASSWORD_LIFETIME', 10); // in seconds
 
 define('ST_PROB_USER_UNAC', 0);
 define('ST_PROB_USER_AC', 1);
+
+define('WEBSERVER_OTHERS', 0);
+define('WEBSERVER_APACHE', 1);
+define('WEBSERVER_IIS7', 2);
+define('WEBSERVER_IIS', 3); // Only for IIS < 7
+
+$cnt = 0;
+define('USER_BROWSER_OTHERS', $cnt++);
+define('USER_BROWSER_LYNX', $cnt++);
+define('USER_BROWSER_CHROME', $cnt++);
+define('USER_BROWSER_SAFARI', $cnt++);
+define('USER_BROWSER_GECKO', $cnt++);
+define('USER_BROWSER_MSIE', $cnt++);
+define('USER_BROWSER_OPERA', $cnt++);
+define('USER_BROWSER_NETSCAPE', $cnt++);
+define('USER_BROWSER_IPHONE', $cnt++);
+unset($cnt);

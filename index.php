@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Tue Oct 12 00:02:57 2010 +0800
+ * $Date: Tue Oct 12 11:42:27 2010 UTC
  */
 /**
  * @package orzoj-website
@@ -58,7 +58,7 @@ require_once $theme_path. 'functions.php';
 user_init_form();
 
 /*
- * TODO: rewrite
+ * TODO: Make rewrite more extendable. 
  */
 if (isset($_GET['page']))
 	$cur_page = $_GET['page'];

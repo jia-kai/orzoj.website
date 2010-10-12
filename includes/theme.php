@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Sat Oct 09 23:33:14 2010 +0800
+ * $Date: Tue Oct 12 11:40:54 2010 UTC
  */
 /**
  * @package orzoj-website
@@ -23,6 +23,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+define('IN_ORZOJ',true);
 if (!defined('IN_ORZOJ'))
 	exit;
 
@@ -76,11 +77,22 @@ $T_DEFAULT_IMG_PATH = get_page_url($root_path . 'contents/theme/default/images/'
  */
 function t_get_link($page, $arg = NULL)
 {
-	// TODO: rewrite
-	global $root_path;
-	$str = get_page_url($root_path . 'index.php') . '?page=' . urlencode($page);
-	if (is_string($arg))
-		$str .= '&arg=' . urlencode($arg);
+	// TODO: Make rewrite better and extendable.
+	global $root_path,$webserver,$website_root;
+	if ($webserver != WEBSERVER_APACHE || defined('DISABLE_URI_REWRITE'))
+	{
+		$str = get_page_url($root_path . 'index.php') . '?page=' . urlencode($page);
+		if (is_string($arg))
+			$str .= '&arg=' . urlencode($arg);
+	}
+	else
+	{
+		$str = $website_root;
+		$str .= urlencode($page) . '/';
+		if (is_string($arg))
+			$str .= urlencode($arg);
+	}
 	echo $str;
 }
+
 

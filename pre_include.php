@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Mon Oct 11 22:43:03 2010 +0800
+ * $Date: Tue Oct 12 11:51:14 2010 UTC
  */
 /**
  * @package orzoj-website
@@ -72,3 +72,50 @@ if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 }
 
 
+/*
+ * Detect web server.Copy from wordpress.
+ */
+$is_Apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
+$is_IIS = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer') !== false);
+$is_IIS7 = $is_iis7 = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/7.') !== false);
+
+if ($is_Apache) $webserver = WEBSERVER_APACHE;
+else if ($is_IIS7) $webserver = WEBSERVER_IIS7;
+else if ($is_IIS) $webserver = WEBSERVER_IIS;
+else $webserver = WEBSERVER_OTHERS;
+
+unset($is_Apache,$is_IIS,$is_IIS7);
+/*
+ * Detect web server finished
+ */
+
+/*
+ * Detect UA Browser.Copy from wordpress.
+ */
+
+$userbrowser = USER_BROWSER_OTHERS;
+
+if ( isset($_SERVER['HTTP_USER_AGENT']) ) {
+	if ( strpos($_SERVER['HTTP_USER_AGENT'], 'Lynx') !== false ) {
+		$userbrowser = USER_BROWSER_LYNX;
+	} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'chrome') !== false ) {
+		$userbrowser = USER_BROWSER_CHROME;
+	} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'safari') !== false ) {
+		$userbrowser = USER_BROWSER_SAFARI;
+	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Gecko') !== false ) {
+		$userbrowser = USER_BROWSER_GECKO;
+	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false ) {
+		$userbrowser = USER_BROWSER_MSIE;
+	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Opera') !== false ) {
+		$userbrowser = USER_BROWSER_OPERA;
+	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Nav') !== false && strpos($_SERVER['HTTP_USER_AGENT'], 'Mozilla/4.') !== false ) {
+		$userbrowser = USER_BROWSER_NETSCAPE;
+	}
+}
+
+if ( $userbrowser == USER_BROWSER_SAFARI && stripos($_SERVER['HTTP_USER_AGENT'], 'mobile') !== false )
+	$is_iphone = USER_BROWSER_IPHONE;
+
+/*
+ * Detect UA Browser finished.
+ */
