@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Oct 12 09:48:10 2010 +0800
+ * $Date: Tue Oct 12 20:22:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -179,8 +179,6 @@ $tables = array(
 			// |--------------------------------------------------------------------|
 			'io' => array('type' => 'TEXT'), // serialized array of input/output file name, or empty string if using stdio
 
-			'hidden' => array('type' => 'INT32'), // whether this problem is hidden
-
 			'time' => array('type' => 'INT64'), // when this problem is added
 
 			'cnt_submit' => array('type' => 'INT32', 'default' => 0),
@@ -194,7 +192,6 @@ $tables = array(
 				'type' => 'UNIQUE',
 				'cols' => array('code')
 			),
-			array('cols' => array('hidden', 'time'))
 		),
 		'index_len' => array(
 			'code' => PROB_CODE_LEN_MAX
@@ -226,12 +223,19 @@ $tables = array(
 		),
 		'index' => array(
 			array(
-				'type' => 'UNIQUE',
 				'cols' => array('pid')),
 			array(
-				'type' => 'UNIQUE',
 				'cols' => array('gid'))
 		)
+	),
+
+	/* cache_pgrp_child */
+	'cache_pgrp_child' => array( // cache of all children of each problem group
+		'cols' => array(
+			'gid' => array('type' => 'INT32'),
+			'chid' => array('type' => 'INT32') // id of one of the children of the problem group
+		),
+		'primary_key' => 'gid'
 	),
 
 	/* contests */
@@ -334,7 +338,7 @@ $tables = array(
 		'primary_key' => 'id',
 		'index' => array(
 			array(
-				'cols' => array('uid')),
+				'cols' => array('uid', 'pid', 'status')),
 			array(
 				'cols' => array('pid')),
 			array(

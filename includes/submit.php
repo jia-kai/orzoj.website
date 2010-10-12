@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Fri Oct 08 19:48:51 2010 +0800
+ * $Date: Tue Oct 12 20:29:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -93,12 +93,12 @@ function submit_src()
 /**
  * insert the record into the database
  * @param int $pid problem id
- * @param int $lang programming language id
+ * @param int $lid programming language id
  * @param string $src the source
  * @param int $status the initial status for this record
  * @return int record id
  */
-function submit_add_record($pid, $lang, $src,
+function submit_add_record($pid, $lid, $src,
 	$status = RECORD_STATUS_WAITING_TO_BE_FETCHED)
 {
 	if (!user_check_login())
@@ -109,7 +109,7 @@ function submit_add_record($pid, $lang, $src,
 		array(
 			'uid' => $user->id,
 			'pid' => $pid,
-			'lid' => $lang,
+			'lid' => $lid,
 			'src_len' => strlen($src),
 			'stime' => time(),
 			'ip' => get_remote_addr()

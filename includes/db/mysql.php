@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Mon Oct 11 22:46:49 2010 +0800
+ * $Date: Tue Oct 12 15:13:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -42,7 +42,7 @@ function _mysql_escape_string($string)
 /**
  * @ignore
  */
-function _mysql_escape_add_brck($str)
+function _mysql_add_brck($str)
 {
 	return '(' . $str . ')';
 }
@@ -53,6 +53,20 @@ function _mysql_escape_add_brck($str)
 function _mysql_escape_col_name($str)
 {
 	return '`' . $str . '`';
+}
+
+/**
+ * @ignore
+ */
+function _mysql_build_cols($cols)
+{
+	if (is_string($cols))
+		return '`' . $cols . '`';
+	$ret = '(';
+	foreach ($cols as $col)
+		$ret .= '`' . $col . '`,';
+	$ret[strlen($ret) - 1] = ')';
+	return $ret;
 }
 
 /**
@@ -85,11 +99,14 @@ $DBOP['=s'] = new _Mysql_opt(2, '=', $tmp);
 $DBOP['!=s'] = new _Mysql_opt(2, '!=', $tmp);
 $DBOP['like'] = new _Mysql_opt(2, ' LIKE ', $tmp);
 
-$tmp = array('_mysql_escape_add_brck', '_mysql_escape_add_brck');
+$tmp = array('_mysql_add_brck', '_mysql_add_brck');
 $DBOP['&&'] = new _Mysql_opt(2, ' && ', $tmp);
 $DBOP['||'] = new _Mysql_opt(2, ' || ', $tmp);
 
-$DBOP['!'] = new _Mysql_opt(1, '! ', '_mysql_escape_add_brck');
+$DBOP['!'] = new _Mysql_opt(1, '! ', '_mysql_add_brck');
+
+$DBPP['in'] = new _Mysql_opt(2, ' IN ',
+	array('_mysql_build_cols', '_mysql_add_brck'));
 
 unset($tmp);
 
@@ -361,14 +378,27 @@ class Dbal_mysql extends Dbal
 	}
 
 	public function select_from($tablename, $cols = NULL, $whereclause = NULL,
-		$orderby = NULL, $offset = NULL, $amount = NULL)
+		$orderby = NULL, $offset = NULL, $amount = NULL, $col_as = NULL, $return_query_str = FALSE)
 	{
 		$tablename = $this->table_prefix . $tablename;
 		$sql = 'SELECT ';
 		if (is_array($cols))
 		{
-			foreach ($cols as $row) 
-				$sql .= '`' . $row . '`,';
+			if (is_array($col_as))
+			{
+				foreach ($cols as $col)
+				{
+					$sql .= '`' . $col . '`';
+					if (isset($col_as[$col]))
+						$sql .= ' AS `' . $col_as[$col] . '`';
+					$sql .= ',';
+				}
+			}
+			else
+			{
+				foreach ($cols as $col) 
+					$sql .= '`' . $col . '`,';
+			}
 			$sql[strlen($sql) - 1] = ' ';
 		}
 		else if ($cols === NULL)
@@ -403,6 +433,8 @@ class Dbal_mysql extends Dbal
 			else $sql.='LIMIT 0';
 			if ($amount > 0) $sql.=','.$amount;
 		}
+		if ($return_query_str)
+			return $sql;
 		if ($this->direct_query)
 		{
 			$rt = $this->query($sql);

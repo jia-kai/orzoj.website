@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Wed Oct 06 09:58:35 2010 +0800
+ * $Date: Tue Oct 12 14:53:20 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -167,15 +167,24 @@ abstract class Dbal
 	 *								&lt;statement&gt;, &lt;statement&gt;
 	 *							operands for '!':
 	 *								&lt;statement&gt;
+	 *			'in'
+	 *						--	subquery
+	 *							operands:
+	 *								&lt;col name:string|col names:array&gt;, &lt;subqeury:string&gt;
+	 *								subquery is the query returned by select_from with $return_query_str = TRUE
 	 *		use $DBOP[str] to get operator object named str
 	 *		example: array($DBOP["="], "id", "1") means "id = 1" </pre>
-	 * @param array $orderby array(<col name> => 'ASC'|'DESC') meaning how to sort the result.
-	 * @param int $offset meaning start from which.
-	 * @param int $amount meaning get how many
+	 * @param array|NULL $orderby array(<col name> => 'ASC'|'DESC') meaning how to sort the result.
+	 * @param int|NULL $offset which row in the original result should be returned as the first row
+	 * @param int|NULL $amount maximal number of rows to be returned
+	 * @param array|NULL $as columns alias in the format array(<orignal column name> => <alias name>)
+	 * @param bool $return_query_str whetehr to return the query as string without executing it
 	 * @return array the data fetched from database
 	 */
 	abstract protected function
-		select_from($tablename, $cols = NULL, $whereclause = NULL, $orderby = NULL, $offset = NULL, $amount = NULL);
+		select_from($tablename, $cols = NULL, $whereclause = NULL,
+			$orderby = NULL, $offset = NULL, $amount = NULL,
+			$col_as = NULL, $return_query_str = FALSE);
 
 	/**
 	 * update data in the database

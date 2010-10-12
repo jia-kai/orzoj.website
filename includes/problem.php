@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Wed Oct 06 11:10:42 2010 +0800
+ * $Date: Tue Oct 12 20:19:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,7 +31,9 @@ require_once $includes_path . 'contest/ctal.php';
 
 $PROB_SUBMIT_PINFO = array('id', 'code', 'perm', 'io');
 $PROB_VIEW_PINFO = array('id', 'title', 'code', 'desc', 'perm', 'io', 'time',
-	'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce');
+	'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce', 'grp');
+// grp: array of problem group ids that this problem belongs to
+// io: array of input/output file name, or NULL if using stdio
 
 /**
  * check whether a user has permission for a problem
@@ -41,8 +43,6 @@ $PROB_VIEW_PINFO = array('id', 'title', 'code', 'desc', 'perm', 'io', 'time',
  */
 function prob_check_perm($user_grp, $perm)
 {
-	if (!isset($user->groups))
-		$user->set_val($user->id);
 	if (!is_array($perm))
 		$perm = unserialize($perm);
 	if ($perm[0])
@@ -50,7 +50,7 @@ function prob_check_perm($user_grp, $perm)
 	else $order = array(3, 2);
 	$match = NULL;
 	foreach ($order as $o)
-		if (count(array_intersect($user->groups, $perm[$o])))
+		if (count(array_intersect($user_grp, $perm[$o])))
 			$match = $o;
 	if (is_null($match))
 		return $perm[1] != 0;
@@ -60,25 +60,47 @@ function prob_check_perm($user_grp, $perm)
 /**
  * view a problem
  * @param int $pid problem id
- * @return string|NULL the HTML code, or NULL if the user is not allowed to view this problem
+ * @return string the HTML code
+ * @exception Exc_runtime if permission denied
  */
 function prob_view($pid)
 {
 	global $db, $DBOP;
-	$row = $db->select_from('problems', $PROB_VIEW_PINFO,
+	$row = $PROB_VIEW_PINFO;
+	unset($row['grp']);
+	$row = $db->select_from('problems', $row,
 		array($DBOP['='], 'id', $pid));
 	if (count($row) != 1)
 		throw new Exc_runtime(__('No such problem #%d', $pid));
 	$row = $row[0];
 	if (user_check_login())
+	{
 		$grp = $user->groups;
-	else $grp = array(GID_GUEST);
-	if (!prob_check_perm($grp, $row['perm']))
-		throw new Exc_runtime(__('Permission denied for this problem'));
+		$has_perm = $user->is_grp_member(GID_SUPER_SUBMITTER);
+	}
+	else
+		$grp = array(GID_GUEST);
 
-	$ct = ctal_get_class($pid);
-	if ($ct)
-		$ct->prob_view($grp, $row);
+	if (!$has_perm && !prob_check_perm($grp, $row['perm']))
+		throw new Exc_runtime(__('Sorry, your are not allowed to view this problem'));
+
+	$row_grp = array();
+	$grps = $db->select_from('problems', 'gid',
+		array($DBP['='], 'pid', $pid));
+	foreach ($grps as $grp)
+		$row_grp[] = $grp['gid'];
+	$row['grp'] = $row_grp;
+
+	if (strlen($row['io']))
+		$row['io'] = unserialize($row['io']);
+	else $row['io'] = NULL;
+
+	if (!$has_perm)
+	{
+		$ct = ctal_get_class($pid);
+		if ($ct)
+			$ct->prob_view($grp, $row);
+	}
 
 	$str = tf_get_prob_html($row);
 
@@ -86,28 +108,83 @@ function prob_view($pid)
 }
 
 /**
+ * @ignore
+ */
+function _prob_get_list_make_where($gid)
+{
+	global $db, $DBOP;
+	$ret0 = NULL;
+	if (!is_null($gid))
+		$ret0 = array($DBOP['in'], 'id', $db->select_from(
+			'map_prob_grp', 'pid', 
+			array($DBOP['in'], 'gid', $db->select_from(
+				'cache_pgrp_child', 'chid', array(
+					$DBOP['='], 'gid', $gid), array('chid' => 'ASC'), NULL, NULL,
+					array('chid' => 'gid'), TRUE),
+			), array('pid' => 'ASC'), NULL, NULL, array('pid' => 'id'), TRUE));
+	$ret1 = NULL;
+	$now = time();
+	if (!user_check_login() || !$user->is_grp_member(GID_SUPER_SUBMITTER))
+		$ret1 = array($DBOP['!'], $DBOP['in'], 'id', $db->select_from(
+			'map_prob_ct', 'pid', array($DBOP['&&'],
+				$DBOP['<='], 'time_start', $now,
+				$DBOP['>'], 'time_end', $now), array('pid' => 'ASC'), NULL, NULL,
+			array('pid' => 'id'), TRUE));
+
+	if (is_null($ret0))
+		return $ret1;
+	if (is_null($ret1))
+		return $ret0;
+	return array_merge(array($DBOP['&&']), $ret0, $ret1);
+}
+
+/**
  * get the number of problems
+ * @param int|NULL $gid problem group id
  * @return int
  */
-function prob_get_amount()
+function prob_get_amount($gid = NULL)
 {
 	global $db, $DBOP;
 	return $db->get_number_of_rows('problems',
-		array($DBP['='], 'hidden', 0));
+		_prob_get_list_make_where($gid));
 }
 
 /**
  * get problem list
- * @param array $fields the fields needed, which should be a subset of $PROB_VIEW_PINFO
+ * @param array $fields the fields needed, which should be a subset of $PROB_VIEW_PINFO, and CAN NOT contain 'grp'
+ * @param int|NULL $gid problem group id
  * @param bool $time_asc order by time ASC(TRUE) or DESC(FALSE)
  * @param int|NULL $offset
  * @param int|NULL $cnt
+ * @return array
  */
-function prob_get_list($fields, $time_asc = TRUE, $offset = NULL, $cnt = NULL)
+function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $cnt = NULL)
 {
 	global $db, $DBOP;
-	return $db->select_from('problems',
-		$fields, array($DBOP['='], 'hidden', 0),
+	if (!in_array('perm', $fields))
+		$fields[] = 'perm';
+	$rows = $db->select_from('problems',
+		$fields, _prob_get_list_make_where($gid),
 		array('time' => $time_asc ? 'ASC' : 'DESC'));
+	$ret = array();
+	if (user_check_login())
+		$grp = $user->groups;
+	else $grp = array(GID_GUEST);
+
+	$io_set = isset($fields['io']);
+
+	foreach ($rows as $row)
+		if (prob_check_perm($grp, $row['perm']))
+		{
+			if ($io_set)
+			{
+				if (strlen($row['io']))
+					$row['io'] = unserialize($row['io']);
+				else $row['io'] = NULL;
+			}
+			$ret[] = $row;
+		}
+	return $ret;
 }
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Tue Oct 12 10:13:30 2010 +0800
+ * $Date: Tue Oct 12 21:42:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -39,8 +39,7 @@ abstract class Ctal
 
 	/**
 	 * construction function
-	 * @param int|array|NULL $data contest id, row in the database describing the contest or NULL,
-	 *		depening on the function you will call
+	 * @param array|NULL $data row in the database describing the contest or NULL if only get_form_fields will be called
 	 */
 	public function __construct($data)
 	{
@@ -49,7 +48,6 @@ abstract class Ctal
 
 	/**
 	 * echo contest-type specific form fields when adding a new contest
-	 * $data in __construct: NULL
 	 * @return void
 	 */
 	abstract protected function get_form_fields();
@@ -57,25 +55,29 @@ abstract class Ctal
 	/**
 	 * this function is called when a new contest of a this type is added
 	 * and data in the 'contests' table are inserted
-	 * $data in __construct: contst id
 	 * @return void
 	 */
 	abstract protected function add_contest();
 
 	/**
+	 * this function is called when the contest is updated
+	 * and data in the 'contests' table are inserted
+	 * @return void
+	 */
+	abstract protected function update_contest();
+
+	/**
 	 * called when user tries to view a problem in this contest
-	 * $data in __construct: database row
-	 * @param array $groups the ids of groups the user belonging to
+	 * @param array $user_grp the ids of groups the user belonging to
 	 * @param array $pinfo problem information, containing $PROB_VIEW_PINFO (defined in problem.php)
 	 *		may be modified
 	 * @return void
 	 * @exception Exc_runtime if permission denied
 	 */
-	abstract protected function prob_view($groups, &$pinfo);
+	abstract protected function prob_view($user_grp, &$pinfo);
 
 	/**
 	 * deal with user submissions for problems in this contest
-	 * $data in __construct: database row
 	 * @param array $pinfo problem information, containing $PROB_SUBMIT_PINFO (defined in problem.php)
 	 * @param int $lid programming language id
 	 * @param string $src source
@@ -85,7 +87,6 @@ abstract class Ctal
 
 	/**
 	 * get final rank list of the problem
-	 * $data in __construct: contest id
 	 * @param array|NULL $users if not NULL, specify the ids of users needed to be ranked
 	 * @return array|NULL a 2-dimension array representing a complete table of the final rank list (including table headers)
 	 */
@@ -107,7 +108,7 @@ function ctal_get_class($pid)
 		array($DBOP['&&'], $DBOP['&&'], $DBOP['&&'],
 		$DBOP['='], 'pid', $pid,
 		$DBOP['<='], 'time_start', $now,
-		$DBOP['>='], 'time_end', $now));
+		$DBOP['>'], 'time_end', $now));
 	if (count($row))
 	{
 		$row = $db->select_from('contests', NULL,

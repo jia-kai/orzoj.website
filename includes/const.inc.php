@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.inc.php
- * $Date: Tue Oct 12 11:50:15 2010 UTC
+ * $Date: 二 10月 12 20:00:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -47,12 +47,11 @@ define('GID_ADMIN_TEAM', $cnt ++); // manage user teams
 define('GID_ADMIN_PROB', $cnt ++); // manage problems
 define('GID_ADMIN_CONTEST', $cnt ++);  // manage contests
 define('GID_ADMIN_POST', $cnt ++); // manage posts
-define('GID_SUPER_CONTESTER', $cnt ++); // submit regardless of which contest the problem belongs to
+define('GID_SUPER_SUBMITTER', $cnt ++); // submit regardless of which contest the problem belongs to or other limits on problem submission
 define('GID_LOCK', $cnt ++); // locked group id
 define('GID_ALL', $cnt ++); // every registered user should be in this group
 define('GID_NONE', $cnt ++); // nobody should be in this group
 define('GID_GUEST', $cnt ++);
-unset($cnt);
 
 define('JUDGE_STATUS_OFFLINE',0);
 define('JUDGE_STATUS_ONLINE',1);
@@ -62,19 +61,20 @@ define('DYNAMIC_PASSWORD_LIFETIME', 10); // in seconds
 define('ST_PROB_USER_UNAC', 0);
 define('ST_PROB_USER_AC', 1);
 
-define('WEBSERVER_OTHERS', 0);
-define('WEBSERVER_APACHE', 1);
-define('WEBSERVER_IIS7', 2);
-define('WEBSERVER_IIS', 3); // Only for IIS < 7
+$cnt = 0;
+define('WEBSERVER_OTHERS', $cnt ++);
+define('WEBSERVER_APACHE', $cnt ++);
+define('WEBSERVER_IIS7', $cnt ++);
+define('WEBSERVER_IIS', $cnt ++); // Only for IIS < 7
 
 $cnt = 0;
-define('USER_BROWSER_OTHERS', $cnt++);
-define('USER_BROWSER_LYNX', $cnt++);
-define('USER_BROWSER_CHROME', $cnt++);
-define('USER_BROWSER_SAFARI', $cnt++);
-define('USER_BROWSER_GECKO', $cnt++);
-define('USER_BROWSER_MSIE', $cnt++);
-define('USER_BROWSER_OPERA', $cnt++);
-define('USER_BROWSER_NETSCAPE', $cnt++);
-define('USER_BROWSER_IPHONE', $cnt++);
+define('USER_BROWSER_OTHERS', $cnt ++);
+define('USER_BROWSER_LYNX', $cnt ++);
+define('USER_BROWSER_CHROME', $cnt ++);
+define('USER_BROWSER_SAFARI', $cnt ++);
+define('USER_BROWSER_GECKO', $cnt ++);
+define('USER_BROWSER_MSIE', $cnt ++);
+define('USER_BROWSER_OPERA', $cnt ++);
+define('USER_BROWSER_NETSCAPE', $cnt ++);
+define('USER_BROWSER_IPHONE', $cnt ++);
 unset($cnt);

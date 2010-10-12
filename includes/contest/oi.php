@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Tue Oct 12 10:13:40 2010 +0800
+ * $Date: Tue Oct 12 20:45:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,6 +28,9 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once $includes_path . 'contest/ctal.php';
+require_once $includes_path . 'problem.php';
+require_once $includes_path . 'sched.php';
+require_once $includes_path . 'record.inc.php';
 
 class Ctal_oi extends Ctal
 {
@@ -36,6 +39,30 @@ class Ctal_oi extends Ctal
 	}
 
 	public function add_contest()
+	{
+	}
+
+	public function prob_view($user_grp, &$pinfo)
+	{
+		if (!prob_check_perm($user_grp, $this->data->perm))
+			throw new Exc_runtime('Sorry, you are not allowed to view this problem now');
+		if (is_null($pinfo['io']))
+			$pinfo['io'] = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
+	}
+
+	public function user_submit($pinfo, $lid, $src)
+	{
+		global $user, $db, $DBOP;
+		$db->delete_item('records', array(
+			$DBOP['&&'], $DBOP['&&'], $DBOP['&&'],
+			$DBOP['='], 'uid', $user->id,
+			$DBOP['='], 'pid', $pinfo['id'],
+			$DBOP['='], 'status', RECORD_STATUS_WAITING_FOR_CONTEST));
+		submit_add_record($pinfo['id'], $lid, $src,
+			RECORD_STATUS_WAITING_FOR_CONTEST);
+	}
+
+	public function get_rank_list()
 	{
 	}
 }

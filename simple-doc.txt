@@ -82,4 +82,5 @@ Note:
 	3. all the pages accessed by user except those in install are in / and /admin
 	4. themes should not operate on database directly except when quering for records (because record queries
 		are usually highly customized, so no API is provided)
+	5. One problem can only belong to one contest simultaneously
 
