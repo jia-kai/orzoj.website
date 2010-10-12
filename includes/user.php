@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Mon Oct 11 22:04:00 2010 +0800
+ * $Date: Tue Oct 12 09:19:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -179,7 +179,6 @@ function user_check_login($cookie_time = NULL)
 		if (!user_check_name($username))
 			return $_user_check_login_result = FALSE;
 		$username = strtolower($username);
-		$password .= $username;
 
 		$row = $db->select_from('users', array('id', 'passwd'),
 			array($DBOP['=s'], 'username', $username));
@@ -187,7 +186,7 @@ function user_check_login($cookie_time = NULL)
 			return $_user_check_login_result = FALSE;
 
 		$row = $row[0];
-		$pwd_chk = _user_check_passwd($password, $row['passwd']);
+		$pwd_chk = _user_check_passwd($username, $password, $row['passwd']);
 		if (!$pwd_chk)
 			return $_user_check_login_result = FALSE;
 		if ($pwd_chk != $row['passwd'])
@@ -217,7 +216,7 @@ function user_check_login($cookie_time = NULL)
 			return $_user_check_login_result = FALSE;
 		$row = $row[0];
 
-		if ($password != _user_make_passwd($row['salt'] . $row['passwd']))
+		if ($password != _user_make_passwd($uid, $row['salt'] . $row['passwd']))
 			return $_user_check_login_result = FALSE;
 
 	}
@@ -269,19 +268,20 @@ define('_USER_PASSWD_ENCRYPTION_VERSION', '01');
  */
 /*
  * check user password
+ * @param string $username user name
  * @param string $passwd plain password
  * @param string $passwd_encr encrypted password read from database
  * @return NULL|string return the newest password as string if checking successfully, or NULL otherwise
  */
-function _user_check_passwd($passwd, $passwd_encr)
+function _user_check_passwd($username, $passwd, $passwd_encr)
 {
 	$pos = strpos($passwd_encr, ':');
 	$version = substr($passwd_encr, 0, $pos);
 	$func = '_user_make_passwd_v' . $version;
-	$ret = $func($passwd);
+	$ret = $func($username, $passwd);
 	if ($ret != substr($passwd_encr, $pos + 1))
 		return NULL;
-	return _user_make_passwd($passwd);
+	return _user_make_passwd($username, $passwd);
 }
 
 /**
@@ -299,18 +299,19 @@ function user_check_name($name)
 /**
  * @ignore
  */
-function _user_make_passwd_v01($passwd)
+function _user_make_passwd_v01($username, $passwd)
 {
+	$passwd .= '$' . $username;
 	return sha1(md5($passwd) . $passwd . sha1($passwd));
 }
 
 /**
  * @ignore
  */
-function _user_make_passwd($passwd)
+function _user_make_passwd($username, $passwd)
 {
 	$func = '_user_make_passwd_v' . _USER_PASSWD_ENCRYPTION_VERSION;
-	return _USER_PASSWD_ENCRYPTION_VERSION . ':' . $func($passwd);
+	return _USER_PASSWD_ENCRYPTION_VERSION . ':' . $func($username, $passwd);
 }
 
 /**
@@ -398,7 +399,7 @@ function user_register_get_form()
 	global $db, $_user_plang, $_user_wlang;
 	$str = 
 		tf_form_get_text_input(__('Username:'), 'username', $_user_checker_id) . 
-		tf_form_get_passwd(__('Password:'), 'password', __('Confirm password:')) .
+		tf_form_get_passwd(__('Password:'), 'passwd', __('Confirm password:')) .
 		tf_form_get_text_input(__('Real name:'), 'realname') .
 		tf_form_get_text_input(__('Nickname:'), 'nickname') .
 		tf_form_get_text_input(__('E-mail:'), 'email') .
@@ -417,13 +418,15 @@ function user_register_get_form()
  */
 function user_register()
 {
-	$VAL_SET = array('username', 'password', 'realname', 'nickname', 'email',
+	$VAL_SET = array('username', 'passwd', 'realname', 'nickname', 'email',
 		'aid', 'plang', 'wlang', 'self_desc');
 	$val = array();
 	foreach ($VAL_SET as $v)
 	{
 		if (!isset($_POST[$v]))
 			throw new Exc_runtime(__('incomplete post: required field "%s" not found', $v));
+		if (!strlen($_POST[$v]))
+			throw new Exc_runtime(__('Every field in the register form must be filled.'));
 		$val[$v] = $_POST[$v];
 	}
 	if (!user_check_name($_POST['username']))
@@ -440,9 +443,7 @@ function user_register()
 	}
 
 	$val['username'] = strtolower($val['username']);
-	$val['password'] .= $val['username'];
-	$val['passwd'] = _user_make_passwd($val['password']);
-	unset($val['password']);
+	$val['passwd'] = _user_make_passwd($val['username'], $val['passwd']);
 	$val['view_gid'] = serialize(array());
 	$val['reg_time'] = time();
 	$val['reg_ip'] = get_remote_addr();
@@ -478,8 +479,8 @@ function user_del($uid)
  * @param int $uid user id
  * @param string $oldpwd old password in plain text (if logged in as administrator, $oldpwd is ignored)
  * @param string $newpwd new password in plain text
- * @return bool whether old password is correct
- * @exception Exc_inner if $uid does not exist
+ * @return void
+ * @exception Exc_runtime if faield to change password
  */
 function user_chpasswd($uid, $oldpwd, $newpwd)
 {
@@ -487,19 +488,19 @@ function user_chpasswd($uid, $oldpwd, $newpwd)
 	$where = array($DBOP['='], 'id', $uid);
 	$row = $db->select_from('users', array('username', 'passwd'), $where);
 	if (count($row) != 1)
-		throw new Exc_inner(__('user_chpasswd: uid %d does not exist', $uid));
+		throw new Exc_runtime(__('uid %d does not exist', $uid));
 
 	$row = $row[0];
-	$oldpwd .= $row['username'];
-	$newpwd .= $row['username'];
 
-	if (!user_check_login() || !$user->is_grp_member(GID_ADMIN_USER))
+	if (!user_check_login())
+		throw new Exc_runtime(__('permission denied'));
+	if (!$user->is_grp_member(GID_ADMIN_USER))
 	{
-		if (!_user_check_passwd($oldpwd, $row['passwd']))
-			return FALSE;
+		if ($user->id != $uid || !_user_check_passwd($row['username'], $oldpwd, $row['passwd']))
+			throw new Exc_runtime(__('permission denied'));
 	}
 
-	$db->update_data('users', array('passwd' => _user_make_passwd($newpwd)),
+	$db->update_data('users', array('passwd' => _user_make_passwd($row['username'], $newpwd)),
 		$where);
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: register.php
- * $Date: Mon Oct 11 21:11:51 2010 +0800
+ * $Date: Tue Oct 12 08:54:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,11 +31,11 @@ if ($page_arg == 'do')
 	try
 	{
 		$id = user_register();
-		die(__("Congratulations! You has successfully registered, and your user id is %d", $id));
+		die(__("0Congratulations! You has successfully registered, and your user id is %d", $id));
 	}
 	catch (Exc_orzoj $e)
 	{
-		die(__('Failed to register: ') . $e->msg());
+		die(__('1Failed to register: ') . $e->msg());
 	}
 }
 
@@ -58,7 +58,9 @@ $("#register-form").bind("submit", function(){
 		"url": "<?php t_get_link($cur_page, 'do');?>",
 		"data": $("#register-form").serializeArray(),
 		success: function(data) {
-			$.colorbox({"html": data});
+			if (data[0] == '1')
+				alert(data.substr(1));
+			else $.colorbox({"html": data.substr(1)});
 		}
 	});
 	return false;
