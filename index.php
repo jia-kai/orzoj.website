@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Sun Oct 10 00:53:48 2010 +0800
+ * $Date: Tue Oct 12 00:02:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,6 +29,7 @@ $theme_path = '';
 
 require_once 'pre_include.php';
 require_once $includes_path . 'theme.php';
+
 /**
  * @ignore
  */
@@ -48,7 +49,9 @@ function _index_set_theme($id = NULL)
 	$theme_path = $root_path . 'contents/themes/' . $theme_name . '/';
 }
 
-_index_set_theme(user_check_login() ? $user->theme_id : NULL);
+// TODO: next version
+//_index_set_theme(user_check_login() ? $user->theme_id : NULL);
+_index_set_theme(DEFAULT_THEME_ID);
 
 require_once $theme_path. 'functions.php';
 

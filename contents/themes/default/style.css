@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Oct 11 21:56:23 2010 +0800
+ * $Date: Tue Oct 12 00:32:35 2010 +0800
 
  This file is part of orzoj
 
@@ -254,3 +254,20 @@ div.clearer
 	clear: both;
 }
 
+
+div#prob-left
+{
+	margin: 0;
+	padding: 5px;
+	border: 2px;
+	float: left;
+	width: 180px;
+	height: 100%;
+}
+
+div.prob-grp
+{
+	margin: 0;
+	text-align: left;
+	padding: 0 0 0 10px;
+}

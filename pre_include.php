@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: 五 10月 08 18:58:13 2010 +0800
+ * $Date: Mon Oct 11 22:43:03 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,6 +37,8 @@ $ORZOJ_VERSION = '0.0.1-alpha';
 require_once $root_path . 'config.php';
 require_once $includes_path . 'const.inc.php';
 require_once $includes_path . 'l10n.php';
+if (!defined('IS_INSTALLED'))
+	die(__('You must install first.<br />Please run %sinstall.', $root_path));
 require_once $includes_path . 'functions.php';
 require_once $includes_path . 'exception.php';
 require_once $includes_path . 'user.php';

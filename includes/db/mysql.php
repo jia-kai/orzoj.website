@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Mon Oct 11 12:08:23 2010 +0800
+ * $Date: Mon Oct 11 22:46:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -106,7 +106,7 @@ function _mysql_build_where_clause($whereclause)
 	$stack = array();
 	foreach ($whereclause as $token)
 	{
-		if (get_class($token) === '_Mysql_opt')
+		if (is_object($token) && get_class($token) === '_Mysql_opt')
 		{
 			if (count($stack) < $token->nopr)
 				throw new Exc_inner(__('invalid where clause'));

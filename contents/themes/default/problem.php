@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Mon Oct 11 19:26:07 2010 +0800
+ * $Date: Tue Oct 12 00:31:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,14 +28,25 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 ?>
-This is problem!
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-
+<div id="prob-left">
+<?php echo __("Problem Groups") . '<br />'; ?>
+<?php
+/**
+ * @ignore
+ */
+function _build_prob_grp_list($pgid, $blank)
+{
+	global $db, $DBOP;
+	$grps = $db->select_from('prob_grps', array('id', 'title'),
+		array($DBOP['='], 'pgid', $pgid));
+	foreach ($grps as $grp)
+	{
+		echo '<li>' . $blank . $grp['title'] . '</li>';
+		_build_prob_grp_list($grp['id'], $blank . '&nbsp;&nbsp;');
+	}
+}
+?>
+<div class="prob-grp">
+<?php _build_prob_grp_list(0, '');?>
+</div>
+</div>

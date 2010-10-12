@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Fri Oct 08 13:53:07 2010 +0800
+ * $Date: Tue Oct 12 00:36:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -50,6 +50,7 @@ function conf_file_generate($db_layer,$db_host,$db_port,$db_username,$db_passwor
 \$db_dbname = '$db_name';
 \$table_prefix = '$table_prefix';
 \$website_root = '$website_root';
+define('IS_INSTALLED', TRUE);
 EOF;
 	$fptr = fopen("config.php", "w");
 	if ($fptr)
@@ -147,6 +148,7 @@ case 2:
 			echo 'Table "'. $name . '" created successfully<br />';
 			ob_flush();
 		}
+		// XXX TEST
 		echo __('Installation completed. Please move install/config.php to the top direcotry of orzoj-website and delete "install" directory.');
 	}
 	catch (Exc_orzoj $e)
