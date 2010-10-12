@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Tue Oct 12 10:25:14 2010 +0800
+ * $Date: Tue Oct 12 10:52:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -223,7 +223,6 @@ EOF;
 				"success": function(data)
 				{
 					$(result_div_id).html(data);
-					$.colorbox.resize();
 				}
 			});
 		}
