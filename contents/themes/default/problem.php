@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Tue Oct 12 00:31:57 2010 +0800
+ * $Date: Tue Oct 12 10:50:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,24 +29,37 @@ if (!defined('IN_ORZOJ'))
 
 ?>
 <div id="prob-left">
-<?php echo __("Problem Groups") . '<br />'; ?>
+<h1 class="prob-left-title"><?php echo __("Problem Groups") . '<br />'; ?></h1>
 <?php
 /**
  * @ignore
  */
-function _build_prob_grp_list($pgid, $blank)
+function _build_prob_grp_list($pgid)
 {
 	global $db, $DBOP;
-	$grps = $db->select_from('prob_grps', array('id', 'title'),
+	$grps = $db->select_from('prob_grps', array('id', 'name'),
 		array($DBOP['='], 'pgid', $pgid));
+	$flag = FALSE;
+	if (count($grps)) $flag = TRUE;
+	if ($flag && $pgid != 0) echo '<ul>';
 	foreach ($grps as $grp)
 	{
-		echo '<li>' . $blank . $grp['title'] . '</li>';
-		_build_prob_grp_list($grp['id'], $blank . '&nbsp;&nbsp;');
+		echo '<li>';
+	   	echo '<a href="#">' . $grp['name'] . '</a>';
+		_build_prob_grp_list($grp['id']);
+		echo '</li>';
 	}
+	if ($flag && $pgid != 0) echo '</ul>';
 }
 ?>
 <div class="prob-grp">
-<?php _build_prob_grp_list(0, '');?>
+<ul id="prob-grp-tree" class="treeview">
+<?php _build_prob_grp_list(0);?>
+</ul>
+
+
+<script type="text/javascript">
+ddtreemenu.createTree("prob-grp-tree", true);
+</script>
 </div>
 </div>

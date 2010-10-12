@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Mon Oct 11 22:00:48 2010 +0800
+ * $Date: Tue Oct 12 10:25:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -162,7 +162,20 @@ if (isset($PAGES_ACTION[$cur_page]))
 
 	<link href="<?php _url('scripts/jquery/colorbox/colorbox.css'); ?>" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="<?php _url('scripts/jquery/colorbox/colorbox-min.js');?>"></script>
-	
+
+	<script type="text/javascript">
+		var TREE_MENU_IMG_OPEN = "<?php _url('scripts/simpletree/open.gif'); ?>";
+		var TREE_MENU_IMG_CLOSED = "<?php _url('scripts/simpletree/closed.gif'); ?>"
+	</script>
+	<script type="text/javascript" src="<?php _url('scripts/simpletree/simpletreemenu.js'); ?>">
+	/***********************************************
+	* Simple Tree Menu- © Dynamic Drive DHTML code library (www.dynamicdrive.com)
+	* This notice MUST stay intact for legal use
+	* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+	***********************************************/
+	</script>
+	<link rel="stylesheet" type="text/css" href="<?php _url('scripts/simpletree/simpletree.css'); ?>" />
+
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#navigator").buttonset();

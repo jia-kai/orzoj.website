@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Oct 12 00:21:19 2010 +0800
+ * $Date: Tue Oct 12 09:48:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -206,7 +206,7 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'pgid' => array('type' => 'INT32', 'default' => 0), // parent group id, or 0
-			'title' => array('type' => 'TEXT'),
+			'name' => array('type' => 'TEXT'),
 			'desc' => array('type' => 'TEXT')
 		),
 		'primary_key' => 'id',
