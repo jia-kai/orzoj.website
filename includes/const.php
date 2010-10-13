@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: const.inc.php
- * $Date: 二 10月 12 20:00:59 2010 +0800
+ * $File: const.php
+ * $Date: Wed Oct 13 21:26:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -47,7 +47,12 @@ define('GID_ADMIN_TEAM', $cnt ++); // manage user teams
 define('GID_ADMIN_PROB', $cnt ++); // manage problems
 define('GID_ADMIN_CONTEST', $cnt ++);  // manage contests
 define('GID_ADMIN_POST', $cnt ++); // manage posts
-define('GID_SUPER_SUBMITTER', $cnt ++); // submit regardless of which contest the problem belongs to or other limits on problem submission
+define('GID_SUPER_SUBMITTER', $cnt ++);
+// submit regardless of which contest the problem belongs to
+// or other limits on problem submission
+define('GID_SUPER_RECORD_VIEWER', $cnt ++);
+// view all records and sources
+define('GID_IP_VIEWER', $cnt ++); // view register IP, submission IP, etc.
 define('GID_LOCK', $cnt ++); // locked group id
 define('GID_ALL', $cnt ++); // every registered user should be in this group
 define('GID_NONE', $cnt ++); // nobody should be in this group

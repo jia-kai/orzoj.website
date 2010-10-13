@@ -1,7 +1,7 @@
 <?php
-/* 
- * $File: exe_status.inc.php
- * $Date: Wed Sep 29 16:03:27 2010 +0800
+/*
+ * $File: record_detail.php
+ * $Date: Wed Oct 13 21:33:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,19 +26,5 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-/* these are status for a single test case */
-define('EXESTS_RIGHT', 0);
-define('EXESTS_PARTIALLY_RIGHT', 1);
-define('EXESTS_WRONG_ANSWER', 2);
-define('EXESTS_TLE', 3);
-define('EXESTS_SIGKILL', 4);
-define('EXESTS_SIGSEGV', 5);
-define('EXESTS_SIGNAL', 6);
-define('EXESTS_ILLEGAL_CALL', 7);
-define('EXESTS_EXIT_NONZERO', 8);
-define('EXESTS_SYSTEM_ERROR', 9);
+$row = $db->select_from('records', );
 
-class Case_result
-{
-	var $exe_status, $score, $time, $memory, $extra_info;
-}

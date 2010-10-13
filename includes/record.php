@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: record.inc.php
- * $Date: Tue Oct 05 15:24:51 2010 +0800
+ * $File: record.php
+ * $Date: Wed Oct 13 20:44:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,19 +34,42 @@ define('RECORD_STATUS_WAITING_TO_BE_FETCHED', $cnt ++);
 define('RECORD_STATUS_WAITING_FOR_CONTEST', $cnt ++);
 define('RECORD_STATUS_WAITING_ON_SERVER', $cnt ++);
 
+define('RECORD_STATUS_JUDGE_BUSY', $cnt ++);
+
 define('RECORD_STATUS_COMPILING', $cnt ++);
+define('RECORD_STATUS_RUNNING', $cnt ++);
+
 define('RECORD_STATUS_COMPILE_SUCCESS', $cnt ++);
 define('RECORD_STATUS_COMPILE_FAILURE', $cnt ++);
-define('RECORD_STATUS_RUNNING', $cnt ++);
+
 define('RECORD_STATUS_ACCEPTED',$cnt ++ );
 define('RECORD_STATUS_WRONG_ANSWER', $cnt ++);
 define('RECORD_STATUS_TIME_LIMIT_EXCEED', $cnt ++);
 define('RECORD_STATUS_MEMORY_LIMIT_EXCEED', $cnt ++);
 define('RECORD_STATUS_RUNTIME_ERROR', $cnt ++);
 define('RECORD_STATUS_DATA_NOT_FOUND', $cnt ++);
-define('RECORD_STATUS_JUDGE_BUSY', $cnt ++);
 define('RECORD_STATUS_ERROR', $cnt ++);
 unset($cnt);
+
+/**
+ * test whether the source is executed
+ * @param int $status
+ * @return bool
+ */
+function record_status_executed($status)
+{
+	return $status >= RECORD_STATUS_ACCEPTED && $status <= RECORD_STATUS_RUNTIME_ERROR;
+}
+
+/**
+ * test whether the judge process is finished
+ * @param int $status
+ * return bool
+ */
+function record_status_finished($status)
+{
+	return intval($status) > RECORD_STATUS_RUNNING;
+}
 
 
 /**
