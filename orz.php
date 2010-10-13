@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Thu Oct 07 11:37:04 2010 +0800
+ * $Date: Wed Oct 13 19:05:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,9 +28,9 @@ require_once 'pre_include.php';
 require_once $includes_path . 'user.php';
 require_once $includes_path . 'sched.php';
 require_once $includes_path . 'judge.php';
-require_once $includes_path . 'exe_status.inc.php';
+require_once $includes_path . 'exe_status.php';
 require_once $includes_path . 'plugin.php';
-require_once $includes_path . 'record.inc.php';
+require_once $includes_path . 'record.php';
 
 define('MSG_VERSION', 1);
 
@@ -337,22 +337,12 @@ function report_judge_waiting()
 }
 
 /**
- * @ignore
- */
-function _get_prob_user_status($status)
-{
-	if ($status == 'cnt_submit') return ST_PROB_USER_UNAC;
-	if ($status == 'cnt_unac') return ST_PROB_USER_UNAC;
-	if ($statsu == 'cnt_ac') return ST_PROB_USER_AC;
-	throw new Exc_inner('Unknown cnt status.');
-}
-/**
  * increase statistics value in the database
  * @param int $rid record id
- * @param array|string $fields
+ * @param string $field
  * @return void
  */
-function increase_statistics_value($rid, $fields)
+function increase_statistics_value($rid, $field)
 {
 	global $db, $DBOP;
 	$row = $db->select_from('records', array('uid', 'pid'), array($DBOP['='], 'id', $rid));
@@ -360,14 +350,14 @@ function increase_statistics_value($rid, $fields)
 		throw new Exc_inner(__('No such record #%d', $rid));
 	$row = $row[0];
 	table_update_numeric_value('users',
-		array($DBOP['='], 'id', $row['uid']), $fields);
+		array($DBOP['='], 'id', $row['uid']), $field);
 	table_update_numeric_value('problems',
-		array($DBOP['='], 'id', $row['pid']), $fields);
+		array($DBOP['='], 'id', $row['pid']), $field);
 
 
 	$where = array($DBOP['&&'], $DBOP['='], 'uid', $row['uid'], $DBOP['='], 'pid', $row['pid']);
 	$st = $db->select_from('sts_prob_user', array('status'), $where);
-	$status = _get_prob_user_status($fields);
+	$status = $field == 'cnt_ac' ? ST_PROB_USER_AC : ST_PROB_USER_UNAC;
 	if (count($st) == 0)
 		$db->insert_into('sts_prob_user',
 			array('uid' => $row['uid'], 'pid' => $row['pid'], 'status' => $status)
@@ -543,7 +533,7 @@ function judge_update($id, $name, $lang_sup, $query_ans)
 /**
  * set judge status
  * @param int $id
- * @param int $status see const.inc.php
+ * @param int $status see const.php
  * @param $success_filter 
  * @return void
  */

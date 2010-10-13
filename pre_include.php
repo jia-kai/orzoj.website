@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Tue Oct 12 11:51:14 2010 UTC
+ * $Date: Wed Oct 13 17:26:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -35,7 +35,7 @@ $includes_path = $root_path . 'includes/';
 $ORZOJ_VERSION = '0.0.1-alpha';
 
 require_once $root_path . 'config.php';
-require_once $includes_path . 'const.inc.php';
+require_once $includes_path . 'const.php';
 require_once $includes_path . 'l10n.php';
 if (!defined('IS_INSTALLED'))
 	die(__('You must install first.<br />Please run %sinstall.', $root_path));
@@ -73,26 +73,27 @@ if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 
 
 /*
- * Detect web server.Copy from wordpress.
+ * Detect web server.
+ * Copied from wordpress.
  */
-$is_Apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
-$is_IIS = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer') !== false);
-$is_IIS7 = $is_iis7 = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/7.') !== false);
+if (isset($_SERVER['SERVER_SOFTWARE']))
+{
+	$is_Apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
+	$is_IIS = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer') !== false);
+	$is_IIS7 = $is_iis7 = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/7.') !== false);
 
-if ($is_Apache) $webserver = WEBSERVER_APACHE;
-else if ($is_IIS7) $webserver = WEBSERVER_IIS7;
-else if ($is_IIS) $webserver = WEBSERVER_IIS;
-else $webserver = WEBSERVER_OTHERS;
+	if ($is_Apache) $webserver = WEBSERVER_APACHE;
+	else if ($is_IIS7) $webserver = WEBSERVER_IIS7;
+	else if ($is_IIS) $webserver = WEBSERVER_IIS;
+	else $webserver = WEBSERVER_OTHERS;
 
-unset($is_Apache,$is_IIS,$is_IIS7);
+	unset($is_Apache,$is_IIS,$is_IIS7);
+}
+
 /*
- * Detect web server finished
+ * Detect UA Browser.
+ * Copied from wordpress.
  */
-
-/*
- * Detect UA Browser.Copy from wordpress.
- */
-
 $userbrowser = USER_BROWSER_OTHERS;
 
 if ( isset($_SERVER['HTTP_USER_AGENT']) ) {

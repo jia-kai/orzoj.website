@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: register.php
- * $Date: Tue Oct 12 19:36:11 2010 +0800
+ * $Date: Wed Oct 13 19:32:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -55,7 +55,7 @@ $("#register-form").bind("submit", function(){
 	$.ajax({
 		"type": "post",
 		"cache": false,
-		"url": "<?php t_get_link($cur_page, 'do');?>",
+		"url": "<?php t_get_link($cur_page, 'do', FALSE);?>",
 		"data": $("#register-form").serializeArray(),
 		success: function(data) {
 			if (data.charAt(0) == '1')

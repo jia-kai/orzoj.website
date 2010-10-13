@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Oct 13 17:36:48 2010 +0800
+ * $Date: Wed Oct 13 16:06:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,8 +27,8 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-require_once realpath('..') . '/includes/const.inc.php';
-require_once realpath('..') . '/includes/record.inc.php';
+require_once realpath('..') . '/includes/const.php';
+require_once realpath('..') . '/includes/record.php';
 
 $tables = array(
 	/* scheds */
@@ -315,7 +315,7 @@ $tables = array(
 	),
 
 	/* records */
-	'records' => array(
+	'records' => array( // this table is read directly by themes
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'uid' => array('type' => 'INT32'), // user id
@@ -323,7 +323,7 @@ $tables = array(
 			'jid' => array('type' => 'INT32', 'default' => 0), // judge id
 			'lid' => array('type' => 'INT32'), // language id
 			'src_len' => array('type' => 'INT32'), // source length in bytes
-			'status' => array('type' => 'INT32', 'default'), // see includes/record.inc.php
+			'status' => array('type' => 'INT32', 'default'), // see includes/record.php
 			'stime' => array('type' => 'INT64'), // submission time
 			'jtime' => array('type' => 'INT64', 'default' => 0), // time when it is judged
 			'ip' => array('type' => 'TEXT'), // from which ip it is submitted
@@ -332,19 +332,17 @@ $tables = array(
 			'time' => array('type' => 'INT32', 'default' => 0), // microsecond
 			'mem' => array('type' => 'INT32', 'default' => 0), // maximal memory, kb
 			'detail' => array('type' => 'TEXT', 'default' => '')
-			// serialized array of Case_result. see includes/exe_status.inc.php
+			// serialized array of Case_result. see includes/exe_status.php
 			// or error info if judge process not started
 		),
 		'primary_key' => 'id',
 		'index' => array(
 			array(
-				'cols' => array('uid', 'pid', 'status')),
+				'cols' => array('uid', 'status', 'pid', 'lid')),
 			array(
-				'cols' => array('pid')),
+				'cols' => array('pid', 'status')),
 			array(
-				'cols' => array('time')),
-			array(
-				'cols' => array('mem')),
+				'cols' => array('time'))
 		)
 	),
 
@@ -366,7 +364,7 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
 			'name' => array('type' => 'TEXT200'),
-			'status' => array('type' => 'INT32'),  // see /includes/const.inc.php
+			'status' => array('type' => 'INT32'),  // see /includes/const.php
 			'lang_sup' => array('type' => 'TEXT'), // serialized array of id of supported languages
 			'detail' => array('type' => 'TEXT') // serialized array of query_ans from orzoj-server
 		),

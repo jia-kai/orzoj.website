@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Mon Oct 04 21:46:25 2010 +0800
+ * $Date: Wed Oct 13 16:16:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,7 +34,7 @@ class Judge
 {
 	var $id, // int
 		$name, // string
-		$status, // see /includes/const.inc.php, consts with JUDGE_STATUS_ prefix
+		$status, // see /includes/const.php, consts with JUDGE_STATUS_ prefix
 		$lang_sup, // array of name of supported languages
 		$detail; // array of info like 'cpu', 'mem', defined in table options:'judge_info_list'
 }
@@ -82,5 +82,23 @@ function judge_remove($id)
 {
 	global $db, $DBOP;
 	$db->delete_item('judges', array($DBOP['='], 'id', $id));
+}
+
+/**
+ * get judge name by id
+ * @param int $jid judge id
+ * @return string|NULL judge name or NULL if no such judge
+ */
+function judge_get_name_by_id($jid)
+{
+	static $cache = array();
+	if (array_key_exists($jid, $cache))
+		return $cache[$jid];
+	global $db, $DBOP;
+	$row = $db->select_from('judges', 'name', array(
+		$DBOP['='], 'id', $jid));
+	if (count($row) != 1)
+		return $cache[$jid] = NULL;
+	return $cache[$jid] = $row[0]['name'];
 }
 

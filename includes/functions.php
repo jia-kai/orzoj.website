@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 09 23:35:18 2010 +0800
+ * $Date: Wed Oct 13 18:59:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -230,7 +230,7 @@ function table_update_numeric_value($table, $where, $fields, $delta = 1)
 	if (is_string($fields))
 		$fields = array($fields);
 
-	$val = $db->select_from($tables, $fields, $where);
+	$val = $db->select_from($table, $fields, $where);
 
 	if (!count($val))
 		throw new Exc_inner(__('no such row'));

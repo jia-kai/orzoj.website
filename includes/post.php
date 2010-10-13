@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Fri Oct 08 19:46:58 2010 +0800
+ * $Date: Wed Oct 13 10:02:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -96,19 +96,6 @@ function post_add_get_form()
 		tf_form_get_text_input(__('Subject:'), 'subject') .
 		tf_form_get_rich_text_editor(__('Content:'), 'content');
 	echo filter_apply('after_post_add_form', $str);
-}
-
-/**
- * @ignore
- */
-if (!function_exists('_where_and_eq'))
-{
-	function _where_and_eql(&$where, $col, $val)
-	{
-		if (is_array($where))
-			$where = array_merge(array($DBOP['&&'], $DBOP['='], $col, $val), $where);
-		else $where = array($DBOP['='], $col, $val);
-	}
 }
 
 /**

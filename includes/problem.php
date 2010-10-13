@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Tue Oct 12 20:19:21 2010 +0800
+ * $Date: Wed Oct 13 14:09:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -186,5 +186,63 @@ function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $
 			$ret[] = $row;
 		}
 	return $ret;
+}
+
+/**
+ * get problem id by code
+ * @param string $pcode problem code
+ * @return int|NULL problem id or NULL if no such problem
+ */
+function prob_get_id_by_code($pcode)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('problems',
+		'id', array($DBOP['=s'], 'code', $pcode));
+	if (count($row) != 1)
+		return NULL;
+	return $row[0]['id'];
+}
+
+/**
+ * @ignore
+ */
+function _prob_get_title_code_by_id($pid)
+{
+	static $cache = array();
+	if (array_key_exists($pid, $cache))
+		return $cache[$pid];
+	global $db, $DBOP;
+	$row = $db->select_from('problems',
+		array('title', 'code'),
+		array($DBOP['='], 'id', $pid));
+	if (count($row) != 1)
+		return $cache[$pid] = NULL;
+	return $cache[$pid] = $row[0];
+}
+
+/**
+ * get problem title by id
+ * @param int $pid problem id
+ * @return string|NULL problem title or NULL if no such problem
+ */
+function prob_get_title_by_id($pid)
+{
+	$t = _prob_get_title_code_by_id($pid);
+	if ($t == NULL)
+		return NULL;
+	return $t['title'];
+}
+
+/**
+ * get problem code by id
+ * @param int $pid problem id
+ * @return string|NULL problem code or NULL if no such problem
+ */
+function prob_get_code_by_id($pid)
+{
+	$t = _prob_get_title_code_by_id($pid);
+	if ($t == NULL)
+		return NULL;
+	return $t['code'];
 }
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Tue Oct 12 09:32:44 2010 +0800
+ * $Date: Wed Oct 13 17:32:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -325,7 +325,7 @@ function _user_make_salt()
 /**
  * get user id by username
  * @param string $name username
- * @return bool|int FALSE if such user does not exist, user id otherwise
+ * @return int|NULL user id or NULL of no such user
  */
 function user_get_id_by_name($name)
 {
@@ -335,7 +335,7 @@ function user_get_id_by_name($name)
 		array($DBOP['=s'], 'username', $name));
 	if (count($row) == 1)
 		return $row[0]['id'];
-	return FALSE;
+	return NULL;
 }
 
 $_user_checker_id = NULL;
@@ -565,8 +565,8 @@ function user_update_info()
 function _user_get_name_by_id($uid)
 {
 	static $cache = array();
-	if (isset($cache[$uid]))
-		return $cache[$uio];
+	if (array_key_exists($uid, $cache))
+		return $cache[$uid];
 	global $db, $DBOP;
 	$row = $db->select_from('users', array('username', 'realname', 'nickname'),
 		array($DBOP['='], 'id', $uid));

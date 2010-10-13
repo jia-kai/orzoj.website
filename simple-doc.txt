@@ -22,9 +22,9 @@
 |	|--	submit.php		functions for submitting source files and getting judge results
 |	|--	team.php		functions for managing user teams
 |	|--	announcement.php	publish and get announcements
-|	|--	exe_status.inc.php	case execution status and case structure definitions
-|	|--	const.inc.php	miscellaneous constants
-|	|--	record.inc.php	execution status constant definitions and record-related structures
+|	|--	exe_status.php	case execution status and case structure definitions
+|	|--	const.php	miscellaneous constants
+|	|--	record.php	execution status constant definitions and record-related structures
 |	|--	contest/
 |	|	|--	ctal.php	contest abstract layer
 |	|	|--	oi.php		implementation for OI rules of contest abstract layer
@@ -83,4 +83,5 @@ Note:
 	4. themes should not operate on database directly except when quering for records (because record queries
 		are usually highly customized, so no API is provided)
 	5. One problem can only belong to one contest simultaneously
+	6. all text data saved in database should be properly HTML encoded
 

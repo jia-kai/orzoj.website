@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Tue Oct 12 20:29:49 2010 +0800
+ * $Date: Wed Oct 13 18:47:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,7 +28,7 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once $includes_path . 'problem.php';
-require_once $includes_path . 'contests/ctal.php';
+require_once $includes_path . 'contest/ctal.php';
 
 /**
  * echo fileds in the form for submitting source code
@@ -111,6 +111,7 @@ function submit_add_record($pid, $lid, $src,
 			'pid' => $pid,
 			'lid' => $lid,
 			'src_len' => strlen($src),
+			'status' => $status,
 			'stime' => time(),
 			'ip' => get_remote_addr()
 		));

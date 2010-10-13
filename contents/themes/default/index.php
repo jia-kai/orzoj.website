@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Wed Oct 13 21:32:37 2010 +0800
+ * $Date: 三 10月 13 21:37:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -60,6 +60,7 @@ $PAGES_AJAX = array(
 	'ajax-register' => 'ajax/register.php',
 	'ajax-form-checker' => 'ajax/form_checker.php',
 	'ajax-avatar-browser' => 'ajax/avatar_browser.php',
+	'ajax-record-detail' => 'ajax/record_detail.php',
 	'ajax-prob-group-tree' => 'ajax/prob_group_tree.php'
 );
 
@@ -163,7 +164,7 @@ if (isset($PAGES_ACTION[$cur_page]))
 
 	<link href="<?php _url('scripts/jquery/colorbox/colorbox.css'); ?>" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="<?php _url('scripts/jquery/colorbox/colorbox-min.js');?>"></script>
-
+	
 	<script type="text/javascript" src="<?php _url("scripts/jsTree.v.1.0rc2/jquery.jstree.js"); ?>"></script>
 	<script type="text/javascript" src="<?php _url("scripts/jsTree.v.1.0rc2/_lib/jquery.cookie.js"); ?>"></script>
 
@@ -176,12 +177,7 @@ if (isset($PAGES_ACTION[$cur_page]))
 			t.removeClass("ui-button-disabled");
 			t.removeClass("ui-state-disabled");
 			$("button").button();
-/*			$("#prob-grp-tree").each(function(){
-				$(this).find('a').click(function(){
-					document.location.href=$(this).attr('href');
-				})
-		});
- */
+
 <?php
 if (!user_check_login())
 	echo '$("#user-register").colorbox({"escKey": false, "arrowKey": false});';
@@ -227,7 +223,7 @@ if (!user_check_login())
 }
 else
 {
-	$p = __('Submission/AC: %d/%d', $user->cnt_submit, $user->cnt_ac);
+	$p = __('AC/Submission: %d/%d', $user->cnt_ac, $user->cnt_submit);
 	echo <<<EOF
 <div style="float: left">
 <img src="$user->avatar" alt="avatar" style="max-height: 128px; max-width: 128px;" />
@@ -310,8 +306,10 @@ if (isset($startup_msg))
 				"data": ({"checker" : checker_id, "val" : $(input_id).val()}),
 				"success": function(data)
 				{
+					var ele = document.activeElement;
 					$(result_div_id).html(data);
 					$.colorbox.resize();
+					ele.focus();
 				}
 			});
 		}

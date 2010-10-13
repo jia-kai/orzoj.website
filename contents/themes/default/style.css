@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Oct 13 21:13:24 2010 +0800
+ * $Date: Wed Oct 13 21:45:12 2010 +0800
 
  This file is part of orzoj
 
@@ -24,18 +24,6 @@ body
 	margin: 0;
 	font: 16px Verdana, Arial, sans-serif;
 	background-color: black; 
-}
-
-a:link, a:visited
-{
-	color: #FFFF00;
-	text-decoration: none;
-}
-
-a:hover
-{
-	color: #FF00FF;
-	text-decoration: underline;
 }
 
 input[type="text"]:hover, input[type="password"]:hover, textarea:hover
@@ -76,6 +64,20 @@ div#page
 	color: white;
 	text-align: center;
 }
+
+div#page a:link, div#page a:visited
+{
+	color: white;
+	text-decoration: none;
+	font-style: italic;
+}
+
+div#page a:hover
+{
+	color: white;
+	text-decoration: underline;
+}
+
 
 img
 {
@@ -279,8 +281,67 @@ div#prob-grp-tree a
 	color: white;
 }
 
-h1#prob-left-title
+h1.prob-left-title
 {
 	font-size: 20px;
+}
+
+div.status-filter
+{
+	float: left;
+}
+
+div.status-filter input, div.status-filter select
+{
+	width: 80px;
+	margin-right: 20px;
+}
+
+table#status-table
+{
+	clear: both;
+	border-collapse: collapse;
+	width: 100%;
+	margin: 0;
+	border: 0;
+	padding: 0;
+	margin-top: 20px;
+}
+
+table#status-table tr, table#status-table th, table#status-table td
+{
+	border: 1px solid white;
+	padding: 3px;
+}
+
+table#status-table tr:hover
+{
+	background-color: #39424B;
+}
+
+table#status-table th
+{
+	background-color: #0F1923;
+}
+
+div#page a.status-ac:link, div#page a.status-ac:visited
+{
+	color: #F85D5D;
+}
+
+div#page a.status-wa:link, div#page a.status-wa:visited
+{
+	color: #96E718;
+}
+
+div#page a.status-ce:link, div#page a.status-ce:visited
+{
+	color: #A204F4;
+}
+
+div#page a.status-ac:hover, div#page a.status-wa:hover, div#page a.status-ce:hover
+{
+	color: #1BF11A;
+	text-decoration: underline;
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Wed Oct 13 21:33:11 2010 +0800
+ * $Date: Wed Oct 13 21:40:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,7 +29,7 @@ if (!defined('IN_ORZOJ'))
 
 ?>
 <div id="prob-left">
-<h1 id="prob-left-title"><?php echo __("Problem Groups") . '<br />'; ?></h1>
+<h1 class="prob-left-title"><?php echo __("Problem Groups") . '<br />'; ?></h1>
 
 <div id="prob-grp-tree"></div>
 <script type="text/javascript">

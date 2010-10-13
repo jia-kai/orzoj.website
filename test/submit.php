@@ -1,7 +1,9 @@
 <?php
 require_once '../pre_include.php';
 require_once $includes_path . 'user.php';
-require_once $includes_path . 'record.inc.php';
+require_once $includes_path . 'record.php';
+require_once $includes_path . 'problem.php';
+require_once $includes_path . 'submit.php';
 
 $src = <<<_EOF_
 #include <cstdio>
@@ -12,39 +14,15 @@ int main()
 	freopen("a+b.out", "w", stdout);
 	int a, b;
 	scanf("%d %d", &a, &b);
-	printf("%d\\n", a + b);
+	printf("%d\\n", a + b + 1);
 }
 
 _EOF_;
 
-$id = $db->insert_into('records',
-	array(
-		'uid' => user_get_id_by_name('jiakai'),
-		'pid' => 1, 'lid' => lang_get_id_by_name('g++'),
-		'src_len' => strlen($src),
-		'status' => RECORD_STATUS_WAITING_TO_BE_FETCHED,
-		'stime' => time(), 'ip' => 'mars'
-	));
+$row = $db->select_from('plang', 'id', array($DBOP['=s'], 'name', 'g++'));
 
-$db->insert_into('sources',
-	array(
-		'rid' => $id,
-		'src' => $src,
-		'time' => time()
-	));
+$rid = submit_add_record(prob_get_id_by_code('a+b'),
+	$row[0]['id'],
+	$src);
 
-echo 'record id: ' . $id . "\n";
-
-$reqid = $db->insert_into('orz_req',
-	array('data' => serialize(array(
-		'type' => 'src',
-		'id' => $id,
-		'prob' => 'apb',
-		'lang' => 'g++',
-		'src' => '',
-		'input' => 'a+b.in',
-		'output' => 'a+b.out'
-	))));
-
-echo 'orz_req id: ' . $reqid . "\n";
-
+submit_add_judge_req($rid, 'a+b.in', 'a+b.out');

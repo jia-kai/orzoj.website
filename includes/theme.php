@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Tue Oct 12 11:53:42 2010 UTC
+ * $Date: Wed Oct 13 19:33:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -55,7 +55,8 @@ function t_get_footer()
 	global $db, $PAGE_START_TIME, $ORZOJ_VERSION;
 	$str = "<br />" .
 		__('%d database queries | Page execution time: %d milliseconds |' .
-	   ' Powerd by <a href="http://code.google.com/p/orzoj/">Orz Online Judge</a> %s<br />', $db->get_query_amount(),
+		' Powerd by <a href="http://code.google.com/p/orzoj/" target="_blank">Orz Online Judge</a> %s<br />',
+		$db->get_query_amount(),
 			(microtime(TRUE) - $PAGE_START_TIME) * 1000, $ORZOJ_VERSION);
 	echo filter_apply('after_footer', $str);
 }
@@ -66,23 +67,31 @@ function t_get_footer()
 $T_DEFAULT_IMG_PATH = get_page_url($root_path . 'contents/theme/default/images/');
 
 /**
- * echo a URL to visit the page
+ * echo or return a URL to visit the page
  *
  * before including index.php in a theme, global variable $cur_page and $page_arg
  * will be set according to the link
  * @param string $page
  * @param string|NULL $arg
- * @return void
+ * @param bool $in_HTML whether this link address is used in HTML
+ *		(because in HTML, '&' needed to be encoded as '&amp;') (only meaningful when $arg != NULL)
+ * @param bool $return_string whether to return the address or echo it
+ * @return void|string
  */
-function t_get_link($page, $arg = NULL)
+function t_get_link($page, $arg = NULL, $in_HTML = TRUE, $return_string = FALSE)
 {
 	// TODO: Make rewrite better and extendable.
-	global $root_path,$webserver,$website_root;
+	global $root_path, $webserver, $website_root;
 	if ($webserver != WEBSERVER_APACHE || defined('DISABLE_URI_REWRITE'))
 	{
 		$str = get_page_url($root_path . 'index.php') . '?page=' . urlencode($page);
 		if (is_string($arg))
-			$str .= '&arg=' . urlencode($arg);
+		{
+			$str .= '&';
+			if ($in_HTML)
+				$str .= 'amp;';
+			$str .= 'arg=' . urlencode($arg);
+		}
 	}
 	else
 	{
@@ -91,6 +100,8 @@ function t_get_link($page, $arg = NULL)
 		if (is_string($arg))
 			$str .= urlencode($arg);
 	}
+	if ($return_string)
+		return $str;
 	echo $str;
 }
 

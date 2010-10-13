@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Tue Oct 12 20:45:11 2010 +0800
+ * $Date: Wed Oct 13 16:16:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,7 +30,10 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'contest/ctal.php';
 require_once $includes_path . 'problem.php';
 require_once $includes_path . 'sched.php';
-require_once $includes_path . 'record.inc.php';
+require_once $includes_path . 'record.php';
+
+// What a real mess!
+// TODO: solve all problems!!
 
 class Ctal_oi extends Ctal
 {

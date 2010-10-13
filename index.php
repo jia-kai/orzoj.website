@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Tue Oct 12 11:42:27 2010 UTC
+ * $Date: Wed Oct 13 09:05:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -49,7 +49,7 @@ function _index_set_theme($id = NULL)
 	$theme_path = $root_path . 'contents/themes/' . $theme_name . '/';
 }
 
-// TODO: next version
+// TODO: user custom theme
 //_index_set_theme(user_check_login() ? $user->theme_id : NULL);
 _index_set_theme(DEFAULT_THEME_ID);
 
