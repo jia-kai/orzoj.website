@@ -4,4 +4,5 @@ default settings such as:
 	a+b
 	plang wlang
 	add default theme to database
-
+contents/themes/default/ajax/avatar_browser.php:102
+	Go to page: => Go to page: %s where %s is the inputbox.
