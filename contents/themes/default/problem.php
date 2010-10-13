@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Tue Oct 12 10:50:21 2010 +0800
+ * $Date: Wed Oct 13 21:33:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,37 +29,30 @@ if (!defined('IN_ORZOJ'))
 
 ?>
 <div id="prob-left">
-<h1 class="prob-left-title"><?php echo __("Problem Groups") . '<br />'; ?></h1>
-<?php
-/**
- * @ignore
- */
-function _build_prob_grp_list($pgid)
-{
-	global $db, $DBOP;
-	$grps = $db->select_from('prob_grps', array('id', 'name'),
-		array($DBOP['='], 'pgid', $pgid));
-	$flag = FALSE;
-	if (count($grps)) $flag = TRUE;
-	if ($flag && $pgid != 0) echo '<ul>';
-	foreach ($grps as $grp)
-	{
-		echo '<li>';
-	   	echo '<a href="#">' . $grp['name'] . '</a>';
-		_build_prob_grp_list($grp['id']);
-		echo '</li>';
-	}
-	if ($flag && $pgid != 0) echo '</ul>';
-}
-?>
-<div class="prob-grp">
-<ul id="prob-grp-tree" class="treeview">
-<?php _build_prob_grp_list(0);?>
-</ul>
+<h1 id="prob-left-title"><?php echo __("Problem Groups") . '<br />'; ?></h1>
 
-
+<div id="prob-grp-tree"></div>
 <script type="text/javascript">
-ddtreemenu.createTree("prob-grp-tree", true);
+$(function(){
+	$("#prob-grp-tree").jstree({
+		"plugins" : [ "themes", "json_data", "cookies"],
+		"themes" : {
+			"theme" : "default",
+			"dots" : false,
+			"icons" : false
+		},
+		"json_data" : {
+			"ajax" : {
+				"url" : "<?php t_get_link('ajax-prob-group-tree'); ?>"
+				,
+				"data" : function (node) {
+					return {
+						"prob_grp_id" : node.attr ? node.attr("id") : 0
+					};
+				}
+			}
+		}
+	})
+});
 </script>
-</div>
 </div>

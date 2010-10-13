@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Tue Oct 12 10:28:34 2010 +0800
+ * $Date: Wed Oct 13 21:13:24 2010 +0800
 
  This file is part of orzoj
 
@@ -265,14 +265,22 @@ div#prob-left
 	height: 100%;
 }
 
-div.prob-grp
+div#prob-grp-tree
 {
 	margin: 0;
+	min-height: 200px;
+	background: inherit;
+	overflow: auto;
 	text-align: left;
 }
 
-h1.prob-left-title
+div#prob-grp-tree a
 {
-	font-size: 16px;
+	color: white;
+}
+
+h1#prob-left-title
+{
+	font-size: 20px;
 }
 

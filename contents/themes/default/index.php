@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Tue Oct 12 19:25:17 2010 +0800
+ * $Date: Wed Oct 13 21:32:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -59,7 +59,8 @@ $PAGES_AJAX = array(
 	// <page name> => <file>
 	'ajax-register' => 'ajax/register.php',
 	'ajax-form-checker' => 'ajax/form_checker.php',
-	'ajax-avatar-browser' => 'ajax/avatar_browser.php'
+	'ajax-avatar-browser' => 'ajax/avatar_browser.php',
+	'ajax-prob-group-tree' => 'ajax/prob_group_tree.php'
 );
 
 /**
@@ -162,19 +163,9 @@ if (isset($PAGES_ACTION[$cur_page]))
 
 	<link href="<?php _url('scripts/jquery/colorbox/colorbox.css'); ?>" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="<?php _url('scripts/jquery/colorbox/colorbox-min.js');?>"></script>
-	
-	<script type="text/javascript">
-		var TREE_MENU_IMG_OPEN = "<?php _url('scripts/simpletree/open.gif'); ?>";
-		var TREE_MENU_IMG_CLOSED = "<?php _url('scripts/simpletree/closed.gif'); ?>"
-	</script>
-	<script type="text/javascript" src="<?php _url('scripts/simpletree/simpletreemenu.js'); ?>">
-	/***********************************************
-	* Simple Tree Menu- © Dynamic Drive DHTML code library (www.dynamicdrive.com)
-	* This notice MUST stay intact for legal use
-	* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
-	***********************************************/
-	</script>
-	<link rel="stylesheet" type="text/css" href="<?php _url('scripts/simpletree/simpletree.css'); ?>" />
+
+	<script type="text/javascript" src="<?php _url("scripts/jsTree.v.1.0rc2/jquery.jstree.js"); ?>"></script>
+	<script type="text/javascript" src="<?php _url("scripts/jsTree.v.1.0rc2/_lib/jquery.cookie.js"); ?>"></script>
 
 	<script type="text/javascript">
 		$(document).ready(function(){
@@ -185,7 +176,12 @@ if (isset($PAGES_ACTION[$cur_page]))
 			t.removeClass("ui-button-disabled");
 			t.removeClass("ui-state-disabled");
 			$("button").button();
-
+/*			$("#prob-grp-tree").each(function(){
+				$(this).find('a').click(function(){
+					document.location.href=$(this).attr('href');
+				})
+		});
+ */
 <?php
 if (!user_check_login())
 	echo '$("#user-register").colorbox({"escKey": false, "arrowKey": false});';
