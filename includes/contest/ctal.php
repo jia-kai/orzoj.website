@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Tue Oct 12 21:42:41 2010 +0800
+ * $Date: Thu Oct 14 10:57:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -103,9 +103,10 @@ $CONTEST_TYPE2CLASS = array('oi', 'acm');
  */
 function ctal_get_class($pid)
 {
+	global $db, $DBOP;
 	$now = time();
 	$row = $db->select_from('map_prob_ct', 'cid',
-		array($DBOP['&&'], $DBOP['&&'], $DBOP['&&'],
+		array($DBOP['&&'], $DBOP['&&'],
 		$DBOP['='], 'pid', $pid,
 		$DBOP['<='], 'time_start', $now,
 		$DBOP['>'], 'time_end', $now));

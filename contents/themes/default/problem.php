@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Thu Oct 14 09:44:50 2010 +0800
+ * $Date: Thu Oct 14 11:44:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,16 +32,28 @@ if (!defined('IN_ORZOJ'))
 <h1 class="prob-navigator-title"><?php echo __("Problem Groups") . '<br />'; ?></h1>
 
 <script type="text/javascript">
-function prob_view_by_group(id)
+function prob_view_by_group(id, start_page)
 {
 	$.ajax({
 		url: "<?php t_get_link('ajax-prob-view-by-group'); ?>",
-			data: "arg=" + id,
-			success: function(content) {
-				$("#prob-view").html(content);
-			}
+		data: "arg=" + id + "|" + start_page,
+		success: function(content) {
+			$("#prob-view").html(content);
+		}
 	});
 }
+
+function prob_view_single(id)
+{
+	$.ajax({
+		url: "<?php t_get_link('ajax-prob-view-single')?>",
+		data : "arg=" + id,
+		success : function(content) {
+			$("#prob-view").html(content);
+		}
+	});
+}
+
 </script>
 
 <div id="prob-grp-tree"></div>
@@ -60,7 +72,7 @@ $(function(){
 				,
 				"data" : function (node) {
 					return {
-						"prob_grp_id" : node.attr ? node.attr("id") : 0
+						"prob_grp_id" : node.attr ? node.attr("id") : -1
 					};
 				}
 			}
@@ -71,4 +83,7 @@ $(function(){
 </div> <!-- id: prob-navigator -->
 
 
-<div id="prob-view">Hello</div>
+<div id="prob-view"></div>
+<script type="text/javascript">
+prob_view_by_group(0, 1);
+</script>

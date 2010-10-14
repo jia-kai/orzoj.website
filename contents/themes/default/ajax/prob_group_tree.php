@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_group_tree.php
- * $Date: Thu Oct 14 08:54:20 2010 +0800
+ * $Date: Thu Oct 14 11:32:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,13 +24,18 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//require_once("../../../../pre_include.php");
 if (!defined('IN_ORZOJ'))
 	exit;
 $ret = array();
 if (!isset($_GET['prob_grp_id']))
 	throw new Exc_inner('`prob_grp_id in $_GET does not set.`');
 $pgid = $_GET['prob_grp_id'];
+$first_request = FALSE;
+if ($pgid == -1) // the first request
+{
+	$first_request = TRUE;
+	$pgid = 0;
+}
 $grps = $db->select_from('prob_grps', array('id', 'name'),
 	array($DBOP['='], 'pgid', $pgid));
 foreach ($grps as $grp)
@@ -41,10 +46,8 @@ foreach ($grps as $grp)
 		'data' => array(
 			'title' => $name,
 			'attr' => array(
-				// TODO
-				'href' => t_get_link('ajax-prob-view-by-group', "$id", FALSE, TRUE),
-				'onclick' => "prob_view_by_group($id); return false;"
-//				'onclick' => 'alert("Hello world!"); return false;'
+				'href' => t_get_link('ajax-prob-view-by-group', $id, FALSE, TRUE),
+				'onclick' => "prob_view_by_group($id, 1); return false;"
 			)
 		),
 		'attr' => array('id' => $id)
@@ -56,6 +59,19 @@ foreach ($grps as $grp)
 	$ret[] = $grp;
 }
 
+if ($first_request)
+	$ret = array(
+		'data' => array(
+			'title' => 'All',
+			'attr' => array(
+				'href' => t_get_link('ajax-prob-view-by-group', 0, FALSE, TRUE),
+				'onclick' => "prob_view_by_group(0, 1); return false;"
+			)
+		),
+		'attr' => array('id' => 0),
+		'state' => 'open',
+		'children' => $ret
+	);
 echo json_encode($ret);
 
 /*

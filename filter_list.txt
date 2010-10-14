@@ -95,3 +95,11 @@ after_html_head:
 after_footer:
 	file: includes/theme.php
 	param: string
+
+before_prob_html:
+	file: includes/problem.php
+	param: array an array containing $PROB_VIEW_PINFO
+
+after:prob_html:
+	file: includes/problem.php
+	param: string the HTML code converted from problem info

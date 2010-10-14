@@ -66,11 +66,15 @@ theme structure:
 	|--	functions.php	functions exported to the whole website
 	|--	...				theme specific files
 
-problem description in the database is a serialized array of (<field name> => <value>)
+problem description (column desc) in the database is a serialized array of (<field name> => <value>)
 standard field names:
-	time: time limit
+	time: time limit 
 	memory: memory limit
 	desc: problem description
+	input_fmt: input format
+	output_fmt: output format
+	input_samp: input sample
+	output_samp: output sample
 	range: data range
 	source: where the problem is originally published
 	hint: some hints?
@@ -84,4 +88,10 @@ Note:
 		are usually highly customized, so no API is provided)
 	5. One problem can only belong to one contest simultaneously
 	6. all text data saved in database should be properly HTML encoded
+	7. if you are running this website on nginx and can not open 
+		open pages whose url seems like 'http://localhost/orzoj-website/problem/',
+		please append:
 
+			define('DISABLE_URI_REWRITE', TRUE);
+
+		to file config.php

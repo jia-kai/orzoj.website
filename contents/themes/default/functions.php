@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Oct 12 10:57:52 2010 +0800
+ * $Date: Thu Oct 14 14:29:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -267,6 +267,37 @@ function tf_form_get_hidden($post_name, $post_value)
  */
 function tf_get_prob_html($pinfo)
 {
+	$desc = unserialize($pinfo['desc']);
+	$content  = '
+<div id="prob-view-single">
+<div id="prob-view-single-title">'
+. $pinfo['title'] . '(' . $pinfo['code']. ')</div>' 
+	.'<div id="prob-view-single-subtitle">'
+		. __('Time Limit: ') . $desc['time'] . ' '
+		. __('Memory Limit: ') . $desc['memory'] . '<br />'
+		. __('Total Submit: ') . $pinfo['cnt_submit'] . ' '
+		. __('Accepted: ') . $pinfo['cnt_ac']
+		. '</div> <!-- id: prob-view-single-subtitle-->'
+		. '<div id="prob-view-single-desc">';
+	$translate = array(
+		'desc' => __('Description'), 
+		'input_fmt' => __('Input Format'), 
+		'output_fmt' => __('Output Format'), 
+		'input_samp' => __('Input Sample'), 
+		'output_samp' => __('Output Sample'),
+		'source' => __('Source'), 
+		'hint' => __('Hint')
+	);
+	foreach ($desc as $key => $item)
+		if (isset($translate[$key]))
+		{
+			$content .= '<p>' . $translate[$key] . '</p>';
+			$content .= '<div id="prob-view-single-content">'
+				. $item . '<br /></div>';
+		}
+	$content .= '</div> <!-- id: prob-view-single-desc-->'
+		. '</div>';
+	return $content;
 }
 
 /**

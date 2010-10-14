@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Tue Oct 12 00:36:34 2010 +0800
+ * $Date: Thu Oct 14 14:28:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -50,7 +50,11 @@ function conf_file_generate($db_layer,$db_host,$db_port,$db_username,$db_passwor
 \$db_dbname = '$db_name';
 \$table_prefix = '$table_prefix';
 \$website_root = '$website_root';
+
 define('IS_INSTALLED', TRUE);
+
+define('DISABLE_URI_REWRITE', TRUE);
+
 EOF;
 	$fptr = fopen("config.php", "w");
 	if ($fptr)

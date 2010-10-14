@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Thu Oct 14 09:41:40 2010 +0800
+ * $Date: Thu Oct 14 14:09:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,6 +32,7 @@ require_once $includes_path . 'contest/ctal.php';
 $PROB_SUBMIT_PINFO = array('id', 'code', 'perm', 'io');
 $PROB_VIEW_PINFO = array('id', 'title', 'code', 'desc', 'perm', 'io', 'time',
 	'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce', 'grp');
+// desc: exlained in simple-doc.txt or install/tables.php
 // grp: array of problem group ids that this problem belongs to
 // io: array of input/output file name, or NULL if using stdio
 
@@ -65,9 +66,9 @@ function prob_check_perm($user_grp, $perm)
  */
 function prob_view($pid)
 {
-	global $db, $DBOP;
+	global $db, $DBOP, $PROB_VIEW_PINFO;
 	$row = $PROB_VIEW_PINFO;
-	unset($row['grp']);
+	unset($row[array_search('grp', $row)]);
 	$row = $db->select_from('problems', $row,
 		array($DBOP['='], 'id', $pid));
 	if (count($row) != 1)
@@ -79,14 +80,17 @@ function prob_view($pid)
 		$has_perm = $user->is_grp_member(GID_SUPER_SUBMITTER);
 	}
 	else
+	{
 		$grp = array(GID_GUEST);
+		$has_perm = FALSE;
+	}
 
 	if (!$has_perm && !prob_check_perm($grp, $row['perm']))
-		throw new Exc_runtime(__('Sorry, your are not allowed to view this problem'));
+		throw new Exc_runtime(__('Your are not permitted to view this problem'));
 
 	$row_grp = array();
-	$grps = $db->select_from('problems', 'gid',
-		array($DBP['='], 'pid', $pid));
+	$grps = $db->select_from('map_prob_grp', 'gid',
+		array($DBOP['='], 'pid', $pid));
 	foreach ($grps as $grp)
 		$row_grp[] = $grp['gid'];
 	$row['grp'] = $row_grp;
@@ -102,6 +106,8 @@ function prob_view($pid)
 			$ct->prob_view($grp, $row);
 	}
 
+	$row = filter_apply('before_prob_html', $row);
+
 	$str = tf_get_prob_html($row);
 
 	return filter_apply('after_prob_html', $str, $pid);
@@ -109,6 +115,7 @@ function prob_view($pid)
 
 /**
  * @ignore
+ * FIXME: This function has somthing wrong
  */
 function _prob_get_list_make_where($gid)
 {
