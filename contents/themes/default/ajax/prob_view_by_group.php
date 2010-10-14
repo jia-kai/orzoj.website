@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Thu Oct 14 00:17:26 2010 +0800
+ * $Date: Thu Oct 14 09:45:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,5 +25,30 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+require_once $includes_path . 'problem.php';
 
-echo $page_arg;
+$id = $page_arg;
+$fields = array('id', 'title', 'code', 'cnt_submit', 'cnt_ac');
+$translate = array(
+	__('id'),
+	__('title'),
+	__('code'),
+	__('cnt_submut'),
+	);
+$probs = prob_get_list($fields, $id, TRUE, NULL, NULL);
+$content = '<table class="orzoj-table"><tr>';
+foreach ($fields as $field)
+{
+	$content .= '<th>' . $field . '</th>';
+}
+$content .= '</tr>';
+foreach ($probs as $prob)
+{
+	$content .= '<tr>';
+	foreach ($prob as $col)
+		$content .= '<td>' . $col . '</td>';
+	$content .= '</tr>';
+}
+
+$content .= '</table>';
+echo $content;

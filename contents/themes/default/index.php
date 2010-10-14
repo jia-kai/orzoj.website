@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Oct 14 09:08:36 2010 +0800
+ * $Date: Thu Oct 14 09:46:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -170,7 +170,6 @@ if (isset($PAGES_ACTION[$cur_page]))
 	<script type="text/javascript" src="<?php _url("scripts/jquery/jquery.cookie.js"); ?>"></script>
 
 	<link rel="stylesheet" type="text/css" href="<?php _url('style.css'); ?>" />
-
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#navigator").buttonset();

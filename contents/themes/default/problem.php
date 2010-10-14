@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Thu Oct 14 08:54:17 2010 +0800
+ * $Date: Thu Oct 14 09:44:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,16 +32,19 @@ if (!defined('IN_ORZOJ'))
 <h1 class="prob-navigator-title"><?php echo __("Problem Groups") . '<br />'; ?></h1>
 
 <script type="text/javascript">
-<?php 
-//TODO How does it work?
-?>
 function prob_view_by_group(id)
 {
+	$.ajax({
+		url: "<?php t_get_link('ajax-prob-view-by-group'); ?>",
+			data: "arg=" + id,
+			success: function(content) {
+				$("#prob-view").html(content);
+			}
+	});
 }
 </script>
 
 <div id="prob-grp-tree"></div>
-
 <script type="text/javascript">
 $(function(){
 	$("#prob-grp-tree").jstree({
@@ -66,7 +69,6 @@ $(function(){
 });
 </script>
 </div> <!-- id: prob-navigator -->
-
 
 
 <div id="prob-view">Hello</div>

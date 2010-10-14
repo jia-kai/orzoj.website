@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Wed Oct 13 14:09:17 2010 +0800
+ * $Date: Thu Oct 14 09:41:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -112,6 +112,7 @@ function prob_view($pid)
  */
 function _prob_get_list_make_where($gid)
 {
+	return NULL;
 	global $db, $DBOP;
 	$ret0 = NULL;
 	if (!is_null($gid))
@@ -162,8 +163,12 @@ function prob_get_amount($gid = NULL)
 function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $cnt = NULL)
 {
 	global $db, $DBOP;
+	$perm_added = FALSE;
 	if (!in_array('perm', $fields))
+	{
 		$fields[] = 'perm';
+		$perm_added = TRUE;
+	}
 	$rows = $db->select_from('problems',
 		$fields, _prob_get_list_make_where($gid),
 		array('time' => $time_asc ? 'ASC' : 'DESC'));
@@ -183,6 +188,8 @@ function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $
 					$row['io'] = unserialize($row['io']);
 				else $row['io'] = NULL;
 			}
+			if ($perm_added)
+				unset($row['perm']);
 			$ret[] = $row;
 		}
 	return $ret;
