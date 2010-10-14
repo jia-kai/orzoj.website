@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Thu Oct 14 21:45:04 2010 +0800
+ * $Date: Thu Oct 14 21:50:05 2010 +0800
 
  This file is part of orzoj
 
@@ -256,6 +256,8 @@ div.clearer
 	clear: both;
 }
 
+
+
 div#prob-grp-tree
 {
 	margin: 0;
@@ -450,5 +452,18 @@ div#record-source
 	max-width: 800px;
 	max-height: 600px;
 	overflow: auto;
+}
+
+div#status-list-navigate
+{
+	clear: both;
+	float: right;
+	margin-top: 20px;
+}
+
+form#goto-page-form
+{
+	float: right;
+	margin-left: 20px;
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Oct 14 20:37:03 2010 +0800
+ * $Date: Thu Oct 14 21:49:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,9 +30,11 @@ if (!defined('IN_ORZOJ'))
 /**
  * @ignore
  */
-function _url($file)
+function _url($file, $return_str = FALSE)
 {
 	global $theme_path;
+	if ($return_str)
+		return get_page_url($theme_path . $file);
 	echo get_page_url($theme_path . $file);
 }
 
@@ -64,7 +66,8 @@ $PAGES_AJAX = array(
 	'ajax-prob-group-tree' => 'ajax/prob_group_tree.php',
 	'ajax-prob-view-by-group' => 'ajax/prob_view_by_group.php',
 	'ajax-prob-view-single' => 'ajax/prob_view_single.php',
-	'ajax-prob-submit' => 'ajax/prob_submit.php'
+	'ajax-prob-submit' => 'ajax/prob_submit.php',
+	'ajax-status-list' => 'ajax/status_list.php'
 );
 
 /**
@@ -411,6 +414,27 @@ if (isset($startup_msg))
 			$(window).unbind("resize", resize_avatar_browser_handler);
 			avatar_browser_init_done = false;
 		}
+
+		function load_js_css_file(filename, filetype)
+		{
+			if (filetype == "js")
+			{
+				var fileref = document.createElement('script');
+				fileref.setAttribute("type","text/javascript");
+				fileref.setAttribute("src", filename);
+			}
+			else if (filetype == "css")
+			{
+				var fileref = document.createElement("link");
+				fileref.setAttribute("rel", "stylesheet");
+				fileref.setAttribute("type", "text/css");
+				fileref.setAttribute("href", filename);
+			}
+			if (typeof(fileref) != "undefined")
+				document.getElementsByTagName("head")[0].appendChild(fileref);
+		}
+
+
 	</script>
 
 </body>

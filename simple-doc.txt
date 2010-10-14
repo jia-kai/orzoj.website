@@ -46,6 +46,9 @@
 |	|	|--	...
 |	|--	lang/			.mo files for various languages
 |	|	|-- *.mo
+|	|--	geshi-styles/	css files used for GeSHi
+|	|	|--	gen.php		generate these files
+|	|	|--	*.css
 |	|--	editors/		system-wide editors (shared by themes)
 |	|-- orzoj-xhtml.dtd DTD for allowed XHTML tags in user posted data
 |--	admin/				

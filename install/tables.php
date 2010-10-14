@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Thu Oct 14 14:22:25 2010 +0800
+ * $Date: Thu Oct 14 20:32:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -320,6 +320,7 @@ $tables = array(
 			'jtime' => array('type' => 'INT64', 'default' => 0), // time when it is judged
 			'ip' => array('type' => 'TEXT'), // from which ip it is submitted
 			'score' => array('type' => 'INT32', 'default' => 0),
+			// if status == RECORD_STATUS_RUNNING, the current case number is stored in 'score'
 			'full_score' => array('type' => 'INT32', 'default' => 0),
 			'time' => array('type' => 'INT32', 'default' => 0), // microsecond
 			'mem' => array('type' => 'INT32', 'default' => 0), // maximal memory, kb

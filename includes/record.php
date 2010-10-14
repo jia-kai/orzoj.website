@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Thu Oct 14 08:06:24 2010 +0800
+ * $Date: Thu Oct 14 20:29:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -68,7 +68,7 @@ function record_status_executed($status)
  */
 function record_status_finished($status)
 {
-	return intval($status) > RECORD_STATUS_COMPILE_SUCCESS;
+	return intval($status) > RECORD_STATUS_RUNNING;
 }
 
 

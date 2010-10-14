@@ -2,3 +2,4 @@ gimp
 test
 contents/themes/default/scripts/jquery/orig
 contents/themes/default/scripts/jquery/gen_ui.sh
+contents/geshi-styles/gen.php

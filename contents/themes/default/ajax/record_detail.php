@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Thu Oct 14 14:29:15 2010 +0800
+ * $Date: Thu Oct 14 15:41:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -232,7 +232,13 @@ function _fd_src()
 		$src = $src[0]['src'];
 	else $src = __('not found');
 	//TODO: retrieve source from orzoj-server
-	echo __('Source:') . '<br /><div id="record-source">'
+	echo __('Source:') . '<br />';
+	$geshi = new GeSHi($src, $syntax);
+	$geshi->set_header_type(GESHI_HEADER_PRE_TABLE);
+	$geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS);
+	$geshi->enable_classes();
+	$geshi->set_tab_width(4);
+	echo $geshi->parse_code();
 }
 
 $cols = array(
@@ -260,7 +266,7 @@ if (count($row) != 1)
 
 $row = $row[0];
 
-$syntax = plang_get_syntax_by_id($page_arg);
+$syntax = plang_get_syntax_by_id($row['lid']);
 
 if (user_check_view_src_perm($row['uid']))
 	$cols['src'] = '_fd_src';
@@ -272,4 +278,8 @@ foreach ($cols as $col => $func)
 }
 
 ?>
+
+<script type="text/javascript">
+load_js_css_file("<?php echo get_page_url($root_path . "contents/geshi-styles/$syntax.css");?>", 'css');
+</script>
 

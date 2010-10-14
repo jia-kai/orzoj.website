@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Wed Oct 13 19:33:40 2010 +0800
+ * $Date: Thu Oct 14 19:58:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -85,7 +85,7 @@ function t_get_link($page, $arg = NULL, $in_HTML = TRUE, $return_string = FALSE)
 	if ($webserver != WEBSERVER_APACHE || defined('DISABLE_URI_REWRITE'))
 	{
 		$str = get_page_url($root_path . 'index.php') . '?page=' . urlencode($page);
-		if (is_string($arg))
+		if (!is_null($arg))
 		{
 			$str .= '&';
 			if ($in_HTML)
