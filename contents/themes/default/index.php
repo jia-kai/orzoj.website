@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: 三 10月 13 21:37:10 2010 +0800
+ * $Date: Thu Oct 14 08:47:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -165,8 +165,8 @@ if (isset($PAGES_ACTION[$cur_page]))
 	<link href="<?php _url('scripts/jquery/colorbox/colorbox.css'); ?>" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="<?php _url('scripts/jquery/colorbox/colorbox-min.js');?>"></script>
 	
-	<script type="text/javascript" src="<?php _url("scripts/jsTree.v.1.0rc2/jquery.jstree.js"); ?>"></script>
-	<script type="text/javascript" src="<?php _url("scripts/jsTree.v.1.0rc2/_lib/jquery.cookie.js"); ?>"></script>
+	<script type="text/javascript" src="<?php _url("scripts/jquery/jstree/jquery.jstree.js"); ?>"></script>
+	<script type="text/javascript" src="<?php _url("scripts/jquery/jquery.cookie.js"); ?>"></script>
 
 	<script type="text/javascript">
 		$(document).ready(function(){

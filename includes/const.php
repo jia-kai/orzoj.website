@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Wed Oct 13 21:26:36 2010 +0800
+ * $Date: Wed Oct 13 22:45:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,7 +52,7 @@ define('GID_SUPER_SUBMITTER', $cnt ++);
 // or other limits on problem submission
 define('GID_SUPER_RECORD_VIEWER', $cnt ++);
 // view all records and sources
-define('GID_IP_VIEWER', $cnt ++); // view register IP, submission IP, etc.
+define('GID_UINFO_VIEWER', $cnt ++); // view view register IP, submission IP, user real name etc.
 define('GID_LOCK', $cnt ++); // locked group id
 define('GID_ALL', $cnt ++); // every registered user should be in this group
 define('GID_NONE', $cnt ++); // nobody should be in this group

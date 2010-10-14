@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Wed Oct 13 21:35:29 2010 +0800
+ * $Date: Thu Oct 14 08:28:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -85,12 +85,12 @@ EOF;
 
 $rows = $db->select_from('plang', array('id', 'name'));
 
-$plang = array(__('ANY') => '');
+$plang = array(__('ALL') => '');
 foreach ($rows as $row)
 	$plang[$row['name']] = $row['id'];
 
 _make_select(__('lang.'), 'plang', $plang);
-_make_select(__('status'), 'status', array_merge(array('ANY' => ''),
+_make_select(__('status'), 'status', array_merge(array('ALL' => ''),
 	array_flip($RECORD_STATUS_TEXT)));
 
 $p = __('Apply');
@@ -166,6 +166,8 @@ function _cv_prob()
 
 function _cv_lang()
 {
+	global $cur_row;
+	return plang_get_name_by_id($cur_row['lid']);
 }
 
 function _cv_status()
@@ -191,9 +193,7 @@ function _cv_score()
 	global $cur_row;
 	if (!record_status_executed($cur_row['status']))
 		return '---';
-	$s = intval($cur_row['score']);
-	$f = intval($cur_row['full_score']);
-	return "$s / $f";
+	return $cur_row['score'];
 }
 
 function _cv_time()

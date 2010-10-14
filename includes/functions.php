@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Oct 13 18:59:25 2010 +0800
+ * $Date: Wed Oct 13 21:56:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -296,5 +296,20 @@ function xhtml_validate($text)
 
 	if (!is_null($_xhtml_error))
 		throw new Exc_xhtml($_xhtml_error);
+}
+
+/**
+ * get programming language name by id
+ * @param int $lid language id
+ * @return string|NULL language name or NULL if no such language
+ */
+function plang_get_name_by_id($lid)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('plang', 'name',
+		array($DBOP['='], 'id', $lid));
+	if (count($row) != 1)
+		return NULL;
+	return $row[0]['name'];
 }
 

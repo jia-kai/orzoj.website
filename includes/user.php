@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Oct 13 17:32:24 2010 +0800
+ * $Date: Wed Oct 13 23:00:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -444,6 +444,9 @@ function user_register()
 
 	$val['username'] = strtolower($val['username']);
 	$val['passwd'] = _user_make_passwd($val['username'], $val['passwd']);
+	$val['realname'] = htmlencode($val['realname']);
+	$val['nickname'] = htmlencode($val['nickname']);
+	$val['email'] = htmlencode($val['email']);
 	$val['view_gid'] = serialize(array());
 	$val['reg_time'] = time();
 	$val['reg_ip'] = get_remote_addr();

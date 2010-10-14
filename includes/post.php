@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Wed Oct 13 10:02:47 2010 +0800
+ * $Date: Wed Oct 13 23:25:26 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -164,10 +164,10 @@ function post_del_posts($id)
 	if ($id <= 0)
 		throw new Exc_runtime(__('Invalid post id: id <= 0'));
 	if (!user_check_login())
-		throw new Exc_runtime(__("Please login first."));
+		throw new Exc_runtime(__("Please login first"));
 	$post = $db->select_from('posts', array('uid'), array($DBOP['='], 'id', $id));
 	if (!($user->id == $post[0]['uid'] || $user->is_grp_member(GID_ADMIN_POST)))
-		throw new Exc_runtime(__('You are not permitted to delete this post.'));
+		throw new Exc_runtime(__('You are not permitted to delete this post'));
 	_post_del_posts($id);
 }
 

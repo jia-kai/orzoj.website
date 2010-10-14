@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Wed Oct 13 20:44:20 2010 +0800
+ * $Date: Thu Oct 14 08:06:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,9 +37,9 @@ define('RECORD_STATUS_WAITING_ON_SERVER', $cnt ++);
 define('RECORD_STATUS_JUDGE_BUSY', $cnt ++);
 
 define('RECORD_STATUS_COMPILING', $cnt ++);
+define('RECORD_STATUS_COMPILE_SUCCESS', $cnt ++);
 define('RECORD_STATUS_RUNNING', $cnt ++);
 
-define('RECORD_STATUS_COMPILE_SUCCESS', $cnt ++);
 define('RECORD_STATUS_COMPILE_FAILURE', $cnt ++);
 
 define('RECORD_STATUS_ACCEPTED',$cnt ++ );
@@ -68,7 +68,7 @@ function record_status_executed($status)
  */
 function record_status_finished($status)
 {
-	return intval($status) > RECORD_STATUS_RUNNING;
+	return intval($status) > RECORD_STATUS_COMPILE_SUCCESS;
 }
 
 

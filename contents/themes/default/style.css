@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Oct 13 21:45:12 2010 +0800
+ * $Date: Thu Oct 14 08:26:26 2010 +0800
 
  This file is part of orzoj
 
@@ -343,5 +343,14 @@ div#page a.status-ac:hover, div#page a.status-wa:hover, div#page a.status-ce:hov
 {
 	color: #1BF11A;
 	text-decoration: underline;
+}
+
+table#record-detail
+{
+	clear: both;
+	border-collapse: collapse;
+	margin: 0;
+	border: 0;
+	padding: 0;
 }
 

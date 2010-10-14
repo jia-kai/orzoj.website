@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: exe_status.php
- * $Date: Wed Oct 13 16:17:14 2010 +0800
+ * $Date: Thu Oct 14 08:19:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,6 +37,19 @@ define('EXESTS_SIGNAL', 6);
 define('EXESTS_ILLEGAL_CALL', 7);
 define('EXESTS_EXIT_NONZERO', 8);
 define('EXESTS_SYSTEM_ERROR', 9);
+
+$EXECUTION_STATUS_TEXT = array(
+	EXESTS_RIGHT => __('Right'),
+	EXESTS_PARTIALLY_RIGHT => __('Partially right'),
+	EXESTS_WRONG_ANSWER => __('Wrong answer'),
+	EXESTS_TLE => __('Time limit exceeded'),
+	EXESTS_SIGKILL => __('Terminated by SIGKILL'),
+	EXESTS_SIGSEGV => __('Illegal access to memeory'),
+	EXESTS_SIGNAL => __('Terminated by signal'),
+	EXESTS_ILLEGAL_CALL => __('Illegal system call'),
+	EXESTS_EXIT_NONZERO => __('Non-zero exit code'),
+	EXESTS_SYSTEM_ERROR => __('System error'),
+);
 
 class Case_result
 {
