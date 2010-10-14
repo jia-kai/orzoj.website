@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Thu Oct 14 08:28:42 2010 +0800
+ * $Date: Thu Oct 14 09:45:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -96,7 +96,7 @@ _make_select(__('status'), 'status', array_merge(array('ALL' => ''),
 $p = __('Apply');
 echo "
 	<div class=\"status-filter\">
-	<input type=\"submit\" value=\"$p\" />
+	<input type=\"submit\" id=\"filter-apply-button\" value=\"$p\" />
 	</div>";
 
 echo '</form>';
@@ -184,7 +184,7 @@ function _cv_status()
 	else if ($s == RECORD_STATUS_COMPILE_FAILURE)
 		$class = 'class="status-ce"';
 	else $class = '';
-	return "<a $class href=\"" . t_get_link('ajax-record-detail', $cur_row['id'], TRUE, TRUE) .
+	return "<a name=\"status-detail\" $class href=\"" . t_get_link('ajax-record-detail', $cur_row['id'], TRUE, TRUE) .
 		"\">$str</a>";
 }
 
@@ -256,7 +256,7 @@ $cols = array(
 
 ?>
 
-<table id="status-table">
+<table class="orzoj-table">
 <tr>
 <?php
 foreach ($cols as $name => $func)
@@ -273,4 +273,9 @@ foreach ($rows as $cur_row)
 }
 ?>
 </table>
+
+<script type="text/javascript">
+$("#filter-apply-button").button();
+$("a[name='status-detail']").colorbox();
+</script>
 

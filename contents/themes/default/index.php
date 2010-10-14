@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Oct 14 08:55:51 2010 +0800
+ * $Date: Thu Oct 14 09:08:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -155,7 +155,6 @@ if (isset($PAGES_ACTION[$cur_page]))
 <head>
 	<?php t_get_html_head(); ?>
 	<title>Orz Online Judge</title>
-	<link rel="stylesheet" type="text/css" href="<?php _url('style.css'); ?>" />
 	<link rel="icon" type="image/vnd.microsoft.icon" href="<? _url('images/favicon.ico'); ?>" />
 	<link rel="icon" type="image/jpeg" href="<?php _url('images/favicon.jpg'); ?>" />
 	<meta http-equiv="pragma" content="no-cache" />
@@ -169,6 +168,8 @@ if (isset($PAGES_ACTION[$cur_page]))
 
 	<script type="text/javascript" src="<?php _url("scripts/jquery/jstree/jquery.jstree.js"); ?>"></script>
 	<script type="text/javascript" src="<?php _url("scripts/jquery/jquery.cookie.js"); ?>"></script>
+
+	<link rel="stylesheet" type="text/css" href="<?php _url('style.css'); ?>" />
 
 	<script type="text/javascript">
 		$(document).ready(function(){

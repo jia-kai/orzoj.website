@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Thu Oct 14 08:56:18 2010 +0800
+ * $Date: Thu Oct 14 09:44:49 2010 +0800
 
  This file is part of orzoj
 
@@ -305,7 +305,14 @@ div.status-filter input, div.status-filter select
 	margin-right: 20px;
 }
 
-table#status-table
+div.status-filter #filter-apply-button
+{
+	height: 22px;
+	font-size: 12px;
+	padding: 2px 8px;
+}
+
+table.orzoj-table
 {
 	clear: both;
 	border-collapse: collapse;
@@ -314,20 +321,21 @@ table#status-table
 	border: 0;
 	padding: 0;
 	margin-top: 20px;
+	text-align: center;
 }
 
-table#status-table tr, table#status-table th, table#status-table td
+table.orzoj-table tr, table.orzoj-table th, table.orzoj-table td
 {
 	border: 1px solid white;
 	padding: 3px;
 }
 
-table#status-table tr:hover
+table.orzoj-table tr:hover
 {
 	background-color: #39424B;
 }
 
-table#status-table th
+table.orzoj-table th
 {
 	background-color: #0F1923;
 }
@@ -360,5 +368,22 @@ table#record-detail
 	margin: 0;
 	border: 0;
 	padding: 0;
+}
+
+table#record-detail tr, table#record-detail th, table#record-detail td
+{
+	border: 1px solid #C3C3C3;
+	padding: 3px;
+	text-align: center;
+}
+
+table#record-detail th
+{
+	background-color: #E5EECC;
+}
+
+table#record-detail tr:hover
+{
+	background-color: #E5EEFF;
 }
 

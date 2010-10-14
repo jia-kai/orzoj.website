@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Thu Oct 14 08:32:45 2010 +0800
+ * $Date: Thu Oct 14 09:00:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,6 +31,8 @@ if (!is_string($page_arg))
 
 require_once $includes_path . 'exe_status.php';
 require_once $includes_path . 'problem.php';
+require_once $includes_path . 'judge.php';
+require_once $includes_path . 'record.php';
 
 // whether to display realname and submission IP
 $disp_info = user_check_login() && $user->is_grp_member(GID_UINFO_VIEWER);
@@ -65,7 +67,7 @@ function _fd_lang()
 function _fd_status()
 {
 	global $row, $RECORD_STATUS_TEXT;
-	echo __('Status: %s', $RECORD_STATUS_TEXT[intval($s)]);
+	echo __('Status: %s', $RECORD_STATUS_TEXT[intval($row['status'])]);
 }
 
 function _fd_score()
@@ -130,7 +132,7 @@ function _fd_srclen()
 function _fd_stime()
 {
 	global $row;
-	echo __('Submission time: %s', strftime('%a %b %d %H:%M:%S %Y %Z', $row['stime']));
+	echo __('When submitted: %s', strftime('%a %b %d %H:%M:%S %Y %Z', $row['stime']));
 }
 
 function _fd_jtime()
