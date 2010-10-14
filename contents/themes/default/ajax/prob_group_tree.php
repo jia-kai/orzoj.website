@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_group_tree.php
- * $Date: Wed Oct 13 21:32:07 2010 +0800
+ * $Date: Thu Oct 14 08:54:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,7 +37,18 @@ foreach ($grps as $grp)
 {
 	$id = $grp['id'];
 	$name = $grp['name'];
-	$grp = array("data" => $name, "attr" => array("id" => $id));
+	$grp = array(
+		'data' => array(
+			'title' => $name,
+			'attr' => array(
+				// TODO
+				'href' => t_get_link('ajax-prob-view-by-group', "$id", FALSE, TRUE),
+				'onclick' => "prob_view_by_group($id); return false;"
+//				'onclick' => 'alert("Hello world!"); return false;'
+			)
+		),
+		'attr' => array('id' => $id)
+	);
 	$nchild = $db->get_number_of_rows('prob_grps',
 		array($DBOP['='], 'pgid', $id));
 	if ($nchild)

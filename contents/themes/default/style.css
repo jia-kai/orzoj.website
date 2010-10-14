@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Thu Oct 14 08:26:26 2010 +0800
+ * $Date: Thu Oct 14 08:56:18 2010 +0800
 
  This file is part of orzoj
 
@@ -257,7 +257,7 @@ div.clearer
 }
 
 
-div#prob-left
+div#prob-navigator
 {
 	margin: 0;
 	padding: 5px;
@@ -281,9 +281,17 @@ div#prob-grp-tree a
 	color: white;
 }
 
-h1.prob-left-title
+h1.prob-navigator-title
 {
 	font-size: 20px;
+}
+
+div#prob-view
+{
+	float: right;
+	padding: 5px 0 0 0;
+	border: 2px;
+	width: 656px;
 }
 
 div.status-filter

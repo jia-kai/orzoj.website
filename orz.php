@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Wed Oct 13 19:05:42 2010 +0800
+ * $Date: Wed Oct 13 23:53:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -124,7 +124,7 @@ if (isset($_REQUEST['data']))
 	call_func($func_param->action);
 }
 else
-	exit('what\'s going on?');
+	exit('Please DO NOT orz me... I am too weak...');
 
 
 /* ----------------------------------------- */

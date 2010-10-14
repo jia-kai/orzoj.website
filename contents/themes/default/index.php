@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Oct 14 08:47:07 2010 +0800
+ * $Date: Thu Oct 14 08:55:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -61,7 +61,9 @@ $PAGES_AJAX = array(
 	'ajax-form-checker' => 'ajax/form_checker.php',
 	'ajax-avatar-browser' => 'ajax/avatar_browser.php',
 	'ajax-record-detail' => 'ajax/record_detail.php',
-	'ajax-prob-group-tree' => 'ajax/prob_group_tree.php'
+	'ajax-prob-group-tree' => 'ajax/prob_group_tree.php',
+	'ajax-prob-view-by-group' => 'ajax/prob_view_by_group.php',
+	'ajax-prob-view-single' => 'ajax/prob_view-single.php'
 );
 
 /**
@@ -164,7 +166,7 @@ if (isset($PAGES_ACTION[$cur_page]))
 
 	<link href="<?php _url('scripts/jquery/colorbox/colorbox.css'); ?>" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="<?php _url('scripts/jquery/colorbox/colorbox-min.js');?>"></script>
-	
+
 	<script type="text/javascript" src="<?php _url("scripts/jquery/jstree/jquery.jstree.js"); ?>"></script>
 	<script type="text/javascript" src="<?php _url("scripts/jquery/jquery.cookie.js"); ?>"></script>
 
