@@ -1,7 +1,6 @@
 <?php
 require_once '../pre_include.php';
 
-/*
 $db->insert_into('problems',
 	array(
 		'title' => 'A+B Problem',
@@ -10,7 +9,7 @@ $db->insert_into('problems',
 		'io' => '',
 		'time' => time()
 	));
- */
+
 $db->insert_into('problems',
 	array('title' => 'A+B Problem V2',
 	'code' => 'apb',

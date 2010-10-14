@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Thu Oct 14 09:45:22 2010 +0800
+ * $Date: Thu Oct 14 10:08:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -276,6 +276,9 @@ foreach ($rows as $cur_row)
 
 <script type="text/javascript">
 $("#filter-apply-button").button();
-$("a[name='status-detail']").colorbox();
+$("a[name='status-detail']").colorbox({
+	"width": 700,
+	"maxHeight": 500
+});
 </script>
 

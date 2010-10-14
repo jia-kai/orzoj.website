@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Oct 13 21:56:43 2010 +0800
+ * $Date: Thu Oct 14 14:28:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -107,10 +107,10 @@ function session_get($name)
  */
 function htmlencode($text, $replace_space = FALSE)
 {
+	$text = htmlspecialchars($text);
 	if ($replace_space)
-		return nl2br(str_replace(' ', '&nbsp;',
-			htmlspecialchars($text)));
-	return nl2br(htmlspecialchars($text));
+		$text = str_replace(' ', '&nbsp;', $text);
+	return nl2br($text);
 }
 
 $db = NULL;
@@ -305,11 +305,29 @@ function xhtml_validate($text)
  */
 function plang_get_name_by_id($lid)
 {
+	static $cache = array();
+	if (array_key_exists($lid, $cache))
+		return $cache[$lid];
 	global $db, $DBOP;
 	$row = $db->select_from('plang', 'name',
 		array($DBOP['='], 'id', $lid));
 	if (count($row) != 1)
+		return $cache[$lid] = NULL;
+	return $cache[$lid] = $row[0]['name'];
+}
+
+/**
+ * get syntax name used in GeSHi
+ * @param int $lid language id
+ * @return string|NULL the name or NULL if no such language
+ */
+function plang_get_syntax_by_id($lid)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('plang', 'syntax',
+		array($DBOP['='], 'id', $lid));
+	if (count($row) != 1)
 		return NULL;
-	return $row[0]['name'];
+	return $row[0]['syntax'];
 }
 

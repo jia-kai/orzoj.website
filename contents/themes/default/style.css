@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Thu Oct 14 14:30:01 2010 +0800
+ * $Date: 四 10月 14 14:32:17 2010 +0800
 
  This file is part of orzoj
 
@@ -396,11 +396,12 @@ div#page a.status-ac:hover, div#page a.status-wa:hover, div#page a.status-ce:hov
 
 table#record-detail
 {
-	clear: both;
 	border-collapse: collapse;
 	margin: 0;
 	border: 0;
 	padding: 0;
+	min-width: 600px;
+	max-width: 650px;
 }
 
 table#record-detail tr, table#record-detail th, table#record-detail td
@@ -418,5 +419,25 @@ table#record-detail th
 table#record-detail tr:hover
 {
 	background-color: #E5EEFF;
+}
+
+div#record-detail
+{
+	border: 1px solid #C3C3C3;
+	margin: 3px;
+	padding: 3px;
+	max-width: 800px;
+	max-height: 200px;
+	overflow: auto;
+}
+
+div#record-source
+{
+	border: 1px solid #C3C3C3;
+	margin: 3px;
+	padding: 3px;
+	max-width: 800px;
+	max-height: 600px;
+	overflow: auto;
 }
 

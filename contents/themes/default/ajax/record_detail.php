@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Thu Oct 14 09:00:12 2010 +0800
+ * $Date: Thu Oct 14 14:29:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,6 +33,7 @@ require_once $includes_path . 'exe_status.php';
 require_once $includes_path . 'problem.php';
 require_once $includes_path . 'judge.php';
 require_once $includes_path . 'record.php';
+require_once $includes_path . 'geshi.php';
 
 // whether to display realname and submission IP
 $disp_info = user_check_login() && $user->is_grp_member(GID_UINFO_VIEWER);
@@ -185,7 +186,7 @@ function _fd_detail()
 	echo __('Details:') . '<br />';
 	$detail = $row['detail'];
 	if (!record_status_executed($row['status']))
-		echo $detail;
+		echo '<div id="record-detail">' . $detail . '</div>';
 	else
 	{
 		$details = unserialize($detail);
@@ -224,15 +225,14 @@ function _fd_detail()
 
 function _fd_src()
 {
-	global $row, $db, $DBOP;
+	global $row, $db, $DBOP, $page_arg, $syntax;
 	$src = $db->select_from('sources', 'src', array(
-		$DBOP['='], 'rid', $row['id']));
-	if ($count($src) == 1)
+		$DBOP['='], 'rid', $page_arg));
+	if (count($src) == 1)
 		$src = $src[0]['src'];
-	else $src = __('Unavailable');
+	else $src = __('not found');
 	//TODO: retrieve source from orzoj-server
-	echo __('Source: <br /><div id="record-source">%s</div>',
-		htmlencode($src));
+	echo __('Source:') . '<br /><div id="record-source">'
 }
 
 $cols = array(
@@ -260,7 +260,9 @@ if (count($row) != 1)
 
 $row = $row[0];
 
-if (user_check_login() && ($user->id == $row['uid'] || $user->is_grp_member(GID_SUPER_RECORD_VIEWER)))
+$syntax = plang_get_syntax_by_id($page_arg);
+
+if (user_check_view_src_perm($row['uid']))
 	$cols['src'] = '_fd_src';
 
 foreach ($cols as $col => $func)
@@ -268,4 +270,6 @@ foreach ($cols as $col => $func)
 	$func();
 	echo '<br />';
 }
+
+?>
 

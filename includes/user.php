@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Oct 13 23:00:02 2010 +0800
+ * $Date: Thu Oct 14 14:11:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -615,5 +615,27 @@ function user_get_realname_by_id($uid)
 	if (!$ret)
 		return NULL;
 	return $ret['realname'];
+}
+
+/**
+ * check whether the current user has permission to view the source of a specific user
+ * @param int $uid target user id
+ * @return bool
+ */
+function user_check_view_src_perm($uid)
+{
+	global $db, $DBOP, $user;
+	if (user_check_login())
+	{
+		if ($user->id == $uid || $user->is_grp_member(GID_SUPER_RECORD_VIEWER))
+			return TRUE;
+		$grp = $user->groups;
+	} else $grp = array(GID_GUEST);
+	$row = $db->select_from('users', 'view_gid',
+		array($DBOP['='], 'id', $uid));
+	if (count($row) != 1)
+		return TRUE;
+	$row = unserialize($row[0]['view_gid']);
+	return count(array_intersect($row, $grp)) > 0;
 }
 

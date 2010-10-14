@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Oct 13 16:06:17 2010 +0800
+ * $Date: Thu Oct 14 14:22:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -281,18 +281,10 @@ $tables = array(
 	'plang' => array( // programming language
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
-			'name' => array('type' => 'TEXT200')
+			'name' => array('type' => 'TEXT200'), // display name and name used on orzoj-server
+			'syntax' => array('type' => 'TEXT200') // syntax name used in GeSHi
 		),
-		'primary_key' => 'id',
-		'index' => array(
-			array(
-				'type' => 'UNIQUE',
-				'cols' => array('name')
-			)
-		),
-		'index_len' => array(
-			'name' => PLANG_NAME_LEN_MAX
-		),
+		'primary_key' => 'id'
 	),
 
 	/* wlang */
