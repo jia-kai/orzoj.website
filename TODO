@@ -11,3 +11,7 @@ contents/themes/default/ajax/avatar_browser.php:102
 	Go to page: => Go to page: %s where %s is the inputbox.
 
 permission check failes before contest starts
+
+dealing of show-ajax-*
+
+t_get_link : in_HTML

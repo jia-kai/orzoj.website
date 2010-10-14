@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: 四 10月 14 14:32:17 2010 +0800
+ * $Date: Thu Oct 14 21:45:04 2010 +0800
 
  This file is part of orzoj
 
@@ -256,21 +256,9 @@ div.clearer
 	clear: both;
 }
 
-
-div#prob-navigator
-{
-	margin: 0;
-	padding: 5px;
-	border: 2px;
-	float: left;
-	width: 180px;
-	height: 100%;
-}
-
 div#prob-grp-tree
 {
 	margin: 0;
-	min-height: 200px;
 	background: inherit;
 	overflow: auto;
 	text-align: left;
@@ -284,14 +272,31 @@ div#prob-grp-tree a:hover
 h1.prob-navigator-title
 {
 	font-size: 20px;
+	text-align: center;
 }
+
+div#prob-container
+{
+	width: 100%;
+	background-image: url(images/bg_problem.gif);
+	float: left;
+}
+
+div#prob-navigator
+{
+	margin: 0;
+	padding: 5px;
+	width: 175px;
+	float: left;
+	min-height: 200px;
+}
+
 
 div#prob-view
 {
+	padding: 5px 0px 0 5px;
 	float: right;
-	padding: 5px 0 0 5px;
-	padding: 5px;
-	width: 650px;
+	width: 660px;
 }
 
 div#prob-view a:hover
@@ -325,6 +330,12 @@ div#prob-view-single-desc p
 div#prob-view-single-content
 {
 	text-align: left;
+	margin: 0 0 0 20px;
+}
+
+div#prob-view-single-navigator table
+{
+	width: 100%;
 }
 
 div.status-filter

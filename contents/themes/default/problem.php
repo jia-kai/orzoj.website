@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Thu Oct 14 11:44:33 2010 +0800
+ * $Date: Thu Oct 14 19:25:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,35 +27,28 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+require_once $theme_path . 'prob_func.php';
+require_once $includes_path . 'problem.php';
+
+
+
 ?>
+<div id="prob-container">
 <div id="prob-navigator">
 <h1 class="prob-navigator-title"><?php echo __("Problem Groups") . '<br />'; ?></h1>
 
 <script type="text/javascript">
-function prob_view_by_group(id, start_page)
+function prob_view_set_content(addr)
 {
 	$.ajax({
-		url: "<?php t_get_link('ajax-prob-view-by-group'); ?>",
-		data: "arg=" + id + "|" + start_page,
-		success: function(content) {
-			$("#prob-view").html(content);
-		}
-	});
-}
-
-function prob_view_single(id)
-{
-	$.ajax({
-		url: "<?php t_get_link('ajax-prob-view-single')?>",
-		data : "arg=" + id,
-		success : function(content) {
+		"url" : addr,
+		"success" : function(content) {
 			$("#prob-view").html(content);
 		}
 	});
 }
 
 </script>
-
 <div id="prob-grp-tree"></div>
 <script type="text/javascript">
 $(function(){
@@ -82,8 +75,19 @@ $(function(){
 </script>
 </div> <!-- id: prob-navigator -->
 
-
-<div id="prob-view"></div>
-<script type="text/javascript">
-prob_view_by_group(0, 1);
-</script>
+<div id="prob-view">
+<?php
+if (isset($page_arg))
+{
+	$pid = prob_get_id_by_code($page_arg);
+	if ($pid === NULL) // no such problem
+		die('just for fun');
+	$gid = -1;
+	$start_page = -1;
+	require_once $theme_path . 'ajax/prob_view_single.php';
+}
+else
+	require_once $theme_path . 'ajax/prob_view_by_group.php';
+?>
+</div> <!-- id: prob-view -->
+</div> <!-- id: prob-container -->

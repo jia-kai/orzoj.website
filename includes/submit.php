@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Wed Oct 13 18:47:01 2010 +0800
+ * $Date: Thu Oct 14 21:37:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,6 +33,7 @@ require_once $includes_path . 'contest/ctal.php';
 /**
  * echo fileds in the form for submitting source code
  * @param int $pid default problem id
+ * @exception Exc_runtime
  * @return void
  */
 function submit_src_get_form($pid)
@@ -46,7 +47,7 @@ function submit_src_get_form($pid)
 	if (!is_int($pid))
 		$pid = '';
 	$str = 
-		tf_form_get_text_input(__('Problem id:'), 'pid', $pid) .
+		tf_form_get_text_input(__('Problem id:'), 'pid', NULL, $pid) .
 		tf_form_get_select(__('Programming language:'), 'plang', $plang, $user->plang) .
 		tf_form_get_source_editor(__('Source:'), 'src');
 	echo filter_apply('after_submit_src_form', $str);
@@ -54,6 +55,7 @@ function submit_src_get_form($pid)
 
 /**
  * parse posted data and submit the source
+ * @exception Exc_runtime
  * @return void
  */
 function submit_src()
@@ -130,6 +132,7 @@ function submit_add_record($pid, $lid, $src,
  * @param int $rid record id
  * @param string $input input file name, or empty string to use stdin
  * @param string $output output file name, or empty string to use stdout
+ * @exception Exc_runtime
  * @return void
  */
 function submit_add_judge_req($rid, $input, $output)

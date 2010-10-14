@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Thu Oct 14 11:23:32 2010 +0800
+ * $Date: Thu Oct 14 17:24:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,11 +26,11 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 require_once $includes_path . 'problem.php';
+require_once $theme_path . 'prob_func.php';
 
 define('PAGE_PROB_LIST_ROWS', 20);
 
-$id = 0; $start_page = 0;
-sscanf($page_arg, '%d|%d', $id, $start_page);
+prob_view_by_group_parse_arg();
 $fields = array('id', 'title', 'code', 'cnt_submit', 'cnt_ac');
 $show_fields= array(
 	__('ID'),
@@ -38,7 +38,7 @@ $show_fields= array(
 	__('Code'),
 	__('Difficulty')
 );
-$probs = prob_get_list($fields, $id, TRUE, ($start_page - 1) * PAGE_PROB_LIST_ROWS, PAGE_PROB_LIST_ROWS);
+$probs = prob_get_list($fields, $gid, TRUE, ($start_page - 1) * PAGE_PROB_LIST_ROWS, PAGE_PROB_LIST_ROWS);
 $content = '<table class="orzoj-table"><tr>';
 foreach ($show_fields as $field)
 	$content .= '<th>' . $field . '</th>';
@@ -48,8 +48,9 @@ foreach ($probs as $prob)
 {
 	$content .= '<tr>';
 	$content .= '<td>' . $prob['id'] . '</td>'; // ID
-	$content .= '<td><a href=' . t_get_link('show-ajax-prob-view-single', $prob['id'], TRUE, TRUE) 
-		. ' onclick="prob_view_single(' . $prob['id'] . '); return false;">' . $prob['title'] . '</a></td>'; // Title
+	$content .= '<td><a href="' . prob_view_single_get_a_href($prob['id'], $gid, $start_page) 
+		. '" onclick="' . prob_view_single_get_a_onclick($prob['id'], $gid, $start_page) 
+		.'">' . $prob['title'] . '</a></td>'; // Title
 	$content .= '<td>' . $prob['code'] . '</td>'; // Code
 	$content .= '<td>' . $prob['cnt_ac'] . '/' . $prob['cnt_submit'] . '</td>'; // Difficulty
 	$content .= '</tr>';

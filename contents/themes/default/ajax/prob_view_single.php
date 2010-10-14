@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Thu Oct 14 11:33:12 2010 +0800
+ * $Date: Thu Oct 14 21:08:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,12 +26,34 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 require_once $includes_path . 'problem.php';
-$id = $page_arg;
+require_once $theme_path . 'prob_func.php';
+
+prob_view_single_parse_arg();
+
 try
 {
-	echo prob_view($id);
+	// navigator
+	$content = '<div id="prob-view-single-navigator"><table><tr>';
+	if ($start_page != -1)
+		// previous page
+		$content .= '<td><a href="' . prob_view_by_group_get_a_href($gid, $start_page) 
+		. '" onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page) .'">'
+		. __('previous page')
+		. '</a></td>';
+
+	$content .= '<td><a id="prob-submit-link" href="' . t_get_link('ajax-prob-submit', "$pid", TRUE, TRUE) . '">' . __('submit') . '</a></td>';
+	$content .= '</tr></table></div>';
+	// content
+	$content .= prob_view($pid);
+
+	echo $content;
 }
 catch (Exc_runtime $e)
 {
 	die(__('Hello buddy: %s', $e->msg()));
 }
+?>
+<script type="text/javascript">
+	$("#prob-submit-link").colorbox({"escKey" : false});
+</script>
+

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Thu Oct 14 14:29:39 2010 +0800
+ * $Date: Thu Oct 14 21:42:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -70,7 +70,7 @@ EOF;
 	return sprintf('<tr><td><label  for="%s">%s</label></td>
 		<td><input type="text" id="%s" name="%s" %s %s /></td></tr>' . "\n",
 		$id, $prompt, $id, $post_name,
-		is_null($default) ? '' : sprintf('value="%s"', htmlcode($default)),
+		is_null($default) ? '' : sprintf('value="%s"', htmlencode($default)),
 		$checker);
 }
 
@@ -227,7 +227,7 @@ EOF;
 }
 
 /**
- * get a selction list
+ * get a selection list
  * @param string $prompt
  * @param string $post_name
  * @param array $options in the format array(&lt;display name&rt; => &lt;option value&rt;)
@@ -273,9 +273,9 @@ function tf_get_prob_html($pinfo)
 <div id="prob-view-single-title">'
 . $pinfo['title'] . '(' . $pinfo['code']. ')</div>' 
 	.'<div id="prob-view-single-subtitle">'
-		. __('Time Limit: ') . $desc['time'] . ' '
+		. __('Time Limit: ') . $desc['time'] . '&nbsp;&nbsp;'
 		. __('Memory Limit: ') . $desc['memory'] . '<br />'
-		. __('Total Submit: ') . $pinfo['cnt_submit'] . ' '
+		. __('Total Submit: ') . $pinfo['cnt_submit'] . '&nbsp;&nbsp;'
 		. __('Accepted: ') . $pinfo['cnt_ac']
 		. '</div> <!-- id: prob-view-single-subtitle-->'
 		. '<div id="prob-view-single-desc">';
@@ -310,7 +310,8 @@ function _tf_form_generate_body($gen_func)
 	$_tf_cur_checker_div = $ckid;
 	echo "<div class=\"form-checker-result\" id=\"$ckid\">place holder</div>\n";
 	echo '<table border="0" style="clear:both">';
-	$gen_func();
+	$args = func_get_args();
+	call_user_func_array($gen_func, array_slice($args, 1));
 	echo '</table>';
 }
 

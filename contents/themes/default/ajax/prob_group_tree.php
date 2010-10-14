@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_group_tree.php
- * $Date: Thu Oct 14 11:32:40 2010 +0800
+ * $Date: Thu Oct 14 16:30:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,9 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+require_once $theme_path . 'prob_func.php';
+
 $ret = array();
 if (!isset($_GET['prob_grp_id']))
 	throw new Exc_inner('`prob_grp_id in $_GET does not set.`');
@@ -46,8 +49,8 @@ foreach ($grps as $grp)
 		'data' => array(
 			'title' => $name,
 			'attr' => array(
-				'href' => t_get_link('ajax-prob-view-by-group', $id, FALSE, TRUE),
-				'onclick' => "prob_view_by_group($id, 1); return false;"
+				'href' => prob_view_by_group_get_a_href($id, 1),
+				'onclick' => prob_view_by_group_get_a_onclick($id, 1)
 			)
 		),
 		'attr' => array('id' => $id)
@@ -64,8 +67,8 @@ if ($first_request)
 		'data' => array(
 			'title' => 'All',
 			'attr' => array(
-				'href' => t_get_link('ajax-prob-view-by-group', 0, FALSE, TRUE),
-				'onclick' => "prob_view_by_group(0, 1); return false;"
+				'href' => prob_view_by_group_get_a_href(0, 1),
+				'onclick' => prob_view_by_group_get_a_onclick(0, 1)
 			)
 		),
 		'attr' => array('id' => 0),
