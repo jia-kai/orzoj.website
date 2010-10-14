@@ -15,3 +15,5 @@ permission check failes before contest starts
 dealing of show-ajax-*
 
 t_get_link : in_HTML
+
+includes/message.php:75 单词拼写错误

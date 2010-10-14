@@ -45,7 +45,8 @@
 |	|	|--	team_image/	team images
 |	|	|--	...
 |	|--	lang/			.mo files for various languages
-|	|	|-- *.mo
+|   |   |--<lang_name>/	language name e.g. zh_CN, en_US
+|	|		|-- *.mo
 |	|--	geshi-styles/	css files used for GeSHi
 |	|	|--	gen.php		generate these files
 |	|	|--	*.css
