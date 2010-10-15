@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Thu Oct 14 20:32:08 2010 +0800
+ * $Date: Fri Oct 15 12:09:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,7 +34,7 @@ $tables = array(
 	/* scheds */
 	'scheds'=> array( //  scheduled tasks
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'time' => array('type' => 'INT64'),
 			'file' => array('type' => 'TEXT'), // file where the function is, relative to $root_path
 			'func' => array('type' => 'TEXT'), // function name
@@ -50,7 +50,7 @@ $tables = array(
 	/* users */ 
 	'users' => array( // related file: /includes/user.php
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'username' => array('type' => 'TEXT200'),
 			'realname' => array('type' => 'TEXT200'), // only visiable by administrator
 			'nickname' => array('type' => 'TEXT200'), // display name
@@ -94,7 +94,7 @@ $tables = array(
 	/* user_groups */
 	'user_groups' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'pgid' => array('type' => 'INT32'), // parent group id, or 0 if none
 			'desc' => array('type' => 'TEXT'), // description
 		),
@@ -127,7 +127,7 @@ $tables = array(
 	/* user_teams */
 	'user_teams' => array( // managed by administrators
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'name' => array('type' => 'TEXT200'),
 			'desc' => array('type' => 'TEXT'),
 			'img' => array('type' => 'TEXT')  // image file path related to /contents/uploads/team_image
@@ -144,7 +144,7 @@ $tables = array(
 	/* user_avatars */
 	'user_avatars' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'file' => array('type' => 'TEXT') // related to /contents/uploads/user_avatar
 		),
 		'primary_key' => 'id'
@@ -153,7 +153,7 @@ $tables = array(
 	/* problems */
 	'problems' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'title' => array('type' => 'TEXT'),
 			'code' => array('type' => 'TEXT200'), // like the code on SPOJ
 			'desc' => array('type' => 'TEXT'),
@@ -201,7 +201,7 @@ $tables = array(
 	/* prob_grps */ // problem groups
 	'prob_grps' => array( // classification of problems
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'pgid' => array('type' => 'INT32', 'default' => 0), // parent group id, or 0
 			'name' => array('type' => 'TEXT'),
 			'desc' => array('type' => 'TEXT')
@@ -241,7 +241,7 @@ $tables = array(
 	/* contests */
 	'contests' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'type' => array('type' => 'INT32'), // contest type, defined in /includes/contest/ctal.php
 			'name' => array('type' => 'TEXT'), // contest name
 			'desc' => array('type' => 'TEXT'), // description
@@ -280,7 +280,7 @@ $tables = array(
 	/* plang */ 
 	'plang' => array( // programming language
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'name' => array('type' => 'TEXT200'), // display name and name used on orzoj-server
 			'syntax' => array('type' => 'TEXT200') // syntax name used in GeSHi
 		),
@@ -290,7 +290,7 @@ $tables = array(
 	/* wlang */
 	'wlang' => array( // website language
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'name' => array('type' => 'TEXT200'), // language name
 			'file' => array('type' => 'TEXT') // the .mo file name in /contents/lang/
 		),
@@ -309,7 +309,7 @@ $tables = array(
 	/* records */
 	'records' => array( // this table is read directly by themes
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'uid' => array('type' => 'INT32'), // user id
 			'pid' => array('type' => 'INT32'), // problem id
 			'jid' => array('type' => 'INT32', 'default' => 0), // judge id
@@ -333,9 +333,7 @@ $tables = array(
 			array(
 				'cols' => array('uid', 'status', 'pid', 'lid')),
 			array(
-				'cols' => array('pid', 'status')),
-			array(
-				'cols' => array('time'))
+				'cols' => array('pid', 'status'))
 		)
 	),
 
@@ -355,7 +353,7 @@ $tables = array(
 	/* judges */
 	'judges' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'name' => array('type' => 'TEXT200'),
 			'status' => array('type' => 'INT32'),  // see /includes/const.php
 			'lang_sup' => array('type' => 'TEXT'), // serialized array of id of supported languages
@@ -376,7 +374,7 @@ $tables = array(
 	/* announcements */
 	'announcements' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'content' => array('type' => 'TEXT')
 		),
 		'primary_key' => 'id'
@@ -408,7 +406,7 @@ $tables = array(
 	/* orz_req */
 	'orz_req' => array( // requests to orzoj-server in orz.php
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'data' => array('type' => 'TEXT'),
 			// serialized array of request data, see orzoj-server/web.py:fetch_task()
 			// if type=src, src is not set and should be found in 'sources' table
@@ -419,7 +417,7 @@ $tables = array(
 	/* messages */
 	'messages' => array( // user-to-user messages
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'time' => array('type' => 'INT64'),
 			'uid_snd' => array('type' => 'INT32'),
 			'uid_rcv' => array('type' => 'INT32'),
@@ -443,7 +441,7 @@ $tables = array(
 	/* posts */
 	'posts' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'time' => array('type' => 'INT64'),
 			'uid' => array('type' => 'INT32'), // user id
 			'pid' => array('type' => 'INT32', 'default' => 0), // less than 0 means related problem id, greater than 0 means parent id, 0 means no related problem
@@ -480,7 +478,7 @@ $tables = array(
 	/* themes */
 	'themes' => array(
 		'cols' => array(
-			'id' => array('type' => 'INT32', 'auto_assign' => TRUE),
+			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'name' => array('type' => 'TEXT')
 		),
 		'primary_key' => 'id'

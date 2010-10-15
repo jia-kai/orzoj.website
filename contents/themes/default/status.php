@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Thu Oct 14 20:04:05 2010 +0800
+ * $Date: Fri Oct 15 12:01:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -99,7 +99,18 @@ echo '</form>';
 
 ?>
 
-<div id="status-list">
+<div style="clear:both; float:left; position: relative;">
+	<div style="float: left;">
+		<a href="#" onclick="goto_page();">
+		<img src="<?php _url('images/refresh.gif');?>" alt="&lt;refresh&gt;" />
+		</a>
+	</div>
+	<div style="left:40px; bottom: 0px; position: absolute;">
+		<a href="#" onclick="goto_page();"><?php echo __('Refresh');?></a>
+	</div>
+</div>
+
+<div id="status-list" style="clear:both">
 <?php
 require_once $theme_path . 'ajax/status_list.php';
 ?>
@@ -111,19 +122,35 @@ $("a[name='status-detail']").colorbox({
 	"width": 700,
 	"maxHeight": 500
 });
+
+function navigate_do(addr, data)
+{
+	var t = $("#status-list");
+	t.animate({"opacity": 0.5}, 1);
+	$.ajax({
+		"type": "post",
+		"cache": false,
+		"url": addr,
+		"data": data,
+		"success": function(data) {
+			var t = $("#status-list");
+			t.animate({"opacity": 1}, 1);
+			t.html(data);
+		}
+	});
+}
+
 function navigate(addr)
 {
-	$("#status-list").load(addr,
+	navigate_do(addr,
 		$("#filter-form").serializeArray());
 }
 
 function goto_page()
 {
-	$("#status-list").load(
-		"<?php t_get_link('ajax-status-list');?>",
+	navigate_do("<?php t_get_link('ajax-status-list');?>",
 		$("#filter-form").serializeArray().concat(
-			$("#goto-page-form").serializeArray()
-		));
+			$("#goto-page-form").serializeArray()));
 }
 
 </script>

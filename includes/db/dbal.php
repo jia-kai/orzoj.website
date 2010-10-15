@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Fri Oct 15 00:01:19 2010 +0800
+ * $Date: Fri Oct 15 13:23:27 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -80,7 +80,7 @@ abstract class Dbal
 	 *    'cols' =&gt; array(
 	 *     &lt;col name&gt; =&gt; array('type' =&gt; &lt;coltype&gt;:INT32|INT64|TEXT|TEXT200, 
 	 *						'default' =&gt; &lt;default value&gt; , 
-	 *						'auto_assign' =&gt; true|false)
+	 *						'auto_increment' =&gt; true|false)
 	 *    ),
 	 *	 ['primary_key' =&gt; $keycolname,]
 	 *	 ['index' =&gt; array(
@@ -232,8 +232,20 @@ abstract class Dbal
 	abstract protected function transaction_rollback();
 }
 
-/*
- * vim:shiftwidth=4
- * vim:tabstop=4
+/**
+ * add a clause for logic and to the where clause
+ * @param &array $where the where clause
+ * @param array $new the clause to be added
+ * @return void
  */
+function db_where_add_and(&$where, $new)
+{
+	if (is_null($new))
+		return;
+	global $where, $DBOP;
+	if (is_null($where))
+		$where = $new;
+	else $where = array_merge(array($DBOP['&&']), $where, $new);
+}
+
 

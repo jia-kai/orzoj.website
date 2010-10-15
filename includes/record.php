@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Thu Oct 14 20:29:33 2010 +0800
+ * $Date: Fri Oct 15 13:32:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -71,6 +71,20 @@ function record_status_finished($status)
 	return intval($status) > RECORD_STATUS_RUNNING;
 }
 
+/**
+ * get the required where clause in queries for selecting records (must be anded with other clauses)
+ * @return array
+ */
+function record_make_where()
+{
+	global $DBOP, $user;
+	if (!user_check_login())
+		return array($DBOP['!='], 'status', RECORD_STATUS_WAITING_FOR_CONTEST);
+	if (!$user->is_grp_member(GID_SUPER_RECORD_VIEWER))
+		return array($DBOP['||'],
+		$DBOP['!='], 'status', RECORD_STATUS_WAITING_FOR_CONTEST,
+		$DBOP['='], 'uid', $user->id);
+}
 
 /**
  * translate record status to human readable text

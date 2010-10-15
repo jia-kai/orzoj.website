@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Fri Oct 15 10:27:56 2010 +0800
+ * $Date: Fri Oct 15 13:33:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -49,10 +49,7 @@ $where = NULL;
 
 function _where_and($new)
 {
-	global $where, $DBOP;
-	if (is_null($where))
-		$where = $new;
-	else $where = array_merge(array($DBOP['&&']), $where, $new);
+	db_where_add_and($where, $new);
 }
 
 if (isset($_POST['filter']))
@@ -71,17 +68,12 @@ if (isset($_POST['filter']))
 			_where_and(array($DBOP['='], $f, $req[$f]));
 }
 
-if (!user_check_login())
-	_where_and(array($DBOP['!='], 'status', RECORD_STATUS_WAITING_FOR_CONTEST));
-else if (!$user->is_grp_member(GID_SUPER_RECORD_VIEWER))
-	_where_and(array($DBOP['||'],
-		$DBOP['!='], 'status', RECORD_STATUS_WAITING_FOR_CONTEST,
-		$DBOP['='], 'uid', $user->id));
+_where_and(record_make_where());
 
 $rows = $db->select_from('records', array(
 	'id', 'uid', 'pid', 'jid', 'lid', 'src_len', 'status',
 	'stime', 'score', 'full_score', 'time', 'mem'
-	), $where, array('stime' => 'DESC'), $pgnum * PAGE_SIZE, PAGE_SIZE);
+	), $where, array('id' => 'DESC'), $pgnum * PAGE_SIZE, PAGE_SIZE);
 
 
 // cv: column value

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Tue Oct 12 15:13:54 2010 +0800
+ * $Date: Fri Oct 15 13:13:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -238,7 +238,7 @@ class Dbal_mysql extends Dbal
 			{
 				$tmp.= ' DEFAULT ' . _mysql_escape_string($colstruc['default']) . ' ';
 			}
-			if (isset($colstruc['auto_assign']) && $colstruc['auto_assign'])
+			if (isset($colstruc['auto_increment']) && $colstruc['auto_increment'])
 			{
 				$tmp.=' AUTO_INCREMENT ';
 			}

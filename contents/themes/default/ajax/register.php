@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: register.php
- * $Date: Fri Oct 15 11:32:42 2010 +0800
+ * $Date: Fri Oct 15 10:55:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -57,7 +57,7 @@ $("#register-form").bind("submit", function(){
 		"cache": false,
 		"url": "<?php t_get_link($cur_page, 'do', FALSE);?>",
 		"data": $("#register-form").serializeArray(),
-		success: function(data) {
+		"success": function(data) {
 			if (data.charAt(0) == '1')
 				alert(data.substr(1));
 			else $.colorbox({"html": data.substr(1)});
