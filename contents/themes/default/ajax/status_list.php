@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Thu Oct 14 21:00:10 2010 +0800
+ * $Date: Fri Oct 15 10:27:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -253,4 +253,5 @@ $("#goto-page-form").bind("submit", function(){
 	goto_page();
 	return false;
 });
+table_set_double_bgcolor();
 </script>
