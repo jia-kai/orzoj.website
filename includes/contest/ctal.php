@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Thu Oct 14 10:57:31 2010 +0800
+ * $Date: Fri Oct 15 21:50:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -67,7 +67,7 @@ abstract class Ctal
 	abstract protected function update_contest();
 
 	/**
-	 * called when user tries to view a problem in this contest
+	 * called when user tries to view a problem in this contest before the contest ends
 	 * @param array $user_grp the ids of groups the user belonging to
 	 * @param array $pinfo problem information, containing $PROB_VIEW_PINFO (defined in problem.php)
 	 *		may be modified
@@ -106,10 +106,10 @@ function ctal_get_class($pid)
 	global $db, $DBOP;
 	$now = time();
 	$row = $db->select_from('map_prob_ct', 'cid',
-		array($DBOP['&&'], $DBOP['&&'],
+		array($DBOP['&&'], 
 		$DBOP['='], 'pid', $pid,
-		$DBOP['<='], 'time_start', $now,
-		$DBOP['>'], 'time_end', $now));
+		$DBOP['>'], 'time_end', $now),
+		array('time_start' => 'ASC'));
 	if (count($row))
 	{
 		$row = $db->select_from('contests', NULL,

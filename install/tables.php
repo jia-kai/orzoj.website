@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Fri Oct 15 16:55:04 2010 +0800
+ * $Date: Fri Oct 15 19:53:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -202,7 +202,7 @@ $tables = array(
 	'prob_grps' => array( // classification of problems
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
-			'pgid' => array('type' => 'INT32', 'default' => 0), // parent group id, or 0
+			'pgid' => array('type' => 'INT32', 'default' => 0), // parent group id, or 0 if no parent group
 			'name' => array('type' => 'TEXT'),
 			'desc' => array('type' => 'TEXT')
 		),

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_func.php
- * $Date: Fri Oct 15 00:30:57 2010 +0800
+ * $Date: Fri Oct 15 21:48:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -44,18 +44,22 @@ function prob_view_by_group_parse_arg()
 	global $gid, $start_page, $page_arg;
 	if (is_null($page_arg))
 	{
-		$gid = 0;
+		$gid = NULL;
 		$start_page = 1;
 		return;
 	}
 	if (sscanf($page_arg, '%d|%d', $gid, $start_page) != 2)
 		die('Hello, argument is wrong.');
+	if ($gid == 0)
+		$gid = NULL;
 	if ($start_page < 1)
 		$start_page = 1;
 }
 
 function prob_view_single_pack_arg($pid, $gid, $start_page)
 {
+	if (is_null($gid))
+		$gid = 0;
 	return "$pid|$gid|$start_page";
 }
 

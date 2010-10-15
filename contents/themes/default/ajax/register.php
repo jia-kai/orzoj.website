@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: register.php
- * $Date: Fri Oct 15 10:55:56 2010 +0800
+ * $Date: Fri Oct 15 21:39:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -35,7 +35,7 @@ if ($page_arg == 'do')
 	}
 	catch (Exc_orzoj $e)
 	{
-		die(__('1Failed to register: ') . $e->msg());
+		die(__('1Failed to register: ') . htmlencode($e->msg()));
 	}
 }
 

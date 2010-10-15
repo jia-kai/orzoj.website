@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri Oct 15 19:46:04 2010 +0800
+ * $Date: Fri Oct 15 20:58:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -53,6 +53,14 @@ $PAGES = array(
 	'judge' => array(__('Judges'), 'judge.php'),
 	'faq' => array(__('FAQ'), 'faq.php')
 );
+
+if (isset($_POST['index_navigate_ajax']))
+{
+	if (!isset($PAGES[$cur_page]))
+		die('nothing what you are looking for');
+	require_once $theme_path . 'ajax/index_content_with_nav.php';
+	die;
+}
 
 /*
  * pages for AJAX
@@ -186,12 +194,6 @@ if (isset($PAGES_ACTION[$cur_page]))
 			$(".orzoj-table tr:even").addClass("table-bgcolor2");
 		}
 		$(document).ready(function(){
-			$("#navigator").buttonset();
-			var t=$("#nav_<?php echo $cur_page?>");
-			t.button("disable");
-			t.addClass("ui-state-active");
-			t.removeClass("ui-button-disabled");
-			t.removeClass("ui-state-disabled");
 			$("button").button();
 
 			<?php
@@ -259,37 +261,9 @@ EOF;
 			</div> <!-- id: banner-right -->
 		</div> <!-- id: banner -->
 
-		<div class="navigator">
-			<div id="navigator">
-<?php
-
-foreach ($PAGES as $name => $value)
-{
-	echo '<a href="';
-	if ($name == $cur_page)
-		echo '#';
-	else
-		t_get_link($name);
-	echo "\" id=\"nav_$name\">$value[0]</a>\n";
-}
-
-?>
-			</div>
+		<div id="content-with-nav">
+<?php require_once $theme_path . 'ajax/index_content_with_nav.php'; ?>
 		</div>
-
-		<img src="<?php _url('images/bg_cornerul.jpg');?>" alt="corner" class="bgcornerl" />
-		<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgtop" />
-		<img src="<?php _url('images/bg_cornerur.jpg');?>" alt="corner" class="bgcornerr" />
-
-		<div id="content">
-<?php require_once($PAGES[$cur_page][1]); ?>
-		</div>
-	
-		<img src="<?php _url('images/bg_cornerdl.jpg');?>" alt="corner" class="bgcornerl" />
-		<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgbottom" />
-		<img src="<?php _url('images/bg_cornerdr.jpg');?>" alt="corner" class="bgcornerr" />
-
-		<?php t_get_footer(); ?>
 	</div> <!-- id: page -->
 
 	<div id="avatar-browser">
@@ -442,6 +416,21 @@ if (isset($startup_msg))
 			}
 			if (typeof(fileref) != "undefined")
 				document.getElementsByTagName("head")[0].appendChild(fileref);
+		}
+
+		function index_navigate(addr)
+		{
+			$("#content-with-border").animate({"opacity": 0.5}, 1.2);
+			$.ajax({
+				"type": "post",
+				"cache": false,
+				"url": addr,
+				"data": ({"index_navigate_ajax": "1"}),
+				"success": function(data) {
+					$("#content-with-nav").html(data);
+					$("#content-with-border").animate({"opacity": 1}, 1.2);
+				}
+			});
 		}
 
 

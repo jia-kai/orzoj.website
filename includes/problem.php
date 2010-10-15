@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Fri Oct 15 14:07:53 2010 +0800
+ * $Date: Fri Oct 15 19:57:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -115,12 +115,10 @@ function prob_view($pid)
 
 /**
  * @ignore
- * FIXME: This function has somthing wrong
  */
 function _prob_get_list_make_where($gid)
 {
-	return NULL;
-	global $db, $DBOP;
+	global $db, $DBOP, $user;
 	$ret0 = NULL;
 	if (!is_null($gid))
 		$ret0 = array($DBOP['in'], 'id', $db->select_from(
@@ -131,12 +129,10 @@ function _prob_get_list_make_where($gid)
 					array('chid' => 'gid'), TRUE),
 			), array('pid' => 'ASC'), NULL, NULL, array('pid' => 'id'), TRUE));
 	$ret1 = NULL;
-	$now = time();
 	if (!user_check_login() || !$user->is_grp_member(GID_SUPER_SUBMITTER))
 		$ret1 = array($DBOP['!'], $DBOP['in'], 'id', $db->select_from(
-			'map_prob_ct', 'pid', array($DBOP['&&'],
-				$DBOP['<='], 'time_start', $now,
-				$DBOP['>'], 'time_end', $now), array('pid' => 'ASC'), NULL, NULL,
+			'map_prob_ct', 'pid', array($DBOP['>'], 'time_end', time()),
+			array('pid' => 'ASC'), NULL, NULL,
 			array('pid' => 'id'), TRUE));
 
 	if (is_null($ret0))
@@ -165,7 +161,7 @@ function prob_get_amount($gid = NULL)
  * @param bool $time_asc order by time ASC(TRUE) or DESC(FALSE)
  * @param int|NULL $offset
  * @param int|NULL $cnt
- * @return array
+ * @return array  Note: if some problems is not allowed to be viewd, the corresponding rows will be NULL 
  */
 function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $cnt = NULL)
 {
@@ -181,14 +177,13 @@ function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $
 		array('time' => $time_asc ? 'ASC' : 'DESC'),
 		$offset, $cnt
 	);
-	$ret = array();
 	if (user_check_login())
 		$grp = $user->groups;
 	else $grp = array(GID_GUEST);
 
 	$io_set = isset($fields['io']);
 
-	foreach ($rows as $row)
+	foreach ($rows as $key => $row)
 		if (prob_check_perm($grp, $row['perm']))
 		{
 			if ($io_set)
@@ -199,9 +194,8 @@ function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $
 			}
 			if ($perm_added)
 				unset($row['perm']);
-			$ret[] = $row;
-		}
-	return $ret;
+		} else $rows[$key] = NULL;
+	return $rows;
 }
 
 /**
@@ -284,5 +278,42 @@ function prob_is_invisible($pid)
 			$cache[$row['pid']] = TRUE;
 	}
 	return isset($cache[$pid]);
+}
+
+/**
+ * update cache, must be called exactly once after adding a problem group
+ * @param int $gid id of newly added problem group
+ * @return void
+ */
+function prob_update_grp_cache_add($gid)
+{
+	global $db, $DBOP;
+	while (TRUE)
+	{
+		$pgid = $db->select_from('prob_grps', 'pgid',
+			array($DBOP['='], 'id', $gid));
+		if (!count($pgid))
+			return;
+		$pgid = intval($pgid[0]['pgid']);
+		if ($pgid == 0)
+			return;
+		$db->insert_into('cache_pgrp_child',
+			array('gid' => $pgid, 'chid' => $gid));
+		$gid = $pgid;
+	}
+}
+
+/**
+ * update cache, must be called after deleting a problem group
+ * @param int $gid id of the deleted problem group
+ * @return void
+ */
+function prob_update_grp_cache_delete($gid)
+{
+	global $db, $DBOP;
+	$db->delete_item('cache_pgrp_child',
+		array($DBOP['||'],
+		$DBOP['='], 'gid', $gid,
+		$DBOP['='], 'chid', $gid));
 }
 

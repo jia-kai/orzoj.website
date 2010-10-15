@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 15 19:16:49 2010 +0800
+ * $Date: Fri Oct 15 19:38:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -46,10 +46,8 @@ $prob_amount = prob_get_amount($gid);
 // XXX: how does this work?
 $probs = prob_get_list($fields, $gid, TRUE, ($start_page - 1) * $PROB_VIEW_ROWS_PER_PAGE, $PROB_VIEW_ROWS_PER_PAGE);
 
-$content = '';
-
 /* problem list title*/
-$content .= '<div id="prob-view-by-group-title">';
+echo '<div id="prob-view-by-group-title">';
 $gname = '';
 if ($gid == 0)
 	$gname = 'All';
@@ -60,24 +58,49 @@ else
 }
 
 // XXX: how to translate items in problem group?
-$content .= __('Problems') . ' - ' . '<span>' . $gname . '</span>';
-$content .= '</div>';
-echo $content;
-
-echo '<div id="prob-list">';
-require_once $theme_path . 'ajax/prob_view_list.php';
+echo __('Problems') . ' - ' . '<span>' . $gname . '</span>';
 echo '</div>';
+
+echo '
+<div id="prob-list">
+<table class="orzoj-table">
+<tr>';
+
+foreach ($show_fields as $field)
+	echo '<th>' . $field . '</th>';
+echo '</tr>';
+
+foreach ($probs as $prob)
+{
+	echo '<tr>';
+	if (is_null($prob))
+		for ($i = count($show_fields); $i; $i --)
+			echo '<td>---</td>';
+	else
+	{
+		echo '<td>' . $prob['id'] . '</td>'; // ID
+		echo '<td><a href="' . prob_view_single_get_a_href($prob['id'], $gid, $start_page) 
+			. '" onclick="' . prob_view_single_get_a_onclick($prob['id'], $gid, $start_page) 
+			.'">' . $prob['title'] . '</a></td>'; // Title
+		echo '<td>' . $prob['code'] . '</td>'; // Code
+		echo '<td>' . $prob['cnt_ac'] . '/' . $prob['cnt_submit'] . '</td>'; // Difficulty
+	}
+	echo '</tr>';
+}
+echo '
+</table>
+</div>';
 
 $total_page = ceil($prob_amount / $PROB_VIEW_ROWS_PER_PAGE);
 
 
 /* bottom navigator */
-echo '<div id=prob-view-by-group-navigator-bottom>';
+echo '<div id="prob-view-by-group-navigator-bottom">';
 
 function make_page_link($text, $page)
 {
 	global $gid;
-	return sprintf('<a href=%s onclick="%s"); return false;">%s</a>',
+	return sprintf('<a href="%s" onclick="%s"); return false;">%s</a>',
 		prob_view_by_group_get_a_href($gid, $page),
 		prob_view_by_group_get_a_onclick($gid, $page),
 		$text
@@ -90,12 +113,11 @@ if ($start_page > 1)
 if ($start_page < $total_page)
 	echo ($start_page > 1 ? ' | ' : '') . make_page_link(__('Next'), $start_page + 1) . '&gt;';
 
-$content .= '<span>' . $start_page . '/' . $total_page . '</span>';
+echo '<span>' . $start_page . '/' . $total_page . '</span>';
 
-$content .= '</div>';
-echo $content; $content = '';
-/* javascript */
+echo '</div>';
 ?>
+
 <script type="text/javascript">
 $("button").button();
 table_set_double_bgcolor();

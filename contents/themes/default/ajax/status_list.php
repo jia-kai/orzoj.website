@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Fri Oct 15 17:38:36 2010 +0800
+ * $Date: Fri Oct 15 21:54:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -254,7 +254,7 @@ if (isset($_POST['request']))
 }
 
 echo '
-<table class="orzoj-table">
+<table class="orzoj-table" id="status-list-table">
 <tr> ';
 
 foreach ($cols as $name => $func)
@@ -286,7 +286,7 @@ echo '
 
 function make_a($text, $pg)
 {
-	printf('<a href="%s" onclick="navigate(\'%s\'); return false;">%s</a>',
+	printf('<a href="%s" onclick="status_navigate(\'%s\'); return false;">%s</a>',
 		t_get_link('show-ajax-status-list', $pg, TRUE, TRUE),
 		t_get_link('ajax-status-list', $pg, TRUE, TRUE),
 		$text);
@@ -323,7 +323,7 @@ $("a[name='status-detail']").colorbox({
 	"maxHeight": 500
 });
 $("#goto-page-form").bind("submit", function(){
-	goto_page();
+	status_goto_page();
 	return false;
 });
 table_set_double_bgcolor();
@@ -344,6 +344,8 @@ function update_table()
 		"url": "<?php t_get_link('ajax-status-list');?>",
 		"data": ({"request": records}),
 		"success": function(data) {
+			if ($("#status-list-table").size() == 0)
+				return;
 			var obj = JSON.parse(data, function(key, value){
 				if (typeof(value) != "string")
 					return;

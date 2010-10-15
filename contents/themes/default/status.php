@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Fri Oct 15 16:24:09 2010 +0800
+ * $Date: Fri Oct 15 20:11:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -110,12 +110,12 @@ echo '</form>';
 
 <div style="clear:both; float:left; position: relative;">
 	<div style="float: left;">
-		<a href="#" onclick="goto_page();">
+		<a href="#" onclick="status_goto_page();">
 		<img src="<?php _url('images/refresh.gif');?>" alt="&lt;refresh&gt;" />
 		</a>
 	</div>
 	<div style="left:40px; bottom: 0px; position: absolute;">
-		<a href="#" onclick="goto_page();"><?php echo __('Refresh');?></a>
+		<a href="#" onclick="status_goto_page();"><?php echo __('Refresh');?></a>
 	</div>
 </div>
 
@@ -128,7 +128,7 @@ require_once $theme_path . 'ajax/status_list.php';
 <script type="text/javascript">
 $("#filter-apply-button").button();
 
-function navigate_do(addr, data)
+function status_navigate_do(addr, data)
 {
 	var t = $("#status-list");
 	t.animate({"opacity": 0.5}, 1);
@@ -145,15 +145,15 @@ function navigate_do(addr, data)
 	});
 }
 
-function navigate(addr)
+function status_navigate(addr)
 {
-	navigate_do(addr,
+	status_navigate_do(addr,
 		$("#filter-form").serializeArray());
 }
 
-function goto_page()
+function status_goto_page()
 {
-	navigate_do("<?php t_get_link('ajax-status-list');?>",
+	status_navigate_do("<?php t_get_link('ajax-status-list');?>",
 		$("#filter-form").serializeArray().concat(
 			$("#goto-page-form").serializeArray()));
 }
