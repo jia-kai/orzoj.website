@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Fri Oct 15 17:21:12 2010 +0800
+ * $Date: Fri Oct 15 17:32:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -67,7 +67,6 @@ require_once $includes_path . 'submit.php';
 
 function show_running_status()
 {
-	var flag_continue = false;
 	$.ajax({
 		"type" : "post",
 		"cache" : false,
@@ -77,7 +76,7 @@ function show_running_status()
 			if (data.charAt(0) == '0')
 			{
 				$.colorbox({"html" : data.substr(1)});
-				flag_continue = true;
+				setTimeout("show_running_status();", 1000);
 			}
 			else
 			{
@@ -85,8 +84,6 @@ function show_running_status()
 			}
 		}
 	});
-	if (flag_continue == true)
-		setTimeout("show_running_status();", 1000);
 }
  
 $("button").button();
@@ -102,9 +99,7 @@ $("#submit-form").bind("submit", function(){
 			else
 			{
 				$.colorbox({"html": data.substr(1)});
-				setTimeout("", 1000);
-				show_running_status();
-				//setTimeout("window.location='<?php t_get_link('status', NULL, FALSE); ?>';", 2000);
+				setTimeout("show_running_status();", 1000);
 			}
 		}
 	});

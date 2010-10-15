@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Fri Oct 15 15:41:13 2010 +0800
+ * $Date: Fri Oct 15 17:38:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,21 +30,46 @@ if (!defined('IN_ORZOJ'))
 /*
  * page argument: [<starting page num:int>]
  * POST: 
- * ['filter'|'request']
+ * ['filter'|'request'|'prob_submit']
  *		'filter':
- *			array of used filters
+ *			value: array of used filters
  *			return a complete ajax page
  *		'request':
- *			array of requests record ids (size <= PAGE_SIZE)
+ *			value: array of requests record ids (size <= PAGE_SIZE)
  *			return json encoded array (<record id> => <done><table columns>)
  *				if done == 0, judge for this record is not finished and the
  *				record should be requested again
  *				if done == 1, this record needs no more updating
+ *		'prob_submit':
+ *			used for dynamic status display in problem submission
+ *			value: problem id
+ *			return: <done><status as string|detail page address>
+ *				if done == 0, current status as string follows
+ *				if done == 1, URL to the detail page follows
  */
 
 require_once $includes_path . 'record.php';
 require_once $includes_path . 'problem.php';
 require_once $includes_path . 'judge.php';
+
+if (isset($_POST['prob_submit']))
+{
+	if (!user_check_login())
+		die('0not logged in');
+	$where = array($DBOP['&&'],
+		$DBOP['='], 'uid', $user->id,
+		$DBOP['='], 'pid', $_POST['prob_submit']);
+	db_where_add_and($where, record_make_where());
+	$row = $db->select_from('records', array('id', 'status', 'score'), $where,
+		array('id' => 'DESC'), NULL, 1);
+	if (count($row) != 1)
+		die('0no such record');
+	$s = $row[0]['status'];
+	if (record_status_finished($s))
+		die('1' . t_get_link('ajax-record-detail', $row[0]['id'], FALSE, TRUE));
+	$cur_row = $row[0];
+	die('0' . _cv_status());
+}
 
 define('PAGE_SIZE', 10);
 
@@ -61,6 +86,10 @@ if ($pgnum < 0)
 $FILETER_ALLOWED = array('uid', 'pid', 'lid', 'status');
 
 $where = NULL;
+$select_cols = array(
+	'id', 'uid', 'pid', 'jid', 'lid', 'src_len', 'status',
+	'stime', 'score', 'full_score', 'time', 'mem'
+);
 
 if (isset($_POST['filter']))
 {
@@ -77,23 +106,21 @@ if (isset($_POST['filter']))
 		if (array_key_exists($f, $req))
 			db_where_add_and($where, array($DBOP['='], $f, $req[$f]));
 }
-else
-	if (isset($_POST['request']))
+else if (isset($_POST['request']))
+{
+	$req = $_POST['request'];
+	if (is_array($req) && count($req) <= PAGE_SIZE)
 	{
-		$req = $_POST['request'];
-		if (is_array($req) && count($req) <= PAGE_SIZE)
-		{
-			foreach ($req as $id)
-				db_where_add_or($where, array($DBOP['='], 'id', $id));
-		}
+		foreach ($req as $id)
+			db_where_add_or($where, array($DBOP['='], 'id', $id));
 	}
+}
+
 
 db_where_add_and($where, record_make_where());
 
-$rows = $db->select_from('records', array(
-	'id', 'uid', 'pid', 'jid', 'lid', 'src_len', 'status',
-	'stime', 'score', 'full_score', 'time', 'mem'
-	), $where, array('id' => 'DESC'), $pgnum * PAGE_SIZE, PAGE_SIZE);
+$rows = $db->select_from('records', $select_cols, $where,
+	array('id' => 'DESC'), $pgnum * PAGE_SIZE, PAGE_SIZE);
 
 record_filter_rows($rows);
 
@@ -291,6 +318,10 @@ echo '</div>';
 ?>
 
 <script type="text/javascript">
+$("a[name='status-detail']").colorbox({
+	"width": 700,
+	"maxHeight": 500
+});
 $("#goto-page-form").bind("submit", function(){
 	goto_page();
 	return false;

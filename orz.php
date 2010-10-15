@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Fri Oct 15 15:39:42 2010 +0800
+ * $Date: Fri Oct 15 17:23:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -450,6 +450,41 @@ function report_case_result()
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
+/**
+ * determin the record status by execution details
+ * @param array $details array of Case_result
+ * @return int the status
+ */
+function determin_record_status($details)
+{
+	$cnt = array();
+	foreach ($details as $d)
+		if ($d->exe_status != EXESTS_RIGHT)
+		{
+			$s = $d->exe_status;
+			if ($s == EXESTS_PARTIALLY_RIGHT)
+				$s = EXESTS_WRONG_ANSWER;
+			if (!isset($cnt[$s]))
+				$cnt[$s] = 1;
+			else $cnt[$s] ++;
+		}
+	asort($cnt);
+	$s = key($cnt);
+
+	if ($s == EXESTS_WRONG_ANSWER)
+		return RECORD_STATUS_WRONG_ANSWER;
+
+	if ($s == EXESTS_TLE)
+		return RECORD_STATUS_TIME_LIMIT_EXCEED;
+
+	if ($s == EXESTS_SIGSEGV)
+		return RECORD_STATUS_MEMORY_LIMIT_EXCEED;
+
+	if ($s == EXESTS_SYSTEM_ERROR)
+		return RECORD_STATUS_ERROR;
+
+	return RECORD_STATUS_RUNTIME_ERROR;
+}
 
 /**
  *  report to orzoj-website a prob result
@@ -460,6 +495,7 @@ function report_prob_result()
 	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
 
+	$where_clause = array($DBOP['='], 'id', $rid);
 	$value = array(
 		'score' => $func_param->total_score,
 		'full_score' => $func_param->full_score,
@@ -474,10 +510,12 @@ function report_prob_result()
 	else
 	{
 		$result = 'cnt_unac';
-		$value['status'] = RECORD_STATUS_WRONG_ANSWER;
+		$row = $db->select_from('records', 'detail', $where_clause);
+		if (count($row) != 1)
+			throw new Exc_inner(__('no such record #%d', $rid));
+		$value['status'] = determin_record_status(unserialize($row[0]['detail']));
 	}
 
-	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
 	increase_statistics_value($rid, $result);
 	msg_write(MSG_STATUS_OK, NULL);

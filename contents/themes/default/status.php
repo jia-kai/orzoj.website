@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Fri Oct 15 14:35:43 2010 +0800
+ * $Date: Fri Oct 15 16:24:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -127,10 +127,6 @@ require_once $theme_path . 'ajax/status_list.php';
 
 <script type="text/javascript">
 $("#filter-apply-button").button();
-$("a[name='status-detail']").colorbox({
-	"width": 700,
-	"maxHeight": 500
-});
 
 function navigate_do(addr, data)
 {

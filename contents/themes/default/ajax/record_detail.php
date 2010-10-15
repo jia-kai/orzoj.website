@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Thu Oct 14 15:41:14 2010 +0800
+ * $Date: Fri Oct 15 17:05:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,6 +25,11 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+
+/**
+ * page argument:
+ *	record id
+ */
 
 if (!is_string($page_arg))
 	die('no argument');
