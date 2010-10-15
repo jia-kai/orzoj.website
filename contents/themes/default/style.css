@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Fri Oct 15 10:24:21 2010 +0800
+ * $Date: Fri Oct 15 10:46:06 2010 +0800
 
  This file is part of orzoj
 
@@ -398,14 +398,14 @@ table.orzoj-table tr, table.orzoj-table th, table.orzoj-table td
 	padding: 3px;
 }
 
-.table-bgcolor1
+tr.table-bgcolor1
 {
-	background-color: #60628b;
+	background-color: #2C253F;
 }
 
-.table-bgcolor2
+tr.table-bgcolor2
 {
-	background-color: #40425b;
+	background-color: #0F0E28;
 }
 
 table.orzoj-table tr:hover
@@ -415,8 +415,8 @@ table.orzoj-table tr:hover
 
 table.orzoj-table th
 {
-	background-color: #0F1923;
-	color: #10cc10;
+	background-color: #070614;
+	color: #F0CC10;
 }
 
 div#page a.status-ac:link, div#page a.status-ac:visited
@@ -431,7 +431,7 @@ div#page a.status-wa:link, div#page a.status-wa:visited
 
 div#page a.status-ce:link, div#page a.status-ce:visited
 {
-	color: #A204F4;
+	color: #FF04F4;
 }
 
 div#page a.status-ac:hover, div#page a.status-wa:hover, div#page a.status-ce:hover
