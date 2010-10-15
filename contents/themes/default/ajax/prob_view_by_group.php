@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 15 11:19:02 2010 +0800
+ * $Date: Fri Oct 15 15:19:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,6 +32,7 @@ require_once $theme_path . 'prob_func.php';
 $PROB_VIEW_ROWS_PER_PAGE = 20;
 
 prob_view_by_group_parse_arg();
+
 $fields = array('id', 'title', 'code', 'cnt_submit', 'cnt_ac');
 $show_fields= array(
 	__('ID'),
@@ -57,52 +58,46 @@ else
 	$gname = $db->select_from('prob_grps', array('name'), array($DBOP['='], 'id', $gid));
 	$gname = $gname[0]['name'];
 }
+
 // XXX: how to translate items in problem group?
 $content .= __('Problems') . ' - ' . '<span>' . $gname . '</span>';
 $content .= '</div>';
+echo $content;
 
-/* problem list table */
-$content .= '<table class="orzoj-table"><tr>';
-foreach ($show_fields as $field)
-	$content .= '<th>' . $field . '</th>';
-$content .= '</tr>';
-
-foreach ($probs as $prob)
-{
-	$content .= '<tr>';
-	$content .= '<td>' . $prob['id'] . '</td>'; // ID
-	$content .= '<td><a href="' . prob_view_single_get_a_href($prob['id'], $gid, $start_page) 
-		. '" onclick="' . prob_view_single_get_a_onclick($prob['id'], $gid, $start_page) 
-		.'">' . $prob['title'] . '</a></td>'; // Title
-	$content .= '<td>' . $prob['code'] . '</td>'; // Code
-	$content .= '<td>' . $prob['cnt_ac'] . '/' . $prob['cnt_submit'] . '</td>'; // Difficulty
-	$content .= '</tr>';
-}
-
-$content .= '</table>';
+echo '<div id="prob-list">';
+require_once $theme_path . 'ajax/prob_view_list.php';
+echo '</div>';
 
 $total_page = ceil($prob_amount / $PROB_VIEW_ROWS_PER_PAGE);
 
 
 /* bottom navigator */
-$content .= '<div id=prob-view-by-group-navigator-bottom>';
+echo '<div id=prob-view-by-group-navigator-bottom>';
+
+function make_page_link($text, $page)
+{
+	global $gid;
+	return sprintf('<a href=%s onclick="%s"); return false;">%s</a>',
+		prob_view_by_group_get_a_href($gid, $page),
+		prob_view_by_group_get_a_onclick($gid, $page),
+		$text
+	);
+}
+
 if ($start_page > 1)
-{
-	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page - 1) . '"'
-		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page - 1) . '"><button type="button">'
-		. __('prev') . '</button></a>';
-}
-$content .= '<span>' . $start_page . '/' . $total_page . '</span>';
+	echo '&lt;' . make_page_link(__('Prev'), $start_page - 1);
+
 if ($start_page < $total_page)
-{
-	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page + 1) . '"'
-		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page + 1) . '"><button type="button">'
-		. __('next') . '</button></a>';
-}
+	echo ($start_page > 1 ? ' | ' : '') . make_page_link(__('Next'), $start_page + 1) . '&gt;';
+
+$content .= '<span>' . $start_page . '/' . $total_page . '</span>';
+
 $content .= '</div>';
-$content .= '<script type="text/javascript">';
-$content .= '$("button").button();';
-$content .= 'table_set_double_bgcolor();';
-$content .= '</script>';
-echo $content;
+echo $content; $content = '';
+/* javascript */
+?>
+<script type="text/javascript">
+$("button").button();
+table_set_double_bgcolor();
+</script>
 

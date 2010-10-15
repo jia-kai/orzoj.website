@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: prob_group_tree.php
- * $Date: Fri Oct 15 16:05:41 2010 +0800
+ * $File: prob_view_list.php
+ * $Date: Fri Oct 15 14:38:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,34 +23,28 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 if (!defined('IN_ORZOJ'))
 	exit;
 ?>
-<h1 class="prob-navigator-title"><?php echo __("Problem Groups"); ?></h1>
 
-<div id="prob-grp-tree"></div>
-<script type="text/javascript">
-$(function(){
-	$("#prob-grp-tree").jstree({
-		"plugins" : [ "themes", "json_data", "cookies"],
-		"themes" : {
-			"theme" : "default",
-			"dots" : false,
-			"icons" : false
-		},
-		"json_data" : {
-			"ajax" : {
-				"url" : "<?php t_get_link('ajax-prob-group-tree-ask'); ?>"
-				,
-				"data" : function (node) {
-					return {
-						"prob_grp_id" : node.attr ? node.attr("id") : -1
-					};
-				}
-			}
-		}
-	})
-});
-</script>
+<table class="orzoj-table"><tr>
+<?php
+foreach ($show_fields as $field)
+	echo '<th>' . $field . '</th>';
+echo '</tr>';
 
+foreach ($probs as $prob)
+{
+	$content = '';
+	$content .= '<tr>';
+	$content .= '<td>' . $prob['id'] . '</td>'; // ID
+	$content .= '<td><a href="' . prob_view_single_get_a_href($prob['id'], $gid, $start_page) 
+		. '" onclick="' . prob_view_single_get_a_onclick($prob['id'], $gid, $start_page) 
+		.'">' . $prob['title'] . '</a></td>'; // Title
+	$content .= '<td>' . $prob['code'] . '</td>'; // Code
+	$content .= '<td>' . $prob['cnt_ac'] . '/' . $prob['cnt_submit'] . '</td>'; // Difficulty
+	$content .= '</tr>';
+	echo $content; $content = '';
+}
+?>
+</table>

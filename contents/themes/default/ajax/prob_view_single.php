@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Fri Oct 15 13:20:13 2010 +0800
+ * $Date: Fri Oct 15 15:18:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -43,26 +43,35 @@ try
 		. __('Submit') . '</button></a>';
 
 	// All submissions
-	$content .= '<a id="prob-view-submissions" href="' . t_get_link('ajax-prob-view-submissions', "$pid", TRUE, TRUE) . '"><button type="button">' 
+	$content .= '<a id="prob-all-submissions" href="' . t_get_link('ajax-prob-all-submissions', "$pid", TRUE, TRUE) . '"><button type="button">' 
 		. __('All submissions') . '</button></a>';
+
+	// Best solutions 
+	$content .= '<a id="prob-best-solutions" href="' . t_get_link('ajax-prob-best-solutions', $pid, TRUE, TRUE) . '"><button type="button">'
+		. __('Best solutions') . '</button></a>';
+
 	// Back to list
-	if ($start_page != -1)
+	if ($start_page == -1) // from a unknown place..
 	{
-		$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page) 
-			. '" id="prob-view-single-back"'
-			. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page) . '"><button type="button">';
-		$content .= __('Back to list');
-		$content .= '</button></a>';
+		$gid = 0; 
+		$startpage = 1;
 	}
+	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page) 
+		. '" id="prob-view-single-back"'
+		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page) . '"><button type="button">';
+	$content .= __('Back to list');
+	$content .= '</button></a>';
 
 	$content .= '</div>';  // id: prob-view-single-navigator-top
+
 	// problem descriptiong
 	$content .= prob_view($pid);
 
 	// javascript
 	$content .= '<script type="text/javascript">$("button").button();';
 	$content .= '$("#prob-submit-link").colorbox();';
-	$content .= '$("#prob-view-submissions").colorbox();';
+	$content .= '$("#prob-all-submissions").colorbox();';
+	$content .= '$("#prob-best-solutions").colorbox();';
 	$content .= '$("button").button();';
 	$content .= '</script>';
 

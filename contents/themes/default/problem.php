@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Thu Oct 14 19:25:32 2010 +0800
+ * $Date: Fri Oct 15 15:31:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,46 +33,25 @@ require_once $includes_path . 'problem.php';
 
 
 ?>
-<div id="prob-container">
-<div id="prob-navigator">
-<h1 class="prob-navigator-title"><?php echo __("Problem Groups") . '<br />'; ?></h1>
-
 <script type="text/javascript">
 function prob_view_set_content(addr)
 {
+	$("#prob-view").animate({"opacity" : 0.5}, 1);
 	$.ajax({
 		"url" : addr,
 		"success" : function(content) {
-			$("#prob-view").html(content);
+			var t = $("#prob-view");
+			t.animate({"opacity" : 1}, 1);
+			t.html(content);
 		}
 	});
 }
+</script>
 
-</script>
-<div id="prob-grp-tree"></div>
-<script type="text/javascript">
-$(function(){
-	$("#prob-grp-tree").jstree({
-		"plugins" : [ "themes", "json_data", "cookies"],
-		"themes" : {
-			"theme" : "default",
-			"dots" : false,
-			"icons" : false
-		},
-		"json_data" : {
-			"ajax" : {
-				"url" : "<?php t_get_link('ajax-prob-group-tree'); ?>"
-				,
-				"data" : function (node) {
-					return {
-						"prob_grp_id" : node.attr ? node.attr("id") : -1
-					};
-				}
-			}
-		}
-	})
-});
-</script>
+<div id="prob-container">
+<div id="prob-navigator">
+<?php require_once $theme_path . 'ajax/prob_filter.php'?>
+<?php require_once $theme_path . 'ajax/prob_group_tree.php'; ?>
 </div> <!-- id: prob-navigator -->
 
 <div id="prob-view">
@@ -89,5 +68,6 @@ if (isset($page_arg))
 else
 	require_once $theme_path . 'ajax/prob_view_by_group.php';
 ?>
+
 </div> <!-- id: prob-view -->
 </div> <!-- id: prob-container -->

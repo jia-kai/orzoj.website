@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: prob_view_submissions.php
- * $Date: Fri Oct 15 13:33:19 2010 +0800
+ * $File: prob_all_submissions.php
+ * $Date: Fri Oct 15 15:13:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,4 +26,6 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 ?>
-
+<div class="prob-view-box-container">
+	<div class="prob-view-box-title">All Submissions</div>
+<div> <!-- class: prob-view-box-container-->
