@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Fri Oct 15 14:42:58 2010 +0800
+ * $Date: Fri Oct 15 16:45:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -46,7 +46,7 @@ function submit_src_get_form($pid)
 	if (!is_int($pid))
 		$pid = '';
 	$str = 
-		tf_form_get_text_input(__('Problem id:'), 'code', NULL, prob_get_code_by_id($pid)) .
+		tf_form_get_text_input(__('Problem code:'), 'code', NULL, prob_get_code_by_id($pid)) .
 		tf_form_get_select(__('Programming language:'), 'plang', $plang, $user->plang) .
 		tf_form_get_source_editor(__('Source code:'), 'src');
 	echo filter_apply('after_submit_src_form', $str);

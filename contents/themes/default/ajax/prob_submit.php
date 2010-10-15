@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Fri Oct 15 14:44:12 2010 +0800
+ * $Date: Fri Oct 15 17:21:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,7 +37,7 @@ if ($page_arg == 'submit')
 		submit_src();
 		$html = '0';
 		$html .= __('Submittion success!') . '<br />';
-		$html .= __('You will be redirected to Status page in 2 seconds ...');
+		//$html .= __('You will be redirected to Status page in 2 seconds ...');
 		die($html);
 	}
 	catch (Exc_orzoj $e)
@@ -64,6 +64,31 @@ require_once $includes_path . 'submit.php';
 </form>
 
 <script type="text/javascript">
+
+function show_running_status()
+{
+	var flag_continue = false;
+	$.ajax({
+		"type" : "post",
+		"cache" : false,
+		"url" : "<?php t_get_link('ajax-status-list'); ?>",
+		"data" : ({"prob_submit" : <?php echo $pid; ?>}),
+		"success" : function(data) {
+			if (data.charAt(0) == '0')
+			{
+				$.colorbox({"html" : data.substr(1)});
+				flag_continue = true;
+			}
+			else
+			{
+				$.colorbox({"href" : data.substr(1)});
+			}
+		}
+	});
+	if (flag_continue == true)
+		setTimeout("show_running_status();", 1000);
+}
+ 
 $("button").button();
 $("#submit-form").bind("submit", function(){
 	$.ajax({
@@ -77,7 +102,9 @@ $("#submit-form").bind("submit", function(){
 			else
 			{
 				$.colorbox({"html": data.substr(1)});
-				setTimeout("window.location='<?php t_get_link('status', NULL, FALSE); ?>';", 2000);
+				setTimeout("", 1000);
+				show_running_status();
+				//setTimeout("window.location='<?php t_get_link('status', NULL, FALSE); ?>';", 2000);
 			}
 		}
 	});
