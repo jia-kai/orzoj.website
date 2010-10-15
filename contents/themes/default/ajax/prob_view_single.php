@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Fri Oct 15 10:12:25 2010 +0800
+ * $Date: Fri Oct 15 13:20:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,29 +34,36 @@ prob_view_single_parse_arg();
 try
 {
 	/* navigator button-set version */
-	// previous page
 	$content = '';
+
+	$content = '<div id="prob-view-single-navigator-top">';
+
+	// Submit
+	$content .= '<a id="prob-submit-link" href="' . t_get_link('ajax-prob-submit', "$pid", TRUE, TRUE) . '"><button type="button">'
+		. __('Submit') . '</button></a>';
+
+	// All submissions
+	$content .= '<a id="prob-view-submissions" href="' . t_get_link('ajax-prob-view-submissions', "$pid", TRUE, TRUE) . '"><button type="button">' 
+		. __('All submissions') . '</button></a>';
+	// Back to list
 	if ($start_page != -1)
 	{
-		$content = '<div id="prob-view-single-navigator-top">';
 		$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page) 
-			. '" id="prob-view-single-submit"'
-			. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page) . '"><botton type="button">';
-		$content .= __('previous page');
+			. '" id="prob-view-single-back"'
+			. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page) . '"><button type="button">';
+		$content .= __('Back to list');
 		$content .= '</button></a>';
-		$content .= '</div>'; 
 	}
 
+	$content .= '</div>';  // id: prob-view-single-navigator-top
 	// problem descriptiong
 	$content .= prob_view($pid);
 
-	// submit
-	$content .= '<a id="prob-submit-link" href="' . t_get_link('ajax-prob-submit', "$pid", TRUE, TRUE) . '">'
-		. __('submit') . '</a>';
-
 	// javascript
 	$content .= '<script type="text/javascript">$("button").button();';
-	$content .= '$("#prob-submit-link").colorbox({"escKey" : false});';
+	$content .= '$("#prob-submit-link").colorbox();';
+	$content .= '$("#prob-view-submissions").colorbox();';
+	$content .= '$("button").button();';
 	$content .= '</script>';
 
 	echo $content;

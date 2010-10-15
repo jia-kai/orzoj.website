@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 15 10:22:43 2010 +0800
+ * $Date: Fri Oct 15 11:19:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -86,19 +86,18 @@ $total_page = ceil($prob_amount / $PROB_VIEW_ROWS_PER_PAGE);
 
 /* bottom navigator */
 $content .= '<div id=prob-view-by-group-navigator-bottom>';
-// TODO: button effects
 if ($start_page > 1)
 {
 	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page - 1) . '"'
-		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page - 1) . '">'
-		. __('Prev') . '</a>';
+		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page - 1) . '"><button type="button">'
+		. __('prev') . '</button></a>';
 }
-$content .= $start_page . '/' . $total_page;
+$content .= '<span>' . $start_page . '/' . $total_page . '</span>';
 if ($start_page < $total_page)
 {
 	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page + 1) . '"'
-		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page + 1) . '">'
-		. __('Next') . '</a>';
+		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page + 1) . '"><button type="button">'
+		. __('next') . '</button></a>';
 }
 $content .= '</div>';
 $content .= '<script type="text/javascript">';

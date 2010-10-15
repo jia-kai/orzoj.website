@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Thu Oct 14 21:42:13 2010 +0800
+ * $Date: Fri Oct 15 12:08:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -167,6 +167,9 @@ function tf_form_get_gid_selector_value($selector_name)
  */
 function tf_form_get_source_editor($prompt, $name, $default = NULL)
 {
+	$id = _tf_get_random_id();
+	return sprintf('<tr><td><label for="%s">%s</label></td><td><textarea type="text" id="%s" name="%s">%s</textarea></td></tr>',
+		$id, $prompt, $id, $name, is_null($default) ? '' : $default);
 }
 
 /**
@@ -174,6 +177,11 @@ function tf_form_get_source_editor($prompt, $name, $default = NULL)
  */
 function tf_form_get_source_editor_data($name)
 {
+	if (!isset($_POST[$name]))
+		throw new Exc_runtime(__('Imcomplete POST.'));
+	if (!strlen($_POST[$name]))
+		throw new Exc_runtime(__('Please copy you source here.'));
+	return $_POST[$name];
 }
 
 /**

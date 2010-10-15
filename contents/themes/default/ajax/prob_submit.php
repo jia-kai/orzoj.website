@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Thu Oct 14 21:21:11 2010 +0800
+ * $Date: Fri Oct 15 13:13:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,11 +29,30 @@ if (!defined('IN_ORZOJ'))
 if (!is_string($page_arg))
 	die("Hello? What are you doing?");
 
+require_once $includes_path . 'submit.php';
+if ($page_arg == 'submit')
+{
+	try
+	{
+		submit_src();
+		$html = '0';
+		$html .= __('Submittion success!') . '<br />';
+		$html .= __('You will be redirected to Status page in 2 seconds ...');
+		die($html);
+	}
+	catch (Exc_orzoj $e)
+	{
+		die('1' . __('Submittion failed: ') . $e->msg());
+	}
+}
+
 $pid = 0;
 if (sscanf($page_arg, "%d", $pid) != 1)
-	die("Eh? What do want me to do?");
+	die(__("Eh? What do want me to do?"));
+
 if (!user_check_login())
 	die(__("Please login first."));
+
 require_once $includes_path . 'submit.php';
 ?>
 
@@ -43,3 +62,26 @@ require_once $includes_path . 'submit.php';
 	<button id="submit-button" type="submit" class="in-form"><?php echo __("Good Luck^ ^"); ?></button>
 </div>
 </form>
+
+<script type="text/javascript">
+$("button").button();
+$("#submit-form").bind("submit", function(){
+	$.ajax({
+		"type": "post",
+		"cache": false,
+		"url": "<?php t_get_link($cur_page, 'submit', FALSE); ?>",
+		"data": $("#submit-form").serializeArray(),
+		"success" : function(data) {
+			if (data.charAt(0) == '1')
+				alert(data.substr(1));
+			else
+			{
+				$.colorbox({"html": data.substr(1)});
+				setTimeout("window.location='<?php t_get_link('status', NULL, FALSE); ?>';", 2000);
+			}
+		}
+	});
+	return false;
+});
+</script>
+

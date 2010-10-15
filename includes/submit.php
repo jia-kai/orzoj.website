@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Thu Oct 14 21:37:21 2010 +0800
+ * $Date: Fri Oct 15 12:41:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,7 +29,7 @@ if (!defined('IN_ORZOJ'))
 
 require_once $includes_path . 'problem.php';
 require_once $includes_path . 'contest/ctal.php';
-
+require_once $includes_path . 'record.php';
 /**
  * echo fileds in the form for submitting source code
  * @param int $pid default problem id
@@ -38,9 +38,8 @@ require_once $includes_path . 'contest/ctal.php';
  */
 function submit_src_get_form($pid)
 {
-	if (!user_check_login())
-		throw new Exc_runtime(__('Not logged in'));
 	global $db, $user;
+	if (!user_check_login())
 	$plang = array();
 	foreach ($db->select_from('plang') as $row)
 		$plang[$row['name']] = $row['id'];
@@ -49,7 +48,7 @@ function submit_src_get_form($pid)
 	$str = 
 		tf_form_get_text_input(__('Problem id:'), 'pid', NULL, $pid) .
 		tf_form_get_select(__('Programming language:'), 'plang', $plang, $user->plang) .
-		tf_form_get_source_editor(__('Source:'), 'src');
+		tf_form_get_source_editor(__('Source code:'), 'src');
 	echo filter_apply('after_submit_src_form', $str);
 }
 
@@ -60,12 +59,13 @@ function submit_src_get_form($pid)
  */
 function submit_src()
 {
+	global $db, $DBOP, $user, $PROB_SUBMIT_PINFO;
 	if (!user_check_login())
 		throw new Exc_runtime(__('Not logged in'));
 	filter_apply_no_iter('before_submit_src');
 	if (!isset($_POST['pid']) || !isset($_POST['plang']))
-		throw new Exc_runtime(__('incomplete post'));
-	global $db, $DBOP, $user;
+		throw new Exc_runtime(__('Incomplete POST'));
+
 	$pid = intval($_POST['pid']);
 	$plang = intval($_POST['plang']);
 	$row = $db->select_from('problems', $PROB_SUBMIT_PINFO,

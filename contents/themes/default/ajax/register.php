@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: register.php
- * $Date: Wed Oct 13 19:32:51 2010 +0800
+ * $Date: Fri Oct 15 11:32:42 2010 +0800
  */
 /**
  * @package orzoj-website
