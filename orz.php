@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Thu Oct 14 20:33:03 2010 +0800
+ * $Date: Fri Oct 15 15:39:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -256,7 +256,7 @@ class Exc_msg extends Exception
 function get_request()
 {
 	global $db, $DBOP;
-	$req = $db->select_from('orz_req', NULL, NULL, NULL, NULL, 1);
+	$req = $db->select_from('orz_req', NULL, NULL, array('id' => 'ASC'), NULL, 1);
 	if (count($req) > 0)
 	{
 		$req = $req[0];

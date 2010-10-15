@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Fri Oct 15 13:33:20 2010 +0800
+ * $Date: Fri Oct 15 15:41:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,21 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+/*
+ * page argument: [<starting page num:int>]
+ * POST: 
+ * ['filter'|'request']
+ *		'filter':
+ *			array of used filters
+ *			return a complete ajax page
+ *		'request':
+ *			array of requests record ids (size <= PAGE_SIZE)
+ *			return json encoded array (<record id> => <done><table columns>)
+ *				if done == 0, judge for this record is not finished and the
+ *				record should be requested again
+ *				if done == 1, this record needs no more updating
+ */
+
 require_once $includes_path . 'record.php';
 require_once $includes_path . 'problem.php';
 require_once $includes_path . 'judge.php';
@@ -47,11 +62,6 @@ $FILETER_ALLOWED = array('uid', 'pid', 'lid', 'status');
 
 $where = NULL;
 
-function _where_and($new)
-{
-	db_where_add_and($where, $new);
-}
-
 if (isset($_POST['filter']))
 {
 	$req = &$_POST['filter'];
@@ -65,16 +75,27 @@ if (isset($_POST['filter']))
 		unset($req['status']);
 	foreach ($FILETER_ALLOWED as $f)
 		if (array_key_exists($f, $req))
-			_where_and(array($DBOP['='], $f, $req[$f]));
+			db_where_add_and($where, array($DBOP['='], $f, $req[$f]));
 }
+else
+	if (isset($_POST['request']))
+	{
+		$req = $_POST['request'];
+		if (is_array($req) && count($req) <= PAGE_SIZE)
+		{
+			foreach ($req as $id)
+				db_where_add_or($where, array($DBOP['='], 'id', $id));
+		}
+	}
 
-_where_and(record_make_where());
+db_where_add_and($where, record_make_where());
 
 $rows = $db->select_from('records', array(
 	'id', 'uid', 'pid', 'jid', 'lid', 'src_len', 'status',
 	'stime', 'score', 'full_score', 'time', 'mem'
 	), $where, array('id' => 'DESC'), $pgnum * PAGE_SIZE, PAGE_SIZE);
 
+record_filter_rows($rows);
 
 // cv: column value
 function _cv_user()
@@ -186,6 +207,25 @@ $cols = array(
 	__('DATE') => '_cv_date'
 );
 
+if (isset($_POST['request']))
+{
+	$ret = array();
+	foreach ($rows as $cur_row)
+	{
+		if (record_status_finished($cur_row['status']) || is_null($cur_row))
+			$cur = '1';
+		else $cur = '0';
+		if (is_null($cur_row))
+			for ($i = count($cols); $i; $i --)
+				$cur .= '<td>---</td>';
+		else
+			foreach ($cols as $func)
+				$cur .= '<td>' . $func() . '</td>';
+		$ret[(string)$cur_row['id']] = $cur;
+	}
+	die(json_encode($ret));
+}
+
 echo '
 <table class="orzoj-table">
 <tr> ';
@@ -195,14 +235,24 @@ foreach ($cols as $name => $func)
 
 echo ' </tr> ';
 
+$records_unfinished = array();
 foreach ($rows as $cur_row)
 {
 	$id = $cur_row['id'];
 	echo "<tr id=\"status-tb-tr-$id\">";
-	foreach ($cols as $func)
-		echo '<td>' . $func() . '</td>';
+	if (is_null($cur_row))
+		for ($i = count($cols); $i; $i --)
+			echo '<td>---</td>';
+	else
+	{
+		foreach ($cols as $func)
+			echo '<td>' . $func() . '</td>';
+		if (!record_status_finished($cur_row['status']))
+			$records_unfinished[] = "'$id'";
+	}
 	echo '</tr>';
 }
+
 echo '
 </table>
 ';
@@ -246,4 +296,45 @@ $("#goto-page-form").bind("submit", function(){
 	return false;
 });
 table_set_double_bgcolor();
+
+<?php
+if (count($records_unfinished))
+{
+	echo 'var records = new Array(';
+	echo implode(',', $records_unfinished);
+	echo ");\n";
+?>
+
+function update_table()
+{
+	$.ajax({
+		"type": "post",
+		"cache": false,
+		"url": "<?php t_get_link('ajax-status-list');?>",
+		"data": ({"request": records}),
+		"success": function(data) {
+			var obj = JSON.parse(data, function(key, value){
+				if (typeof(value) != "string")
+					return;
+				$("#status-tb-tr-" + key).html(value.substr(1));
+				if (value.charAt(0) == '1')
+					for (var i = 0; i < records.length; i ++)
+						if (records[i] == key)
+						{
+							records.splice(i, 1);
+							break;
+						}
+			});
+			if (records.length)
+				setTimeout("update_table()", 1000);
+		}
+	});
+}
+
+update_table();
+
+<?php
+}
+?>
+
 </script>

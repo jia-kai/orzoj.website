@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Fri Oct 15 12:01:05 2010 +0800
+ * $Date: Fri Oct 15 14:35:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,15 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+/*
+ * page argument: [<starting page num:int>]
+ * POST: 
+ * ['filter']
+ *		'filter':
+ *			array of used filters
+ *			return a complete page
+ */
 
 require_once $includes_path . 'record.php';
 

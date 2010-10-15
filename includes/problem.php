@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Fri Oct 15 00:01:23 2010 +0800
+ * $Date: Fri Oct 15 14:07:53 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -260,5 +260,29 @@ function prob_get_code_by_id($pid)
 	if ($t == NULL)
 		return NULL;
 	return $t['code'];
+}
+
+/**
+ * test whether a problem belongs to an upcoming contest and so is not allowed to be accessed
+ * @param int $pid problem id
+ * @return bool
+ */
+function prob_is_invisible($pid)
+{
+	static $cache = NULL;
+	if (is_null($cache))
+	{
+		global $db, $DBOP;
+		$rows = $db->select_from('map_prob_ct', 'pid',
+			array($DBOP['in'], 'cid', $db->select_from('contests',
+			'id', array($DBOP['>='], 'time_start', time()),
+			NULL, NULL, NULL, array('id' => 'cid'), TRUE)));
+
+		$cache = array();
+
+		foreach ($rows as $row)
+			$cache[$row['pid']] = TRUE;
+	}
+	return isset($cache[$pid]);
 }
 

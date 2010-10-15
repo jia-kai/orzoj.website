@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri Oct 15 15:23:12 2010 +0800
+ * $Date: Fri Oct 15 16:08:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -174,6 +174,8 @@ if (isset($PAGES_ACTION[$cur_page]))
 
 	<script type="text/javascript" src="<?php _url("scripts/jquery/jstree/jquery.jstree.js"); ?>"></script>
 	<script type="text/javascript" src="<?php _url("scripts/jquery/jquery.cookie.js"); ?>"></script>
+
+	<script type="text/javascript" src="<?php _url("scripts/json2.js"); ?>"></script>
 
 	<link rel="stylesheet" type="text/css" href="<?php _url('style.css'); ?>" />
 

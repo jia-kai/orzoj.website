@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Fri Oct 15 13:32:44 2010 +0800
+ * $Date: Fri Oct 15 14:00:19 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,7 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+require_once $includes_path . 'problem.php';
 
 $cnt = 0;
 
@@ -84,6 +85,23 @@ function record_make_where()
 		return array($DBOP['||'],
 		$DBOP['!='], 'status', RECORD_STATUS_WAITING_FOR_CONTEST,
 		$DBOP['='], 'uid', $user->id);
+}
+
+/**
+ * filter the records which are not allowed to be accessed
+ * @param &array $rows the rows selected from database, which must contain columns 'pid' and 'uid'
+ * disallowed records will be set to NULL
+ * @return void
+ */
+function record_filter_rows(&$rows)
+{
+	global $user;
+	if (user_check_login() && $user->is_grp_member(GID_SUPER_RECORD_VIEWER))
+		return;
+	foreach ($rows as $k => $row)
+		if (prob_is_invisible($row['pid']))
+			if (!user_check_login() || $user->id != $row['uid'])
+				$rows[$k] = NULL;
 }
 
 /**

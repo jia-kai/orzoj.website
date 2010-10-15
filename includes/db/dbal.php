@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Fri Oct 15 13:23:27 2010 +0800
+ * $Date: Fri Oct 15 14:43:06 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -247,5 +247,22 @@ function db_where_add_and(&$where, $new)
 		$where = $new;
 	else $where = array_merge(array($DBOP['&&']), $where, $new);
 }
+
+/**
+ * add a clause for logic or to the where clause
+ * @param &array $where the where clause
+ * @param array $new the clause to be added
+ * @return void
+ */
+function db_where_add_or(&$where, $new)
+{
+	if (is_null($new))
+		return;
+	global $where, $DBOP;
+	if (is_null($where))
+		$where = $new;
+	else $where = array_merge(array($DBOP['||']), $where, $new);
+}
+
 
 

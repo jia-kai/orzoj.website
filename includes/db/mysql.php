@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Fri Oct 15 13:13:38 2010 +0800
+ * $Date: Fri Oct 15 14:07:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -105,7 +105,7 @@ $DBOP['||'] = new _Mysql_opt(2, ' || ', $tmp);
 
 $DBOP['!'] = new _Mysql_opt(1, '! ', '_mysql_add_brck');
 
-$DBPP['in'] = new _Mysql_opt(2, ' IN ',
+$DBOP['in'] = new _Mysql_opt(2, ' IN ',
 	array('_mysql_build_cols', '_mysql_add_brck'));
 
 unset($tmp);
