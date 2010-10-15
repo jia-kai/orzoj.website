@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Fri Oct 15 15:18:55 2010 +0800
+ * $Date: Fri Oct 15 19:45:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -64,18 +64,19 @@ try
 
 	$content .= '</div>';  // id: prob-view-single-navigator-top
 
+	echo $content; $content = '';
 	// problem descriptiong
-	$content .= prob_view($pid);
+	echo prob_view($pid);
 
 	// javascript
-	$content .= '<script type="text/javascript">$("button").button();';
-	$content .= '$("#prob-submit-link").colorbox();';
-	$content .= '$("#prob-all-submissions").colorbox();';
-	$content .= '$("#prob-best-solutions").colorbox();';
-	$content .= '$("button").button();';
-	$content .= '</script>';
-
-	echo $content;
+?>
+	<script type="text/javascript">$("button").button();
+	$("#prob-submit-link").colorbox();
+	$("#prob-all-submissions").colorbox();
+	$("#prob-best-solutions").colorbox();
+	$("button").button();
+	</script>
+<?php
 }
 catch (Exc_runtime $e)
 {
