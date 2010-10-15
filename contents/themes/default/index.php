@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Oct 14 21:49:57 2010 +0800
+ * $Date: Fri Oct 15 10:24:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -158,7 +158,7 @@ if (isset($PAGES_ACTION[$cur_page]))
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<?php t_get_html_head(); ?>
-	<title>Orz Online Judge</title>
+	<title><?php echo $website_name; ?></title>
 	<link rel="icon" type="image/vnd.microsoft.icon" href="<? _url('images/favicon.ico'); ?>" />
 	<link rel="icon" type="image/jpeg" href="<?php _url('images/favicon.jpg'); ?>" />
 	<meta http-equiv="pragma" content="no-cache" />
@@ -174,7 +174,13 @@ if (isset($PAGES_ACTION[$cur_page]))
 	<script type="text/javascript" src="<?php _url("scripts/jquery/jquery.cookie.js"); ?>"></script>
 
 	<link rel="stylesheet" type="text/css" href="<?php _url('style.css'); ?>" />
+
 	<script type="text/javascript">
+		function table_set_double_bgcolor()
+		{
+			$(".orzoj-table tr:odd").addClass("table-bgcolor1");
+			$(".orzoj-table tr:even").addClass("table-bgcolor2");
+		}
 		$(document).ready(function(){
 			$("#navigator").buttonset();
 			var t=$("#nav_<?php echo $cur_page?>");
@@ -184,7 +190,7 @@ if (isset($PAGES_ACTION[$cur_page]))
 			t.removeClass("ui-state-disabled");
 			$("button").button();
 
-<?php
+			<?php
 if (!user_check_login())
 	echo '$("#user-register").colorbox({"escKey": false, "arrowKey": false});';
 if (isset($startup_msg))

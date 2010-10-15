@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Tue Oct 12 14:53:20 2010 +0800
+ * $Date: Fri Oct 15 00:01:19 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -177,7 +177,7 @@ abstract class Dbal
 	 * @param array|NULL $orderby array(<col name> => 'ASC'|'DESC') meaning how to sort the result.
 	 * @param int|NULL $offset which row in the original result should be returned as the first row
 	 * @param int|NULL $amount maximal number of rows to be returned
-	 * @param array|NULL $as columns alias in the format array(<orignal column name> => <alias name>)
+	 * @param array|NULL $col_as columns alias in the format array(<orignal column name> => <alias name>)
 	 * @param bool $return_query_str whetehr to return the query as string without executing it
 	 * @return array the data fetched from database
 	 */

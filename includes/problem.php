@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Thu Oct 14 19:27:55 2010 +0800
+ * $Date: Fri Oct 15 00:01:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -178,7 +178,9 @@ function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $
 	}
 	$rows = $db->select_from('problems',
 		$fields, _prob_get_list_make_where($gid),
-		array('time' => $time_asc ? 'ASC' : 'DESC'));
+		array('time' => $time_asc ? 'ASC' : 'DESC'),
+		$offset, $cnt
+	);
 	$ret = array();
 	if (user_check_login())
 		$grp = $user->groups;

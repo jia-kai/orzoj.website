@@ -16,6 +16,8 @@ dealing of show-ajax-*
 
 t_get_link : in_HTML
 
+prob列表中留出无权限项的位置
+
 includes/message.php:75 单词拼写错误
 
 注册后自动登录

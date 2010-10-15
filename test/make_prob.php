@@ -1,13 +1,19 @@
 <?php
 require_once '../pre_include.php';
 
+$db->delete_item('problems');
 $db->insert_into('problems',
 	array(
 		'title' => 'A+B Problem',
 		'code' => 'a+b',
 		'perm' => serialize(array(0, 1, array(GID_ALL), array())),
 		'io' => '',
-		'time' => time()
+		'time' => time(),
+		'desc' => serialize(array()),
+		'cnt_submit' => 100,
+		'cnt_ac' => 80,
+		'cnt_unac' => 10,
+		'cnt_ce' => 2,
 	));
 
 $db->insert_into('problems',
@@ -30,6 +36,31 @@ $db->insert_into('problems',
 		'output_samp' => '3',
 		'source' => 'Every OJ',
 		'hint' => '1 <= a, b <= 100000'
-		))
-)
-);
+	))
+));
+
+for ($i = 0; $i < 100; $i ++)
+	$db->insert_into('problems',
+		array(
+			'title' => rand(),
+			'code' => rand(),
+			'perm' => serialize(array(0, 1, array(GID_ALL), array())),
+			'io' => '',
+			'time' => time(),
+			'cnt_submit' => rand(),
+			'cnt_ac' => rand(),
+			'cnt_unac' => rand(),
+			'cnt_ce' => rand(),
+			'desc' => serialize(array(
+				'time' => rand(),
+				'memory' => rand(),
+				'desc' => rand(),
+				'input_fmt' => rand(),
+				'output_fmt' => rand(),
+				'input_samp' => rand(),
+				'output_samp' => rand(),
+				'source' => rand(),
+				'hint' => rand()
+			))
+		)
+	);
