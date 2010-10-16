@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 16 16:58:33 2010 +0800
+ * $Date: Sat Oct 16 19:41:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -280,10 +280,10 @@ function tf_get_prob_html($pinfo)
 {
 	$desc = unserialize($pinfo['desc']);
 	$content  = '
-<div id="prob-view-single">
-<div id="prob-view-single-title">'
-. $pinfo['title'] . '(' . $pinfo['code']. ')</div>' 
-	.'<div id="prob-view-single-subtitle">'
+		<div id="prob-view-single">
+		<div id="prob-view-single-title">'
+		. $pinfo['title'] . '(' . $pinfo['code']. ')</div>' 
+		.'<div id="prob-view-single-subtitle">'
 		. __('Time Limit: ') . $desc['time'] . '&nbsp;&nbsp;'
 		. __('Memory Limit: ') . $desc['memory'] . '<br />'
 		. __('Total Submit: ') . $pinfo['cnt_submit'] . '&nbsp;&nbsp;'
@@ -307,7 +307,7 @@ function tf_get_prob_html($pinfo)
 				. $item . '<br /></div>';
 		}
 	$content .= '</div> <!-- id: prob-view-single-desc-->'
-		. '</div>';
+		. '</div> <!-- id: prob-view-single -->';
 	return $content;
 }
 

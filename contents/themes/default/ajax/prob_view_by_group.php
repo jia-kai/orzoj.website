@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 15 19:38:13 2010 +0800
+ * $Date: Sat Oct 16 20:52:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,12 +38,12 @@ $show_fields= array(
 	__('ID'),
 	__('Title'),
 	__('Code'),
+	__('Accepted'),
+	__('Submited'),
 	__('Difficulty')
 );
-// XXX: how does this work?
 $prob_amount = prob_get_amount($gid);
 
-// XXX: how does this work?
 $probs = prob_get_list($fields, $gid, TRUE, ($start_page - 1) * $PROB_VIEW_ROWS_PER_PAGE, $PROB_VIEW_ROWS_PER_PAGE);
 
 /* problem list title*/
@@ -83,7 +83,11 @@ foreach ($probs as $prob)
 			. '" onclick="' . prob_view_single_get_a_onclick($prob['id'], $gid, $start_page) 
 			.'">' . $prob['title'] . '</a></td>'; // Title
 		echo '<td>' . $prob['code'] . '</td>'; // Code
-		echo '<td>' . $prob['cnt_ac'] . '/' . $prob['cnt_submit'] . '</td>'; // Difficulty
+		echo '<td>' . $prob['cnt_ac'] . '</td>'; // Accepted
+		echo '<td>' . $prob['cnt_submit'] . '</td>'; // Submited
+		$d = ($prob['cnt_submit'] - $prob['cnt_ac']) / $prob['cnt_submit'];
+		$d = floor($d * 1000) / 1000 * 100;
+		echo '<td>' . $d . '%</td>';
 	}
 	echo '</tr>';
 }

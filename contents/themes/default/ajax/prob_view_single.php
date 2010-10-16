@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Sat Oct 16 19:01:14 2010 +0800
+ * $Date: Sat Oct 16 19:37:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,7 +33,7 @@ prob_view_single_parse_arg();
 
 try
 {
-	/* navigator button */
+	/* ----- navigation button ----*/
 	$content = '';
 
 	$content = '<div id="prob-view-single-navigator-top">';
@@ -63,7 +63,8 @@ try
 	$content .= '</div>';  // id: prob-view-single-navigator-top
 
 	echo $content; $content = '';
-	// problem descriptiong
+	
+	/* problem description */
 	echo prob_view($pid);
 
 	// javascript

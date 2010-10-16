@@ -10,14 +10,4 @@ set time format
 contents/themes/default/ajax/avatar_browser.php:102
 	Go to page: => Go to page: %s where %s is the inputbox.
 
-t_get_link : in_HTML
-
-注册后自动登录
-
-检查邮箱地址合法性
-
-problem not permitted returns NULL
-
-There still seems something wrong with problem select by group
-
-Problem page: discuss solution
+Problem page: discuss

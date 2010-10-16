@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Fri Oct 15 15:31:46 2010 +0800
+ * $Date: Sat Oct 16 21:22:51 2010 +0800
  */
 /**
  * @package orzoj-website

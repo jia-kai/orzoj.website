@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_filter.php
- * $Date: Fri Oct 15 16:05:20 2010 +0800
+ * $Date: Sat Oct 16 21:17:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,7 +25,38 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+function _make_input($prompt, $post_name)
+{
+	if (isset($_POST['prob_filter'][$post_name]))
+		$default = $_POST['prob_filter'][$post_name];
+	else 
+		$default = '';
+	$id = _tf_get_random_id();
+	echo <<<EOF
+<tr>
+<div class="prob-filter-prompt"><td>
+<label for="$id">$prompt</label></td>
+</div>
+<div class="prob-filter-input"><td>
+<input id="$id" type="text" name="$post_name" value="$default"></input></td>
+</div>
+</tr>
+EOF;
+}
 ?>
 <h1 class="prob-navigator-title"><?php echo __("Problem Nav."); ?></h1>
-<div id="prob-filter">
-</div> <!-- id: prob-filter -->
+
+<div id="prob-filter-list">
+<form action="<?php t_get_link($cur_page);?>" method="post" id="prob-filter-form">
+<table>
+<?php
+_make_input(__('ID'), 'ID');
+_make_input(__('Code'), 'code');
+?>
+</table>
+</form>
+</div> <!-- id: prob-filter-list -->
+
+
+<script type="text/javascript">
+</script>
