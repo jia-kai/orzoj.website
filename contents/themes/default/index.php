@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sat Oct 16 18:44:55 2010 +0800
+ * $Date: Sat Oct 16 23:07:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -109,9 +109,6 @@ if (isset($PAGES_AJAX[$cur_page]) && !isset($show_ajax))
 	exit;
 }
 
-if (isset($PAGES[$cur_page]))
-	cookie_set('last_page', serialize(array($cur_page, $page_arg)));
-
 /*
  * @ignore
  */
@@ -193,10 +190,11 @@ if (isset($PAGES_ACTION[$cur_page]))
 	<link rel="stylesheet" type="text/css" href="<?php _url('style.css'); ?>" />
 
 	<script type="text/javascript">
+
 		function table_set_double_bgcolor()
 		{
-			$(".orzoj-table tr:odd").addClass("table-bgcolor1");
-			$(".orzoj-table tr:even").addClass("table-bgcolor2");
+			$(".page-table tr:odd").addClass("page-table-bgcolor1");
+			$(".page-table tr:even").addClass("page-table-bgcolor2");
 		}
 		$(document).ready(function(){
 			$("button").button();
@@ -452,7 +450,6 @@ if (isset($startup_msg))
 				}
 			});
 		}
-
 
 	</script>
 

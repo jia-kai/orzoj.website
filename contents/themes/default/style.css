@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sat Oct 16 21:14:19 2010 +0800
+ * $Date: Sat Oct 16 23:22:18 2010 +0800
 
  This file is part of orzoj
 
@@ -302,17 +302,15 @@ div#prob-navigator
 	min-height: 200px;
 }
 
-div.prob-filter-prompt
+label.prob-filter
 {
-	clear: both;
-	float: left;
-	color: red;
+	width: 50px;
+	margin-right: 10px;
 }
 
-div.prob-filter-input
+input.prob-filter
 {
-	float: left;
-	width: 10px;
+	width: 100px;
 }
 
 div#prob-view
@@ -355,7 +353,6 @@ div#prob-view-by-group-navigator-bottom span
 div#prob-view-single
 {
 	clear: both;
-	margin-bottom: 16px;
 }
 
 div#prob-view-single-title
@@ -419,7 +416,7 @@ div.status-filter #filter-apply-button
 	padding: 2px 8px;
 }
 
-table.orzoj-table
+table.page-table
 {
 	clear: both;
 	border-collapse: collapse;
@@ -431,28 +428,28 @@ table.orzoj-table
 	text-align: center;
 }
 
-table.orzoj-table tr, table.orzoj-table th, table.orzoj-table td
+table.page-table tr, table.page-table th, table.page-table td
 {
 	border: 1px solid white;
 	padding: 3px;
 }
 
-tr.table-bgcolor1
+tr.page-table-bgcolor1
 {
 	background-color: #2C253F;
 }
 
-tr.table-bgcolor2
+tr.page-table-bgcolor2
 {
 	background-color: #0F0E28;
 }
 
-table.orzoj-table tr:hover
+table.page-table tr:hover
 {
 	background-color: #39424B;
 }
 
-table.orzoj-table th
+table.page-table th
 {
 	background-color: #070614;
 	color: #F0CC10;
@@ -479,29 +476,27 @@ div#page a.status-ac:hover, div#page a.status-wa:hover, div#page a.status-ce:hov
 	text-decoration: underline;
 }
 
-table#record-detail
+table.colorbox-table
 {
 	border-collapse: collapse;
 	margin: 0;
 	border: 0;
 	padding: 0;
-	min-width: 600px;
-	max-width: 650px;
 }
 
-table#record-detail tr, table#record-detail th, table#record-detail td
+table.colorbox-table tr, table.colorbox-table th, table.colorbox-table td
 {
 	border: 1px solid #C3C3C3;
 	padding: 3px;
 	text-align: center;
 }
 
-table#record-detail th
+table.colorbox-table th
 {
 	background-color: #E5EECC;
 }
 
-table#record-detail tr:hover
+table.colorbox-table tr:hover
 {
 	background-color: #E5EEFF;
 }

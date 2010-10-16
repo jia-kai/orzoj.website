@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: register.php
- * $Date: Fri Oct 15 21:39:34 2010 +0800
+ * $Date: Sat Oct 16 18:58:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,8 +30,9 @@ if ($page_arg == 'do')
 {
 	try
 	{
-		$id = user_register();
-		die(__("0Congratulations! You has successfully registered, and your user id is %d", $id));
+		$id = user_register(TRUE);
+		die(__("0Congratulations! You have successfully registered, and your user id is %d.", $id) .
+			'<br />' . __('Login in 2 seconds ...'));
 	}
 	catch (Exc_orzoj $e)
 	{
@@ -60,7 +61,11 @@ $("#register-form").bind("submit", function(){
 		"success": function(data) {
 			if (data.charAt(0) == '1')
 				alert(data.substr(1));
-			else $.colorbox({"html": data.substr(1)});
+			else
+			{
+				$.colorbox({"html": data.substr(1)});
+				setTimeout("window.location='<?php t_get_link('action-login');?>'", 2000);
+			}
 		}
 	});
 	return false;

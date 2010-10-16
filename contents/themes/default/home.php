@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: home.php
- * $Date: Sun Oct 10 20:34:48 2010 +0800
+ * $Date: Sun Oct 17 00:47:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,8 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+echo htmlencode(print_r($_POST, TRUE));
 
 ?>
 This is home!

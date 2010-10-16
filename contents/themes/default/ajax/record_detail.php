@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Sat Oct 16 13:48:29 2010 +0800
+ * $Date: Sat Oct 16 19:29:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -204,7 +204,7 @@ function _fd_detail()
 			__('Extra infomation') => '_fd_detail_extra_info'
 		);
 
-		echo '<table id="record-detail">
+		echo '<table class="colorbox-table" style="min-width:600px; max-width:650px;">
 			<tr>';
 		foreach ($cols as $col => $func)
 			echo '<th>' . $col . '</th>';

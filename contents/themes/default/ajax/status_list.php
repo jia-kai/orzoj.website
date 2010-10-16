@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Sat Oct 16 17:03:49 2010 +0800
+ * $Date: Sun Oct 17 00:49:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,7 +30,7 @@ if (!defined('IN_ORZOJ'))
 /*
  * page argument: [<starting page num:int>]
  * POST: 
- * ['filter'|'request'|'prob_submit']
+ * ['filter'|'request'|'prob_submit'|'prob_best_solutions']
  *		'filter':
  *			value: array of used filters
  *			return a complete ajax page
@@ -46,6 +46,9 @@ if (!defined('IN_ORZOJ'))
  *			return: <done><status as string|detail page address>
  *				if done == 0, current status as string follows
  *				if done == 1, URL to the detail page follows
+ *		'prob_best_solutions':
+ *			best solutions for a problem
+ *			value: problem id
  */
 
 require_once $includes_path . 'record.php';
@@ -71,7 +74,13 @@ if (isset($_POST['prob_submit']))
 	die('0' . _cv_status());
 }
 
-define('PAGE_SIZE', 10);
+if (isset($_POST['prob_best_solutions']))
+{
+	$_POST['filter']['pid'] = $_POST['prob_best_solutions'];
+	$_POST['filter']['ranklist'] = 1;
+	define('PAGE_SIZE', 5);
+} else define('PAGE_SIZE', 10);
+
 
 $pgnum = 0;
 
@@ -143,8 +152,10 @@ function _cv_prob()
 {
 	global $cur_row;
 	$pid = $cur_row['pid'];
-	return sprintf('<a href="%s">%s</a>',
-		t_get_link('problem', prob_get_code_by_id($pid), TRUE, TRUE),
+	$code = prob_get_code_by_id($pid);
+	return sprintf('<a href="%s" title="%s">%s</a>',
+		t_get_link('problem', $code, TRUE, TRUE),
+		__('Problem code: %s', $code),
 		prob_get_title_by_id($pid));
 }
 
@@ -156,9 +167,11 @@ function _cv_lang()
 
 function _cv_status()
 {
-	global $cur_row, $RECORD_STATUS_TEXT;
+	global $cur_row, $RECORD_STATUS_TEXT, $_POST;
 	$s = intval($cur_row['status']);
 	$str = $RECORD_STATUS_TEXT[$s];
+	if (isset($_POST['prob_best_solutions']))
+		return $str;
 	if ($s == RECORD_STATUS_RUNNING)
 		$str = "$str (" . $cur_row['mem'] . ')'; // see /install/tables.php
 	if (!record_status_finished($s))
@@ -252,6 +265,9 @@ if (isset($_POST['filter']['ranklist']))
 	unset($cols[7]);
 }
 
+if (isset($_POST['prob_best_solutions']))
+	unset($cols[1]);
+
 ksort($cols);
 
 if (isset($_POST['request']))
@@ -277,7 +293,9 @@ if (isset($_POST['request']))
 }
 
 echo '
-<table class="orzoj-table" id="status-list-table">
+<div id="status-list" style="clear:both">
+<table class="' . (isset($_POST['prob_best_solutions']) ? 'colorbox-table' : 'page-table' )
+	. '" id="status-list-table">
 <tr> ';
 
 foreach ($cols as $col)
@@ -307,8 +325,7 @@ foreach ($rows as $cur_row)
 }
 
 echo '
-</table>
-';
+</table>';
 
 function make_a($text, $pg)
 {
@@ -334,22 +351,86 @@ if (count($rows) == PAGE_SIZE)
 }
 
 $id = _tf_get_random_id();
-echo '<form action="#" id="goto-page-form" ><label for="' . $id . '" style="float:left">';
+echo '<form action="#" id="goto-page-form" method="post"
+	onsubmit="status_goto_page(); return false;" ><label for="' . $id . '" style="float:left">';
 echo __('Go to page:');
 echo '</label><input type="text" value="' . ($pgnum + 1) . '" name="goto_page" id="' . $id . '" 
    style="width: 30px; float: left;" /></form>';
 
-echo '</div>';
+echo '</div> <!-- id: status-list-navigate -->
+</div> <!-- id: status-list -->';
 
 ?>
 
 <script type="text/javascript">
-$("a[name='status-detail']").colorbox();
+
+function status_navigate_do(addr, data)
+{
+	var t = $("#status-list");
+	t.animate({"opacity": 0.5}, 1);
+	$.ajax({
+		"type": "post",
+		"cache": false,
+		"url": addr,
+		"data": data,
+		"success": function(data) {
+			var t = $("#status-list");
+			t.animate({"opacity": 1}, 1);
+			t.html(data);
+		}
+	});
+}
+
+<?php
+if (!isset($_POST['prob_best_solutions']))
+{
+?>
+	function status_navigate(addr)
+	{
+		status_navigate_do(addr,
+			$("#filter-form").serializeArray());
+	}
+
+	function status_goto_page()
+	{
+		status_navigate_do("<?php t_get_link('ajax-status-list');?>",
+			$("#filter-form").serializeArray().concat(
+				$("#goto-page-form").serializeArray()));
+	}
+
+	$("a[name='status-detail']").colorbox();
+	table_set_double_bgcolor();
+	start_update_table(new Array(<?php echo implode(',', $records_unfinished); ?>));
+
+<?php
+}
+else
+{
+	$pid = $_POST['prob_best_solutions'];
+	echo '
+
+	function status_navigate(addr)
+	{
+		status_navigate_do(addr, {"prob_best_solutions": ' . $pid . '});
+	}
+
+	function status_goto_page()
+	{
+		status_navigate_do("' . t_get_link('ajax-status-list', NULL, FALSE, TRUE) . '",
+			{
+				"prob_best_solutions": ' . $pid . ',
+				"goto_page": $("#goto-page-form input").val()
+			})
+	}
+
+	';
+
+}
+?>
+
 $("#goto-page-form").bind("submit", function(){
 	status_goto_page();
 	return false;
 });
-table_set_double_bgcolor();
-start_update_table(new Array(<?php echo implode(',', $records_unfinished);?>));
 
 </script>
