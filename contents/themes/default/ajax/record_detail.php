@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Fri Oct 15 23:38:30 2010 +0800
+ * $Date: Sat Oct 16 13:48:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -262,9 +262,11 @@ $cols = array(
 if (!$disp_info)
 	unset($cols['ip']);
 
+$where = array($DBOP['='], 'id', $page_arg);
+db_where_add_and($where, record_make_where());
 
 $row = $db->select_from('records', array_keys($cols),
-	array($DBOP['='], 'id', $page_arg));
+	$where);
 
 if (count($row) != 1)
 	die('no such record');

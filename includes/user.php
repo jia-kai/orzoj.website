@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sat Oct 16 10:02:12 2010 +0800
+ * $Date: Sat Oct 16 17:41:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -338,16 +338,15 @@ function user_get_id_by_name($name)
 	return NULL;
 }
 
-$_user_checker_id = NULL;
-
 /**
  * initialize user check id
  * @return void
  */
 function user_init_form()
 {
-	global $_user_checker_id;
-	$_user_checker_id = tf_form_register_checker('user_check_name_string_output');
+	global $_checker_id;
+	$_checker_id['user'] = tf_form_register_checker('user_check_name_string_output');
+	$_checker_id['email'] = tf_form_register_checker('user_check_email');
 }
 
 /**
@@ -366,6 +365,24 @@ function user_check_name_string_output($name)
 	if (user_get_id_by_name($name))
 		return __('username %s already exists', $name);
 	return __('Username avaliable');
+}
+
+/**
+ * check whether email address is valid
+ * @param string $email email address
+ * @return string a human readable string describing the result, or '' on success
+ */
+function user_check_email($email)
+{
+	try
+	{
+		email_validate($email);
+	}
+	catch (Exc_runtime $e)
+	{
+		return $e->msg();
+	}
+	return '';
 }
 
 
@@ -394,15 +411,15 @@ function _user_init_plang_wlang()
  */
 function user_register_get_form()
 {
-	global $_user_checker_id;
+	global $_checker_id;
 	_user_init_plang_wlang();
 	global $db, $_user_plang, $_user_wlang;
 	$str = 
-		tf_form_get_text_input(__('Username:'), 'username', $_user_checker_id) . 
-		tf_form_get_passwd(__('Password:'), 'passwd', __('Confirm password:')) .
+		tf_form_get_text_input(__('Username:'), 'username', $_checker_id['user']) . 
+		tf_form_get_passwd(__('Password:'), 'passwd', __('Confirm password:'), 'passwd_confirm') .
 		tf_form_get_text_input(__('Real name:'), 'realname') .
 		tf_form_get_text_input(__('Nickname:'), 'nickname') .
-		tf_form_get_text_input(__('E-mail:'), 'email') .
+		tf_form_get_text_input(__('E-mail:'), 'email', $_checker_id['email']) .
 		tf_form_get_avatar_browser(__('Avatar:'), 'aid') .
 		tf_form_get_select(__('Preferred programming language:'), 'plang', $_user_plang) .
 		tf_form_get_select(__('Preferred website language:'), 'wlang', $_user_wlang) .
@@ -418,7 +435,7 @@ function user_register_get_form()
  */
 function user_register()
 {
-	$VAL_SET = array('username', 'passwd', 'realname', 'nickname', 'email',
+	$VAL_SET = array('username', 'passwd', 'passwd_confirm', 'realname', 'nickname', 'email',
 		'aid', 'plang', 'wlang', 'self_desc');
 	$val = array();
 	foreach ($VAL_SET as $v)
@@ -429,6 +446,9 @@ function user_register()
 			throw new Exc_runtime(__('Every field in the register form must be filled.'));
 		$val[$v] = $_POST[$v];
 	}
+	if ($val['passwd'] != $val['passwd_confirm'])
+		throw new Exc_runtime(__('Passwords do not match'));
+	unset($val['passwd_confirm']);
 	if (!user_check_name($_POST['username']))
 		throw new Exc_runtime(__('invalid username'));
 	if (user_get_id_by_name($_POST['username']))
@@ -441,6 +461,8 @@ function user_register()
 	{
 		throw new Exc_runtime(__('Error while validating self description: %s', $e->msg()));
 	}
+
+	email_validate($val['email']);
 
 	$val['username'] = strtolower($val['username']);
 	$val['passwd'] = _user_make_passwd($val['username'], $val['passwd']);

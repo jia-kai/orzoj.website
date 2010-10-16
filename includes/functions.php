@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Thu Oct 14 14:28:22 2010 +0800
+ * $Date: Sat Oct 16 17:47:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -329,5 +329,48 @@ function plang_get_syntax_by_id($lid)
 	if (count($row) != 1)
 		return NULL;
 	return $row[0]['syntax'];
+}
+
+/**
+ * validate an email address.
+ * from http://www.linuxjournal.com/article/9585
+ * @param string $email email address
+ * @return void
+ * @exception Exc_runtime if email address is invalid
+ */
+function email_validate($email)
+{
+	$atIndex = strrpos($email, "@");
+	if (is_bool($atIndex) && !$atIndex)
+		throw new Exc_runtime(__('invalid email address: no at symbol (@) found'));
+	$domain = substr($email, $atIndex+1);
+	$local = substr($email, 0, $atIndex);
+	$localLen = strlen($local);
+	$domainLen = strlen($domain);
+	if ($localLen < 1 || $localLen > 64)
+		throw new Exc_runtime(__('invalid email address: local part length exceeded'));
+	if ($domainLen < 1 || $domainLen > 255)
+		throw new Exc_runtime(__('invalid email address: domain part length exceeded'));
+	if ($local[0] == '.' || $local[$localLen-1] == '.')
+		throw new Exc_runtime(__('invalid email address: local part starts or ends with dot(.)'));
+	if (preg_match('/\\.\\./', $local))
+		throw new Exc_runtime(__('invalid email address: local part has two consecutive dots'));
+	if (!preg_match('/^[A-Za-z0-9\\-\\.]+$/', $domain))
+		throw new Exc_runtime(__('invalid email address: character not valid in domain part'));
+	if (preg_match('/\\.\\./', $domain))
+		throw new Exc_runtime(__('invalid email address: domain part has two consecutive dots'));
+	if (!preg_match('/^(\\\\.|[A-Za-z0-9!#%&`_=\\/$\'*+?^{}|~.-])+$/',
+		str_replace("\\\\","",$local)))
+	{
+		if (!preg_match('/^"(\\\\"|[^"])+"$/',
+			str_replace("\\\\","",$local)))
+			throw new Exc_runtime(__('invalid email address: character not valid in local part unless local part is quoted'));
+	}
+	if (!option_get('email_validate_no_dns_check'))
+	{
+		if (!checkdnsrr($domain, 'MX'))
+			// || !checkdnsrr($domain,"A")))
+		throw new Exc_runtime(__('invalid email address: MX record not found in DNS'));
+	}
 }
 

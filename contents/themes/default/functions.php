@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 16 12:11:51 2010 +0800
+ * $Date: Sat Oct 16 16:58:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -219,7 +219,7 @@ EOF;
  * @param NULL|string $confirm_input if not NULL, it should be the prompt for confirming password input
  * @see tf_form_get_text_input
  */
-function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL)
+function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL, $confirm_post_name = NULL)
 {
 	$id = _tf_get_random_id();
 	$str = "<tr><td><label for=\"$id\">$prompt</label></td>
@@ -230,7 +230,7 @@ function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL)
 		$id1 = _tf_get_random_id();
 		$str .= <<<EOF
 <tr><td><label for="$id1">$confirm_input</label></td><td>
-<input id="$id1" type="password" onblur='form_verify_passwd("$id", "$id1", "$_tf_cur_checker_div")' />
+<input id="$id1" type="password" name="$confirm_post_name" onblur='form_verify_passwd("$id", "$id1", "$_tf_cur_checker_div")' />
 </td></tr>
 EOF;
 	}

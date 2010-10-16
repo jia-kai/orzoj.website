@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sat Oct 16 10:44:59 2010 +0800
+ * $Date: Sat Oct 16 16:20:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -322,10 +322,10 @@ $tables = array(
 			'jtime' => array('type' => 'INT64', 'default' => 0), // time when it is judged
 			'ip' => array('type' => 'TEXT'), // from which ip it is submitted
 			'score' => array('type' => 'INT32', 'default' => 0),
-			// if status == RECORD_STATUS_RUNNING, the current case number is stored in 'score'
 			'full_score' => array('type' => 'INT32', 'default' => 0),
 			'time' => array('type' => 'INT32', 'default' => 0), // microsecond
 			'mem' => array('type' => 'INT32', 'default' => 0), // maximal memory, kb
+			// if status == RECORD_STATUS_RUNNING, the current case number is stored in 'mem'
 			'detail' => array('type' => 'TEXT', 'default' => '')
 			// serialized array of Case_result. see includes/exe_status.php
 			// or error info if judge process not started
@@ -335,7 +335,9 @@ $tables = array(
 			array(
 				'cols' => array('uid', 'pid', 'status', 'lid')),
 			array(
-				'cols' => array('pid', 'status'))
+				'cols' => array('pid', 'status')),
+			array(
+				'cols' => array('score', 'time'))
 		)
 	),
 

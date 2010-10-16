@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index_content_with_nav.php
- * $Date: Fri Oct 15 20:58:00 2010 +0800
+ * $Date: Sat Oct 16 16:51:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -49,19 +49,19 @@ foreach ($PAGES as $name => $value)
 	</div>
 </div>
 
-<div id="content-with-border">
-	<img src="<?php _url('images/bg_cornerul.jpg');?>" alt="corner" class="bgcornerl" />
-	<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgtop" />
-	<img src="<?php _url('images/bg_cornerur.jpg');?>" alt="corner" class="bgcornerr" />
+<img src="<?php _url('images/bg_cornerul.jpg');?>" alt="corner" class="bgcornerl" />
+<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgtop" />
+<img src="<?php _url('images/bg_cornerur.jpg');?>" alt="corner" class="bgcornerr" />
 
-	<div id="content">
+<div id="content">
+	<div id="content-opacity">
 	<?php require_once($theme_path . $PAGES[$cur_page][1]); ?>
 	</div>
-
-	<img src="<?php _url('images/bg_cornerdl.jpg');?>" alt="corner" class="bgcornerl" />
-	<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgbottom" />
-	<img src="<?php _url('images/bg_cornerdr.jpg');?>" alt="corner" class="bgcornerr" />
 </div>
+
+<img src="<?php _url('images/bg_cornerdl.jpg');?>" alt="corner" class="bgcornerl" />
+<img src="<?php _url('images/empty.gif');?>" alt="top" class="bgbottom" />
+<img src="<?php _url('images/bg_cornerdr.jpg');?>" alt="corner" class="bgcornerr" />
 
 <?php t_get_footer(); ?>
 

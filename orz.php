@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Fri Oct 15 17:23:38 2010 +0800
+ * $Date: Sat Oct 16 13:52:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -444,7 +444,7 @@ function report_case_result()
 	$detail[] = $result;
 
 	$value = array('detail' => serialize($detail),
-		'status' => RECORD_STATUS_RUNNING, 'score' => count($detail));
+		'status' => RECORD_STATUS_RUNNING, 'mem' => count($detail));
 	$db->update_data('records', $value, $where_clause);
 
 	msg_write(MSG_STATUS_OK, NULL);

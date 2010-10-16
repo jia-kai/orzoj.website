@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Sat Oct 16 10:15:05 2010 +0800
+ * $Date: Sat Oct 16 16:29:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -45,13 +45,14 @@ var records = new Array();
 
 function update_table()
 {
+	$("a[name='status-detail']").colorbox();
 	$.ajax({
 		"type": "post",
 		"cache": false,
 		"url": "<?php t_get_link('ajax-status-list');?>",
 		"data": ({"request": records}),
 		"success": function(data) {
-			if ($("#status-list-table").size() == 0)
+			if ($("#status-list-table").size() == 0 || !records.length)
 			{
 				records.length = 0;
 				return;
@@ -88,9 +89,10 @@ function start_update_table(rec)
 
 <?php
 
-echo '<div class="status-filter" style="margin-right: 10px">';
+echo '<div class="status-filter" style="margin-right: 10px; float: left;">';
 echo __('Filter:');
 echo '</div>';
+echo '<div style="float:left;">';
 echo '<form action="';
 t_get_link($cur_page);
 echo '" method="post" id="filter-form">';
@@ -125,6 +127,8 @@ function _make_select($prompt, $post_name, $options)
 <select id="$id" name="filter[$post_name]">
 EOF;
 
+	asort($options);
+
 	foreach ($options as $disp => $val)
 	{
 		echo "<option value=\"$val\"";
@@ -135,6 +139,24 @@ EOF;
 	echo '</select></div>';
 }
 
+function _make_checkbox($prompt, $post_name)
+{
+	if (isset($_POST['filter'][$post_name]))
+		$default = ' checked="checked" ';
+	else $default = '';
+	$id = _tf_get_random_id();
+	echo <<<EOF
+<div class="status-filter">
+<label for="$id">$prompt</label>
+</div>
+<div class="status-filter">
+<input name="filter[$post_name]" value="1" type="checkbox" id="$id" $default />
+</div>
+EOF;
+}
+
+echo '<div style="float:left">';
+
 _make_input(__('username'), 'username');
 _make_input(__('problem code'), 'pcode');
 
@@ -144,9 +166,13 @@ $plang = array(__('ALL') => '');
 foreach ($rows as $row)
 	$plang[$row['name']] = $row['id'];
 
+echo '</div><div style="clear:both; float:left;">';
+
 _make_select(__('lang.'), 'lid', $plang);
 _make_select(__('status'), 'status', array_merge(array('ALL' => ''),
 	array_flip($RECORD_STATUS_TEXT)));
+
+_make_checkbox(__('Ranklist Mode'), 'ranklist');
 
 $p = __('Apply');
 echo "
@@ -154,19 +180,16 @@ echo "
 	<input type=\"submit\" id=\"filter-apply-button\" value=\"$p\" />
 	</div>";
 
-echo '</form>';
+echo '</div>';
+
+echo '</form></div>';
 
 ?>
 
-<div style="clear:both; float:left; position: relative;">
-	<div style="float: left;">
-		<a href="#" onclick="status_goto_page();">
-		<img src="<?php _url('images/refresh.gif');?>" alt="&lt;refresh&gt;" />
-		</a>
-	</div>
-	<div style="left:40px; bottom: 0px; position: absolute;">
-		<a href="#" onclick="status_goto_page();"><?php echo __('Refresh');?></a>
-	</div>
+<div style="float:right">
+	<a href="#" onclick="status_goto_page();">
+	<img src="<?php _url('images/refresh.gif');?>" alt="&lt;refresh&gt;" />
+	</a>
 </div>
 
 <div id="status-list" style="clear:both">

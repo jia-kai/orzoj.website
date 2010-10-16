@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sat Oct 16 10:27:57 2010 +0800
+ * $Date: Sat Oct 16 17:41:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -239,9 +239,11 @@ if (!user_check_login())
 ?>
 					<form action="<?php t_get_link('action-login') ?>" method="post">
 						<?php _tf_form_generate_body('user_check_login_get_form'); ?>
+						<div style="float: right;">
+						<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
 						<a href="<?php t_get_link('ajax-register'); ?>"
 						id="user-register"><button type="button" class="in-form" ><?php echo __('Register'); ?></button></a>
-						<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
+						</div>
 					</form>
 <?php
 }
@@ -313,6 +315,8 @@ if (isset($startup_msg))
 				"data": ({"checker" : checker_id, "val" : $(input_id).val()}),
 				"success": function(data)
 				{
+					if (!data.length)
+						$(result_div_id).css("display", "none");
 					var ele = document.activeElement;
 					$(result_div_id).html(data);
 					$.colorbox.resize();
@@ -437,7 +441,7 @@ if (isset($startup_msg))
 
 		function index_navigate(addr)
 		{
-			$("#content-with-border").animate({"opacity": 0.5}, 1.2);
+			$("#content-opacity").animate({"opacity": 0.5}, 1.2);
 			$.ajax({
 				"type": "post",
 				"cache": false,
@@ -445,7 +449,7 @@ if (isset($startup_msg))
 				"data": ({"index_navigate_ajax": "1"}),
 				"success": function(data) {
 					$("#content-with-nav").html(data);
-					$("#content-with-border").animate({"opacity": 1}, 1.2);
+					$("#content-opacity").animate({"opacity": 1}, 1.2);
 				}
 			});
 		}

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Tue Oct 05 15:39:34 2010 +0800
+ * $Date: Sat Oct 16 16:58:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -158,7 +158,7 @@ function tf_form_get_avatar_browser($prompt, $post_name, $default = NULL)
  * @param NULL|string $confirm_input if not NULL, it should be the prompt for confirming password input
  * @see tf_form_get_text_input
  */
-function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL)
+function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL, $confirm_post_name = NULL)
 {
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Sat Oct 16 12:05:02 2010 +0800
+ * $Date: Sat Oct 16 17:03:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -60,7 +60,7 @@ if (isset($_POST['prob_submit']))
 		$DBOP['='], 'uid', $user->id,
 		$DBOP['='], 'pid', $_POST['prob_submit']);
 	db_where_add_and($where, record_make_where());
-	$row = $db->select_from('records', array('id', 'status', 'score'), $where,
+	$row = $db->select_from('records', array('id', 'status', 'mem'), $where,
 		array('id' => 'DESC'), NULL, 1);
 	if (count($row) != 1)
 		die('0no such record');
@@ -90,6 +90,7 @@ $select_cols = array(
 	'id', 'uid', 'pid', 'jid', 'lid', 'src_len', 'status',
 	'stime', 'score', 'full_score', 'time', 'mem'
 );
+$order_by = array('id' => 'DESC');
 
 if (isset($_POST['filter']))
 {
@@ -105,6 +106,12 @@ if (isset($_POST['filter']))
 	foreach ($FILETER_ALLOWED as $f)
 		if (array_key_exists($f, $req))
 			db_where_add_and($where, array($DBOP['='], $f, $req[$f]));
+	if (isset($req['ranklist']))
+	{
+		$order_by = array('score' => 'DESC', 'time' => 'ASC',
+			'mem' => 'ASC', 'src_len' => 'ASC', 'stime' => 'ASC');
+		db_where_add_and($where, array($DBOP['!='], 'score', 0));
+	}
 }
 else if (isset($_POST['request']))
 {
@@ -116,11 +123,10 @@ else if (isset($_POST['request']))
 	}
 }
 
-
 db_where_add_and($where, record_make_where());
 
 $rows = $db->select_from('records', $select_cols, $where,
-	array('id' => 'DESC'), $pgnum * PAGE_SIZE, PAGE_SIZE);
+	$order_by, $pgnum * PAGE_SIZE, PAGE_SIZE);
 
 record_filter_rows($rows);
 
@@ -154,7 +160,7 @@ function _cv_status()
 	$s = intval($cur_row['status']);
 	$str = $RECORD_STATUS_TEXT[$s];
 	if ($s == RECORD_STATUS_RUNNING)
-		$str = "$str (" . $cur_row['score'] . ')';
+		$str = "$str (" . $cur_row['mem'] . ')'; // see /install/tables.php
 	if (!record_status_finished($s))
 		return '<img src="' . _url('images/loading.gif', TRUE) . '" alt="loading" />' . $str;
 	if ($s == RECORD_STATUS_ACCEPTED)
@@ -213,6 +219,12 @@ function _cv_srclen()
 	return sprintf('%.3f [kb]',  $len / 1024.0);
 }
 
+$_cv_rank_val = $pgnum * PAGE_SIZE;
+function _cv_rank()
+{
+	global $_cv_rank_val;
+	return ++ $_cv_rank_val;
+}
 
 function _cv_date()
 {
@@ -221,18 +233,26 @@ function _cv_date()
 }
 
 $cols = array(
-	// <column name> => <function to generate value>
-	__('USER') => '_cv_user',
-	__('PROBLEM') => '_cv_prob',
-	__('STATUS') => '_cv_status',
-	__('LANG') => '_cv_lang',
-	__('SCORE') => '_cv_score',
-	__('TIME[sec]') => '_cv_time',
-	__('MEM[kb]') => '_cv_mem',
-	__('JUDGE') => '_cv_judge',
-	__('SRC LEN') => '_cv_srclen',
-	__('DATE') => '_cv_date'
+	// <key> => array(<column name>, <function to generate value>)
+	array(__('USER'), '_cv_user'),
+	array(__('PROBLEM'), '_cv_prob'),
+	array(__('STATUS'), '_cv_status'),
+	array(__('LANG'), '_cv_lang'),
+	array(__('SCORE'), '_cv_score'),
+	array(__('TIME[sec]'), '_cv_time'),
+	array(__('MEM[kb]'), '_cv_mem'),
+	array(__('JUDGE'), '_cv_judge'),
+	array(__('SRC LEN'), '_cv_srclen'),
+	array(__('DATE'), '_cv_date')
 );
+
+if (isset($_POST['filter']['ranklist']))
+{
+	$cols[-1] = array(__('RANK'), '_cv_rank');
+	unset($cols[7]);
+}
+
+ksort($cols);
 
 if (isset($_POST['request']))
 {
@@ -246,8 +266,11 @@ if (isset($_POST['request']))
 			for ($i = count($cols); $i; $i --)
 				$cur .= '<td>---</td>';
 		else
-			foreach ($cols as $func)
+			foreach ($cols as $col)
+			{
+				$func = $col[1];
 				$cur .= '<td>' . $func() . '</td>';
+			}
 		$ret[(string)$cur_row['id']] = $cur;
 	}
 	die(json_encode($ret));
@@ -257,8 +280,8 @@ echo '
 <table class="orzoj-table" id="status-list-table">
 <tr> ';
 
-foreach ($cols as $name => $func)
-	echo "<th>$name</th>";
+foreach ($cols as $col)
+	echo "<th>$col[0]</th>";
 
 echo ' </tr> ';
 
@@ -272,8 +295,11 @@ foreach ($rows as $cur_row)
 			echo '<td>---</td>';
 	else
 	{
-		foreach ($cols as $func)
+		foreach ($cols as $col)
+		{
+			$func = $col[1];
 			echo '<td>' . $func() . '</td>';
+		}
 		if (!record_status_finished($cur_row['status']))
 			$records_unfinished[] = "'$id'";
 	}
@@ -309,7 +335,7 @@ if (count($rows) == PAGE_SIZE)
 
 $id = _tf_get_random_id();
 echo '<form action="#" id="goto-page-form" ><label for="' . $id . '" style="float:left">';
-echo __('Goto page:');
+echo __('Go to page:');
 echo '</label><input type="text" value="' . ($pgnum + 1) . '" name="goto_page" id="' . $id . '" 
    style="width: 30px; float: left;" /></form>';
 
@@ -324,15 +350,6 @@ $("#goto-page-form").bind("submit", function(){
 	return false;
 });
 table_set_double_bgcolor();
-
-<?php
-if (count($records_unfinished))
-{
-	$arg = 'new Array(';
-	$arg .= implode(',', $records_unfinished);
-	$arg .= ')';
-	echo "start_update_table($arg);\n";
-} else echo "start_update_table(new Array());\n";
-?>
+start_update_table(new Array(<?php echo implode(',', $records_unfinished);?>));
 
 </script>
