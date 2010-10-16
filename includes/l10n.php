@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Mon Sep 27 19:25:22 2010 +0800
+ * $Date: Sat Oct 16 21:30:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,7 +25,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 if (!defined('IN_ORZOJ')) exit;
-
 
 require_once $includes_path . 'pomo/mo.php';
 require_once $includes_path . 'pomo/po.php';
@@ -109,4 +108,29 @@ function l10n_add_po_file($filename,$use_cache = true)
 	);
 }
 
+
+/**
+ * Add an directory for translation
+ * @param string $dir directory
+ */
+function l10n_add_directory($dir)
+{
+	$dr = opendir($dir);
+	if ($dr)
+	{
+		while (($file = readdir($dr)) !== false)
+		{
+			switch (strstr(strtolower($file),'.'))
+			{
+			case '.po':
+				l10n_add_po_file($dir . $file);
+				break;
+			case '.mo':
+				l10n_add_mo_file($dir . $file);
+				echo $file;
+				break;
+			}
+		}
+	}
+}
 

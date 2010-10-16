@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 mv messages.pot ../../old.pot -f
 cd ../../
 xgettext `find . -iname '*.php'` --from-code=UTF-8 --language=PHP --keyword=__ -o messages.pot
