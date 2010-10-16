@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Fri Oct 15 17:05:48 2010 +0800
+ * $Date: Fri Oct 15 23:38:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -243,7 +243,7 @@ function _fd_src()
 	$geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS);
 	$geshi->enable_classes();
 	$geshi->set_tab_width(4);
-	echo $geshi->parse_code();
+	echo '<div id=record-source>' . $geshi->parse_code() . '</div>';
 }
 
 $cols = array(

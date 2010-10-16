@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Fri Oct 15 12:08:43 2010 +0800
+ * $Date: Fri Oct 15 23:51:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -173,6 +173,8 @@ function tf_form_get_source_editor($prompt, $name, $default = NULL)
 }
 
 /**
+ * @param string $name source POST name
+ * @exception Exc_runtime 
  * @return string the non-HTML-encoded source 
  */
 function tf_form_get_source_editor_data($name)
@@ -180,7 +182,7 @@ function tf_form_get_source_editor_data($name)
 	if (!isset($_POST[$name]))
 		throw new Exc_runtime(__('Imcomplete POST.'));
 	if (!strlen($_POST[$name]))
-		throw new Exc_runtime(__('Please copy you source here.'));
+		throw new Exc_runtime(__('Hi buddy, source please?'));
 	return $_POST[$name];
 }
 

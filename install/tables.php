@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Fri Oct 15 19:53:37 2010 +0800
+ * $Date: Sat Oct 16 10:44:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -235,7 +235,9 @@ $tables = array(
 			'gid' => array('type' => 'INT32'),
 			'chid' => array('type' => 'INT32') // id of one of the children of the problem group
 		),
-		'primary_key' => 'gid'
+		'index' => array(
+			array('cols' => array('gid'))
+		)
 	),
 
 	/* contests */

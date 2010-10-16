@@ -27,3 +27,4 @@ includes/message.php:75 单词拼写错误
 
 problem not permitted returns NULL
 
+There still seems something wrong with problem select by group

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Fri Oct 15 21:49:39 2010 +0800
+ * $Date: Sat Oct 16 00:50:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -65,6 +65,9 @@ require_once $includes_path . 'submit.php';
 
 <script type="text/javascript">
 
+// TODO: I can't stop it from requesting data from sever T_T
+var id = 0, cnt = 0;
+function timeout_stop(){clearTimeout(id);}
 function show_running_status()
 {
 	$.ajax({
@@ -77,14 +80,19 @@ function show_running_status()
 			{
 				var t =	$("#prob-submit-box");
 				t.html(data.substr(1));
-				$.colorbox.resize();
-				setTimeout("show_running_status();", 1000);
+				$.colorbox.resize({"innerWidth" : "200px"});
+				id = setTimeout("show_running_status();", 1000);
+			//	$.colorbox.onClosed = alert(id);// timeout_stop();
 			}
 			else
 			{
-				$.colorbox({"href" : data.substr(1)});
-				submitted = false;
-				box_closed = true;
+				$.colorbox({
+					"href" : data.substr(1),
+					// width and maxHeight are the same as a[name='status-detail']
+					"width" : "700px",
+					"maxHeight" : "500px"
+				});
+				$("#prob-submit-box").css("word-break", "break-all");
 			}
 		}
 	});
@@ -101,11 +109,12 @@ $("#submit-form").bind("submit", function(){
 				alert(data.substr(1));
 			else
 			{
+				id = setTimeout("show_running_status();", 1000);
 				$.colorbox({
-					"html": "<div id=\"prob-submit-box\">" + data.substr(1) + "</div>",
-						"onCleanup" : function(){flag_closed = true;}
+					"html": "<div id=\"prob-submit-box\" style=\"text-align:center\">" + data.substr(1) + "</div>",
+					"title" : "<?php echo __("Good luck"); ?>"
+					//"onClosed" : alert(id)//clearTimeout(id)
 				});
-				setTimeout("show_running_status();", 1000);
 			}
 		}
 	});
