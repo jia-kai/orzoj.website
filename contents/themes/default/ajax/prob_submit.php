@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Sat Oct 16 00:50:45 2010 +0800
+ * $Date: Sat Oct 16 12:04:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,7 +37,6 @@ if ($page_arg == 'submit')
 		submit_src();
 		$html = '0';
 		$html .= __('Submittion success!') . '<br />';
-		//$html .= __('You will be redirected to Status page in 2 seconds ...');
 		die($html);
 	}
 	catch (Exc_orzoj $e)
@@ -56,7 +55,7 @@ if (!user_check_login())
 require_once $includes_path . 'submit.php';
 ?>
 
-<form action="#" id="submit-form">
+<form action="<?php t_get_link($cur_page, 'submit');?>" id="submit-form" method="post">
 <?php _tf_form_generate_body('submit_src_get_form', $pid); ?>
 <div style="text-align: right">
 	<button id="submit-button" type="submit" class="in-form"><?php echo __("Good Luck^ ^"); ?></button>
@@ -65,9 +64,10 @@ require_once $includes_path . 'submit.php';
 
 <script type="text/javascript">
 
-// TODO: I can't stop it from requesting data from sever T_T
-var id = 0, cnt = 0;
-function timeout_stop(){clearTimeout(id);}
+$("button").button();
+
+var is_closed = false, cur_id = 0;
+
 function show_running_status()
 {
 	$.ajax({
@@ -78,19 +78,21 @@ function show_running_status()
 		"success" : function(data) {
 			if (data.charAt(0) == '0')
 			{
-				var t =	$("#prob-submit-box");
-				t.html(data.substr(1));
-				$.colorbox.resize({"innerWidth" : "200px"});
-				id = setTimeout("show_running_status();", 1000);
-			//	$.colorbox.onClosed = alert(id);// timeout_stop();
+				$.colorbox({
+					"html": data.substr(1),
+					"onClosed" : function(){
+						is_closed = true;
+						if (cur_id != -1)
+							clearTimeout(cur_id);
+					}
+				});
+				if (!is_closed)
+					cur_id = setTimeout("show_running_status();", 1000);
 			}
 			else
 			{
 				$.colorbox({
-					"href" : data.substr(1),
-					// width and maxHeight are the same as a[name='status-detail']
-					"width" : "700px",
-					"maxHeight" : "500px"
+					"href" : data.substr(1)
 				});
 				$("#prob-submit-box").css("word-break", "break-all");
 			}
@@ -109,12 +111,19 @@ $("#submit-form").bind("submit", function(){
 				alert(data.substr(1));
 			else
 			{
-				id = setTimeout("show_running_status();", 1000);
+				cur_id = -1;
+				is_closed = false;
 				$.colorbox({
-					"html": "<div id=\"prob-submit-box\" style=\"text-align:center\">" + data.substr(1) + "</div>",
-					"title" : "<?php echo __("Good luck"); ?>"
-					//"onClosed" : alert(id)//clearTimeout(id)
+					"html": data.substr(1),
+					"title" : "<?php echo __("Good luck"); ?>",
+					"onClosed" : function(){
+						is_closed = true;
+						if (cur_id != -1)
+							clearTimeout(cur_id);
+					}
 				});
+				if (!is_closed)
+					cur_id = setTimeout("show_running_status()", 1000);
 			}
 		}
 	});

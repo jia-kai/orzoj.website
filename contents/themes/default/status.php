@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Fri Oct 15 20:11:06 2010 +0800
+ * $Date: Sat Oct 16 10:15:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,11 +38,61 @@ if (!defined('IN_ORZOJ'))
 
 require_once $includes_path . 'record.php';
 
+?>
+
+<script type="text/javascript">
+var records = new Array();
+
+function update_table()
+{
+	$.ajax({
+		"type": "post",
+		"cache": false,
+		"url": "<?php t_get_link('ajax-status-list');?>",
+		"data": ({"request": records}),
+		"success": function(data) {
+			if ($("#status-list-table").size() == 0)
+			{
+				records.length = 0;
+				return;
+			}
+			JSON.parse(data, function(key, value){
+				if (typeof(value) != "string")
+					return;
+				$("#status-tb-tr-" + key).html(value.substr(1));
+				if (value.charAt(0) == '1')
+					for (var i = 0; i < records.length; i ++)
+						if (records[i] == key)
+						{
+							records.splice(i, 1);
+							break;
+						}
+			});
+			if (records.length)
+				setTimeout("update_table()", 1000);
+		}
+	});
+}
+
+function start_update_table(rec)
+{
+	if (!records.length)
+	{
+		records = rec;
+		update_table();
+	} else
+		records = rec;
+}
+
+</script>
+
+<?php
+
 echo '<div class="status-filter" style="margin-right: 10px">';
 echo __('Filter:');
 echo '</div>';
 echo '<form action="';
-t_get_link($cur_page, $page_arg);
+t_get_link($cur_page);
 echo '" method="post" id="filter-form">';
 
 function _make_input($prompt, $post_name)
@@ -157,6 +207,12 @@ function status_goto_page()
 		$("#filter-form").serializeArray().concat(
 			$("#goto-page-form").serializeArray()));
 }
+
+$("#filter-form").bind("submit", function(){
+	status_navigate_do("<?php t_get_link('ajax-status-list');?>", 
+		$("#filter-form").serializeArray());
+	return false;
+});
 
 </script>
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Fri Oct 15 19:57:24 2010 +0800
+ * $Date: Sat Oct 16 11:29:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -158,12 +158,12 @@ function prob_get_amount($gid = NULL)
  * get problem list
  * @param array $fields the fields needed, which should be a subset of $PROB_VIEW_PINFO, and CAN NOT contain 'grp'
  * @param int|NULL $gid problem group id
- * @param bool $time_asc order by time ASC(TRUE) or DESC(FALSE)
+ * @param bool $id_asc order by id ASC(TRUE) or DESC(FALSE)
  * @param int|NULL $offset
  * @param int|NULL $cnt
  * @return array  Note: if some problems is not allowed to be viewd, the corresponding rows will be NULL 
  */
-function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $cnt = NULL)
+function prob_get_list($fields, $gid = NULL, $id_asc = TRUE, $offset = NULL, $cnt = NULL)
 {
 	global $db, $DBOP, $user;
 	$perm_added = FALSE;
@@ -174,7 +174,7 @@ function prob_get_list($fields, $gid = NULL, $time_asc = TRUE, $offset = NULL, $
 	}
 	$rows = $db->select_from('problems',
 		$fields, _prob_get_list_make_where($gid),
-		array('time' => $time_asc ? 'ASC' : 'DESC'),
+		array('id' => $id_asc ? 'ASC' : 'DESC'),
 		$offset, $cnt
 	);
 	if (user_check_login())
@@ -288,10 +288,11 @@ function prob_is_invisible($pid)
 function prob_update_grp_cache_add($gid)
 {
 	global $db, $DBOP;
+	$pgid = $gid;
 	while (TRUE)
 	{
 		$pgid = $db->select_from('prob_grps', 'pgid',
-			array($DBOP['='], 'id', $gid));
+			array($DBOP['='], 'id', $pgid));
 		if (!count($pgid))
 			return;
 		$pgid = intval($pgid[0]['pgid']);
@@ -299,7 +300,6 @@ function prob_update_grp_cache_add($gid)
 			return;
 		$db->insert_into('cache_pgrp_child',
 			array('gid' => $pgid, 'chid' => $gid));
-		$gid = $pgid;
 	}
 }
 

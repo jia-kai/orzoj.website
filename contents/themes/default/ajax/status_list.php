@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Fri Oct 15 21:54:41 2010 +0800
+ * $Date: Sat Oct 16 12:05:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -318,10 +318,7 @@ echo '</div>';
 ?>
 
 <script type="text/javascript">
-$("a[name='status-detail']").colorbox({
-	"width": 700,
-	"maxHeight": 500
-});
+$("a[name='status-detail']").colorbox();
 $("#goto-page-form").bind("submit", function(){
 	status_goto_page();
 	return false;
@@ -331,43 +328,11 @@ table_set_double_bgcolor();
 <?php
 if (count($records_unfinished))
 {
-	echo 'var records = new Array(';
-	echo implode(',', $records_unfinished);
-	echo ");\n";
-?>
-
-function update_table()
-{
-	$.ajax({
-		"type": "post",
-		"cache": false,
-		"url": "<?php t_get_link('ajax-status-list');?>",
-		"data": ({"request": records}),
-		"success": function(data) {
-			if ($("#status-list-table").size() == 0)
-				return;
-			var obj = JSON.parse(data, function(key, value){
-				if (typeof(value) != "string")
-					return;
-				$("#status-tb-tr-" + key).html(value.substr(1));
-				if (value.charAt(0) == '1')
-					for (var i = 0; i < records.length; i ++)
-						if (records[i] == key)
-						{
-							records.splice(i, 1);
-							break;
-						}
-			});
-			if (records.length)
-				setTimeout("update_table()", 1000);
-		}
-	});
-}
-
-update_table();
-
-<?php
-}
+	$arg = 'new Array(';
+	$arg .= implode(',', $records_unfinished);
+	$arg .= ')';
+	echo "start_update_table($arg);\n";
+} else echo "start_update_table(new Array());\n";
 ?>
 
 </script>

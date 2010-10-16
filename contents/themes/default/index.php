@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri Oct 15 20:58:23 2010 +0800
+ * $Date: Sat Oct 16 10:27:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -94,11 +94,17 @@ $PAGES_ACTION = array(
 if ($cur_page == 'index')
 	$cur_page = 'home';
 
+if (substr($cur_page, 0, 10) == 'show-ajax-')
+{
+	$show_ajax = TRUE;
+	$cur_page = substr($cur_page, 5);
+}
+
 if (!isset($PAGES[$cur_page]) && !isset($PAGES_AJAX[$cur_page]) &&
 	!isset($PAGES_ACTION[$cur_page]))
 	die("unknown page: $cur_page");
 
-if (isset($PAGES_AJAX[$cur_page]))
+if (isset($PAGES_AJAX[$cur_page]) && !isset($show_ajax))
 {
 	require_once $PAGES_AJAX[$cur_page];
 	exit;
@@ -262,7 +268,18 @@ EOF;
 		</div> <!-- id: banner -->
 
 		<div id="content-with-nav">
-<?php require_once $theme_path . 'ajax/index_content_with_nav.php'; ?>
+<?php
+if (isset($show_ajax))
+{
+	require_once $theme_path . $PAGES_AJAX[$cur_page];
+	echo '<div id="show-ajax-info-div">';
+	echo __('This is an AJAX page. Please visit %s to find the complete page.',
+		"<a href=\"$website_root\">$website_name</a>");
+	echo '</div>';
+}
+else
+	require_once $theme_path . 'ajax/index_content_with_nav.php'; 
+?>
 		</div>
 	</div> <!-- id: page -->
 

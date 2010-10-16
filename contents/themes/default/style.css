@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Fri Oct 15 23:53:45 2010 +0800
+ * $Date: 六 10月 16 11:02:57 2010 +0800
 
  This file is part of orzoj
 
@@ -78,6 +78,15 @@ div#page a:hover
 	text-decoration: underline;
 }
 
+div#show-ajax-info-div
+{
+	clear: both;
+	float: left;
+	color: red;
+	margin: 15px;
+	padding: 5px;
+	border: 1px solid white;
+}
 
 img
 {
@@ -455,6 +464,16 @@ div#page a.status-ac:hover, div#page a.status-wa:hover, div#page a.status-ce:hov
 {
 	color: #1BF11A;
 	text-decoration: underline;
+}
+
+table#record-detail
+{
+	border-collapse: collapse;
+	margin: 0;
+	border: 0;
+	padding: 0;
+	min-width: 600px;
+	max-width: 650px;
 }
 
 table#record-detail tr, table#record-detail th, table#record-detail td

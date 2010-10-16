@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Oct 14 14:11:22 2010 +0800
+ * $Date: Sat Oct 16 10:02:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -301,7 +301,7 @@ function user_check_name($name)
  */
 function _user_make_passwd_v01($username, $passwd)
 {
-	$passwd .= '$' . $username;
+	$passwd .= '$' . strtolower($username);
 	return sha1(md5($passwd) . $passwd . sha1($passwd));
 }
 

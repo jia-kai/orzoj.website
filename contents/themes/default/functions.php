@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Fri Oct 15 23:51:20 2010 +0800
+ * $Date: Sat Oct 16 12:11:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -168,7 +168,8 @@ function tf_form_get_gid_selector_value($selector_name)
 function tf_form_get_source_editor($prompt, $name, $default = NULL)
 {
 	$id = _tf_get_random_id();
-	return sprintf('<tr><td><label for="%s">%s</label></td><td><textarea type="text" id="%s" name="%s">%s</textarea></td></tr>',
+	return sprintf('<tr><td colspan="2"><label for="%s">%s</label><br />
+		<textarea type="text" id="%s" name="%s" style="width: 600px; height: 400px;">%s</textarea></td></tr>',
 		$id, $prompt, $id, $name, is_null($default) ? '' : $default);
 }
 
