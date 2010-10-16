@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Fri Oct 15 19:45:28 2010 +0800
+ * $Date: Sat Oct 16 19:01:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,7 +33,7 @@ prob_view_single_parse_arg();
 
 try
 {
-	/* navigator button-set version */
+	/* navigator button */
 	$content = '';
 
 	$content = '<div id="prob-view-single-navigator-top">';
@@ -42,14 +42,12 @@ try
 	$content .= '<a id="prob-submit-link" href="' . t_get_link('ajax-prob-submit', "$pid", TRUE, TRUE) . '"><button type="button">'
 		. __('Submit') . '</button></a>';
 
-	// All submissions
-	$content .= '<a id="prob-all-submissions" href="' . t_get_link('ajax-prob-all-submissions', "$pid", TRUE, TRUE) . '"><button type="button">' 
-		. __('All submissions') . '</button></a>';
-
 	// Best solutions 
-	$content .= '<a id="prob-best-solutions" href="' . t_get_link('ajax-prob-best-solutions', $pid, TRUE, TRUE) . '"><button type="button">'
+	$content .= '<a id="prob-best-solutions" href="' . t_get_link('ajax-prob-best-solutions', "$pid", TRUE, TRUE) . '"><button type="button">'
 		. __('Best solutions') . '</button></a>';
 
+	// Discuss TODO
+	
 	// Back to list
 	if ($start_page == -1) // from a unknown place..
 	{

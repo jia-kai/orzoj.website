@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Sat Oct 16 12:04:39 2010 +0800
+ * $Date: Sat Oct 16 18:48:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -47,7 +47,7 @@ if ($page_arg == 'submit')
 
 $pid = 0;
 if (sscanf($page_arg, "%d", $pid) != 1)
-	die(__("Eh? What do want me to do?"));
+	die(__("Sir, what can I do for you?"));
 
 if (!user_check_login())
 	die(__("Please login first."));

@@ -19,3 +19,5 @@ t_get_link : in_HTML
 problem not permitted returns NULL
 
 There still seems something wrong with problem select by group
+
+Problem page: discuss solution

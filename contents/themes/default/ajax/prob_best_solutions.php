@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_best_solutions.php
- * $Date: Fri Oct 15 14:52:28 2010 +0800
+ * $Date: Sat Oct 16 18:51:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,5 +25,19 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+$pid = 0;
+if (sscanf($page_arg, "%d", $pid) != 1)
+	die(__("Sir, what can I do for you?"));
+if (!user_check_login())
+	die(__("Please login first."));
+?>
 
-
+<script type="text/javascript">
+$.ajax({
+	"type" : "post",
+	"cache" : false,
+	"url" : "<?php t_get_link('ajax-status-list'); ?>",
+	"data" : ({"prob_best_solutions" : <?php echo $pid; ?>}),
+	"success" : function(data){$.colorbox({"html" : data});}
+});
+</script>
