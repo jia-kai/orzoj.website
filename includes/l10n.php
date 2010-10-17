@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Sat Oct 16 21:30:05 2010 +0800
+ * $Date: Sun Oct 17 16:00:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -123,11 +123,10 @@ function l10n_add_directory($dir)
 			switch (strstr(strtolower($file),'.'))
 			{
 			case '.po':
-				l10n_add_po_file($dir . $file);
+				//l10n_add_po_file($dir . $file);
 				break;
 			case '.mo':
 				l10n_add_mo_file($dir . $file);
-				echo $file;
 				break;
 			}
 		}

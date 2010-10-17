@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Thu Oct 14 10:36:25 2010 +0800
+ * $Date: Sun Oct 17 15:54:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,6 +38,7 @@ define('MESSAGE_SUBJECT_LEN_MAX', 127);
 define('TEAM_NAME_LEN_MAX', 50);
 
 define('DEFAULT_THEME_ID', 1);
+define('DEFAULT_WLANG_ID',2);
 
 $cnt = 1;
 define('GID_ADMIN_USER', $cnt ++); // manage users (lock a user, change password, etc)

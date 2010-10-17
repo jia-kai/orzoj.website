@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Wed Oct 13 09:05:04 2010 +0800
+ * $Date: Sun Oct 17 15:49:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -54,6 +54,18 @@ function _index_set_theme($id = NULL)
 _index_set_theme(DEFAULT_THEME_ID);
 
 require_once $theme_path. 'functions.php';
+if (user_check_login())
+{
+	$result = $db->select_from('wlang',array('file'),array($DBOP['='],'id',$user->wlang));
+	l10n_add_directory($root_path.'contents/lang/'.$result[0]['file'].'/');
+	unset($result);
+}
+else
+{
+	$result = $db->select_from('wlang',array('file'),array($DBOP['='],'id',DEFAULT_WLANG_ID));
+	l10n_add_directory($root_path.'contents/lang/'.$result[0]['file'].'/');
+	unset($result);
+}
 
 user_init_form();
 
