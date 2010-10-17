@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Sun Oct 17 00:49:25 2010 +0800
+ * $Date: Sun Oct 17 10:45:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -167,7 +167,7 @@ function _cv_lang()
 
 function _cv_status()
 {
-	global $cur_row, $RECORD_STATUS_TEXT, $_POST;
+	global $cur_row, $RECORD_STATUS_TEXT;
 	$s = intval($cur_row['status']);
 	$str = $RECORD_STATUS_TEXT[$s];
 	if (isset($_POST['prob_best_solutions']))

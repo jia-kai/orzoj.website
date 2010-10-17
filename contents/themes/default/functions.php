@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 16 19:41:40 2010 +0800
+ * $Date: Sun Oct 17 11:30:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -181,7 +181,7 @@ function tf_form_get_source_editor($prompt, $name, $default = NULL)
 function tf_form_get_source_editor_data($name)
 {
 	if (!isset($_POST[$name]))
-		throw new Exc_runtime(__('Imcomplete POST.'));
+		throw new Exc_runtime(__('imcomplete post'));
 	if (!strlen($_POST[$name]))
 		throw new Exc_runtime(__('Hi buddy, source please?'));
 	return $_POST[$name];

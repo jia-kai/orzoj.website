@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Fri Oct 15 21:50:45 2010 +0800
+ * $Date: Sun Oct 17 09:37:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -75,6 +75,13 @@ abstract class Ctal
 	 * @exception Exc_runtime if permission denied
 	 */
 	abstract protected function prob_view($user_grp, &$pinfo);
+
+	/**
+	 * whether a problem in this contest is allowed to appear in the problem list
+	 * @param array $user_grp
+	 * @return bool
+	 */
+	abstract protected function view_in_list($user_grp);
 
 	/**
 	 * deal with user submissions for problems in this contest

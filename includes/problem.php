@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Sat Oct 16 11:29:11 2010 +0800
+ * $Date: Sun Oct 17 09:47:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -77,15 +77,15 @@ function prob_view($pid)
 	if (user_check_login())
 	{
 		$grp = $user->groups;
-		$has_perm = $user->is_grp_member(GID_SUPER_SUBMITTER);
+		$is_super_submitter = $user->is_grp_member(GID_SUPER_SUBMITTER);
 	}
 	else
 	{
 		$grp = array(GID_GUEST);
-		$has_perm = FALSE;
+		$is_super_submitter = FALSE;
 	}
 
-	if (!$has_perm && !prob_check_perm($grp, $row['perm']))
+	if (!$is_super_submitter && !prob_check_perm($grp, $row['perm']))
 		throw new Exc_runtime(__('Your are not permitted to view this problem'));
 
 	$row_grp = array();
@@ -99,7 +99,7 @@ function prob_view($pid)
 		$row['io'] = unserialize($row['io']);
 	else $row['io'] = NULL;
 
-	if (!$has_perm)
+	if (!$is_super_submitter)
 	{
 		$ct = ctal_get_class($pid);
 		if ($ct)
@@ -118,28 +118,16 @@ function prob_view($pid)
  */
 function _prob_get_list_make_where($gid)
 {
-	global $db, $DBOP, $user;
-	$ret0 = NULL;
-	if (!is_null($gid))
-		$ret0 = array($DBOP['in'], 'id', $db->select_from(
-			'map_prob_grp', 'pid', 
-			array($DBOP['in'], 'gid', $db->select_from(
-				'cache_pgrp_child', 'chid', array(
-					$DBOP['='], 'gid', $gid), array('chid' => 'ASC'), NULL, NULL,
-					array('chid' => 'gid'), TRUE),
+	global $db, $DBOP;
+	if (is_null($gid))
+		return NULL;
+	return array($DBOP['in'], 'id', $db->select_from(
+		'map_prob_grp', 'pid', 
+		array($DBOP['in'], 'gid', $db->select_from(
+			'cache_pgrp_child', 'chid', array(
+				$DBOP['='], 'gid', $gid), array('chid' => 'ASC'), NULL, NULL,
+				array('chid' => 'gid'), TRUE),
 			), array('pid' => 'ASC'), NULL, NULL, array('pid' => 'id'), TRUE));
-	$ret1 = NULL;
-	if (!user_check_login() || !$user->is_grp_member(GID_SUPER_SUBMITTER))
-		$ret1 = array($DBOP['!'], $DBOP['in'], 'id', $db->select_from(
-			'map_prob_ct', 'pid', array($DBOP['>'], 'time_end', time()),
-			array('pid' => 'ASC'), NULL, NULL,
-			array('pid' => 'id'), TRUE));
-
-	if (is_null($ret0))
-		return $ret1;
-	if (is_null($ret1))
-		return $ret0;
-	return array_merge(array($DBOP['&&']), $ret0, $ret1);
 }
 
 /**
@@ -166,25 +154,48 @@ function prob_get_amount($gid = NULL)
 function prob_get_list($fields, $gid = NULL, $id_asc = TRUE, $offset = NULL, $cnt = NULL)
 {
 	global $db, $DBOP, $user;
-	$perm_added = FALSE;
+	$fields_added = array();
 	if (!in_array('perm', $fields))
 	{
 		$fields[] = 'perm';
-		$perm_added = TRUE;
+		$fields_added[] = 'perm';
+	}
+	if (!in_array('id', $fields))
+	{
+		$fields[] = 'id';
+		$fields_added[] = 'id';
 	}
 	$rows = $db->select_from('problems',
 		$fields, _prob_get_list_make_where($gid),
 		array('id' => $id_asc ? 'ASC' : 'DESC'),
 		$offset, $cnt
 	);
+
+	$is_super_submiter = FALSE;
 	if (user_check_login())
+	{
 		$grp = $user->groups;
+		$is_super_submiter = $user->is_grp_member(GID_SUPER_SUBMITTER);
+	}
 	else $grp = array(GID_GUEST);
 
 	$io_set = isset($fields['io']);
 
 	foreach ($rows as $key => $row)
-		if (prob_check_perm($grp, $row['perm']))
+	{
+		if (!$is_super_submiter)
+		{
+			if (prob_future_contest($row['id']))
+			{
+				$ct = ctal_get_class($row['id']);
+				if (!$ct->view_in_list($grp))
+					$rows[$key] = NULL;
+			}
+			if (!prob_check_perm($grp, $row['perm']))
+				$rows[$key] = NULL;
+		}
+
+		if ($rows[$key] != NULL)
 		{
 			if ($io_set)
 			{
@@ -192,9 +203,10 @@ function prob_get_list($fields, $gid = NULL, $id_asc = TRUE, $offset = NULL, $cn
 					$row['io'] = unserialize($row['io']);
 				else $row['io'] = NULL;
 			}
-			if ($perm_added)
-				unset($row['perm']);
-		} else $rows[$key] = NULL;
+			foreach ($fields_added as $f)
+				unset($rows[$key][$f]);
+		}
+	}
 	return $rows;
 }
 
@@ -257,11 +269,11 @@ function prob_get_code_by_id($pid)
 }
 
 /**
- * test whether a problem belongs to an upcoming contest and so is not allowed to be accessed
+ * test whether a problem belongs to an upcoming contest
  * @param int $pid problem id
  * @return bool
  */
-function prob_is_invisible($pid)
+function prob_future_contest($pid)
 {
 	static $cache = NULL;
 	if (is_null($cache))
@@ -291,6 +303,8 @@ function prob_update_grp_cache_add($gid)
 	$pgid = $gid;
 	while (TRUE)
 	{
+		$db->insert_into('cache_pgrp_child',
+			array('gid' => $pgid, 'chid' => $gid));
 		$pgid = $db->select_from('prob_grps', 'pgid',
 			array($DBOP['='], 'id', $pgid));
 		if (!count($pgid))
@@ -298,8 +312,6 @@ function prob_update_grp_cache_add($gid)
 		$pgid = intval($pgid[0]['pgid']);
 		if ($pgid == 0)
 			return;
-		$db->insert_into('cache_pgrp_child',
-			array('gid' => $pgid, 'chid' => $gid));
 	}
 }
 

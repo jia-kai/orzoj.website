@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Sat Oct 16 18:48:54 2010 +0800
+ * $Date: Sun Oct 17 11:30:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -36,12 +36,12 @@ if ($page_arg == 'submit')
 	{
 		submit_src();
 		$html = '0';
-		$html .= __('Submittion success!') . '<br />';
+		$html .= __('Successful submission!') . '<br />';
 		die($html);
 	}
 	catch (Exc_orzoj $e)
 	{
-		die('1' . __('Submittion failed: ') . $e->msg());
+		die('1' . __('Failed to submit: ') . $e->msg());
 	}
 }
 

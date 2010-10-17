@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Sat Oct 16 19:29:18 2010 +0800
+ * $Date: Sun Oct 17 10:13:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -271,7 +271,12 @@ $row = $db->select_from('records', array_keys($cols),
 if (count($row) != 1)
 	die('no such record');
 
+record_filter_rows($row);
+
 $row = $row[0];
+
+if (is_null($row))
+	die('no such record');
 
 $syntax = plang_get_syntax_by_id($row['lid']);
 
