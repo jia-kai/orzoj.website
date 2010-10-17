@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Sun Oct 17 15:49:16 2010 +0800
+ * $Date: Sun Oct 17 18:59:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,40 +33,34 @@ require_once $includes_path . 'theme.php';
 /**
  * @ignore
  */
-function _index_set_theme($id = NULL)
+function _index_set_theme($name = NULL)
 {
-	global $theme_name, $theme_path, $root_path;
-	if ($id == NULL)
-		$theme_name = 'default';
-	else
-	{
-		global $theme_name, $db, $DBOP;
-		$theme_name = $db->select_from('themes', array('name'), array($DBOP['='], 'id', $id));
-		if (count($theme_name) == 0)
-			throw new Exc_runtime(__('No such theme whose id is %d', $id));
-		$theme_name = $theme_name[0]['name'];
-	}
-	$theme_path = $root_path . 'contents/themes/' . $theme_name . '/';
+	global $theme_path, $root_path;
+	if ($name == NULL)
+		$name = DEFAULT_THEME;
+	$theme_path = $root_path . 'contents/themes/' . $name . '/';
 }
 
 // TODO: user custom theme
 //_index_set_theme(user_check_login() ? $user->theme_id : NULL);
-_index_set_theme(DEFAULT_THEME_ID);
+_index_set_theme();
 
-require_once $theme_path. 'functions.php';
+/*
 if (user_check_login())
 {
-	$result = $db->select_from('wlang',array('file'),array($DBOP['='],'id',$user->wlang));
-	l10n_add_directory($root_path.'contents/lang/'.$result[0]['file'].'/');
+	$result = $db->select_from('wlang', array('file'), array($DBOP['='], 'id', $user->wlang));
+	l10n_add_directory($root_path . 'contents/lang/' . $result[0]['file'] . '/');
 	unset($result);
 }
 else
 {
-	$result = $db->select_from('wlang',array('file'),array($DBOP['='],'id',DEFAULT_WLANG_ID));
-	l10n_add_directory($root_path.'contents/lang/'.$result[0]['file'].'/');
+	$result = $db->select_from('wlang', array('file'), array($DBOP['='], 'id', DEFAULT_WLANG_ID));
+	l10n_add_directory($root_path . 'contents/lang/' . $result[0]['file'] . '/');
 	unset($result);
 }
+ */
 
+require_once $theme_path . 'functions.php';
 user_init_form();
 
 /*
