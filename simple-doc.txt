@@ -106,18 +106,21 @@ Note:
 
 options:
 
-judge_info_list:
-	serialized array of what should be queried in /orz.php : get_query_list()
+	judge_info_list:
+		serialized array of what should be queried in /orz.php : get_query_list()
 
-static_password:
-	set by website administrator (/orz.php)
+	static_password:
+		set by website administrator (/orz.php)
 
-dynamic_password, dynamic_password_with_time:
-	generated for orzoj-server authentication (/orz.php)
+	dynamic_password, dynamic_password_with_time:
+		generated for orzoj-server authentication (/orz.php)
 
-thread_req_id:
-	for orzoj-server authentication (/orz.php)
+	thread_req_id:
+		for orzoj-server authentication (/orz.php)
 
-email_validate_no_dns_check:
-	whether to check DNS while validating email address (/includes/function.php)
+	email_validate_no_dns_check:
+		whether to check DNS while validating email address (/includes/function.php)
+	
+	max_src_length:
+		maximal source length in bytes (/includes/submit.php)
 

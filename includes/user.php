@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sat Oct 16 17:41:45 2010 +0800
+ * $Date: Sat Oct 16 18:56:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -429,11 +429,13 @@ function user_register_get_form()
 
 /**
  * register a user, using the data posted by the user register form
+ * @param bool $login_after_register whether to set cookies indicating
+ * the user has logged in after succesful regesteration
  * @return int user id
  * @see user_register_get_form_fields
  * @exception Exc_runtime if failed
  */
-function user_register()
+function user_register($login_after_register = FALSE)
 {
 	$VAL_SET = array('username', 'passwd', 'passwd_confirm', 'realname', 'nickname', 'email',
 		'aid', 'plang', 'wlang', 'self_desc');
@@ -474,8 +476,23 @@ function user_register()
 	$val['reg_ip'] = get_remote_addr();
 
 	$val = filter_apply('before_user_register', $val);
+
+	if ($login_after_register)
+	{
+		$salt = _user_make_salt();
+		$val['salt'] = $salt;
+	}
+
 	global $db;
-	return $db->insert_into('users', $val);
+	$uid = $db->insert_into('users', $val);
+
+	if ($login_after_register)
+	{
+		cookie_set('uid', $uid);
+		cookie_set('password', _user_make_passwd($uid, $salt . $val['passwd']));
+	}
+
+	return $uid;
 }
 
 /**

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Sat Oct 16 16:29:17 2010 +0800
+ * $Date: Sat Oct 16 23:34:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -45,7 +45,6 @@ var records = new Array();
 
 function update_table()
 {
-	$("a[name='status-detail']").colorbox();
 	$.ajax({
 		"type": "post",
 		"cache": false,
@@ -62,12 +61,15 @@ function update_table()
 					return;
 				$("#status-tb-tr-" + key).html(value.substr(1));
 				if (value.charAt(0) == '1')
+				{
 					for (var i = 0; i < records.length; i ++)
 						if (records[i] == key)
 						{
 							records.splice(i, 1);
 							break;
 						}
+					$("#status-tb-tr-" + key + " a[name='status-detail']").colorbox();
+				}
 			});
 			if (records.length)
 				setTimeout("update_table()", 1000);
@@ -187,49 +189,17 @@ echo '</form></div>';
 ?>
 
 <div style="float:right">
-	<a href="#" onclick="status_goto_page();">
-	<img src="<?php _url('images/refresh.gif');?>" alt="&lt;refresh&gt;" />
-	</a>
+	<img src="<?php _url('images/refresh.gif');?>" alt="&lt;refresh&gt;"
+	onclick="status_goto_page();" 
+	style="cursor: pointer;" />
 </div>
 
-<div id="status-list" style="clear:both">
 <?php
 require_once $theme_path . 'ajax/status_list.php';
 ?>
-</div>
 
 <script type="text/javascript">
 $("#filter-apply-button").button();
-
-function status_navigate_do(addr, data)
-{
-	var t = $("#status-list");
-	t.animate({"opacity": 0.5}, 1);
-	$.ajax({
-		"type": "post",
-		"cache": false,
-		"url": addr,
-		"data": data,
-		"success": function(data) {
-			var t = $("#status-list");
-			t.animate({"opacity": 1}, 1);
-			t.html(data);
-		}
-	});
-}
-
-function status_navigate(addr)
-{
-	status_navigate_do(addr,
-		$("#filter-form").serializeArray());
-}
-
-function status_goto_page()
-{
-	status_navigate_do("<?php t_get_link('ajax-status-list');?>",
-		$("#filter-form").serializeArray().concat(
-			$("#goto-page-form").serializeArray()));
-}
 
 $("#filter-form").bind("submit", function(){
 	status_navigate_do("<?php t_get_link('ajax-status-list');?>", 

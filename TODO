@@ -7,7 +7,7 @@ default settings such as:
 
 set time format
 
-contents/themes/default/ajax/avatar_browser.php:102
-	Go to page: => Go to page: %s where %s is the inputbox.
 
 Problem page: discuss
+
+code editor

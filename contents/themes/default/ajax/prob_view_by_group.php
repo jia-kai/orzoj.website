@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Sat Oct 16 20:52:37 2010 +0800
+ * $Date: 六 10月 16 21:25:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -63,7 +63,7 @@ echo '</div>';
 
 echo '
 <div id="prob-list">
-<table class="orzoj-table">
+<table class="page-table">
 <tr>';
 
 foreach ($show_fields as $field)

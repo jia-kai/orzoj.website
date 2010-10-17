@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Fri Oct 15 16:45:55 2010 +0800
+ * $Date: Sun Oct 17 10:32:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -61,23 +61,26 @@ function submit_src()
 {
 	global $db, $DBOP, $user, $PROB_SUBMIT_PINFO;
 	if (!user_check_login())
-		throw new Exc_runtime(__('Not logged in'));
+		throw new Exc_runtime(__('not logged in'));
 	filter_apply_no_iter('before_submit_src');
 	if (!isset($_POST['code']) || !isset($_POST['plang']))
-		throw new Exc_runtime(__('Incomplete POST'));
+		throw new Exc_runtime(__('incomplete POST'));
 
 	$pid = prob_get_id_by_code($_POST['code']);
 	$plang = intval($_POST['plang']);
 	$row = $db->select_from('problems', $PROB_SUBMIT_PINFO,
 		array($DBOP['='], 'id', $pid));
 	if (count($row) != 1)
-		throw new Exc_runtime(__('No such problem'));
+		throw new Exc_runtime(__('no such problem'));
 	$row = $row[0];
 
 	if (!prob_check_perm($user->groups, $row['perm']))
-		throw new Exc_runtime(__('Permission denied for this problem'));
+		throw new Exc_runtime(__('permission denied for this problem'));
 
 	$src = tf_form_get_source_editor_data('src');
+	$max_src_length = intval(option_get('max_src_length'));
+	if (strlen($src) > $max_src_length)
+		throw new Exc_runtime(__('source length exceeds the limit (%d bytes)', $max_src_length));
 
 	$ct = ctal_get_class($pid);
 	if ($ct)

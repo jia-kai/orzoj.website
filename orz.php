@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Sat Oct 16 13:52:38 2010 +0800
+ * $Date: Sun Oct 17 10:08:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -91,10 +91,9 @@ if (isset($_REQUEST['action'])) // login
 if (isset($_REQUEST['data']))
 {
 	$data = json_decode($_REQUEST['data']);
-	if (isset($data->thread_id) && isset($data->req_id) && isset($data->data) && isset($data->checksum))
+	if (isset($data->thread_id) && isset($data->data) && isset($data->checksum))
 	{
 		$thread_id = $data->thread_id;
-		$req_id = $data->req_id;
 		$dynamic_password = option_get('dynamic_password');
 
 		$db_rid = unserialize(option_get('thread_req_id'));
@@ -104,12 +103,10 @@ if (isset($_REQUEST['data']))
 
 		if (!isset($db_rid[$thread_id]))
 			$db_rid[$thread_id] = 0;
+		$req_id = $db_rid[$thread_id];
 
 		$stdchecksum = sha1($thread_id . $req_id . sha1($dynamic_password . $static_password) . $data->data);
 		if ($stdchecksum != $data->checksum)
-			exit('relogin');
-
-		if ($db_rid[$thread_id] != $req_id)
 			exit('relogin');
 
 		$db_rid[$thread_id] ++;

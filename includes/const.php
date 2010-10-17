@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Sun Oct 17 15:54:51 2010 +0800
+ * $Date: 日 10月 17 18:46:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -48,8 +48,8 @@ define('GID_ADMIN_PROB', $cnt ++); // manage problems
 define('GID_ADMIN_CONTEST', $cnt ++);  // manage contests
 define('GID_ADMIN_POST', $cnt ++); // manage posts
 define('GID_SUPER_SUBMITTER', $cnt ++);
-// submit regardless of which contest the problem belongs to
-// or other limits on problem submission
+// view and submit regardless of which contest the problem belongs to
+// or other limits on viewing or submitting problem
 define('GID_SUPER_RECORD_VIEWER', $cnt ++);
 // view all records and sources
 define('GID_UINFO_VIEWER', $cnt ++); // view view register IP, submission IP, user real name etc.

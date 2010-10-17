@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_filter.php
- * $Date: Sat Oct 16 21:17:25 2010 +0800
+ * $Date: Sat Oct 16 23:21:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,12 +34,16 @@ function _make_input($prompt, $post_name)
 	$id = _tf_get_random_id();
 	echo <<<EOF
 <tr>
-<div class="prob-filter-prompt"><td>
-<label for="$id">$prompt</label></td>
-</div>
-<div class="prob-filter-input"><td>
-<input id="$id" type="text" name="$post_name" value="$default"></input></td>
-</div>
+<td>
+	<div style="clear: both; float: left;">
+	<label for="$id" class="prob-filter">$prompt</label>
+	</div>
+</td>
+<td>
+	<div style="float: left">
+	<input id="$id" type="text" name="$post_name" value="$default" class="prob-filter" ></input>
+	</div>
+</td>
 </tr>
 EOF;
 }

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index_content_with_nav.php
- * $Date: Sat Oct 16 16:51:12 2010 +0800
+ * $Date: Sat Oct 16 19:00:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,8 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+
+cookie_set('last_page', serialize(array($cur_page, $page_arg)));
 
 echo '
 <div class="navigator">
