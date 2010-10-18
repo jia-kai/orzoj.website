@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Mon Oct 18 10:05:35 2010 +0800
+ * $Date: Mon Oct 18 17:31:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,6 +32,7 @@ define('JUDGE_NAME_LEN_MAX', 20);
 define('PROB_CODE_LEN_MAX', 25);
 define('USERNAME_LEN_MAX', 20);
 define('USERNAME_LEN_MIN', 3);
+define('USER_GRP_NAME_LEN_MAX', 20);
 define('WLANG_NAME_LEN_MAX', 20);
 define('POST_SUBJECT_LEN_MAX', 127);
 define('MESSAGE_SUBJECT_LEN_MAX', 127);
@@ -40,11 +41,15 @@ define('TEAM_NAME_LEN_MAX', 50);
 define('DEFAULT_THEME', 'default');
 define('DEFAULT_WLANG_ID', 2);
 
-$cnt = 1;
+define('GID_NONE', -1); // nobody should be in this group
+$cnt = 0;
+define('GID_ALL', $cnt ++); // every registered user should be in this group
+define('GID_LOCK', $cnt ++); // locked group id
+define('GID_GUEST', $cnt ++);
 define('GID_ADMIN_USER', $cnt ++); // manage users (lock a user, change password, etc)
 define('GID_ADMIN_GROUP', $cnt ++);  // manage user groups (add, remove groups and assign group administrators)
 define('GID_ADMIN_TEAM', $cnt ++); // manage user teams
-define('GID_ADMIN_PROB', $cnt ++); // manage problems
+define('GID_ADMIN_PROB', $cnt ++); // manage problems and problem groups
 define('GID_ADMIN_CONTEST', $cnt ++);  // manage contests
 define('GID_ADMIN_POST', $cnt ++); // manage posts
 define('GID_SUPER_SUBMITTER', $cnt ++);
@@ -52,11 +57,7 @@ define('GID_SUPER_SUBMITTER', $cnt ++);
 // or other limits on viewing or submitting problem
 define('GID_SUPER_RECORD_VIEWER', $cnt ++);
 // view all records and sources
-define('GID_UINFO_VIEWER', $cnt ++); // view view register IP, submission IP, user real name etc.
-define('GID_LOCK', $cnt ++); // locked group id
-define('GID_ALL', $cnt ++); // every registered user should be in this group
-define('GID_NONE', $cnt ++); // nobody should be in this group
-define('GID_GUEST', $cnt ++);
+define('GID_UINFO_VIEWER', $cnt ++); // view register IP, submission IP, user real name etc.
 
 define('JUDGE_STATUS_OFFLINE',0);
 define('JUDGE_STATUS_ONLINE',1);

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Mon Oct 18 15:36:19 2010 +0800
+ * $Date: Mon Oct 18 21:29:55 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -37,11 +37,22 @@ $DBOP = array();
  */
 abstract class Dbal
 {
+	public
 	/**
 	 * TRUE: do sql query
 	 * FALSE: return an array of query(-ies)
 	 */
-	public $direct_query = TRUE;
+		$direct_query = TRUE,
+
+	/**
+	 * whether to record all queries (only for debugging)
+	 */
+		$record_query = FALSE,
+
+	/**
+	 * if $record_query == TRUE, all queries will be stored here
+	 */
+		$query_log = array();
 
 	/**
 	 * charset of table

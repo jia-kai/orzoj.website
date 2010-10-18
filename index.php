@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Mon Oct 18 14:15:44 2010 +0800
+ * $Date: Mon Oct 18 19:37:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -123,6 +123,10 @@ else $cur_page = 'index';
 if (isset($_GET['arg']))
 	$page_arg = $_GET['arg'];
 else $page_arg = NULL;
+
+
+// XXX: for debug only
+$db->record_query = TRUE;
 
 require_once  $theme_path . 'index.php';
 

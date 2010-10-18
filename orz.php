@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Mon Oct 18 19:32:52 2010 +0800
+ * $Date: Mon Oct 18 21:30:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -203,7 +203,7 @@ function register_new_judge()
 	$lang_sup = $func_param->lang_supported;
 	$query_ans = json_decode($func_param->query_ans, TRUE);
 	$ret = judge_get_id_by_name($judge_name);
-	if ($ret === NULL)
+	if (is_null($ret))
 		$ret = judge_add($judge_name, $lang_sup, $query_ans);
 	else
 		judge_update($ret, $judge_name, $lang_sup, $query_ans);

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Oct 18 16:59:34 2010 +0800
+ * $Date: Mon Oct 18 21:29:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -92,23 +92,30 @@ $tables = array(
 	//
 	// BUT a user belongs to the administrator group iff it belongs to the group directly
 
-	/* user_groups */
-	'user_groups' => array(
+	/* user_grps */
+	'user_grps' => array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'pgid' => array('type' => 'INT32'), // parent group id, or 0 if none
+			'name' => array('type' => 'TEXT200'), // group name
 			'desc' => array('type' => 'TEXT'), // description
 		),
 		'primary_key' => 'id',
 		'index' => array(
 			array(
 				'cols' => array('pgid')
+			),
+			array(
+				'cols' => array('name')
 			)
 		),
+		'index_len' => array(
+			'name' => USER_GRP_NAME_LEN_MAX
+		)
 	),
 
-	/* map_user_group */
-	'map_user_group' => array(
+	/* map_user_grp */
+	'map_user_grp' => array(
 		'cols' => array(
 			'uid' => array('type' => 'INT32'),
 			'gid' => array('type' => 'INT32'),
@@ -286,9 +293,9 @@ $tables = array(
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'name' => array('type' => 'TEXT200'), // display name and name used on orzoj-server
 			'type' => array('type' => 'TEXT200')
-			// the type of this language
+			// the type of this language, also the file extention when downloading a source file of this language
 			// standard types:
-			//	cpp, c, pascal, java
+			//	cpp, c, pas, java
 		),
 		'primary_key' => 'id'
 	),

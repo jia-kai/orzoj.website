@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Mon Oct 18 00:29:27 2010 +0800
+ * $Date: Mon Oct 18 19:40:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -58,6 +58,8 @@ function t_get_footer()
 		' Powered by <a style="color: blue" href="http://code.google.com/p/orzoj/" target="_blank">Orz Online Judge</a> %s<br />',
 		$db->get_query_amount(),
 			(microtime(TRUE) - $PAGE_START_TIME) * 1000, $ORZOJ_VERSION);
+	if ($db->record_query)
+		$str .= '<br /> <div style="text-align: left">Queryies:' . htmlencode(print_r($db->query_log, TRUE)) . '</div>';
 	echo filter_apply('after_footer', $str);
 }
 
@@ -105,4 +107,15 @@ function t_get_link($page, $arg = NULL, $in_HTML = TRUE, $return_string = FALSE)
 	echo $str;
 }
 
+
+/**
+ * get a URL for downloading source
+ * @param int $rid record id
+ * @return string
+ */
+function t_get_src_download_url($rid)
+{
+	global $website_root;
+	return $website_root . "src_download.php?rid=$rid";
+}
 

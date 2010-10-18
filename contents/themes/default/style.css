@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Oct 18 15:32:39 2010 +0800
+ * $Date: Mon Oct 18 21:30:14 2010 +0800
 
  This file is part of orzoj
 
@@ -65,16 +65,17 @@ div#page
 	text-align: center;
 }
 
-div#page a:link, div#page a:visited
+div#page a:link, div#page a:visited, div#gid-treeview a, div#gidtreeview a:visited
 {
 	color: white;
 	text-decoration: none;
 	font-style: italic;
 }
 
-div#page a:hover
+div#page a:hover, div#gid-treeview a:hover
 {
 	color: white;
+	background-color: transparent;
 	text-decoration: underline;
 }
 
@@ -282,14 +283,26 @@ div.clearer
 	clear: both;
 }
 
-
-
-div#prob-grp-tree
+div#prob-grp-tree, div#gid-treeview
 {
 	margin: 0;
-	background: inherit;
+	background: transparent;
 	overflow: auto;
 	text-align: left;
+}
+
+div#gid-treeview
+{
+	float: left;
+	height: 350px;
+	width: 300px;
+}
+
+select#gid-selector-select
+{
+	float: left;
+	height: 350px;
+	width: 200px;
 }
 
 div#prob-grp-tree a:hover
@@ -571,7 +584,6 @@ form#goto-page-form
 	float: right;
 	margin-left: 20px;
 }
-
 
 div#rank-list-table
 {

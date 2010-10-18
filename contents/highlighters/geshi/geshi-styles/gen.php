@@ -2,7 +2,7 @@
 define('IN_ORZOJ', TRUE);
 require_once '../geshi.php';
 
-$formats = array('cpp', 'c', 'pascal', 'java');
+$formats = array('cpp', 'c', 'pas', 'java');
 foreach ($formats as $f)
 {
 	$geshi = new GeSHi($f, $f);

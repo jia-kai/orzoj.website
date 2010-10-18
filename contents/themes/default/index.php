@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Mon Oct 18 18:45:06 2010 +0800
+ * $Date: Mon Oct 18 21:30:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -492,13 +492,25 @@ if (isset($startup_msg))
 					d.html(data);
 					d.dialog({
 						"modal": true,
+						"resizable": false,
+						"minWidth": 600,
 						"buttons": {
-							"OK": function() {
+							"<?php echo __('ADD');?> ->" : function() {
+								gid_selector_add();
+							},
+							"<?php echo __('REMOVE');?>" : function() {
+								gid_selector_remove();
+							},
+							"<?php echo __('CANCEL');?>": function() {
+								$(this).dialog("close");
+							},
+							"<?php echo __('OK');?>": function() {
+								gid_selector_ok();
 								$(this).dialog("close");
 							}
 						},
-						"show": "scale",
-						"hide": "scale"
+						"show": "fade",
+						"hide": "fade"
 					});
 				}
 			});

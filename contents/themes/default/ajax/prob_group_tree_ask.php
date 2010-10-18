@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_group_tree_ask.php
- * $Date: Mon Oct 18 11:39:55 2010 +0800
+ * $Date: Mon Oct 18 17:41:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,9 +30,9 @@ if (!defined('IN_ORZOJ'))
 require_once $theme_path . 'prob_func.php';
 
 $ret = array();
-if (!isset($_GET['prob_grp_id']))
-	throw new Exc_inner('`prob_grp_id in $_GET does not set.`');
-$pgid = $_GET['prob_grp_id'];
+if (!isset($_POST['prob_grp_id']))
+	die('`prob_grp_id in $_POST does not set.`');
+$pgid = $_POST['prob_grp_id'];
 $first_request = FALSE;
 if ($pgid == -1) // the first request
 {
@@ -58,14 +58,14 @@ foreach ($grps as $grp)
 	$nchild = $db->get_number_of_rows('prob_grps',
 		array($DBOP['='], 'pgid', $id));
 	if ($nchild)
-		$grp["state"] = "closed";
+		$grp['state'] = 'closed';
 	$ret[] = $grp;
 }
 
 if ($first_request)
 	$ret = array(
 		'data' => array(
-			'title' => 'All',
+			'title' => __('All'),
 			'attr' => array(
 				'href' => prob_view_by_group_get_a_href(0, 1, FALSE),
 				'onclick' => prob_view_by_group_get_a_onclick(0, 1, FALSE)

@@ -3,9 +3,9 @@
 require_once '../pre_include.php';
 require_once $includes_path . 'problem.php';
 
-define('NPROB', 10);
-define('NPGRP', 10);
-define('NMAP', 10);
+define('NPROB', 50);
+define('NPGRP', 50);
+define('NMAP', 80);
 
 $db->delete_item('problems');
 $db->delete_item('prob_grps');
@@ -70,7 +70,7 @@ function make_pgrp()
 	global $db;
 	for ($i = 0; $i < NPGRP; $i ++)
 	{
-		$id = $db->insert_into('prob_grps', array('pgid' => rand(0, $i), 'name' => "prob_grp $i"));
+		$id = $db->insert_into('prob_grps', array('pgid' => rand(0, $i - 1), 'name' => "prob_grp $i"));
 		prob_update_grp_cache_add($id);
 	}
 }

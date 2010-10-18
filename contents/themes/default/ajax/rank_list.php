@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Mon Oct 18 21:20:30 2010 +0800
+ * $Date: Mon Oct 18 21:34:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -95,7 +95,7 @@ EOF;
  */
 function _make_table_header($name, $col_name, $default_order)
 {
-	echo "<th><a onclick=\"table_sort_by('$col_name', '$default_order'); return false;\">$name</a></th>";
+	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order'); return false;\">$name</a></th>";
 }
 
 $heads = array(

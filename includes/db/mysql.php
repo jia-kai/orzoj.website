@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Fri Oct 15 14:07:47 2010 +0800
+ * $Date: Mon Oct 18 19:37:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -562,6 +562,8 @@ class Dbal_mysql extends Dbal
 				$this->transaction_rollback();
 			throw new Exc_db($msg);
 		}
+		if ($this->record_query)
+			array_push($this->query_log, $query);
 		return $ret;
 	}
 

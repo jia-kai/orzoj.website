@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Mon Oct 18 11:17:57 2010 +0800
+ * $Date: Mon Oct 18 16:47:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -75,7 +75,7 @@ class User
 		$uid = $this->id;
 		if ($this->groups)
 			return $this->groups;
-		$rows = $db->select_from('map_user_group', array('gid', 'admin'),
+		$rows = $db->select_from('map_user_grp', array('gid', 'admin'),
 			array($DBOP['&&'], $DBOP['='], 'uid', $uid, $DBOP['='], 'pending', 0));
 
 		$groups = array(GID_ALL);
@@ -94,7 +94,7 @@ class User
 
 		for ($i = 0; $i < count($groups); $i ++)
 		{
-			$rows = $db->select_from('user_groups', 'pgid',
+			$rows = $db->select_from('user_grps', 'pgid',
 				array($DBOP['='], 'id', $groups[$i]));
 			if (count($rows) != 1)
 				continue;
@@ -512,27 +512,6 @@ function user_register($login_after_register = FALSE)
 	}
 
 	return $uid;
-}
-
-/**
- * delete a user and other information related to it. If the user does not exist, nothing happens
- * @param int $uid user id
- * @return void
- */
-function user_del($uid)
-{
-	global $db, $DBOP;
-	$where = array($DBOP['='], 'id', $uid);
-	$db->delete_item('users', $where);
-
-	$where[1] = 'uid';
-
-	$db->delete_item('map_user_group', $where);
-	$db->delete_item('records', $where);
-	$db->delete_item('posts', $where);
-
-	message_del_by_sender($uid);
-	message_del_by_receiver($uid);
 }
 
 /**

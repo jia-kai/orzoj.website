@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_group_tree.php
- * $Date: Fri Oct 15 16:05:41 2010 +0800
+ * $Date: Mon Oct 18 17:41:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -41,8 +41,9 @@ $(function(){
 		},
 		"json_data" : {
 			"ajax" : {
-				"url" : "<?php t_get_link('ajax-prob-group-tree-ask'); ?>"
-				,
+				"url" : "<?php t_get_link('ajax-prob-group-tree-ask'); ?>",
+				"type": "post",
+				"cache": false,
 				"data" : function (node) {
 					return {
 						"prob_grp_id" : node.attr ? node.attr("id") : -1

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Mon Oct 18 14:55:33 2010 +0800
+ * $Date: Mon Oct 18 15:40:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -230,7 +230,7 @@ function _fd_src()
 		$src = $src[0]['src'];
 	else $src = __('not found');
 	//TODO: retrieve source from orzoj-server
-	echo __('Source:') . '<br />';
+	printf('<a href="%s">%s</a><br />', t_get_src_download_url($page_arg), __('Source:'));
 	$geshi = new GeSHi($src, $plang_type);
 	$geshi->set_header_type(GESHI_HEADER_PRE_TABLE);
 	$geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS);
