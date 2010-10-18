@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Mon Oct 18 21:30:07 2010 +0800
+ * $Date: Mon Oct 18 21:37:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -255,7 +255,7 @@ else
 <img src="$user->avatar" alt="avatar" style="max-height: 128px; max-width: 128px;" />
 </div>
 <div style="float: left; margin: 5px">
-$user->username <br />
+$user->nickname <br />
 $p <br />
 <div id="user-options">
 EOF;
