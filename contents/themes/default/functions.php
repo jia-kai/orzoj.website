@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Oct 18 15:07:45 2010 +0800
+ * $Date: Mon Oct 18 21:57:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -321,8 +321,8 @@ function tf_get_prob_html($pinfo)
 	}
 	else
 	{
-		$input = $pinfo[0];
-		$output = $pinfo[1];
+		$input = $pinfo['io'][0];
+		$output = $pinfo['io'][1];
 	}
 	$desc = unserialize($pinfo['desc']);
 	$content  = '

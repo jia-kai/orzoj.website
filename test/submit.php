@@ -11,15 +11,16 @@ $src = '
 #include <sys/time.h>
 int main()
 {
-	FILE *fin = fopen("a+b.in", "r"),
-		*fout = fopen("a+b.out", "w");
+//	FILE *fin = fopen("a+b.in", "r"),
+	//		*fout = fopen("a+b.out", "w");
+	FILE *fin = stdin, *fout = stdout;
 	int a, b;
 	fscanf(fin, "%d%d", &a, &b);
 
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	srand(tv.tv_sec * tv.tv_usec);
-	if (rand() < RAND_MAX / 2)
+	if (rand() < RAND_MAX / 6)
 		a ++;
 
 	fprintf(fout, "%d\n", a + b);

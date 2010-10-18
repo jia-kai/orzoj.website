@@ -19,7 +19,7 @@ function make_prob()
 		array('title' => 'A+B Problem',
 		'code' => 'a+b',
 		'perm' => serialize(array(0, 1, array(GID_ALL), array())),
-		'io' => '',
+		'io' => serialize(array('a+b.in', 'a+b.out')),
 		'time' => time(),
 		'cnt_submit' => 10,
 		'cnt_ac' => 2,
