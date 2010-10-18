@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: mo.php
- * $Date: Mon Oct 18 22:59:44 2010 +0800
+ * $File: mo2php.php
+ * $Date: Mon Oct 18 22:51:49 2010 +0800
  * $Author: Qijiang Fan <fqj1994@gmail.com>
  * This file is edited for Orz Online Judge
  */
@@ -26,7 +26,6 @@
    limitations under the License.
  */
 
-if (!defined('IN_ORZOJ')) exit;
 
 /**
  * A class to get translation from GNU MO File
@@ -88,7 +87,7 @@ class MOReader
 			if ($length > 0)
 			{
 				$orig = $this->read_char_array($fpointer,$offset,$length);
-				//if ($orig == $text)
+				//	if ($orig == $text)
 				//	{
 				$trans_length = $this->read_int($fpointer,$translation_offset + $i *8);
 				$trans_offset = $this->read_int($fpointer,$translation_offset + $i * 8 + 4);
@@ -156,4 +155,8 @@ class MOReader
 	}
 }
 
-
+$infile = $_SERVER['argv'][1];
+$trans = new MOReader;
+$trans->filename = $infile;
+$trans->translate('orz');
+echo json_encode($trans->cache);

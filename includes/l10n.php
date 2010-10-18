@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Sun Oct 17 16:00:51 2010 +0800
+ * $Date: Mon Oct 18 23:01:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,6 +31,8 @@ require_once $includes_path . 'pomo/po.php';
 
 $translators = array();
 
+$translations = array();
+
 /**
  * Get translation
  * @param string $fmt format, like that of printf in C
@@ -39,21 +41,25 @@ $translators = array();
  */
 function _gettext($fmt)
 {
-	global $translators;
+	global $translators,$translations;
+	static $called = false;
 	$args = func_get_args();
-	$res = $fmt;
-	foreach ($translators as $key => $translator)
+	if (!$called)
 	{
-		$current = $translator['class']->translate($fmt); 
-		if ($current != $fmt)
+		foreach ($translators as $translator)
 		{
-			$res = $current;
-			break;
+			$content = json_decode(file_get_contents($translator),TRUE);
+			//$content = eval('return '.file_get_contents($translator).';');
+			//$content = unserialize(file_get_contents($translator));
+			$translations = array_merge($translations,$content);
 		}
+		$called = true;
 	}
-	$args[0] = $res;
+	if (isset($translations[$fmt]))
+		$args[0] = $translations[$fmt];
 	return call_user_func_array('sprintf', $args);
 }
+
 
 
 /**
@@ -70,44 +76,16 @@ function __($fmt)
 }
 
 /**
- * Add a new .mo file as a translation source.
- * @param string $filename path and name of .mo file
- * @param bool $use_cache whether use in memory cache or not
- * @see l10n_add_po_file
+ * Add php file for translation
+ * @param string $file filename
  */
-function l10n_add_mo_file($filename,$use_cache = true)
+function l10n_add_file($filename)
 {
 	global $translators;
-	$insert_id = count($translators);
-	$newmo = new MOReader;
-	$newmo->use_cache = $use_cache;
-	$newmo->filename = $filename;
-	$translators[$insert_id] = array(
-		'type' => 'mo',
-		'class' => $newmo
-	);
+	if (is_readable($filename))
+		$translators[] = $filename;
+
 }
-
-
-/**
- * Add a new .po file as a translation source.
- * @param string $filename path and name of .po file
- * @param bool $use_cache whether use in memory or not
- * @see l10n_add_mo_file
- */
-function l10n_add_po_file($filename,$use_cache = true)
-{
-	global $translators;
-	$insert_id = count($translators);
-	$newmo = new POReader;
-	$newmo->use_cache = $use_cache;
-	$newmo->filename = $filename;
-	$translators[$insert_id] = array(
-		'type' => 'po',
-		'class' => $newmo
-	);
-}
-
 
 /**
  * Add an directory for translation
@@ -122,11 +100,8 @@ function l10n_add_directory($dir)
 		{
 			switch (strstr(strtolower($file),'.'))
 			{
-			case '.po':
-				//l10n_add_po_file($dir . $file);
-				break;
-			case '.mo':
-				l10n_add_mo_file($dir . $file);
+			case '.php':
+				l10n_add_file($dir . $file);
 				break;
 			}
 		}

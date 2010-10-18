@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Mon Oct 18 19:37:51 2010 +0800
+ * $Date: Mon Oct 18 22:56:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -95,7 +95,6 @@ function _index_set_theme($name = NULL)
 //_index_set_theme(user_check_login() ? $user->theme_id : NULL);
 _index_set_theme();
 
-/*
 if (user_check_login())
 {
 	$result = $db->select_from('wlang', array('file'), array($DBOP['='], 'id', $user->wlang));
@@ -108,7 +107,6 @@ else
 	l10n_add_directory($root_path . 'contents/lang/' . $result[0]['file'] . '/');
 	unset($result);
 }
- */
 
 require_once $theme_path . 'functions.php';
 user_init_form();
