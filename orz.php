@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Mon Oct 18 14:53:29 2010 +0800
+ * $Date: Mon Oct 18 19:32:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -350,6 +350,20 @@ function increase_statistics_value($rid, $field)
 }
 
 /**
+ * update ac rate
+ */
+function update_ac_ratio($rid)
+{
+	global $db, $DBOP;
+	$uid = $db->select_from('records', array('uid'), array($DBOP['='], 'id', $rid));
+	$uid = $uid[0];
+	$val = $db->select_from('users', array('cnt_submit', 'cnt_ac'), array($DBOP['='], 'id', $uid));
+	$val = $val[0];
+	$ac_ratio = floor(($val['cnt_ac'] / $val['cnt_submit']) * 10000);
+	$db->update_data('users', array('ac_ratio' => $ac_ratio), array($DBOP['='], 'id', $uid));
+}
+
+/**
  *  report to orzoj-website that the judge is compiling source
  *  @return void
  */
@@ -365,6 +379,7 @@ function report_compiling()
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
 	increase_statistics_value($rid, 'cnt_submit');
+	update_ac_ratio($rid);
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -511,6 +526,7 @@ function report_prob_result()
 
 	$rid = $func_param->task;
 	increase_statistics_value($rid, $status == RECORD_STATUS_ACCEPTED ? 'cnt_ac' : 'cnt_unac');
+	update_ac_ratio($rid);
 
 	$db->update_data('records',
 		array(

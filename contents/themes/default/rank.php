@@ -1,7 +1,7 @@
 <?php
-/*
- * $File: home.php
- * $Date: Mon Oct 18 21:12:24 2010 +0800
+/* 
+ * $File: rank.php
+ * $Date: Mon Oct 18 18:56:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,16 +26,8 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
-echo var_dump($_POST, TRUE);
+
 ?>
-This is home!
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
+
+<?php require_once $theme_path . 'ajax/rank_list.php'; ?>
 

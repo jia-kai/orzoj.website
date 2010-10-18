@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Oct 18 15:08:09 2010 +0800
+ * $Date: Mon Oct 18 16:59:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -73,7 +73,8 @@ $tables = array(
 			'cnt_submit' => array('type' => 'INT32', 'default' => 0), // number of submissions
 			'cnt_ac' => array('type' => 'INT32', 'default' => 0), // number of accepted submissions
 			'cnt_unac' => array('type' => 'INT32', 'default' => 0), // number of unaccepted submissions
-			'cnt_ce' => array('type' => 'INT32', 'default' => 0) // number of compiling-error submissions
+			'cnt_ce' => array('type' => 'INT32', 'default' => 0), // number of compiling-error submissions
+			'ac_ratio' => array('type' => 'INT32', 'default' => 0) // accepte ratio: floor((cnt_ac / cnt_submit) * 10000, which means two fraction numbers will be hold.
 		),
 		'primary_key' => 'id',
 		'index' => array(

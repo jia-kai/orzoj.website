@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Fri Oct 15 14:43:06 2010 +0800
+ * $Date: Mon Oct 18 15:36:19 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -179,7 +179,7 @@ abstract class Dbal
 	 * @param int|NULL $amount maximal number of rows to be returned
 	 * @param array|NULL $col_as columns alias in the format array(<orignal column name> => <alias name>)
 	 * @param bool $return_query_str whetehr to return the query as string without executing it
-	 * @return array the data fetched from database
+	 * @return array|string the data fetched from database or string is $return_query_str is TRUE
 	 */
 	abstract protected function
 		select_from($tablename, $cols = NULL, $whereclause = NULL,
