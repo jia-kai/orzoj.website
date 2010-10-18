@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: 六 10月 16 21:25:36 2010 +0800
+ * $Date: Mon Oct 18 09:27:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -70,6 +70,17 @@ foreach ($show_fields as $field)
 	echo '<th>' . $field . '</th>';
 echo '</tr>';
 
+/**
+ * @ignore
+ */
+function _make_prob_link($id, $name)
+{
+	global $gid, $start_page;
+	echo '<td><a href="' . prob_view_single_get_a_href($id, $gid, $start_page)
+		. '" onclick="' . prob_view_single_get_a_onclick($id, $gid, $start_page) 
+		.'">' . $name . '</a></td>'; // Title
+}
+
 foreach ($probs as $prob)
 {
 	echo '<tr>';
@@ -79,10 +90,8 @@ foreach ($probs as $prob)
 	else
 	{
 		echo '<td>' . $prob['id'] . '</td>'; // ID
-		echo '<td><a href="' . prob_view_single_get_a_href($prob['id'], $gid, $start_page) 
-			. '" onclick="' . prob_view_single_get_a_onclick($prob['id'], $gid, $start_page) 
-			.'">' . $prob['title'] . '</a></td>'; // Title
-		echo '<td>' . $prob['code'] . '</td>'; // Code
+		_make_prob_link($prob['id'], $prob['title']);
+		_make_prob_link($prob['id'], $prob['code']);
 		echo '<td>' . $prob['cnt_ac'] . '</td>'; // Accepted
 		echo '<td>' . $prob['cnt_submit'] . '</td>'; // Submited
 		$d = ($prob['cnt_submit'] - $prob['cnt_ac']) / $prob['cnt_submit'];

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Wed Oct 13 23:25:26 2010 +0800
+ * $Date: Mon Oct 18 14:43:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,12 +30,16 @@ if (!defined('IN_ORZOJ'))
 class Post
 {
 	var $id, $time, $uid, 
-		$pid,  // related problem or 0 means no problem is related
+		$prob_id, // related problem or 0 means no problem is related
+		$pid,  // parent id, 0 means a root post
+	//	$attrib, // only the root post has attributes
+		$score, // see install/tables.php
 		$subject, $content,
 		$last_reply_time, $last_reply_user,
 		$last_modify_time, $last_modify_user;
 }
 
+$POST_VAL_SET = array('id', 'time', 'uid', 'pid', 'prob_id', 'rid', 'subject', 'content'); 
 /**
  * @ignore
  */
@@ -59,11 +63,12 @@ function _post_update_root_post($id, $uid)
 
 /**
  * add a post, using the data posted by the form
- * @param int $pid problem id or parent post id, less than means this pos is a root post, @see install/tables.php
+ * @param int $prob_id related problem id
+ * @param int $pid parent post id
  * @return int the new post id 
  * @exception Exc_runtime
  */
-function post_add($pid)
+function post_add($prob_id, $pid = 0)
 {
 	global $db, $DBOP, $user;
 	if (!user_check_login())
@@ -76,7 +81,8 @@ function post_add($pid)
 
 	$val = array('subject' => htmlencode($_POST['subject']),
 		'content' => $content, 'time' => time(), 'uid' => $user->id,
-		'pid' => $pid, 'rid' => 0);
+		'pid' => $pid, 'prob_id' => $prob_id, 'rid' => 0);
+
 	if ($pid > 0)
 	{
 		$val['rid'] = _post_get_root_id($pid);
@@ -90,11 +96,12 @@ function post_add($pid)
  * echo form fileds for adding a new post
  * @return void
  */
-function post_add_get_form()
+function post_add_get_form($id)
 {
 	$str =
 		tf_form_get_text_input(__('Subject:'), 'subject') .
-		tf_form_get_rich_text_editor(__('Content:'), 'content');
+		tf_form_get_rich_text_editor(__('Content:'), 'content') .
+		tf_form_get_text_input(__('Problem id'), 'prob_id', NULL, "$id");
 	echo filter_apply('after_post_add_form', $str);
 }
 
@@ -102,6 +109,7 @@ function post_add_get_form()
  * get post list wiht  a specific limitation
  * @param int|NULL $uid int a user's id or NULL means all
  * @param bool $concrete TRUE means need concrete information, FALSE means the opposite.
+ * @param bool|NULL $is_top specific whether the post is toped. NULL means no limit.
  * @param int $offset 
  * @param int $count how many post do you want, this does not include post replies
  * @param string $post_sort_way 'ASC' or 'DESC', sort by last_reply_time
@@ -111,16 +119,17 @@ function post_add_get_form()
  *		and from index 1 to end is array, except the first layer. the first layer will be a 
  *		array of array.
  */
-function post_get_post_list($concrete = FALSE, $offset = NULL, $count = NULL, $post_sort_way = 'DESC', $post_reply_sort_way = 'ASC', $uid = NULL)
+function post_get_post_list($concrete = FALSE, $is_top = NULL, $offset = NULL, $count = NULL, $post_sort_way = 'DESC', $post_reply_sort_way = 'ASC', $uid = NULL)
 {
-	global $db, $DBOP;
+	global $db, $DBOP, $POST_VAL_SET;
+	$where = array($DBOP['='], 'pid', 0);
+	if ($is_top !== NULL)
+		db_where_add_and($where, array($DBOP['='], 'is_top', ($is_top ? 1 : 0)));
 	$ret = array();
-	if ($concrete)
-		array_push($value, 'content');
 	$posts = $db->select_from(
 		'posts', 
 		array('id'),
-		array($DBOP['<='], 'pid', 0),
+		$where,
 		array('last_reply_time' => $post_sort_way),
 		$offset,
 		$count
@@ -133,13 +142,48 @@ function post_get_post_list($concrete = FALSE, $offset = NULL, $count = NULL, $p
 /**
  * @ignore
  */
-function _build_post_list($id, $concrete = FALSE, $sort_way = 'ASC')
+function _post_top_amount()
 {
 	global $db, $DBOP;
+	return $db->get_number_of_rows('posts', array($DBOP['='], 'is_top', 1));
+}
+/**
+ * get list of post in a specific limitaion, top post included
+ * @see post_get_post_list()
+ */
+function post_get_list($concrete = FALSE, $offset = NULL, $count = NULL, $post_sort_way = 'DESC', $post_reply_sort_way = 'ASC', $uid = NULL)
+{
+	$top_post_amount = _post_top_amount();
+	if ($offset <= $top_post_amount) // some top posts are included
+	{
+		if ($offset + $count - 1 <= $top_post_amount) // all top posts
+		{
+			return post_get_post_list($concrete, TRUE, $offset, $count, $post_sort_way, $post_reply_sort_way, $uid);
+		}
+		else // some are top posts
+		{
+			$top_post_amount = $top_post_amount - $offset + 1;
+			$ret = post_get_post_list($concrete, TRUE, $offset, $top_post_amount, $post_sort_way, $post_reply_sort_way, $uid);
+			$remain_amount = $count - $top_post_amount;
+			$ret[] = post_get_post_list($concrete, FALSE, 0, $remain_amount, $post_sort_way, $post_reply_sort_way, $uid);
+			return $ret;
+		}
+	}
+	else // no top posts are included
+	{
+		return post_get_post_list($concrete, FALSE, $offset - $top_post_amount, $post_sort_way, $post_reply_sort_way, $uid);
+	}
+}
+/**
+ * @ignore
+ */
+function _build_post_list($id, $concrete = FALSE, $sort_way = 'ASC')
+{
+	global $db, $DBOP, $POST_VAL_SET;
 	$ret = array();
-	$value = array('id', 'time', 'uid', 'pid', 'rid', 'subject');
-	if ($concrete)
-		array_push($value, 'content');
+	$value = $POST_VAL_SET;
+	if (!$concrete)
+		unset($value['content']);
 	$posts = $db->select_from('posts', $value, array($DBOP['='], 'id', $id));
 	$post = new Post();
 	foreach ($posts[0] as $key => $val)
@@ -186,7 +230,7 @@ function _post_del_posts($id)
 
 /**
  * modify a post
- * @return int|BOOl affected rows or TRUE
+ * @return int|BOOL affected rows or TRUE
  */
 function post_modify_post()
 {
@@ -205,7 +249,7 @@ function post_modify_post()
 		throw new Exc_runtime(__('No post is specified.'));
 	$content = tf_form_get_rich_text_editor_data('content');
 
-	$val = array('subject' => htmlencode($_POST['subject']),
+	$val = array('subject' => htmlencode($_POST['rubject']),
 		'content' => $content, 
 		'last_modify_time' => time(), 'last_modify_user' => $user->id
 	);
@@ -223,7 +267,19 @@ function post_modify_post_get_form($id)
 	$str =
 		tf_form_get_text_input(__('Subject:'), 'subject') .
 		tf_form_get_rich_text_editor(__('Content:'), 'content') .
-		tf_form_get_hidden('post_id', $id);
+		tf_form_get_hidden('id', $id);
 	echo filter_apply('after_post_modify_form', $str);
+}
+
+/**
+ * set a post top status
+ * @param int $id post id
+ * @param BOOL $status TRUE top, and FALSE the opposite
+ */
+function post_set_top_status($id, $status = TRUE)
+{
+	global $db, $DBOP;
+	$db->update_data('posts', array('is_top' => $state),
+		array($DBOP['='], 'id', $status === TRUE ? 1 : 0));
 }
 

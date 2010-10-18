@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Sun Oct 17 18:57:57 2010 +0800
+ * $Date: Mon Oct 18 10:05:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -83,3 +83,5 @@ define('USER_BROWSER_OPERA', $cnt ++);
 define('USER_BROWSER_NETSCAPE', $cnt ++);
 define('USER_BROWSER_IPHONE', $cnt ++);
 unset($cnt);
+
+define('DEFAULT_THEME_ID', 1);

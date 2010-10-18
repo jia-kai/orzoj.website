@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Sat Oct 16 19:37:41 2010 +0800
+ * $Date: Mon Oct 18 10:24:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,10 +29,40 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'problem.php';
 require_once $theme_path . 'prob_func.php';
 
-prob_view_single_parse_arg();
-
 try
 {
+	if (isset($_POST['prob-filter'])) // for prob-filter
+	{
+		if (!isset($_POST['value']))
+			throw new Exc_inner("Incomplete post.");
+		if ($_POST['prob-filter'] == 'prob-filter-id')
+		{
+			$id_str = $_POST['value'];
+			$len = strlen($id_str);
+			if ($len == 0)
+				die(__("Give me an id please."));
+			$pid = 0;
+			for ($i = 0; $i < $len; $i ++)
+				if (!($id_str[$i] >= '0' && $id_str[$i] <= '9'))
+					die(__('Give me an INT please - -!'));
+				else
+					$pid = $pid * 10 + $id_str[$i] - '0';
+			if ($db->get_number_of_rows('problems', array($DBOP['='], 'id', $pid)) == 0)
+				die(__('No such problem whose id is \'%d\'.', $pid));
+		}
+		else // prob-filter-code
+		{
+			$code = $_POST['value'];
+			if (strlen($code) == 0)
+				die(__("Give me a code please."));
+			$pid = prob_get_id_by_code($code);
+			if ($pid === NULL)
+				die(__('No such problem whose code is \'%s\'', $code));
+		}
+		$start_page = -1;
+	}
+	else
+		prob_view_single_parse_arg();
 	/* ----- navigation button ----*/
 	$content = '';
 
@@ -47,7 +77,7 @@ try
 		. __('Best solutions') . '</button></a>';
 
 	// Discuss TODO
-	
+
 	// Back to list
 	if ($start_page == -1) // from a unknown place..
 	{
@@ -62,20 +92,18 @@ try
 
 	$content .= '</div>';  // id: prob-view-single-navigator-top
 
-	echo $content; $content = '';
-	
 	/* problem description */
-	echo prob_view($pid);
-
+	$content .= prob_view($pid);
 	// javascript
-?>
+	$content .= '
 	<script type="text/javascript">$("button").button();
-	$("#prob-submit-link").colorbox();
-	$("#prob-all-submissions").colorbox();
-	$("#prob-best-solutions").colorbox();
-	$("button").button();
+		$("#prob-submit-link").colorbox();
+		$("#prob-all-submissions").colorbox();
+		$("#prob-best-solutions").colorbox();
+		$("button").button();
 	</script>
-<?php
+	';
+	echo $content;
 }
 catch (Exc_runtime $e)
 {

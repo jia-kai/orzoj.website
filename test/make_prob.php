@@ -3,9 +3,14 @@
 require_once '../pre_include.php';
 require_once $includes_path . 'problem.php';
 
-define('NPROB', 100);
-define('NPGRP', 100);
-define('NMAP', 300);
+define('NPROB', 10);
+define('NPGRP', 10);
+define('NMAP', 10);
+
+$db->delete_item('problems');
+$db->delete_item('prob_grps');
+$db->delete_item('map_prob_grp');
+$db->delete_item('cache_pgrp_child');
 
 function make_prob()
 {
@@ -28,8 +33,8 @@ function make_prob()
 			'output_fmt' => 'A number, the sum of a and b.',
 			'input_samp' => '1 2',
 			'output_samp' => '3',
-			'source' => 'Every OJ',
-			'hint' => '1 <= a, b <= 100000'
+			'source' => 'Every OJ'
+	//		'hint' => '1 <= a, b <= 100000'
 		))
 	));
 
@@ -65,7 +70,7 @@ function make_pgrp()
 	global $db;
 	for ($i = 0; $i < NPGRP; $i ++)
 	{
-		$id = $db->insert_into('prob_grps', array('pgid' => rand(0, $i), 'name' => "$i"));
+		$id = $db->insert_into('prob_grps', array('pgid' => rand(0, $i), 'name' => "prob_grp $i"));
 		prob_update_grp_cache_add($id);
 	}
 }

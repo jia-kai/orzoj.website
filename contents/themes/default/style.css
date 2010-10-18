@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sat Oct 16 23:22:18 2010 +0800
+ * $Date: Mon Oct 18 10:22:45 2010 +0800
 
  This file is part of orzoj
 
@@ -284,6 +284,7 @@ h1.prob-navigator-title
 {
 	font-size: 20px;
 	text-align: center;
+	color: green;
 }
 
 div#prob-container
@@ -304,13 +305,22 @@ div#prob-navigator
 
 label.prob-filter
 {
-	width: 50px;
 	margin-right: 10px;
 }
 
 input.prob-filter
 {
-	width: 100px;
+	width: 50px;
+}
+
+input.prob-filter-input-button
+{
+	font-size: 12px;
+	height: 22px;
+	padding-left: 3px;
+	padding-right: 3px;
+	margin: 0;
+	border: 0;
 }
 
 div#prob-view
@@ -322,7 +332,12 @@ div#prob-view
 
 div#prob-view a:hover
 {
-	color: #101040;
+	color: #6f6f6f;
+}
+
+div#prob-view a:active
+{
+	color: red;
 }
 
 div#prob-view-by-group-title
@@ -366,6 +381,11 @@ div#prob-view-single-subtitle
 	color: red;
 }
 
+div#prob-view-single-subtitle span
+{
+	color: #02f010;
+}
+
 div#prob-view-single-desc p
 {
 	font-size: 20px;
@@ -384,6 +404,7 @@ div#prob-view-single-content
 	clear: both;
 	text-align: left;
 	margin-left: 20px;
+	margin-bottom: 20px;
 }
 
 div.prob-view-box-container

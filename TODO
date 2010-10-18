@@ -11,3 +11,18 @@ set time format
 Problem page: discuss
 
 code editor
+
+status filter: 
+	1. turn to page 2 (if exsists)
+	2. set lang to somthing else, then press 'Apply'
+	3. and the filer does not work properly
+
+status filter:
+	a optional radio box contains code and id is supposed to be setted
+
+problem list:
+	color shows the status of a problem or something else
+
+record detail:
+	things in '<>' will be treated as html tag
+

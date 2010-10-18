@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sun Oct 17 11:30:59 2010 +0800
+ * $Date: Mon Oct 18 10:23:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -272,12 +272,49 @@ function tf_form_get_hidden($post_name, $post_value)
 }
 
 /**
+ * @ignore
+ */
+function _make_view_by_group_link($id, $name)
+{
+	return '<a style="color: #101074;" href="' . prob_view_by_group_get_a_href($id, 1) . 
+		'" onclick="' . prob_view_by_group_get_a_onclick($id, 1) . '">'
+		. $name . '</a>&nbsp;';
+}
+/**
  * convert problem information to HTML code
  * @param array $pinfo as $PROB_VIEW_PINFO described in problem.php
  * @return string
  */
 function tf_get_prob_html($pinfo)
 {
+	global $db, $DBOP;
+	$prob_grps = $db->select_from('map_prob_grp', array('gid'),
+		array($DBOP['='], 'pid', $pinfo['id']));
+	$prob_grp = '';
+	$prob_grp_cnt = count($prob_grps);
+	foreach ($prob_grps as $grp)
+	{
+		$grp = $db->select_from('prob_grps', array('id', 'name'),
+			array($DBOP['='], 'id', $grp['gid']));
+		$grp = $grp[0];
+		$prob_grp .= _make_view_by_group_link($grp['id'], $grp['name']);
+	}
+	if ($prob_grp_cnt == 0)
+	{
+		$prob_grp_cnt = 1;
+		$prob_grp = _make_view_by_group_link(0, 'All');
+	}
+
+	if ($pinfo['io'] === NULL)
+	{
+		$input = 'stdin';
+		$output = 'stdout';
+	}
+	else
+	{
+		$input = $pinfo[0];
+		$output = $pinfo[1];
+	}
 	$desc = unserialize($pinfo['desc']);
 	$content  = '
 		<div id="prob-view-single">
@@ -287,7 +324,10 @@ function tf_get_prob_html($pinfo)
 		. __('Time Limit: ') . $desc['time'] . '&nbsp;&nbsp;'
 		. __('Memory Limit: ') . $desc['memory'] . '<br />'
 		. __('Total Submit: ') . $pinfo['cnt_submit'] . '&nbsp;&nbsp;'
-		. __('Accepted: ') . $pinfo['cnt_ac']
+		. __('Accepted: ') . $pinfo['cnt_ac'] . '<br />'
+		. ($prob_grp_cnt == 1 ? __('Problem Group: ') : __('Problem Groups: ')). $prob_grp  . '<br />'
+		. __('Input: ') . '<span>' . $input . '</span>&nbsp;&nbsp;'
+		. __('Output: ') . '<span>' . $output . '</span>'
 		. '</div> <!-- id: prob-view-single-subtitle-->'
 		. '<div id="prob-view-single-desc">';
 	$translate = array(

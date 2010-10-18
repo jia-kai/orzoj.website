@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sun Oct 17 18:56:37 2010 +0800
+ * $Date: Mon Oct 18 14:38:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -448,8 +448,16 @@ $tables = array(
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'time' => array('type' => 'INT64'),
 			'uid' => array('type' => 'INT32'), // user id
-			'pid' => array('type' => 'INT32', 'default' => 0), // less than 0 means related problem id, greater than 0 means parent id, 0 means no related problem
+			'prob_id' => array('type' => 'INT32'), // related problem id
+			'pid' => array('type' => 'INT32', 'default' => 0), // parent id, 0 means root post
 			'rid' => array('type' => 'INT32'), // root post id
+			'score' => array('type' => 'INT32'), // user can grade this post from 0 to 100
+			'is_top' => array('type' => 'INT32', 'default' => 0), //whether the post should be one the top, ordering by time if more than one. root post only
+			// TODO: commented things will be supported next version or later
+			//'attrib' => array('type' => 'TEXT'),
+			/* a serialize array of following attributes, should be only setted on root post
+			 * 'type' => string : one of {'question', 'normal', 'solution'}
+			 */
 			'last_reply_time' => array('type' => 'INT64'),
 			'last_reply_user' => array('type' => 'INT32'), // user id
 			'subject' => array('type' => 'TEXT'),

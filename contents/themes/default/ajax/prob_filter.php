@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_filter.php
- * $Date: Sat Oct 16 23:21:54 2010 +0800
+ * $Date: Sun Oct 17 23:51:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,42 +25,67 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
-function _make_input($prompt, $post_name)
+function _make_input($prompt, $post_name, $func_sufix)
 {
-	if (isset($_POST['prob_filter'][$post_name]))
-		$default = $_POST['prob_filter'][$post_name];
-	else 
-		$default = '';
+	$Go = __('Go');
+	$prob_view_single = t_get_link('ajax-prob-view-single', NULL, TRUE, TRUE);
 	$id = _tf_get_random_id();
+	$form_id = _tf_get_random_id();
 	echo <<<EOF
 <tr>
-<td>
-	<div style="clear: both; float: left;">
-	<label for="$id" class="prob-filter">$prompt</label>
-	</div>
-</td>
-<td>
-	<div style="float: left">
-	<input id="$id" type="text" name="$post_name" value="$default" class="prob-filter" ></input>
-	</div>
-</td>
+	<td>
+		<div style="clear: both; float: left;">
+		<label for="$id" class="prob-filter">$prompt</label>
+		</div>
+		</td>
+		<td>
+		<form id="$form_id"action="$prob_view_single" method="post">
+		<div style="float: left">
+			<input id="$id" name="$post_name" type="text" class="prob-filter" />
+		</div>
+		</form>
+	</td>
+	<td>
+		<div style="float: left">
+			<input class="prob-filter-input-button" type="submit" onclick="prob_view_by_$func_sufix();" value="$Go"/>
+		</div>
+	</td>
 </tr>
+<script type="text/javascript">
+function prob_view_by_$func_sufix()
+{
+	var t = $("#prob-view");
+	t.animate({"opacity" : 0.5}, 1);
+	$.ajax({
+		"url" : "$prob_view_single",
+		"type" : "post",
+		"data" : ({"prob-filter" : "$post_name",
+					"value" : $("#$id").attr("value")}),
+		"success" : function(data) {
+			t.animate({"opacity" : 1}, 1);
+			t.html(data);
+		}
+	});
+	return false;
+}
+$("#$form_id").bind("submit", function(){
+	prob_view_by_$func_sufix(); return false;
+})
+</script>
 EOF;
 }
 ?>
 <h1 class="prob-navigator-title"><?php echo __("Problem Nav."); ?></h1>
 
 <div id="prob-filter-list">
-<form action="<?php t_get_link($cur_page);?>" method="post" id="prob-filter-form">
-<table>
+<table style="max-width: 150px;">
 <?php
-_make_input(__('ID'), 'ID');
-_make_input(__('Code'), 'code');
+_make_input(__('ID'), 'prob-filter-id', 'id');
+_make_input(__('Code'), 'prob-filter-code', 'code');
 ?>
 </table>
-</form>
 </div> <!-- id: prob-filter-list -->
 
-
 <script type="text/javascript">
+$(".prob-filter-input-button").button();
 </script>

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Thu Oct 14 19:58:40 2010 +0800
+ * $Date: Mon Oct 18 00:29:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -55,7 +55,7 @@ function t_get_footer()
 	global $db, $PAGE_START_TIME, $ORZOJ_VERSION;
 	$str = "<br />" .
 		__('%d database queries | Page execution time: %d milliseconds |' .
-		' Powerd by <a href="http://code.google.com/p/orzoj/" target="_blank">Orz Online Judge</a> %s<br />',
+		' Powered by <a style="color: blue" href="http://code.google.com/p/orzoj/" target="_blank">Orz Online Judge</a> %s<br />',
 		$db->get_query_amount(),
 			(microtime(TRUE) - $PAGE_START_TIME) * 1000, $ORZOJ_VERSION);
 	echo filter_apply('after_footer', $str);
