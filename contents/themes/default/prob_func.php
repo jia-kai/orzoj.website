@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_func.php
- * $Date: Fri Oct 15 21:48:37 2010 +0800
+ * $Date: Mon Oct 18 11:35:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,10 +33,10 @@ function prob_view_by_group_get_a_href($gid, $start_page)
 	return t_get_link('show-ajax-prob-view-by-group', $arg, TRUE, TRUE);
 }
 
-function prob_view_by_group_get_a_onclick($gid, $start_page)
+function prob_view_by_group_get_a_onclick($gid, $start_page, $in_HTML = TRUE)
 {
 	$arg = sprintf('%d|%d', $gid, $start_page);
-	return 'prob_view_set_content(\'' . t_get_link('ajax-prob-view-by-group', $arg, FALSE, TRUE) . '\'); return false;';
+	return 'prob_view_set_content(\'' . t_get_link('ajax-prob-view-by-group', $arg, $in_HTML, TRUE) . '\'); return false;';
 }
 
 function prob_view_by_group_parse_arg()
@@ -69,10 +69,10 @@ function prob_view_single_get_a_href($pid, $gid, $start_page)
 	return t_get_link('show-ajax-prob-view-single', $arg, TRUE, TRUE);
 }
 
-function prob_view_single_get_a_onclick($pid, $gid, $start_page)
+function prob_view_single_get_a_onclick($pid, $gid, $start_page, $in_HTML = TRUE)
 {
 	$arg = prob_view_single_pack_arg($pid, $gid, $start_page);
-	return 'prob_view_set_content(\'' . t_get_link('ajax-prob-view-single', $arg, FALSE, TRUE) . '\'); return false;';
+	return 'prob_view_set_content(\'' . t_get_link('ajax-prob-view-single', $arg, $in_HTML, TRUE) . '\'); return false;';
 }
 
 function prob_view_single_parse_arg()

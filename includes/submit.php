@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Sun Oct 17 10:32:55 2010 +0800
+ * $Date: Mon Oct 18 09:51:03 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -74,7 +74,7 @@ function submit_src()
 		throw new Exc_runtime(__('no such problem'));
 	$row = $row[0];
 
-	if (!prob_check_perm($user->groups, $row['perm']))
+	if (!prob_check_perm($user->get_groups(), $row['perm']))
 		throw new Exc_runtime(__('permission denied for this problem'));
 
 	$src = tf_form_get_source_editor_data('src');

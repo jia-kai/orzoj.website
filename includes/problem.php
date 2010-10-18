@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Sun Oct 17 09:47:23 2010 +0800
+ * $Date: Mon Oct 18 09:50:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -76,7 +76,7 @@ function prob_view($pid)
 	$row = $row[0];
 	if (user_check_login())
 	{
-		$grp = $user->groups;
+		$grp = $user->get_groups();
 		$is_super_submitter = $user->is_grp_member(GID_SUPER_SUBMITTER);
 	}
 	else
@@ -174,7 +174,7 @@ function prob_get_list($fields, $gid = NULL, $id_asc = TRUE, $offset = NULL, $cn
 	$is_super_submiter = FALSE;
 	if (user_check_login())
 	{
-		$grp = $user->groups;
+		$grp = $user->get_groups();
 		$is_super_submiter = $user->is_grp_member(GID_SUPER_SUBMITTER);
 	}
 	else $grp = array(GID_GUEST);

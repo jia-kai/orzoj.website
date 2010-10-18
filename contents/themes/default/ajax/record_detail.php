@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Sun Oct 17 10:13:59 2010 +0800
+ * $Date: Mon Oct 18 14:55:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,7 +38,7 @@ require_once $includes_path . 'exe_status.php';
 require_once $includes_path . 'problem.php';
 require_once $includes_path . 'judge.php';
 require_once $includes_path . 'record.php';
-require_once $includes_path . 'geshi.php';
+require_once $root_path . 'contents/highlighters/geshi/geshi.php';
 
 // whether to display realname and submission IP
 $disp_info = user_check_login() && $user->is_grp_member(GID_UINFO_VIEWER);
@@ -59,9 +59,7 @@ function _fd_prob()
 {
 	global $row;
 	$pid = $row['pid'];
-	echo __('Problem: <a href="%s">%s</a>', 
-		t_get_link('problem', prob_get_code_by_id($pid), TRUE, TRUE),
-		prob_get_title_by_id($pid));
+	echo __('Problem: %s', prob_get_title_by_id($pid));
 }
 
 function _fd_lang()
@@ -72,8 +70,8 @@ function _fd_lang()
 
 function _fd_status()
 {
-	global $row, $RECORD_STATUS_TEXT;
-	echo __('Status: %s', $RECORD_STATUS_TEXT[intval($row['status'])]);
+	global $row;
+	echo __('Status: %s', record_status_get_str($row['status']));
 }
 
 function _fd_score()
@@ -82,11 +80,7 @@ function _fd_score()
 	if (!record_status_executed($row['status']))
 		$str = '---';
 	else
-	{
-		$s = intval($row['score']);
-		$f = intval($row['full_score']);
-		$str = __("%d (full score: %d)", $s, $f);
-	}
+		$str = $row['score'];
 	echo __('Score: %s', $str);
 }
 
@@ -138,7 +132,7 @@ function _fd_srclen()
 function _fd_stime()
 {
 	global $row;
-	echo __('When submitted: %s', strftime('%a %b %d %H:%M:%S %Y %Z', $row['stime']));
+	echo __('When submitted: %s', time2str($row['stime']));
 }
 
 function _fd_jtime()
@@ -146,7 +140,7 @@ function _fd_jtime()
 	global $row;
 	$t = intval($row['jtime']);
 	if ($t)
-		$t = strftime('%a %b %d %H:%M:%S %Y %Z', $t);
+		$t = time2str($t);
 	else $t = '---';
 	echo __('When judged: %s', $t);
 }
@@ -159,13 +153,12 @@ function _fd_ip()
 
 function _fd_detail_exe_status($res)
 {
-	global $EXECUTION_STATUS_TEXT;
-	return $EXECUTION_STATUS_TEXT[intval($res->exe_status)];
+	return exests_get_str($res->exe_status);
 }
 
 function _fd_detail_score($res)
 {
-	return $res->score;
+	return $res->score . '/' . $res->full_score;
 }
 
 function _fd_detail_time($res)
@@ -181,7 +174,7 @@ function _fd_detail_mem($res)
 function _fd_detail_extra_info($res)
 {
 	if (strlen($res->extra_info))
-		return $res->extra_info;
+		return htmlencode($res->extra_info);
 	return '---';
 }
 
@@ -191,10 +184,10 @@ function _fd_detail()
 	echo __('Details:') . '<br />';
 	$detail = $row['detail'];
 	if (!record_status_executed($row['status']))
-		echo '<div id="record-detail">' . $detail . '</div>';
+		echo '<div id="record-detail">' . htmlencode($detail) . '</div>';
 	else
 	{
-		$details = unserialize($detail);
+		$details = case_result_array_decode($detail);
 		$cols = array(
 			__('CASE') => '',
 			__('STATUS') => '_fd_detail_exe_status',
@@ -230,7 +223,7 @@ function _fd_detail()
 
 function _fd_src()
 {
-	global $row, $db, $DBOP, $page_arg, $syntax;
+	global $row, $db, $DBOP, $page_arg, $plang_type;
 	$src = $db->select_from('sources', 'src', array(
 		$DBOP['='], 'rid', $page_arg));
 	if (count($src) == 1)
@@ -238,7 +231,7 @@ function _fd_src()
 	else $src = __('not found');
 	//TODO: retrieve source from orzoj-server
 	echo __('Source:') . '<br />';
-	$geshi = new GeSHi($src, $syntax);
+	$geshi = new GeSHi($src, $plang_type);
 	$geshi->set_header_type(GESHI_HEADER_PRE_TABLE);
 	$geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS);
 	$geshi->enable_classes();
@@ -278,7 +271,7 @@ $row = $row[0];
 if (is_null($row))
 	die('no such record');
 
-$syntax = plang_get_syntax_by_id($row['lid']);
+$plang_type = plang_get_type_by_id($row['lid']);
 
 if (user_check_view_src_perm($row['uid']))
 	$cols['src'] = '_fd_src';
@@ -292,6 +285,6 @@ foreach ($cols as $col => $func)
 ?>
 
 <script type="text/javascript">
-load_js_css_file("<?php echo get_page_url($root_path . "contents/geshi-styles/$syntax.css");?>", 'css');
+load_js_css_file("<?php echo get_page_url($root_path . "contents/highlighters/geshi/geshi-styles/$plang_type.css");?>", 'css');
 </script>
 

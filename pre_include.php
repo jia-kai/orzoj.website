@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Mon Oct 18 00:32:07 2010 +0800
+ * $Date: Mon Oct 18 15:08:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -36,13 +36,12 @@ $ORZOJ_VERSION = '0.0.1-alpha';
 
 require_once $root_path . 'config.php';
 require_once $includes_path . 'const.php';
-require_once $includes_path . 'l10n.php';
 // FIXME: this should be determined by where the config file exsists
 if (!defined('IS_INSTALLED'))
 	die(__('You must install first.<br />Please run %sinstall.', $root_path));
+require_once $includes_path . 'l10n.php';
 require_once $includes_path . 'functions.php';
 require_once $includes_path . 'exception.php';
-require_once $includes_path . 'user.php';
 
 try
 {
@@ -73,51 +72,3 @@ if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 }
 
 
-/*
- * Detect web server.
- * Copied from wordpress.
- */
-if (isset($_SERVER['SERVER_SOFTWARE']))
-{
-	$is_Apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
-	$is_IIS = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer') !== false);
-	$is_IIS7 = $is_iis7 = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/7.') !== false);
-
-	if ($is_Apache) $webserver = WEBSERVER_APACHE;
-	else if ($is_IIS7) $webserver = WEBSERVER_IIS7;
-	else if ($is_IIS) $webserver = WEBSERVER_IIS;
-	else $webserver = WEBSERVER_OTHERS;
-
-	unset($is_Apache,$is_IIS,$is_IIS7);
-}
-
-/*
- * Detect UA Browser.
- * Copied from wordpress.
- */
-$userbrowser = USER_BROWSER_OTHERS;
-
-if ( isset($_SERVER['HTTP_USER_AGENT']) ) {
-	if ( strpos($_SERVER['HTTP_USER_AGENT'], 'Lynx') !== false ) {
-		$userbrowser = USER_BROWSER_LYNX;
-	} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'chrome') !== false ) {
-		$userbrowser = USER_BROWSER_CHROME;
-	} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'safari') !== false ) {
-		$userbrowser = USER_BROWSER_SAFARI;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Gecko') !== false ) {
-		$userbrowser = USER_BROWSER_GECKO;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false ) {
-		$userbrowser = USER_BROWSER_MSIE;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Opera') !== false ) {
-		$userbrowser = USER_BROWSER_OPERA;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Nav') !== false && strpos($_SERVER['HTTP_USER_AGENT'], 'Mozilla/4.') !== false ) {
-		$userbrowser = USER_BROWSER_NETSCAPE;
-	}
-}
-
-if ( $userbrowser == USER_BROWSER_SAFARI && stripos($_SERVER['HTTP_USER_AGENT'], 'mobile') !== false )
-	$is_iphone = USER_BROWSER_IPHONE;
-
-/*
- * Detect UA Browser finished.
- */

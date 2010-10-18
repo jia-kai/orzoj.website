@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Mon Oct 18 09:27:20 2010 +0800
+ * $Date: Mon Oct 18 15:07:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -113,7 +113,7 @@ echo '<div id="prob-view-by-group-navigator-bottom">';
 function make_page_link($text, $page)
 {
 	global $gid;
-	return sprintf('<a href="%s" onclick="%s"); return false;">%s</a>',
+	return sprintf('<a href="%s" onclick="%s; return false;">%s</a>',
 		prob_view_by_group_get_a_href($gid, $page),
 		prob_view_by_group_get_a_onclick($gid, $page),
 		$text

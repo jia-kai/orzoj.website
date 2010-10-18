@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Sun Oct 17 10:45:18 2010 +0800
+ * $Date: Mon Oct 18 14:56:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -63,7 +63,7 @@ if (isset($_POST['prob_submit']))
 		$DBOP['='], 'uid', $user->id,
 		$DBOP['='], 'pid', $_POST['prob_submit']);
 	db_where_add_and($where, record_make_where());
-	$row = $db->select_from('records', array('id', 'status', 'mem'), $where,
+	$row = $db->select_from('records', array('id', 'status', 'time', 'mem'), $where,
 		array('id' => 'DESC'), NULL, 1);
 	if (count($row) != 1)
 		die('0no such record');
@@ -97,7 +97,7 @@ $FILETER_ALLOWED = array('uid', 'pid', 'lid', 'status');
 $where = NULL;
 $select_cols = array(
 	'id', 'uid', 'pid', 'jid', 'lid', 'src_len', 'status',
-	'stime', 'score', 'full_score', 'time', 'mem'
+	'stime', 'score', 'time', 'mem'
 );
 $order_by = array('id' => 'DESC');
 
@@ -167,13 +167,14 @@ function _cv_lang()
 
 function _cv_status()
 {
-	global $cur_row, $RECORD_STATUS_TEXT;
+	global $cur_row;
 	$s = intval($cur_row['status']);
-	$str = $RECORD_STATUS_TEXT[$s];
+	$str = record_status_get_str($s);
 	if (isset($_POST['prob_best_solutions']))
 		return $str;
 	if ($s == RECORD_STATUS_RUNNING)
-		$str = "$str (" . $cur_row['mem'] . ')'; // see /install/tables.php
+		$str = sprintf('%s (%d / %d)', $str, $cur_row['time'] + 1, $cur_row['mem']);
+		// see /install/tables.php
 	if (!record_status_finished($s))
 		return '<img src="' . _url('images/loading.gif', TRUE) . '" alt="loading" />' . $str;
 	if ($s == RECORD_STATUS_ACCEPTED)
@@ -398,7 +399,9 @@ if (!isset($_POST['prob_best_solutions']))
 				$("#goto-page-form").serializeArray()));
 	}
 
-	$("a[name='status-detail']").colorbox();
+	$("a[name='status-detail']").colorbox({
+		"title": "<?php echo __('Record detail');?>"
+	});
 	table_set_double_bgcolor();
 	start_update_table(new Array(<?php echo implode(',', $records_unfinished); ?>));
 

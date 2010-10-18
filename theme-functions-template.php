@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Sat Oct 16 16:58:16 2010 +0800
+ * $Date: Sun Oct 17 19:23:26 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -87,22 +87,16 @@ function tf_form_get_rich_text_editor_data($editor_name)
  */
 function tf_form_get_theme_browser($prompt, $post_name, $default = NULL)
 {
+	/*
+	 * !!! THIS FUNCTION IS PLANNED TO BE IMPLEMENTED IN THE FUTURE
+	 */
 }
 
 /**
- * get a team selector
+ * get a team browser, which will post the selected team id
  * @param int|NULL $default default team id if not NULL
- * @see tf_form_get_team_selector_value
  */
-function tf_form_get_team_selector($prompt, $selector_name, $default = NULL)
-{
-}
-
-/**
- * @return int selected team id, or 0 if none
- * @see tf_form_get_team_selector
- */
-function tf_form_get_team_selector_value($selector_name)
+function tf_form_get_team_browser($prompt, $post_name, $default = NULL)
 {
 }
 

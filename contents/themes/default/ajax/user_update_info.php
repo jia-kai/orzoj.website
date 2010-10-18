@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: register.php
- * $Date: Sat Oct 16 18:58:12 2010 +0800
+ * $File: user_update_info.php
+ * $Date: Sun Oct 17 20:38:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,42 +30,38 @@ if ($page_arg == 'do')
 {
 	try
 	{
-		$id = user_register(TRUE);
-		die(__("0Congratulations! You have successfully registered, and your user id is %d.", $id) .
-			'<br />' . __('Login in 2 seconds ...'));
+		$id = user_update_info();
+		die('0' . __('user information updated sucessfully'));
 	}
 	catch (Exc_orzoj $e)
 	{
-		die(__('1Failed to register: ') . htmlencode($e->msg()));
+		die('1' . __('Failed to update user information: ') . htmlencode($e->msg()));
 	}
 }
 
 ?>
 
-<form action="#" id="register-form">
-<?php _tf_form_generate_body('user_register_get_form'); ?>
+<form action="#" id="user-update-info-form">
+<?php _tf_form_generate_body('user_update_info_get_form'); ?>
 <div style="text-align: right">
-	<button id="register-button" type="submit" class="in-form" ><?php echo __('Register!'); ?></button>
+	<button id="user-update-info-button" type="submit" class="in-form" ><?php echo __('Update!'); ?></button>
 </div>
 </form>
 
 <script type="text/javascript">
 
-$("#register-button").button();
-$("#register-form").bind("submit", function(){
+$("#user-update-info-button").button();
+$("#user-update-info-form").bind("submit", function(){
 	$.ajax({
 		"type": "post",
 		"cache": false,
 		"url": "<?php t_get_link($cur_page, 'do', FALSE);?>",
-		"data": $("#register-form").serializeArray(),
+		"data": $("#user-update-info-form").serializeArray(),
 		"success": function(data) {
 			if (data.charAt(0) == '1')
 				alert(data.substr(1));
 			else
-			{
 				$.colorbox({"html": data.substr(1)});
-				setTimeout("window.location='<?php t_get_link('action-login');?>'", 2000);
-			}
 		}
 	});
 	return false;

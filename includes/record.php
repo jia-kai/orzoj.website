@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Sun Oct 17 09:32:14 2010 +0800
+ * $Date: Mon Oct 18 11:28:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -105,24 +105,44 @@ function record_filter_rows(&$rows)
 }
 
 /**
- * translate record status to human readable text
+ * get all record status in an array(<status number> => <description>)
+ * @return string
  */
-$RECORD_STATUS_TEXT = array(
-	RECORD_STATUS_WAITING_TO_BE_FETCHED => __('Waiting to be fetched'),
-	RECORD_STATUS_WAITING_FOR_CONTEST => __('Waiting for contest'),
-	RECORD_STATUS_WAITING_ON_SERVER => __('Waiting on orzoj-server'),
+function &record_status_get_all()
+{
+	static $TEXT = NULL;
+	if (is_null($TEXT))
+	{
+		$TEXT = array(
+			RECORD_STATUS_WAITING_TO_BE_FETCHED => __('Waiting to be fetched'),
+			RECORD_STATUS_WAITING_FOR_CONTEST => __('Waiting for contest'),
+			RECORD_STATUS_WAITING_ON_SERVER => __('Waiting on orzoj-server'),
 
-	RECORD_STATUS_COMPILING => __('Compiling'),
-	RECORD_STATUS_COMPILE_SUCCESS => __('Succesfully compiled'),
-	RECORD_STATUS_COMPILE_FAILURE => __('Compilation error'),
-	RECORD_STATUS_RUNNING => __('Running'),
-	RECORD_STATUS_ACCEPTED => __('Accepted'),
-	RECORD_STATUS_WRONG_ANSWER => __('Wrong answer'),
-	RECORD_STATUS_TIME_LIMIT_EXCEED => __('Time limit exceeded'),
-	RECORD_STATUS_MEMORY_LIMIT_EXCEED => __('Memory limit exceeded'),
-	RECORD_STATUS_RUNTIME_ERROR => __('Runtime error'),
-	RECORD_STATUS_DATA_NOT_FOUND => __('Data not found'),
-	RECORD_STATUS_JUDGE_BUSY => __('Judge is busy'),
-	RECORD_STATUS_ERROR => __('Error'),
-);
+			RECORD_STATUS_COMPILING => __('Compiling'),
+			RECORD_STATUS_COMPILE_SUCCESS => __('Succesfully compiled'),
+			RECORD_STATUS_COMPILE_FAILURE => __('Compilation error'),
+			RECORD_STATUS_RUNNING => __('Running'),
+			RECORD_STATUS_ACCEPTED => __('Accepted'),
+			RECORD_STATUS_WRONG_ANSWER => __('Wrong answer'),
+			RECORD_STATUS_TIME_LIMIT_EXCEED => __('Time limit exceeded'),
+			RECORD_STATUS_MEMORY_LIMIT_EXCEED => __('Memory limit exceeded'),
+			RECORD_STATUS_RUNTIME_ERROR => __('Runtime error'),
+			RECORD_STATUS_DATA_NOT_FOUND => __('Data not found'),
+			RECORD_STATUS_JUDGE_BUSY => __('Judge is busy'),
+			RECORD_STATUS_ERROR => __('Error')
+		);
+	}
+	return $TEXT;
+}
+
+/**
+ * convert record status to human readable text
+ * @param int $status record status
+ * @return string
+ */
+function record_status_get_str($status)
+{
+	$tmp = &record_status_get_all();
+	return $tmp[intval($status)];
+}
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sat Oct 16 18:56:06 2010 +0800
+ * $Date: Mon Oct 18 11:17:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -35,14 +35,16 @@ require_once $includes_path . 'avatar.php';
 class User
 {
 	var $id, $username, $realname, $nickname,
+		$avatar_id, // avatar id
 		$avatar, // avatar URL
 		$email, $self_desc, $tid, $plang, $wlang,
 		$view_gid, // array of gid who can view the user's source
-		$theme_id,
 		$reg_time, $reg_ip, $last_login_time, $last_login_ip,
-		$cnt_submit, $cnt_ac, $cnt_unac, $cnt_ce,
-		$groups, // array of ids of groups that the user blongs to
-		$admin_groups; // array of ids of groups where the user is an administrator
+		$cnt_submit, $cnt_ac, $cnt_unac, $cnt_ce;
+
+	private
+		$groups = NULL, // array of ids of groups that the user blongs to
+		$admin_groups = NULL; // array of ids of groups where the user is an administrator
 
 	/**
 	 * @ignore
@@ -62,6 +64,65 @@ class User
 		}
 		return $a[$left] == $key;
 	}
+
+	/**
+	 * get groups that the user belongs to
+	 * @return array array of ids of groups
+	 */
+	public function get_groups()
+	{
+		global $db, $DBOP;
+		$uid = $this->id;
+		if ($this->groups)
+			return $this->groups;
+		$rows = $db->select_from('map_user_group', array('gid', 'admin'),
+			array($DBOP['&&'], $DBOP['='], 'uid', $uid, $DBOP['='], 'pending', 0));
+
+		$groups = array(GID_ALL);
+		$this->admin_groups = array();
+
+		$grp_set = array();
+
+		foreach ($rows as $row)
+		{
+			$groups[] = $row['gid'];
+			if ($row['admin'] == 1)
+				$this->admin_groups[] = $val['gid'];
+
+			$grp_set[$val['gid']] = 1;
+		}
+
+		for ($i = 0; $i < count($groups); $i ++)
+		{
+			$rows = $db->select_from('user_groups', 'pgid',
+				array($DBOP['='], 'id', $groups[$i]));
+			if (count($rows) != 1)
+				continue;
+			$tmp = $rows[0]['pgid'];
+			if (!isset($grp_set[$tmp]))
+			{
+				array_push($groups, $tmp);
+				$grp_set[$tmp] = 1;
+			}
+		}
+
+		$this->groups = $groups;
+
+		sort($this->groups, SORT_NUMERIC);
+		sort($this->admin_groups, SORT_NUMERIC);
+		return $this->groups;
+	}
+
+	/**
+	 * get groups that the user is an administrator of
+	 * @return array array of ids of groups
+	 */
+	public function get_admin_groups()
+	{
+		if (!$this->admin_groups)
+			$this->get_groups();
+		return $this->admin_groups;
+	}
 	
 	/**
 	 * test whether the user belongs to a specific group
@@ -70,7 +131,7 @@ class User
 	 */
 	function is_grp_member($gid)
 	{
-		return User::bsearch($this->groups, $gid);
+		return User::bsearch($this->get_groups(), $gid);
 	}
 
 	/**
@@ -80,7 +141,7 @@ class User
 	 */
 	function has_admin_perm($gid)
 	{
-		return User::bsearch($this->admin_groups, $gid);
+		return User::bsearch($this->get_admin_groups(), $gid);
 	}
 
 	/**
@@ -91,7 +152,7 @@ class User
 	 * @return void
 	 * @exception Exc_inner if user id does not exist
 	 */
-	function set_val($uid, $set_grp_info = TRUE)
+	function set_val($uid)
 	{
 		global $db, $DBOP;
 		$row = $db->select_from('users', NULL,
@@ -101,60 +162,18 @@ class User
 		$row = $row[0];
 
 		$VAL_SET = array('id', 'username', 'realname', 'nickname',
-			'email', 'self_desc', 'tid', 'plang', 'wlang', 'theme_id',
+			'email', 'self_desc', 'tid', 'plang', 'wlang',
 			'reg_time', 'reg_ip', 'last_login_time', 'last_login_ip',
 			'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce');
 
 		foreach ($VAL_SET as $val)
 			$this->$val = $row[$val];
 
+		$this->avatar_id = $row['aid'];
 		$this->avatar = avatar_get_url($row['aid']);
 
 		$this->view_gid = unserialize($row['view_gid']);
 
-		if ($set_grp_info)
-		{
-			$tmp = $db->select_from('map_user_group', array('gid', 'admin'),
-				array($DBOP['&&'], $DBOP['='], 'uid', $uid, $DBOP['='], 'pending', 0));
-
-			$groups = array(GID_ALL);
-			$this->admin_groups = array();
-
-			$grp_set = array();
-
-			foreach ($tmp as $val)
-			{
-				$groups[] = $val['gid'];
-				if ($val['admin'])
-					$this->admin_groups[] = $val['gid'];
-
-				$grp_set[$val['gid']] = 1;
-			}
-
-			for ($i = 0; $i < count($groups); $i ++)
-			{
-				$tmp = $db->select_from('user_groups', 'pgid',
-					array($DBOP['='], 'id', $groups[$i]));
-				if (count($tmp) != 1)
-					continue;
-				$tmp = $tmp[0]['pgid'];
-				if (!isset($grp_set[$tmp]))
-				{
-					array_push($groups, $tmp);
-					$grp_set[$tmp] = 1;
-				}
-			}
-
-			$this->groups = $groups;
-
-			sort($this->groups, SORT_NUMERIC);
-			sort($this->admin_groups, SORT_NUMERIC);
-		}
-		else
-		{
-			unset($this->groups);
-			unset($this->admin_groups);
-		}
 	}
 }
 
@@ -554,21 +573,21 @@ function user_chpasswd($uid, $oldpwd, $newpwd)
  */
 function user_update_info_get_form()
 {
+	global $_checker_id;
 	if (!user_check_login())
 		throw new Exc_runtime(__('Not logged in'));
 	_user_init_plang_wlang();
 	global $user, $_user_plang, $_user_wlang;
 	$str = 
-		tf_form_get_text_input(__('Real name'), 'realname', $user->realname) .
-		tf_form_get_text_input(__('Nickname'), 'nickname', $user->nickname) .
-		tf_form_get_text_input(__('E-mail:'), 'email', $user->email) .
-		tf_form_get_avatar_browser(__('Avatar:'), 'avatar') .
+		tf_form_get_text_input(__('Real name'), 'realname', NULL, $user->realname) .
+		tf_form_get_text_input(__('Nickname'), 'nickname', NULL, $user->nickname) .
+		tf_form_get_text_input(__('E-mail:'), 'email', $_checker_id['email'], $user->email) .
+		tf_form_get_avatar_browser(__('Avatar:'), 'avatar', $user->avatar_id) .
 		tf_form_get_select(__('Preferred programming language:'), 'plang', $_user_plang, $user->plang) .
 		tf_form_get_select(__('Preferred website language:'), 'wlang', $_user_wlang, $user->wlang) .
-		tf_form_get_theme_browser(__('Preferred website theme:'), 'theme_id', $user->theme_id) .
 		tf_form_get_gid_selector(__('User groups who can view your source:'), 'view_gid', $user->view_gid) .
-		tf_form_get_team_selector(__('Your team:'), 'tid', $user->tid) .
-		tf_form_get_long_text_input(__('Self description:'), 'self_desc');
+		tf_form_get_team_browser(__('Your team:'), 'tid', $user->tid) .
+		tf_form_get_long_text_input(__('Self description:'), 'self_desc', $user->self_desc);
 
 	echo filter_apply('after_user_update_info_form', $str);
 }
@@ -584,17 +603,29 @@ function user_update_info()
 		throw new Exc_runtime(__('Not logged in'));
 	global $db, $DBOP, $user;
 	$VAL_SET = array('realname', 'nickname', 'email', 'avatar',
-		'plang', 'wlang', 'theme_id', 'self_desc');
+		'plang', 'wlang', 'tid', 'self_desc');
 
 	$val = array();
 	foreach ($VAL_SET as $v)
 	{
 		if (!isset($_POST[$v]))
 			throw new Exc_runtime(__('incomplete post'));
-		$val[$v] = htmlencode($_POST[$v]);
 	}
+
+	try
+	{
+		xhtml_validate($val['self_desc']);
+	} catch (Exc_orzoj $e)
+	{
+		throw new Exc_runtime(__('Error while validating self description: %s', $e->msg()));
+	}
+
+	email_validate($val['email']);
+
+	$val['realname'] = htmlencode($val['realname']);
+	$val['nickname'] = htmlencode($val['nickname']);
+	$val['email'] = htmlencode($val['email']);
 	$val['view_gid'] = tf_form_get_gid_selector_value('view_gid');
-	$val['tid'] = tf_form_get_team_selector_value('tid');
 
 	$val = filter_apply('before_user_update_info', $val);
 
@@ -668,7 +699,7 @@ function user_check_view_src_perm($uid)
 	{
 		if ($user->id == $uid || $user->is_grp_member(GID_SUPER_RECORD_VIEWER))
 			return TRUE;
-		$grp = $user->groups;
+		$grp = $user->get_groups();
 	} else $grp = array(GID_GUEST);
 	$row = $db->select_from('users', 'view_gid',
 		array($DBOP['='], 'id', $uid));

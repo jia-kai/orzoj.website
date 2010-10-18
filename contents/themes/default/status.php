@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Sun Oct 17 18:50:24 2010 +0800
+ * $Date: Mon Oct 18 11:29:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -172,7 +172,7 @@ echo '</div><div style="clear:both; float:left;">';
 
 _make_select(__('lang.'), 'lid', $plang);
 _make_select(__('status'), 'status', array_merge(array(__('ALL') => ''),
-	array_flip($RECORD_STATUS_TEXT)));
+	array_flip(record_status_get_all())));
 
 _make_checkbox(__('Ranklist Mode'), 'ranklist');
 

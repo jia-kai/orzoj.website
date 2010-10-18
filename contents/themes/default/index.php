@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sat Oct 16 23:07:43 2010 +0800
+ * $Date: Sun Oct 17 21:44:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -67,9 +67,11 @@ if (isset($_POST['index_navigate_ajax']))
  */
 $PAGES_AJAX = array(
 	// <page name> => <file>
-	'ajax-register' => 'ajax/register.php',
+	'ajax-user-register' => 'ajax/user_register.php',
+	'ajax-user-update-info' => 'ajax/user_update_info.php',
 	'ajax-form-checker' => 'ajax/form_checker.php',
 	'ajax-avatar-browser' => 'ajax/avatar_browser.php',
+	'ajax-gid-selector' => 'ajax/gid_selector.php',
 	'ajax-record-detail' => 'ajax/record_detail.php',
 	'ajax-prob-group-tree-ask' => 'ajax/prob_group_tree_ask.php',
 	'ajax-prob-view-by-group' => 'ajax/prob_view_by_group.php',
@@ -238,7 +240,7 @@ if (!user_check_login())
 						<?php _tf_form_generate_body('user_check_login_get_form'); ?>
 						<div style="float: right;">
 						<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
-						<a href="<?php t_get_link('ajax-register'); ?>"
+						<a href="<?php t_get_link('ajax-user-register'); ?>"
 						id="user-register"><button type="button" class="in-form" ><?php echo __('Register'); ?></button></a>
 						</div>
 					</form>
@@ -254,12 +256,28 @@ else
 <div style="float: left; margin: 5px">
 $user->username <br />
 $p <br />
+<div id="user-options">
 EOF;
-	echo '<a href="';
-	t_get_link('user-info');
-	echo '">&lt;' . __('User info.') . '&gt;</a> <a href="';
-	t_get_link('action-logout');
-	echo '">&lt;' . __('Logout') . '&gt;</a></div>';
+	$options = array(
+		__('User info.') => 'ajax-user-info',
+		__('Update profile') => 'ajax-user-update-info',
+		__('Logout') => 'action-logout'
+	);
+	echo '<ul>';
+	foreach ($options as $opt => $page)
+	{
+		echo '<li>';
+		echo '<a href="';
+		t_get_link($page);
+		if (substr($page, 0, 5) == 'ajax-')
+			echo '" name="ajax';
+		echo "\">&lt;$opt&gt;</a><br />\n";
+		echo '</li>';
+	}
+	echo '</ul>';
+	echo '
+		</div> <!-- id: user-options -->
+		</div>';
 }
 ?>
 				</div> <!-- id: user-info -->
@@ -287,6 +305,9 @@ else
 	<div id="avatar-browser-overlay">
 	</div>
 
+	<div id="gid-selector-box" title="<?php echo __('User group selector');?>" >
+	</div>
+
 <?php
 if (isset($startup_msg))
 {
@@ -297,6 +318,8 @@ if (isset($startup_msg))
 ?>
 
 	<script type="text/javascript">
+		
+		$("a[name='ajax']").colorbox();
 
 		function form_checker(checker_id, input_id, result_div_id)
 		{
@@ -329,6 +352,10 @@ if (isset($startup_msg))
 			{
 				$(result_div_id).css("display", "inline");
 				$(result_div_id).html("<?php echo __('Passwords do not match');?>");
+			} else if (!$("#" + pwd1_id).val().length)
+			{
+				$(result_div_id).css("display", "inline");
+				$(result_div_id).html("<?php echo __('You must set a password');?>");
 			} else
 				$(result_div_id).css("display", "none");
 			$.colorbox.resize();
@@ -447,6 +474,31 @@ if (isset($startup_msg))
 				"success": function(data) {
 					$("#content-with-nav").html(data);
 					$("#content-opacity").animate({"opacity": 1}, 1.2);
+				}
+			});
+		}
+
+		function gid_selector(input_id)
+		{
+			$.ajax({
+				"type": "post",
+				"cache": false,
+				"url": "<?php t_get_link('ajax-gid-selector');?>",
+				"data": ({"input_id": input_id, "cur_val": $("#" + input_id).val()}),
+				"success": function(data){
+					var d = $("#gid-selector-box");
+					d.show();
+					d.html(data);
+					d.dialog({
+						"modal": true,
+						"buttons": {
+							"OK": function() {
+								$(this).dialog("close");
+							}
+						},
+						"show": "scale",
+						"hide": "scale"
+					});
 				}
 			});
 		}

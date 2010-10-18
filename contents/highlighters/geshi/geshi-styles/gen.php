@@ -1,6 +1,6 @@
 <?php
 define('IN_ORZOJ', TRUE);
-require_once '../../includes/geshi.php';
+require_once '../geshi.php';
 
 $formats = array('cpp', 'c', 'pascal', 'java');
 foreach ($formats as $f)

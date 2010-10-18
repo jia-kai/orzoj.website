@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Sun Oct 17 10:08:33 2010 +0800
+ * $Date: Mon Oct 18 14:53:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -40,7 +40,7 @@ define('MSG_STATUS_ERROR', 1);
 
 $static_password = option_get('static_password');
 if ($static_password === FALSE)
-	die(__('static password is not set'));
+	die('static password is not set');
 
 if (isset($_REQUEST['action'])) // login
 {
@@ -121,12 +121,8 @@ if (isset($_REQUEST['data']))
 	call_func($func_param->action);
 }
 else
-	exit('Please DO NOT orz me... I am too weak...');
+	exit('Please DO NOT orz me... I am too weak...<br /> Tim orz!!!');
 
-
-/* ----------------------------------------- */
-/* | All called functions are listed below  |*/
-/* ----------------------------------------- */
 
 /**
  * write a massage to sever
@@ -206,26 +202,13 @@ function register_new_judge()
 	$judge_name = $func_param->judge;
 	$lang_sup = $func_param->lang_supported;
 	$query_ans = json_decode($func_param->query_ans, TRUE);
-	if ($ret = judge_get_id_by_name($judge_name))
-		judge_update($ret, $judge_name, $lang_sup, $query_ans);
-	else
+	$ret = judge_get_id_by_name($judge_name);
+	if ($ret === NULL)
 		$ret = judge_add($judge_name, $lang_sup, $query_ans);
+	else
+		judge_update($ret, $judge_name, $lang_sup, $query_ans);
 	judge_set_online($ret);
 	msg_write(MSG_STATUS_OK, array('id_num' => $ret));
-}
-
-/**
- * search a judge by name
- * @param string $name judge name
- * @return int judge id, or 0 if no such judge
- */
-function judge_get_id_by_name($name)
-{
-	global $db, $DBOP;
-	$row = $db->select_from('judges', 'id', array($DBOP['=s'], 'name', $name));
-	if (count($row) != 1)
-		return 0;
-	return $row[0]['id'];
 }
 
 /**
@@ -265,7 +248,7 @@ function get_request()
 			$src = $db->select_from('sources', 'src',
 				array($DBOP['='], 'rid', $req['id']));
 			if (count($src) != 1)
-				throw new Exc_inner(__('source not found'));
+				throw new Exc_inner('source not found');
 			$req['src'] = $src[0]['src'];
 			$db->update_data('records', array('status' => RECORD_STATUS_WAITING_ON_SERVER),
 				array($DBOP['='], 'id', $req['id']));
@@ -319,8 +302,7 @@ function report_no_data()
 }
 
 /**
- *  report to orzoj-website that none of the judges 
- *  has the data of this problem
+ *  report to orzoj-website that the judge is waiting (perhaps system busy)
  *  @return void
  */
 function report_judge_waiting()
@@ -344,7 +326,7 @@ function increase_statistics_value($rid, $field)
 	global $db, $DBOP;
 	$row = $db->select_from('records', array('uid', 'pid'), array($DBOP['='], 'id', $rid));
 	if (count($row) != 1)
-		throw new Exc_inner(__('No such record #%d', $rid));
+		throw new Exc_inner('No such record #%d', $rid);
 	$row = $row[0];
 	table_update_numeric_value('users',
 		array($DBOP['='], 'id', $row['uid']), $field);
@@ -394,7 +376,10 @@ function report_compile_success()
 {
 	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
-	$value = array('status' => RECORD_STATUS_COMPILE_SUCCESS);
+	$value = array(
+		'status' => RECORD_STATUS_COMPILE_SUCCESS,
+		'mem' => $func_param->ncase
+	);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
 	msg_write(MSG_STATUS_OK, NULL);
@@ -420,30 +405,15 @@ function report_compile_failure()
  *  report to orzoj-website a single case result
  *  @return void
  */
-function report_case_result()
+function report_judge_progress()
 {
 	global $db, $func_param, $DBOP;
-	$rid = $func_param->task;
-	$result = new Case_result();
-
-	foreach(get_class_vars(get_class($result)) as $key => $val)
-		$result->$key = $func_param->$key;
-
-	$col = array('detail');
-	$where_clause = array($DBOP['='], 'id', $rid);
-	$detail = $db->select_from('records', $col, $where_clause);
-	$detail = $detail[0]['detail'];
-
-	$detail = @unserialize($detail);
-	if (!is_array($detail))
-		$detail = array();
-
-	$detail[] = $result;
-
-	$value = array('detail' => serialize($detail),
-		'status' => RECORD_STATUS_RUNNING, 'mem' => count($detail));
-	$db->update_data('records', $value, $where_clause);
-
+	$db->update_data('records',
+		array(
+			'time' => $func_param->now,
+			'status' => RECORD_STATUS_RUNNING
+		),
+		array($DBOP['='], 'id', $func_param->task));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -490,31 +460,68 @@ function determin_record_status($details)
 function report_prob_result()
 {
 	global $db, $func_param, $DBOP;
+
+	$status = RECORD_STATUS_ACCEPTED;
+	$result = array();
+	$tot_score = 0;
+	$tot_time = 0;
+	$max_mem = 0;
+	foreach (get_class_vars('Case_result') as $var => $val)
+		foreach ($func_param->$var as $idx => $val)
+		{
+			if (!isset($result[$idx]))
+				$result[$idx] = new Case_result();
+			$result[$idx]->$var = $val;
+		}
+
+	foreach ($result as $cres)
+	{
+		if ($cres->exe_status > 0)
+		{
+			$cres->exe_status += 2;
+			$status = -1;
+		}
+		else
+		{
+			if ($cres->score == 0)
+			{
+				$cres->exe_status = EXESTS_WRONG_ANSWER;
+				$status = -1;
+			}
+			else
+			{
+				$tot_score += $cres->score;
+				$tot_time += $cres->time;
+				if ($cres->memory > $max_mem)
+					$max_mem = $cres->memory;
+
+				if ($cres->score == $cres->full_score)
+					$cres->exe_status = EXESTS_RIGHT;
+				else
+				{
+					$cres->exe_status = EXESTS_PARTIALLY_RIGHT;
+					$status = -1;
+				}
+			}
+		}
+	}
+
+	if ($status == -1)
+		$status = determin_record_status($result);
+
 	$rid = $func_param->task;
+	increase_statistics_value($rid, $status == RECORD_STATUS_ACCEPTED ? 'cnt_ac' : 'cnt_unac');
 
-	$where_clause = array($DBOP['='], 'id', $rid);
-	$value = array(
-		'score' => $func_param->total_score,
-		'full_score' => $func_param->full_score,
-		'time' => $func_param->total_time,
-		'mem' => $func_param->max_mem
-	);
-	if ($func_param->total_score == $func_param->full_score && $func_param->total_score)
-	{
-		$result = 'cnt_ac';
-		$value['status'] = RECORD_STATUS_ACCEPTED;
-	}
-	else
-	{
-		$result = 'cnt_unac';
-		$row = $db->select_from('records', 'detail', $where_clause);
-		if (count($row) != 1)
-			throw new Exc_inner(__('no such record #%d', $rid));
-		$value['status'] = determin_record_status(unserialize($row[0]['detail']));
-	}
+	$db->update_data('records',
+		array(
+			'status' => $status,
+			'score' => $tot_score,
+			'time' => $tot_time,
+			'mem' => $max_mem,
+			'detail' => case_result_array_encode($result)
+		),
+		array($DBOP['='], 'id', $rid));
 
-	$db->update_data('records', $value, $where_clause);
-	increase_statistics_value($rid, $result);
 	msg_write(MSG_STATUS_OK, NULL);
 }
 

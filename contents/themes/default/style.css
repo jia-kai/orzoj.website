@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Oct 18 10:22:45 2010 +0800
+ * $Date: Mon Oct 18 15:07:48 2010 +0800
 
  This file is part of orzoj
 
@@ -153,6 +153,23 @@ div#user-info
 {
 	float: right;
 	margin: 20px;
+}
+
+div#user-options
+{
+	text-align: left;
+}
+
+div#user-options ul
+{
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+div#user-options li
+{
+	margin-left: 10px;
 }
 
 div#content

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Oct 18 14:38:48 2010 +0800
+ * $Date: Mon Oct 18 15:08:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -284,7 +284,10 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'name' => array('type' => 'TEXT200'), // display name and name used on orzoj-server
-			'syntax' => array('type' => 'TEXT200') // syntax name used in GeSHi
+			'type' => array('type' => 'TEXT200')
+			// the type of this language
+			// standard types:
+			//	cpp, c, pascal, java
 		),
 		'primary_key' => 'id'
 	),
@@ -322,13 +325,15 @@ $tables = array(
 			'jtime' => array('type' => 'INT64', 'default' => 0), // time when it is judged
 			'ip' => array('type' => 'TEXT'), // from which ip it is submitted
 			'score' => array('type' => 'INT32', 'default' => 0),
-			'full_score' => array('type' => 'INT32', 'default' => 0),
 			'time' => array('type' => 'INT32', 'default' => 0), // microsecond
 			'mem' => array('type' => 'INT32', 'default' => 0), // maximal memory, kb
-			// if status == RECORD_STATUS_RUNNING, the current case number is stored in 'mem'
+			// if status == RECORD_STATUS_RUNNING,
+			//		current case number (starting at 0) is stored in 'time',
+			//		and total number of cases is stored in 'mem'
 			'detail' => array('type' => 'TEXT', 'default' => '')
-			// serialized array of Case_result. see includes/exe_status.php
+			// encoded array of Case_result. see includes/exe_status.php
 			// or error info if judge process not started
+			// values in this field are not HTML encoded
 		),
 		'primary_key' => 'id',
 		'index' => array(

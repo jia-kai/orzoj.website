@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Wed Oct 13 16:16:57 2010 +0800
+ * $Date: Mon Oct 18 14:54:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -100,5 +100,19 @@ function judge_get_name_by_id($jid)
 	if (count($row) != 1)
 		return $cache[$jid] = NULL;
 	return $cache[$jid] = $row[0]['name'];
+}
+
+/**
+ * get judge id by name
+ * @param string $name judge name
+ * @return int|NULL judge id, or NULL if no such judge
+ */
+function judge_get_id_by_name($name)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('judges', 'id', array($DBOP['=s'], 'name', $name));
+	if (count($row) != 1)
+		return NULL;
+	return $row[0]['id'];
 }
 

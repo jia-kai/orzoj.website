@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Oct 18 10:23:38 2010 +0800
+ * $Date: Mon Oct 18 15:07:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -121,19 +121,10 @@ function tf_form_get_theme_browser($prompt, $post_name, $default = NULL)
 }
 
 /**
- * get a team selector
+ * get a team browser, which will post the selected team id
  * @param int|NULL $default default team id if not NULL
- * @see tf_form_get_team_selector_value
  */
-function tf_form_get_team_selector($prompt, $selector_name, $default = NULL)
-{
-}
-
-/**
- * @return int selected team id, or 0 if none
- * @see tf_form_get_team_selector
- */
-function tf_form_get_team_selector_value($selector_name)
+function tf_form_get_team_browser($prompt, $post_name, $default = NULL)
 {
 }
 
@@ -147,6 +138,24 @@ function tf_form_get_team_selector_value($selector_name)
  */
 function tf_form_get_gid_selector($prompt, $selector_name, $default = NULL)
 {
+	if (is_null($default))
+		$default = '';
+	else
+	{
+		$tmp = '';
+		foreach ($default as $gid)
+			$tmp .= user_grp_get_name_by_id($gid) . ',';
+		$default = substr($tmp, 0, strlen($tmp) - 1);
+	}
+	$id = _tf_get_random_id();
+	$str = <<<EOF
+<tr>
+<td><label for="$id">$prompt</label></td>
+<td><input id="$id" type="text" value="$default" name="gid_selector_$selector_name"
+	onkeydown="return false;" onclick="gid_selector('$id');" /></td>
+</tr>
+EOF;
+	return $str;
 }
 
 /**

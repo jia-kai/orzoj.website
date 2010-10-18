@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: exe_status.php
- * $Date: Thu Oct 14 08:19:17 2010 +0800
+ * $Date: Mon Oct 18 12:08:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,20 +38,89 @@ define('EXESTS_ILLEGAL_CALL', 7);
 define('EXESTS_EXIT_NONZERO', 8);
 define('EXESTS_SYSTEM_ERROR', 9);
 
-$EXECUTION_STATUS_TEXT = array(
-	EXESTS_RIGHT => __('Right'),
-	EXESTS_PARTIALLY_RIGHT => __('Partially right'),
-	EXESTS_WRONG_ANSWER => __('Wrong answer'),
-	EXESTS_TLE => __('Time limit exceeded'),
-	EXESTS_SIGKILL => __('Terminated by SIGKILL'),
-	EXESTS_SIGSEGV => __('Illegal access to memeory'),
-	EXESTS_SIGNAL => __('Terminated by signal'),
-	EXESTS_ILLEGAL_CALL => __('Illegal system call'),
-	EXESTS_EXIT_NONZERO => __('Non-zero exit code'),
-	EXESTS_SYSTEM_ERROR => __('System error'),
-);
+/**
+ * get all execution status in an array(<status number> => <description>)
+ * @return string
+ */
+function &exests_get_all()
+{
+	static $TEXT = NULL;
+	if (is_null($TEXT))
+	{
+		$TEXT = array(
+			EXESTS_RIGHT => __('Right'),
+			EXESTS_PARTIALLY_RIGHT => __('Partially right'),
+			EXESTS_WRONG_ANSWER => __('Wrong answer'),
+			EXESTS_TLE => __('Time limit exceeded'),
+			EXESTS_SIGKILL => __('Terminated by SIGKILL'),
+			EXESTS_SIGSEGV => __('Illegal access to memeory'),
+			EXESTS_SIGNAL => __('Terminated by signal'),
+			EXESTS_ILLEGAL_CALL => __('Illegal system call'),
+			EXESTS_EXIT_NONZERO => __('Non-zero exit code'),
+			EXESTS_SYSTEM_ERROR => __('System error')
+		);
+	}
+	return $TEXT;
+}
+
+/**
+ * convert execution status to human readable text
+ * @param int $status execution status
+ * @return string
+ */
+function exests_get_str($status)
+{
+	$tmp = &exests_get_all();
+	return $tmp[intval($status)];
+}
 
 class Case_result
 {
-	var $exe_status, $score, $time, $memory, $extra_info;
+	var $exe_status, $score, $full_score, $time, $memory, $extra_info;
 }
+
+$case_result_vars = array_keys(get_class_vars('Case_result'));
+sort($case_result_vars);
+
+/**
+ * encode an array of Case_result into a string
+ * @param array $data
+ * @return string
+ */
+function case_result_array_encode($data)
+{
+	global $case_result_vars;
+	$ret = array();
+	foreach ($data as $d)
+	{
+		$tmp = array();
+		foreach ($case_result_vars as $v)
+			$tmp[] = $d->$v;
+		$ret[] = $tmp;
+	}
+	return json_encode($ret);
+}
+
+/**
+ * decode a string into an array of Case_result
+ * @param string $str
+ * @return array
+ */
+function case_result_array_decode($str)
+{
+	global $case_result_vars;
+	$ret = array();
+	$cnt = count($case_result_vars);
+	foreach (json_decode($str) as $d)
+	{
+		$tmp = new Case_result();
+		for ($idx = 0; $idx < $cnt; $idx ++)
+		{
+			$f = $case_result_vars[$idx];
+			$tmp->$f = $d[$idx];
+		}
+		$ret[] = $tmp;
+	}
+	return $ret;
+}
+

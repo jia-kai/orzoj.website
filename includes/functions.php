@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 16 17:47:12 2010 +0800
+ * $Date: Mon Oct 18 14:44:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -317,18 +317,18 @@ function plang_get_name_by_id($lid)
 }
 
 /**
- * get syntax name used in GeSHi
+ * get programming language type by id
  * @param int $lid language id
  * @return string|NULL the name or NULL if no such language
  */
-function plang_get_syntax_by_id($lid)
+function plang_get_type_by_id($lid)
 {
 	global $db, $DBOP;
-	$row = $db->select_from('plang', 'syntax',
+	$row = $db->select_from('plang', 'type',
 		array($DBOP['='], 'id', $lid));
 	if (count($row) != 1)
 		return NULL;
-	return $row[0]['syntax'];
+	return $row[0]['type'];
 }
 
 /**
@@ -372,5 +372,15 @@ function email_validate($email)
 			// || !checkdnsrr($domain,"A")))
 		throw new Exc_runtime(__('invalid email address: MX record not found in DNS'));
 	}
+}
+
+/**
+ * get a human readable string representing the Unix time stamp
+ * @param int $time the Unix time stamp
+ * @return string
+ */
+function time2str($time)
+{
+	return strftime('%a %b %d %H:%M:%S %Y %Z', $time);
 }
 
