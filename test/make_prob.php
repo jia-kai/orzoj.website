@@ -21,10 +21,6 @@ function make_prob()
 		'perm' => serialize(array(0, 1, array(GID_ALL), array())),
 		'io' => serialize(array('a+b.in', 'a+b.out')),
 		'time' => time(),
-		'cnt_submit' => 10,
-		'cnt_ac' => 2,
-		'cnt_unac' => 4,
-		'cnt_ce' => 1,
 		'desc' => serialize(array(
 			'time' => '1s',
 			'memory' => '256MB',

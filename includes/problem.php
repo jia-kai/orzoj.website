@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Mon Oct 18 09:50:24 2010 +0800
+ * $Date: Mon Oct 18 23:08:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,7 +31,7 @@ require_once $includes_path . 'contest/ctal.php';
 
 $PROB_SUBMIT_PINFO = array('id', 'code', 'perm', 'io');
 $PROB_VIEW_PINFO = array('id', 'title', 'code', 'desc', 'perm', 'io', 'time',
-	'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce', 'grp');
+	'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce', 'difficulty', 'grp');
 // desc: exlained in simple-doc.txt or install/tables.php
 // grp: array of problem group ids that this problem belongs to
 // io: array of input/output file name, or NULL if using stdio

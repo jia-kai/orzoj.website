@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Mon Oct 18 15:07:41 2010 +0800
+ * $Date: Mon Oct 18 23:11:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,7 +33,7 @@ $PROB_VIEW_ROWS_PER_PAGE = 20;
 
 prob_view_by_group_parse_arg();
 
-$fields = array('id', 'title', 'code', 'cnt_submit', 'cnt_ac');
+$fields = array('id', 'title', 'code', 'cnt_submit', 'cnt_ac', 'difficulty');
 $show_fields= array(
 	__('ID'),
 	__('Title'),
@@ -94,9 +94,7 @@ foreach ($probs as $prob)
 		_make_prob_link($prob['id'], $prob['code']);
 		echo '<td>' . $prob['cnt_ac'] . '</td>'; // Accepted
 		echo '<td>' . $prob['cnt_submit'] . '</td>'; // Submited
-		$d = ($prob['cnt_submit'] - $prob['cnt_ac']) / $prob['cnt_submit'];
-		$d = floor($d * 1000) / 1000 * 100;
-		echo '<td>' . $d . '%</td>';
+		echo '<td>' . $prob['difficulty'] / DB_REAL_PRECISION * 100 . '</td>'; // Difficulty
 	}
 	echo '</tr>';
 }

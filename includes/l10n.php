@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Mon Oct 18 23:01:42 2010 +0800
+ * $Date: Tue Oct 19 08:27:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -93,7 +93,7 @@ function l10n_add_file($filename)
  */
 function l10n_add_directory($dir)
 {
-	$dr = opendir($dir);
+	$dr = @opendir($dir);
 	if ($dr)
 	{
 		while (($file = readdir($dr)) !== false)

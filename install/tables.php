@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Oct 18 21:29:52 2010 +0800
+ * $Date: Tue Oct 19 08:17:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -71,10 +71,12 @@ $tables = array(
 			'last_login_ip' => array('type' => 'TEXT', 'default' => ''),
 
 			'cnt_submit' => array('type' => 'INT32', 'default' => 0), // number of submissions
-			'cnt_ac' => array('type' => 'INT32', 'default' => 0), // number of accepted submissions
-			'cnt_unac' => array('type' => 'INT32', 'default' => 0), // number of unaccepted submissions
+			'cnt_ac' => array('type' => 'INT32', 'default' => 0),
+			// number of accepted solutions (multi accepted submissions to the same problem count as one)
+			'cnt_unac' => array('type' => 'INT32', 'default' => 0),
+			// number of unaccepted submissions except those with compilation error
 			'cnt_ce' => array('type' => 'INT32', 'default' => 0), // number of compiling-error submissions
-			'ac_ratio' => array('type' => 'INT32', 'default' => 0) // accepte ratio: floor((cnt_ac / cnt_submit) * 10000, which means two fraction numbers will be hold.
+			'ac_ratio' => array('type' => 'INT32', 'default' => 0) // accepted ratio: cnt_ac / cnt_submit
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -189,10 +191,13 @@ $tables = array(
 
 			'time' => array('type' => 'INT64'), // when this problem is added
 
-			'cnt_submit' => array('type' => 'INT32', 'default' => 0),
-			'cnt_ac' => array('type' => 'INT32', 'default' => 0),
+			'cnt_submit' => array('type' => 'INT32', 'default' => 0), // total submissions
+			'cnt_ac' => array('type' => 'INT32', 'default' => 0), // number of users who submit an accepted solution
 			'cnt_unac' => array('type' => 'INT32', 'default' => 0),
-			'cnt_ce' => array('type' => 'INT32', 'default' => 0),
+			// number of unaccepted submissions except those with compilation error
+			'cnt_ce' => array('type' => 'INT32', 'default' => 0), // number of submissions with compilation error 
+			'difficulty' => array('type' => 'INT32', 'default' => DB_REAL_PRECISION)
+			// cnt_unac / cnt_submit
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -491,7 +496,7 @@ $tables = array(
 		'cols' => array(
 			'uid' => array('type' => 'INT32'),
 			'pid' => array('type' => 'INT32'),
-			'status' => array('type' => 'INT32')
+			'status' => array('type' => 'INT32') // see consts starting with STS_
 		),
 		'index' => array(
 			array(

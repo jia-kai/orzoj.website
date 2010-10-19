@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Mon Oct 18 21:30:18 2010 +0800
+ * $Date: Tue Oct 19 08:40:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -316,37 +316,90 @@ function report_judge_waiting()
 }
 
 /**
- * increase statistics value in the database
+ * update statistics value in the database
  * @param int $rid record id
- * @param string $field
+ * @param string $type must be one of 'submit', 'ac', 'unac', 'ce'
  * @return void
  */
-function increase_statistics_value($rid, $field)
+function update_statistics($rid, $type)
 {
 	global $db, $DBOP;
-	$row = $db->select_from('records', array('uid', 'pid'), array($DBOP['='], 'id', $rid));
+	$row = $db->select_from('records', array('uid', 'pid'),
+		array($DBOP['='], 'id', $rid));
 	if (count($row) != 1)
 		throw new Exc_inner('No such record #%d', $rid);
 	$row = $row[0];
-	table_update_numeric_value('users',
-		array($DBOP['='], 'id', $row['uid']), $field);
-	table_update_numeric_value('problems',
-		array($DBOP['='], 'id', $row['pid']), $field);
 
+	$where = array($DBOP['&&'],
+		$DBOP['='], 'uid', $row['uid'],
+		$DBOP['='], 'pid', $row['pid']);
+	$old_sts = $db->select_from('sts_prob_user', 'status', $where);
 
-	$where = array($DBOP['&&'], $DBOP['='], 'uid', $row['uid'], $DBOP['='], 'pid', $row['pid']);
-	$st = $db->select_from('sts_prob_user', array('status'), $where);
-	$status = $field == 'cnt_ac' ? ST_PROB_USER_AC : ST_PROB_USER_UNAC;
-	if (count($st) == 0)
-		$db->insert_into('sts_prob_user',
-			array('uid' => $row['uid'], 'pid' => $row['pid'], 'status' => $status)
-		);
+	if (!count($old_sts))
+	{
+		$update_col = "cnt_$type";
+		$new_sts = $type == 'ac' ? STS_PROB_USER_AC : STS_PROB_USER_UNAC;
+	}
 	else
 	{
-		$st = $st[0];
-		if ($st['status'] == ST_PROB_USER_UNAC && $status == ST_PROB_USER_AC)
-			$db->update_data('sts_prob_user', array('status' => ST_PROB_USER_AC), $where);
+		$old_sts = $old_sts[0]['status'];
+		if ($old_sts == STS_PROB_USER_AC)
+		{
+			if ($type != 'ac')
+			{
+				$update_col = "cnt_$type";
+				$new_sts = STS_PROB_USER_UNAC;
+			}
+		}
+		else
+		{
+			$update_col = "cnt_$type";
+			$new_sts = $type == 'ac' ? STS_PROB_USER_AC : STS_PROB_USER_UNAC;
+		}
 	}
+
+	if (!isset($update_col))
+		return;
+
+	if (isset($new_sts))
+	{
+		if (is_string($old_sts))
+			$db->update_data('sts_prob_user',
+				array('status' => $new_sts), $where);
+		else
+			$db->insert_into('sts_prob_user',
+				array('status' => $new_sts, 'uid' => $row['uid'], 'pid' => $row['pid']));
+	}
+
+	$where = array($DBOP['='], 'id', $row['uid']);
+	if ($update_col == 'cnt_ac' || $update_col == 'cnt_submit')
+	{
+		$tmp = $db->select_from('users', array('cnt_ac', 'cnt_submit'), $where);
+		$tmp = $tmp[0];
+		$tmp[$update_col] ++;
+		$tmp['ac_ratio'] = floor($tmp['cnt_ac'] * DB_REAL_PRECISION / $tmp['cnt_submit'] + 0.5);
+	} else
+	{
+		$tmp = $db->select_from('users', $update_col, $where);
+		$tmp = $tmp[0];
+		$tmp[$update_col] ++;
+	}
+	$db->update_data('users', $tmp, $where);
+
+	$where[2] = $row['pid'];
+	if ($update_col == 'cnt_unac' || $update_col == 'cnt_submit')
+	{
+		$tmp = $db->select_from('problems', array('cnt_unac', 'cnt_submit'), $where);
+		$tmp = $tmp[0];
+		$tmp[$update_col] ++;
+		$tmp['difficulty'] = floor($tmp['cnt_unac'] * DB_REAL_PRECISION / $tmp['cnt_submit'] + 0.5);
+	} else
+	{
+		$tmp = $db->select_from('problems', $update_col, $where);
+		$tmp = $tmp[0];
+		$tmp[$update_col] ++;
+	}
+	$db->update_data('problems', $tmp, $where);
 }
 
 /**
@@ -378,8 +431,7 @@ function report_compiling()
 		'jtime' => time());
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	increase_statistics_value($rid, 'cnt_submit');
-	update_ac_ratio($rid);
+	update_statistics($rid, 'submit');
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -412,7 +464,7 @@ function report_compile_failure()
 		'detail' => $func_param->info);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	increase_statistics_value($rid, 'cnt_ce');
+	update_statistics($rid, 'ce');
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -525,8 +577,7 @@ function report_prob_result()
 		$status = determin_record_status($result);
 
 	$rid = $func_param->task;
-	increase_statistics_value($rid, $status == RECORD_STATUS_ACCEPTED ? 'cnt_ac' : 'cnt_unac');
-	update_ac_ratio($rid);
+	update_statistics($rid, $status == RECORD_STATUS_ACCEPTED ? 'ac' : 'unac');
 
 	$db->update_data('records',
 		array(

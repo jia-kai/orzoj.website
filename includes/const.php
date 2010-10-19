@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Mon Oct 18 17:31:33 2010 +0800
+ * $Date: Mon Oct 18 23:32:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,10 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+define('DB_REAL_PRECISION', 10000);
+// real numbers are multiplied by DB_REAL_PRECISION and 
+// converted to integer to be inserted in the database
 
 define('OPTION_KEY_LEN_MAX', 30);
 define('JUDGE_NAME_LEN_MAX', 20);
@@ -64,8 +68,8 @@ define('JUDGE_STATUS_ONLINE',1);
 
 define('DYNAMIC_PASSWORD_LIFETIME', 10); // in seconds
 
-define('ST_PROB_USER_UNAC', 0);
-define('ST_PROB_USER_AC', 1);
+define('STS_PROB_USER_UNAC', 0);
+define('STS_PROB_USER_AC', 1);
 
 $cnt = 0;
 define('WEBSERVER_OTHERS', $cnt ++);

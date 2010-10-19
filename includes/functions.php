@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Oct 18 14:44:21 2010 +0800
+ * $Date: Mon Oct 18 22:56:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -212,34 +212,6 @@ function get_page_url($file)
 	global $website_root, $root_path;
 	$file = realpath($file);
 	return $website_root . substr($file, strlen($root_path));
-}
-
-/**
- * update table numeric value
- * @param string $table table name
- * @param array $where where clause
- * @param string|array $fileds the fileds need to be increased
- * @param int $delta
- * @return void
- * @exception Exc_inner if the row id does not exist
- */
-function table_update_numeric_value($table, $where, $fields, $delta = 1)
-{
-	global $db, $DBOP;
-
-	if (is_string($fields))
-		$fields = array($fields);
-
-	$val = $db->select_from($table, $fields, $where);
-
-	if (!count($val))
-		throw new Exc_inner(__('no such row'));
-
-	$val = $val[0];
-	foreach ($val as $k => $v)
-		$val[$k] += $delta;
-
-	$db->update_data($table, $val, $where);
 }
 
 /**
