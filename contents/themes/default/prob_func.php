@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_func.php
- * $Date: Tue Oct 19 01:06:17 2010 +0800
+ * $Date: Tue Oct 19 11:31:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,40 +27,50 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-function prob_view_by_group_get_a_href($gid, $start_page)
+function prob_view_by_group_get_a_href($gid, $start_page, $sort_col = 'id', $sort_way = 'ASC')
 {
-	$arg = sprintf('%d|%d', $gid, $start_page);
+	$arg = sprintf('%d|%d|%s|%s', $gid, $start_page, $sort_col, $sort_way);
 	return t_get_link('show-ajax-prob-view-by-group', $arg, TRUE, TRUE);
 }
 
-function prob_view_by_group_get_a_onclick($gid, $start_page, $sort_col = 'id', $sort_way = 'ASC', $in_HTML = TRUE)
+function prob_view_by_group_get_a_onclick($gid, $start_page, $sort_col = 'id', $sort_way = 'ASC', $title_pattern_show = NULL, $in_HTML = TRUE)
 {
-	$arg = sprintf('%d|%d|%s|%s', $gid, $start_page, $sort_col, $sort_way);
+	if (is_null($title_pattern_show))
+		$title_pattern = '*';
+	$arg = sprintf('%d|%d|%s|%s|%s', $gid, $start_page, $sort_col, $sort_way, $title_pattern_show);
 	return 'prob_view_set_content(\'' . t_get_link('ajax-prob-view-by-group', $arg, $in_HTML, TRUE) . '\'); return false;';
 }
 
 function _get_int(&$pos, $str, $len)
 {
 	$ret = 0; $flag = false;
+	$exc_msg = 'error in _get_int() ';
 	if ($pos >= $len)
-		throw new Exc_orzoj();
+		throw new Exc_orzoj($exc_msg . '1');
 	if ($str[$pos] == '|')
 		$pos ++;
+	$t = 1;
+	if ($str[$pos] == '-')
+	{
+		$t = -1;
+		$pos ++;
+	}
 	while ($pos < $len && ($str[$pos] >= '0' && $str[$pos] <= '9'))
 	{
 		$ret = $ret * 10 + ($str[$pos ++]) - '0';
 		$flag = true;
 	}
 	if (!$flag)
-		throw new Exc_orzoj();
-	return $ret;
+		throw new Exc_orzoj($exc_msg . '2');
+	return $ret * $t;
 }
 
 function _get_string(&$pos, $str, $len)
 {
 	$ret = ''; $flag = false;
+	$exc_msg = 'error in _get_string';
 	if ($pos >= $len)
-		throw new Exc_orzoj();
+		throw new Exc_orzoj($exc_msg . '1');
 	if ($str[$pos] == '|')
 		$pos ++;
 	while ($pos < $len && $str[$pos] != '|')
@@ -69,19 +79,21 @@ function _get_string(&$pos, $str, $len)
 		$flag = true;
 	}
 	if (!$flag)
-		throw new Exc_orzoj();
+		throw new Exc_orzoj($exc_msg . '2');
 	return $ret;
 }
 
 function prob_view_by_group_parse_arg()
 {
-	global $gid, $start_page, $page_arg, $sort_col, $sort_way;
+	global $gid, $start_page, $page_arg, $sort_col, $sort_way, $title_pattern_show;
+	echo "page_arg: $page_arg";
 	if (is_null($page_arg))
 	{
 		$gid = NULL;
 		$start_page = 1;
 		$sort_col = 'id';
 		$sort_way = 'ASC';
+		$title_pattern_show = NULL;
 		return;
 	}
 	try
@@ -92,10 +104,12 @@ function prob_view_by_group_parse_arg()
 		$start_page = _get_int($pos, $page_arg, $len);
 		$sort_col = _get_string($pos, $page_arg, $len);
 		$sort_way = _get_string($pos, $page_arg, $len);
+		$title_pattern_show = _get_string($pos, $page_arg, $len);
+		//die("gid: $gid, start_page: $start_page, sort_col: $sort_col, sort_way: $sort_way");
 	}
    	catch (Exc_orzoj $e)
 	{
-		die('Hello, argument is wrong.');
+		die($e->msg());
 	}
 	if ($gid == 0)
 		$gid = NULL;
@@ -103,28 +117,32 @@ function prob_view_by_group_parse_arg()
 		$start_page = 1;
 }
 
-function prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way)
+function prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern)
 {
 	if (is_null($gid))
 		$gid = 0;
-	return "$pid|$gid|$start_page|$sort_col|$sort_way";
+	if (is_null($title_pattern))
+		$title_pattern = '*';
+	return "$pid|$gid|$start_page|$sort_col|$sort_way|$title_pattern";
 }
 
 function prob_view_single_get_a_href($pid, $gid, $start_page)
 {
-	$arg = prob_view_single_pack_arg($pid, $gid, $start_page, 'id', 'ASC');
+	$arg = prob_view_single_pack_arg($pid, $gid, $start_page, 'id', 'ASC', '*');
 	return t_get_link('show-ajax-prob-view-single', $arg, TRUE, TRUE);
 }
 
-function prob_view_single_get_a_onclick($pid, $gid, $start_page, $sort_col, $sort_way, $in_HTML = TRUE)
+function prob_view_single_get_a_onclick($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern = NULL, $in_HTML = FALSE)
 {
-	$arg = prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way);
+	if (is_null($title_pattern))
+		$title_pattern = '*';
+	$arg = prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern);
 	return 'prob_view_set_content(\'' . t_get_link('ajax-prob-view-single', $arg, $in_HTML, TRUE) . '\'); return false;';
 }
 
 function prob_view_single_parse_arg()
 {
-	global $pid, $gid, $start_page, $page_arg, $sort_col, $sort_way;
+	global $pid, $gid, $start_page, $page_arg, $sort_col, $sort_way, $title_pattern_show;
 	if (!isset($pid))
 	{
 		try
@@ -136,6 +154,7 @@ function prob_view_single_parse_arg()
 			$start_page  = _get_int($pos, $page_arg, $len);
 			$sort_col = _get_string($pos, $page_arg, $len);
 			$sort_way = _get_string($pos, $page_arg, $len);
+			$title_pattern_show = _get_string($pos, $page_arg, $len);
 		} catch (Exc_orzoj $e)
 			{
 				die('What ?');

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_filter.php
- * $Date: Sun Oct 17 23:51:40 2010 +0800
+ * $Date: Tue Oct 19 09:55:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,10 +25,12 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
-function _make_input($prompt, $post_name, $func_sufix)
+function _make_input($prompt, $post_name, $func_sufix, $page)
 {
 	$Go = __('Go');
-	$prob_view_single = t_get_link('ajax-prob-view-single', NULL, TRUE, TRUE);
+	$prob_view_page = t_get_link('ajax-prob-view-' . $page, 
+		NULL,
+	   	TRUE, TRUE);
 	$id = _tf_get_random_id();
 	$form_id = _tf_get_random_id();
 	echo <<<EOF
@@ -39,7 +41,7 @@ function _make_input($prompt, $post_name, $func_sufix)
 		</div>
 		</td>
 		<td>
-		<form id="$form_id"action="$prob_view_single" method="post">
+		<form id="$form_id" action="$prob_view_page" method="post">
 		<div style="float: left">
 			<input id="$id" name="$post_name" type="text" class="prob-filter" />
 		</div>
@@ -57,10 +59,11 @@ function prob_view_by_$func_sufix()
 	var t = $("#prob-view");
 	t.animate({"opacity" : 0.5}, 1);
 	$.ajax({
-		"url" : "$prob_view_single",
+		"url" : "$prob_view_page",
 		"type" : "post",
 		"data" : ({"prob-filter" : "$post_name",
-					"value" : $("#$id").attr("value")}),
+					"value" : $("#$id").attr("value")
+				}),
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
 			t.html(data);
@@ -80,8 +83,9 @@ EOF;
 <div id="prob-filter-list">
 <table style="max-width: 150px;">
 <?php
-_make_input(__('ID'), 'prob-filter-id', 'id');
-_make_input(__('Code'), 'prob-filter-code', 'code');
+_make_input(__('ID'), 'prob-filter-id', 'id', 'single');
+_make_input(__('Code'), 'prob-filter-code', 'code', 'single');
+_make_input(__('Title'), 'prob-filter-title', 'title', 'by-group');
 ?>
 </table>
 </div> <!-- id: prob-filter-list -->

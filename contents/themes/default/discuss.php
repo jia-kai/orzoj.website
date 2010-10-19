@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: discuss.php
- * $Date: Mon Oct 18 14:58:15 2010 +0800
+ * $Date: Tue Oct 19 09:02:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -48,7 +48,6 @@ if (isset($page_arg))
 			die(__('Can not parse arg while trying to view list.'));
 		require_once $theme_path . 'ajax/post_list.php';
 	}
-	else
 }
 else
 	require_once $theme_path . 'ajax/post_list.php';

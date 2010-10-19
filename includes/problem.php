@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Tue Oct 19 01:06:28 2010 +0800
+ * $Date: Tue Oct 19 10:42:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -116,18 +116,23 @@ function prob_view($pid)
 /**
  * @ignore
  */
-function _prob_get_list_make_where($gid)
+function _prob_get_list_make_where($gid, $title_pattern)
 {
 	global $db, $DBOP;
-	if (is_null($gid))
-		return NULL;
-	return array($DBOP['in'], 'id', $db->select_from(
-		'map_prob_grp', 'pid', 
-		array($DBOP['in'], 'gid', $db->select_from(
-			'cache_pgrp_child', 'chid', array(
-				$DBOP['='], 'gid', $gid), array('chid' => 'ASC'), NULL, NULL,
-				array('chid' => 'gid'), TRUE),
-			), array('pid' => 'ASC'), NULL, NULL, array('pid' => 'id'), TRUE));
+	$where = NULL;
+	if (!is_null($gid))
+		$where = array($DBOP['in'], 'id', $db->select_from(
+			'map_prob_grp', 'pid', 
+			array($DBOP['in'], 'gid', $db->select_from(
+				'cache_pgrp_child', 'chid', array(
+					$DBOP['='], 'gid', $gid), array('chid' => 'ASC'), NULL, NULL,
+					array('chid' => 'gid'), TRUE),
+		), array('pid' => 'ASC'), NULL, NULL, array('pid' => 'id'), TRUE));
+
+	if (!is_null($title_pattern) && strlen($title_pattern))
+		db_where_add_and($where, array($DBOP['like'], 'title', $title_pattern));
+
+	return $where;
 }
 
 /**
@@ -135,11 +140,11 @@ function _prob_get_list_make_where($gid)
  * @param int|NULL $gid problem group id
  * @return int
  */
-function prob_get_amount($gid = NULL)
+function prob_get_amount($gid = NULL, $title_pattern = NULL)
 {
 	global $db, $DBOP;
 	return $db->get_number_of_rows('problems',
-		_prob_get_list_make_where($gid));
+		_prob_get_list_make_where($gid, $title_pattern));
 }
 
 /**
@@ -151,8 +156,10 @@ function prob_get_amount($gid = NULL)
  * @param int|NULL $cnt
  * @return array  Note: if some problems is not allowed to be viewd, the corresponding rows will be NULL 
  */
-function prob_get_list($fields, $gid = NULL, $order_by = NULL, $offset = NULL, $cnt = NULL)
+function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = NULL, $offset = NULL, $cnt = NULL)
 {
+	if (is_string($fields))
+		$fields = array($fields);
 	global $db, $DBOP, $user;
 	$fields_added = array();
 	if (!in_array('perm', $fields))
@@ -167,7 +174,7 @@ function prob_get_list($fields, $gid = NULL, $order_by = NULL, $offset = NULL, $
 	}
 	$rows = $db->select_from('problems',
 		$fields, 
-		_prob_get_list_make_where($gid),
+		_prob_get_list_make_where($gid, $title_pattern),
 		$order_by,
 		$offset, $cnt
 	);

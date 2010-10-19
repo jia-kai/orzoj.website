@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Tue Oct 19 01:07:52 2010 +0800
+ * $Date: Tue Oct 19 11:36:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,29 +25,65 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+
 require_once $includes_path . 'problem.php';
 require_once $theme_path . 'prob_func.php';
+
 
 // XXX: this should be a setting of theme
 $PROB_VIEW_ROWS_PER_PAGE = 20;
 
+$title_pattern = NULL;
+
 $sort_col = 'id';
 $sort_way = 'ASC';
 $start_page = 1;
+function _tranform_pattern($title_pattern)
+{
+	$title_pattern = trim($title_pattern);
+	$title_pattern_show = $title_pattern;
+	$title_pattern = str_replace('_', '\_', $title_pattern);
+	$title_pattern = str_replace('%', '\%', $title_pattern);
+	$title_pattern = str_replace('*', '%', $title_pattern);
+	$title_pattern = str_replace('?', '_', $title_pattern);
+	$title_pattern = '%' . $title_pattern . '%';
+	return $title_pattern;
+}
+
 if (isset($_POST['sort_col']) && isset($_POST['sort_way']))
 {
 	$sort_col = $_POST['sort_col'];
 	$sort_way = $_POST['sort_way'];
-	$post = true;
+	$on_sort = TRUE;
 	if (isset($_POST['gid']))
 		$gid = intval($_POST['gid']);
 	if ($gid === 0)
 		$gid = NULL;
 	if (isset($_POST['start_page']))
 		$start_page = intval($_POST['start_page']);
+	if (isset($_POST['title_pattern_show']))
+	{
+		$title_pattern_show = $_POST['title_pattern_show'];
+		$title_filtered = TRUE;
+		if ($title_pattern_show == '*')
+			$title_pattern_show = NULL;
+	}
 }
 else
+{
 	prob_view_by_group_parse_arg();
+	if (isset($_POST['prob-filter']))
+	{
+		if ($_POST['prob-filter'] == 'prob-filter-title')
+			$title_pattern_show = $_POST['value'];
+		else
+			throw new Exc_inner(__('Unknown problem filter.'));
+	}
+}
+
+if ($title_pattern_show == '*')
+	$title_pattern = NULL;
+else $title_pattern = _tranform_pattern($title_pattern_show);
 
 $start_prob = ($start_page - 1) * $PROB_VIEW_ROWS_PER_PAGE + 1;
 // parsed $gid, $start_page
@@ -62,13 +98,13 @@ $show_fields= array(
 	array(__('Ratio'), 'ac_ratio', 'ASC')
 );
 
-$prob_amount = prob_get_amount($gid);
+$prob_amount = prob_get_amount($gid, $title_pattern);
 
 
-if (!isset($post))
+echo '<div id="prob-view-by-group-title">';
+if (isset($title_filtered) && $title_filtered == FALSE)
 {
 	/* problem list title*/
-	echo '<div id="prob-view-by-group-title">';
 	$gname = '';
 	if ($gid == 0)
 		$gname = 'All';
@@ -80,6 +116,10 @@ if (!isset($post))
 
 	// XXX: how to translate items in problem group?
 	echo __('Problems') . ' - ' . '<span>' . $gname . '</span>';
+}
+else if (!(isset($on_sort) && $on_sort == TRUE))
+{
+	echo __('Problems filter: ') . ' - ' . '<span>' . $title_pattern_show . '</span>';
 }
 echo '</div>';
 ?>
@@ -93,7 +133,7 @@ var sort_way = "<?php echo $sort_way; ?>";
 $url = t_get_link('ajax-prob-view-by-group', NULL, FALSE, TRUE);
 echo <<<EOF
 <script type="text/javascript">
-function table_sort_by(col, default_order)
+function table_sort_by(col, default_order, title_pattern_show)
 {
 	if (sort_col == col)
 	{
@@ -109,7 +149,13 @@ function table_sort_by(col, default_order)
 		"type" : "post",
 		"cache" : false,
 		"url" : "$url",
-		"data" : ({"start_page" : "1", "gid" : "$gid", "sort_col" : col, "sort_way" : sort_way}),
+		"data" : ({"start_page" : "1",
+			 "gid" : "$gid", 
+			"sort_col" : col,
+			 "sort_way" : sort_way,
+			"title_pattern_show" : title_pattern_show,
+			"on_sort" : true
+			}),
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
 			t.html(data);
@@ -120,19 +166,20 @@ function table_sort_by(col, default_order)
 </script>
 EOF;
 
-
-
 echo <<<EOF
 <div id="prob-list">
 <table class="page-table">
 <tr>
 EOF;
+
 /**
  * @ignore
  */
 function _make_table_header($name, $col_name, $default_order)
 {
-	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order'); return false;\">$name</a></th>";
+	global $title_pattern_show;
+	$t = ($title_pattern_show  == NULL ? '*' : $title_pattern_show);
+	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order', '$t'); return false;\">$name</a></th>";
 }
 foreach ($show_fields as $field)
 	_make_table_header($field[0], $field[1], $field[2]);
@@ -144,17 +191,19 @@ echo '</tr>';
  */
 function _make_prob_link($id, $name)
 {
-	global $gid, $start_page, $sort_col, $sort_way;
+	global $gid, $start_page, $sort_col, $sort_way, $title_pattern_show;
 	echo '<td><a href="' . prob_view_single_get_a_href($id, $gid, $start_page)
-		. '" onclick="' . prob_view_single_get_a_onclick($id, $gid, $start_page, $sort_col, $sort_way) 
+		. '" onclick="' . prob_view_single_get_a_onclick($id, $gid, $start_page, $sort_col, $sort_way, $title_pattern_show) 
 		.'">' . $name . '</a></td>'; // Title
 }
-
-//$GID = ($gid === NULL ? "NULL" : $gid);
-//echo "gid:$GID, sort_col:$sort_col, sort_way:$sort_way";
+/*
+$GID = ($gid === NULL ? "NULL" : $gid);
+echo "gid:$GID, sort_col:$sort_col, sort_way:$sort_way, title_pattern_show: $title_pattern_show";
+ */
 
 $probs = prob_get_list($fields, 
 	$gid, 
+	$title_pattern,
 	array($sort_col => $sort_way), 
 	($start_page - 1) * $PROB_VIEW_ROWS_PER_PAGE, 
 	$PROB_VIEW_ROWS_PER_PAGE);
