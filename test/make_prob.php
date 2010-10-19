@@ -42,10 +42,12 @@ function make_prob()
 				'perm' => serialize(array(0, 1, array(GID_ALL), array())),
 				'io' => '',
 				'time' => time(),
-				'cnt_submit' => rand(),
 				'cnt_ac' => rand(),
 				'cnt_unac' => rand(),
 				'cnt_ce' => rand(),
+				'cnt_submit_user' => rand(),
+				'cnt_ac_user' => rand(),
+				'difficulty' => rand(0, 10000),
 				'desc' => serialize(array(
 					'time' => rand(),
 					'memory' => rand(),

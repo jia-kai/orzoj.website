@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_group_tree_ask.php
- * $Date: Mon Oct 18 17:41:20 2010 +0800
+ * $Date: Tue Oct 19 00:17:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -50,7 +50,7 @@ foreach ($grps as $grp)
 			'title' => $name,
 			'attr' => array(
 				'href' => prob_view_by_group_get_a_href($id, 1, FALSE),
-				'onclick' => prob_view_by_group_get_a_onclick($id, 1, FALSE)
+				'onclick' => prob_view_by_group_get_a_onclick($id, 1, 'id', 'ASC', FALSE)
 			)
 		),
 		'attr' => array('id' => $id)
@@ -68,7 +68,7 @@ if ($first_request)
 			'title' => __('All'),
 			'attr' => array(
 				'href' => prob_view_by_group_get_a_href(0, 1, FALSE),
-				'onclick' => prob_view_by_group_get_a_onclick(0, 1, FALSE)
+				'onclick' => prob_view_by_group_get_a_onclick(0, 1, 'id', 'ASC', FALSE)
 			)
 		),
 		'attr' => array('id' => 0),

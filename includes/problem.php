@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Mon Oct 18 23:08:02 2010 +0800
+ * $Date: 二 10月 19 08:48:03 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -146,12 +146,12 @@ function prob_get_amount($gid = NULL)
  * get problem list
  * @param array $fields the fields needed, which should be a subset of $PROB_VIEW_PINFO, and CAN NOT contain 'grp'
  * @param int|NULL $gid problem group id
- * @param bool $id_asc order by id ASC(TRUE) or DESC(FALSE)
+ * @param NULL|array $order_by @see includes/db/dbal.php : function select_from
  * @param int|NULL $offset
  * @param int|NULL $cnt
  * @return array  Note: if some problems is not allowed to be viewd, the corresponding rows will be NULL 
  */
-function prob_get_list($fields, $gid = NULL, $id_asc = TRUE, $offset = NULL, $cnt = NULL)
+function prob_get_list($fields, $gid = NULL, $order_by = NULL, $offset = NULL, $cnt = NULL)
 {
 	global $db, $DBOP, $user;
 	$fields_added = array();
@@ -167,7 +167,7 @@ function prob_get_list($fields, $gid = NULL, $id_asc = TRUE, $offset = NULL, $cn
 	}
 	$rows = $db->select_from('problems',
 		$fields, _prob_get_list_make_where($gid),
-		array('id' => $id_asc ? 'ASC' : 'DESC'),
+		$order_by,
 		$offset, $cnt
 	);
 

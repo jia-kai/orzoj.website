@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Mon Oct 18 23:32:23 2010 +0800
+ * $Date: Tue Oct 19 09:59:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -70,6 +70,7 @@ define('DYNAMIC_PASSWORD_LIFETIME', 10); // in seconds
 
 define('STS_PROB_USER_UNAC', 0);
 define('STS_PROB_USER_AC', 1);
+define('STS_PROB_USER_AC_BLINK', 2);
 
 $cnt = 0;
 define('WEBSERVER_OTHERS', $cnt ++);

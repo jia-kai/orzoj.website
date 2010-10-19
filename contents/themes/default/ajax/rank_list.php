@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Mon Oct 18 21:34:48 2010 +0800
+ * $Date: Mon Oct 18 23:48:12 2010 +0800
  */
 /**
  * @package orzoj-website

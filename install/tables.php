@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Oct 19 08:17:37 2010 +0800
+ * $Date: Tue Oct 19 10:47:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -70,13 +70,24 @@ $tables = array(
 			'last_login_time' => array('type' => 'INT64', 'default' => 0),
 			'last_login_ip' => array('type' => 'TEXT', 'default' => ''),
 
-			'cnt_submit' => array('type' => 'INT32', 'default' => 0), // number of submissions
 			'cnt_ac' => array('type' => 'INT32', 'default' => 0),
-			// number of accepted solutions (multi accepted submissions to the same problem count as one)
+			// number of accepted submissions
 			'cnt_unac' => array('type' => 'INT32', 'default' => 0),
 			// number of unaccepted submissions except those with compilation error
-			'cnt_ce' => array('type' => 'INT32', 'default' => 0), // number of compiling-error submissions
-			'ac_ratio' => array('type' => 'INT32', 'default' => 0) // accepted ratio: cnt_ac / cnt_submit
+			'cnt_ce' => array('type' => 'INT32', 'default' => 0),
+			// number of compiling-error submissions
+
+			'cnt_ac_prob' => array('type' => 'INT32', 'default' => 0),
+			// number of problems where the user submitted an accepted solution
+			'cnt_ac_prob_blink' => array('type' => 'INT32', 'default' => 0),
+			// number of problems where the user's first submission is accepted
+			'cnt_ac_submit_sum' => array('type' => 'INT32', 'default' => 0),
+			// total number of submissions of which the corresponding problem does not
+			// have an accepted solution by this user before
+			'cnt_submit_prob' => array('type' => 'INT32', 'default' => 0),
+			// number of problems where the user has ever submitted
+			'ac_ratio' => array('type' => 'INT32', 'default' => 0)
+			// accepted ratio: cnt_ac_prob / cnt_ac_submit_sum
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -191,13 +202,23 @@ $tables = array(
 
 			'time' => array('type' => 'INT64'), // when this problem is added
 
-			'cnt_submit' => array('type' => 'INT32', 'default' => 0), // total submissions
-			'cnt_ac' => array('type' => 'INT32', 'default' => 0), // number of users who submit an accepted solution
+			'cnt_ac' => array('type' => 'INT32', 'default' => 0),
+			// number of accepted submissions
+
 			'cnt_unac' => array('type' => 'INT32', 'default' => 0),
 			// number of unaccepted submissions except those with compilation error
-			'cnt_ce' => array('type' => 'INT32', 'default' => 0), // number of submissions with compilation error 
+
+			'cnt_ce' => array('type' => 'INT32', 'default' => 0),
+			// number of submissions with compilation error 
+
+			'cnt_submit_user' => array('type' => 'INT32', 'default' => 0),
+			// number of users who have submitted this problem
+
+			'cnt_ac_user' => array('type' => 'INT32', 'default' => 0),
+			// number of users who have submitted an accepted solution
+
 			'difficulty' => array('type' => 'INT32', 'default' => DB_REAL_PRECISION)
-			// cnt_unac / cnt_submit
+			// (cnt_submit_user - cnt_ac_user) / cnt_submit_user
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -500,7 +521,8 @@ $tables = array(
 		),
 		'index' => array(
 			array(
-				'cols' => array('uid', 'pid')
+				'cols' => array('uid', 'pid'),
+				'cols' => array('uid', 'status')
 			)
 		)
 	)

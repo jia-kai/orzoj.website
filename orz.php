@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Tue Oct 19 08:40:01 2010 +0800
+ * $Date: Tue Oct 19 11:41:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -318,7 +318,7 @@ function report_judge_waiting()
 /**
  * update statistics value in the database
  * @param int $rid record id
- * @param string $type must be one of 'submit', 'ac', 'unac', 'ce'
+ * @param string $type must be one of 'ac', 'unac', 'ce'
  * @return void
  */
 function update_statistics($rid, $type)
@@ -335,35 +335,42 @@ function update_statistics($rid, $type)
 		$DBOP['='], 'pid', $row['pid']);
 	$old_sts = $db->select_from('sts_prob_user', 'status', $where);
 
+	$update_col_user = array("cnt_$type");
+	$update_col_prob = array("cnt_$type");
 	if (!count($old_sts))
 	{
-		$update_col = "cnt_$type";
-		$new_sts = $type == 'ac' ? STS_PROB_USER_AC : STS_PROB_USER_UNAC;
+		$old_sts = NULL;
+		$update_col_user[] = 'cnt_submit_prob';
+		$update_col_user[] = 'cnt_ac_submit_sum';
+		$update_col_prob[] = 'cnt_submit_user';
+		if ($type == 'ac')
+		{
+			$update_col_user[] = 'cnt_ac_prob';
+			$update_col_user[] = 'cnt_ac_prob_blink';
+			$update_col_prob[] = 'cnt_ac_user';
+			$new_sts = STS_PROB_USER_AC_BLINK;
+		}
+		else
+			$new_sts = STS_PROB_USER_UNAC;
 	}
 	else
 	{
 		$old_sts = $old_sts[0]['status'];
-		if ($old_sts == STS_PROB_USER_AC)
+		if ($old_sts == STS_PROB_USER_UNAC)
 		{
-			if ($type != 'ac')
+			$update_col_user[] = 'cnt_ac_submit_sum';
+			if ($type == 'ac')
 			{
-				$update_col = "cnt_$type";
-				$new_sts = STS_PROB_USER_UNAC;
+				$update_col_user[] = 'cnt_ac_prob';
+				$update_col_prob[] = 'cnt_ac_user';
+				$new_sts = STS_PROB_USER_AC;
 			}
-		}
-		else
-		{
-			$update_col = "cnt_$type";
-			$new_sts = $type == 'ac' ? STS_PROB_USER_AC : STS_PROB_USER_UNAC;
 		}
 	}
 
-	if (!isset($update_col))
-		return;
-
 	if (isset($new_sts))
 	{
-		if (is_string($old_sts))
+		if (!is_null($old_sts))
 			$db->update_data('sts_prob_user',
 				array('status' => $new_sts), $where);
 		else
@@ -371,49 +378,46 @@ function update_statistics($rid, $type)
 				array('status' => $new_sts, 'uid' => $row['uid'], 'pid' => $row['pid']));
 	}
 
+	// update 'users' table
 	$where = array($DBOP['='], 'id', $row['uid']);
-	if ($update_col == 'cnt_ac' || $update_col == 'cnt_submit')
-	{
-		$tmp = $db->select_from('users', array('cnt_ac', 'cnt_submit'), $where);
-		$tmp = $tmp[0];
-		$tmp[$update_col] ++;
-		$tmp['ac_ratio'] = floor($tmp['cnt_ac'] * DB_REAL_PRECISION / $tmp['cnt_submit'] + 0.5);
-	} else
-	{
-		$tmp = $db->select_from('users', $update_col, $where);
-		$tmp = $tmp[0];
-		$tmp[$update_col] ++;
-	}
+	$cols = $update_col_user;
+	$update_sts = array('cnt_ac_prob', 'cnt_ac_submit_sum');
+	if (count(array_intersect($cols, $update_sts)))
+		$cols = array_unique(array_merge($cols, $update_sts));
+	else $update_sts = NULL;
+
+	$tmp = $db->select_from('users', $cols, $where);
+	if (count($tmp) != 1)
+		throw Exc_inner(__('No corresponding user #%d for record #%d', $row['uid'], $rid));
+	$tmp = $tmp[0];
+	foreach ($update_col_user as $c)
+		$tmp[$c] ++;
+	if (!is_null($update_sts))
+		$tmp['ac_ratio'] = floor($tmp['cnt_ac_prob'] * DB_REAL_PRECISION / $tmp['cnt_ac_submit_sum'] + 0.5);
 	$db->update_data('users', $tmp, $where);
 
+
+	// update 'problems' table
 	$where[2] = $row['pid'];
-	if ($update_col == 'cnt_unac' || $update_col == 'cnt_submit')
+	$cols = $update_col_prob;
+	$update_sts = array('cnt_ac_user', 'cnt_submit_user');
+	if (count(array_intersect($cols, $update_sts)))
+		$cols = array_unique(array_merge($cols, $update_sts));
+	else $update_sts = NULL;
+
+	$tmp = $db->select_from('problems', $cols, $where);
+	if (count($tmp) != 1)
+		throw Exc_inner(__('No corresponding problem #%d for record #%d', $row['pid'], $rid));
+	$tmp = $tmp[0];
+	foreach ($update_col_prob as $c)
+		$tmp[$c] ++;
+	if (!is_null($update_sts))
 	{
-		$tmp = $db->select_from('problems', array('cnt_unac', 'cnt_submit'), $where);
-		$tmp = $tmp[0];
-		$tmp[$update_col] ++;
-		$tmp['difficulty'] = floor($tmp['cnt_unac'] * DB_REAL_PRECISION / $tmp['cnt_submit'] + 0.5);
-	} else
-	{
-		$tmp = $db->select_from('problems', $update_col, $where);
-		$tmp = $tmp[0];
-		$tmp[$update_col] ++;
+		$a = intval($tmp['cnt_ac_user']);
+		$s = intval($tmp['cnt_submit_user']);
+		$tmp['difficulty'] = floor(($s - $a) * DB_REAL_PRECISION / $s + 0.5);
 	}
 	$db->update_data('problems', $tmp, $where);
-}
-
-/**
- * update ac rate
- */
-function update_ac_ratio($rid)
-{
-	global $db, $DBOP;
-	$uid = $db->select_from('records', array('uid'), array($DBOP['='], 'id', $rid));
-	$uid = $uid[0];
-	$val = $db->select_from('users', array('cnt_submit', 'cnt_ac'), array($DBOP['='], 'id', $uid));
-	$val = $val[0];
-	$ac_ratio = floor(($val['cnt_ac'] / $val['cnt_submit']) * 10000);
-	$db->update_data('users', array('ac_ratio' => $ac_ratio), array($DBOP['='], 'id', $uid));
 }
 
 /**
@@ -431,7 +435,6 @@ function report_compiling()
 		'jtime' => time());
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
-	update_statistics($rid, 'submit');
 	msg_write(MSG_STATUS_OK, NULL);
 }
 

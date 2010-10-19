@@ -16,11 +16,10 @@ int main()
 	int a, b;
 	fscanf(fin, "%d%d", &a, &b);
 
-	xx
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	srand(tv.tv_sec * tv.tv_usec);
-	if (rand() < RAND_MAX / 6)
+	if (rand() < 0) // < RAND_MAX / 6)
 		a ++;
 
 	fprintf(fout, "%d\n", a + b);

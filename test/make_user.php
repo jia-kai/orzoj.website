@@ -1,8 +1,10 @@
 <?php
 
+define('NUSER', 150);
+
 require_once '../pre_include.php';
 $db->delete_item('users');
-for ($i = 1; $i <= 123; $i ++)
+for ($i = 1; $i <= NUSER; $i ++)
 	$db->insert_into('users', 
 	array(
 		'username' => "user $i",
@@ -21,10 +23,6 @@ for ($i = 1; $i <= 123; $i ++)
 		'reg_ip' => '127.0.0.1',
 		'last_login_time' => time(),
 		'last_login_ip' => '127.0.0.1',
-		'cnt_submit' => rand(1, 100),
-		'cnt_ac' => rand(1, 100),
-		'cnt_unac' => rand(1, 100),
-		'cnt_ce' => rand(1, 100),
 		'ac_ratio' => rand(1, 10000)
 	)
 );

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Mon Oct 18 19:40:36 2010 +0800
+ * $Date: Tue Oct 19 09:03:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -59,7 +59,7 @@ function t_get_footer()
 		$db->get_query_amount(),
 			(microtime(TRUE) - $PAGE_START_TIME) * 1000, $ORZOJ_VERSION);
 	if ($db->record_query)
-		$str .= '<br /> <div style="text-align: left">Queryies:' . htmlencode(print_r($db->query_log, TRUE)) . '</div>';
+		$str .= '<br /> <div style="text-align: left">Queries:' . htmlencode(print_r($db->query_log, TRUE)) . '</div>';
 	echo filter_apply('after_footer', $str);
 }
 

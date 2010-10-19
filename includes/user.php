@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Mon Oct 18 16:47:38 2010 +0800
+ * $Date: Tue Oct 19 11:26:19 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,9 +38,7 @@ class User
 		$avatar_id, // avatar id
 		$avatar, // avatar URL
 		$email, $self_desc, $tid, $plang, $wlang,
-		$view_gid, // array of gid who can view the user's source
-		$reg_time, $reg_ip, $last_login_time, $last_login_ip,
-		$cnt_submit, $cnt_ac, $cnt_unac, $cnt_ce;
+		$view_gid; // array of gid who can view the user's source
 
 	private
 		$groups = NULL, // array of ids of groups that the user blongs to
@@ -63,6 +61,11 @@ class User
 			else $right = $mid;
 		}
 		return $a[$left] == $key;
+	}
+
+	public function __construct($uid)
+	{
+		$this->id = $uid;
 	}
 
 	/**
@@ -146,15 +149,13 @@ class User
 
 	/**
 	 * set attributes in this class
-	 * @param int $uid user id
-	 * @param bool $set_grp_info whether to set $this->groups, $this->admin_groups
-	 *		(because these operations may take some time)
 	 * @return void
 	 * @exception Exc_inner if user id does not exist
 	 */
-	function set_val($uid)
+	function set_val()
 	{
 		global $db, $DBOP;
+		$uid = $this->id;
 		$row = $db->select_from('users', NULL,
 			array($DBOP['='], 'id', $uid));
 		if (count($row) != 1)
@@ -162,9 +163,7 @@ class User
 		$row = $row[0];
 
 		$VAL_SET = array('id', 'username', 'realname', 'nickname',
-			'email', 'self_desc', 'tid', 'plang', 'wlang',
-			'reg_time', 'reg_ip', 'last_login_time', 'last_login_ip',
-			'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce');
+			'email', 'self_desc', 'tid', 'plang', 'wlang');
 
 		foreach ($VAL_SET as $val)
 			$this->$val = $row[$val];
@@ -174,6 +173,31 @@ class User
 
 		$this->view_gid = unserialize($row['view_gid']);
 
+	}
+
+	public $STATISTICS_FIELDS = array(
+		'cnt_ac', 'cnt_unac', 'cnt_ce', 'cnt_ac_prob', 'cnt_ac_prob_blink',
+		'cnt_ac_submit_sum', 'cnt_submit_prob', 'ac_ratio'
+		// ac_ratio is a real number between 0 and 1
+	);
+	/**
+	 * get statistics value
+	 * @return array an array containing $this->STATISTICS_FIELDS
+	 * @exception Exc_inner if user id does not exist
+	 */
+	function &get_statistics()
+	{
+		static $cache = NULL;
+		global $db, $DBOP;
+		if (!is_null($cache))
+			return $cache;
+		$cache = $db->select_from('users', $this->STATISTICS_FIELDS,
+			array($DBOP['='], 'id', $this->id));
+		if (count($cache) != 1)
+			throw new Exc_inner(__('user id %d does not exist', $this->id));
+		$cache = $cache[0];
+		$cache['ac_ratio'] = $cache['ac_ratio'] / DB_REAL_PRECISION;
+		return $cache;
 	}
 }
 
@@ -245,8 +269,8 @@ function user_check_login($cookie_time = NULL)
 	$db->update_data('users', array('last_login_time' => time(), 'last_login_ip' => get_remote_addr()),
 		array($DBOP['='], 'id', $uid));
 
-	$user = new User();
-	$user->set_val($uid);
+	$user = new User($uid);
+	$user->set_val();
 	return $_user_check_login_result = TRUE;
 }
 
