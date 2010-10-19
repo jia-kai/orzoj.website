@@ -11,9 +11,8 @@ $src = '
 #include <sys/time.h>
 int main()
 {
-//	FILE *fin = fopen("a+b.in", "r"),
-	//		*fout = fopen("a+b.out", "w");
-	FILE *fin = stdin, *fout = stdout;
+	FILE *fin = fopen("a+b.in", "r"),
+			*fout = fopen("a+b.out", "w");
 	int a, b;
 	fscanf(fin, "%d%d", &a, &b);
 

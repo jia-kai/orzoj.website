@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Tue Oct 19 01:19:16 2010 +0800
+ * $Date: Tue Oct 19 08:29:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -368,7 +368,7 @@ function update_ac_ratio($rid)
 	$val = $db->select_from('problems', array('cnt_submit', 'cnt_ac'), array($DBOP['='], 'id', $pid));
 	$val = $val[0];
 	$ac_ratio = ($val['cnt_submit'] == 0 ? -1 : floor(($val['cnt_ac'] / $val['cnt_submit']) * 10000));
-	$db->update_data('problems', array('ac_ratio' => $ac_ratio), array($DBOP['-'], 'id', $pid));
+	$db->update_data('problems', array('ac_ratio' => $ac_ratio), array($DBOP['='], 'id', $pid));
 }
 
 /**
