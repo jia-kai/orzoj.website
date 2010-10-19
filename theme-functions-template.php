@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Sun Oct 17 19:23:26 2010 +0800
+ * $Date: Tue Oct 19 13:58:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -180,7 +180,7 @@ function tf_form_get_hidden($post_name, $post_value)
 
 /**
  * convert problem information to HTML code
- * @param array $pinfo as $PROB_VIEW_PINFO described in problem.php
+ * @param array $pinfo as $PROB_VIEW_PINFO described in problem.php (statistics value may be absent)
  * @return string
  */
 function tf_get_prob_html($pinfo)

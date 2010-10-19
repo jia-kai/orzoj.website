@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Mon Oct 18 23:48:12 2010 +0800
+ * $Date: Tue Oct 19 14:16:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -39,7 +39,7 @@ if (isset($_POST['sort_col']) && isset($_POST['sort_way']))
 }
 else
 {
-	$sort_col = 'cnt_ac';
+	$sort_col = 'cnt_ac_prob';
 	$sort_way = 'DESC';
 }
 
@@ -101,9 +101,9 @@ function _make_table_header($name, $col_name, $default_order)
 $heads = array(
 	array(__('Rank'), 'rank', 'ASC'),
 	array(__('Nickname'), 'nickname', 'ASC'),
-	array(__('Accepted'), 'cnt_ac', 'DESC'),
-	array(__('Submited'), 'cnt_submit', 'DESC'),
-	array(__('Ratio(AC/Solved)'), 'ac_ratio', 'DESC')
+	array(__('Accepted'), 'cnt_ac_prob', 'DESC'),
+	array(__('Submited'), 'cnt_submit_prob', 'DESC'),
+	array(__('AC ratio'), 'ac_ratio', 'DESC')
 );
 ?>
 </script>
@@ -122,7 +122,7 @@ foreach ($heads as $head)
 echo '</tr>';
 
 $users = $db->select_from('users', 
-	array('id', 'nickname', 'cnt_submit', 'cnt_ac', 'ac_ratio'),
+	array('id', 'nickname', 'cnt_submit_prob', 'cnt_ac_prob', 'ac_ratio'),
 	NULL,
 	array($sort_col  => $sort_way),
 	($start_page - 1) * $USERS_PER_PAGE,

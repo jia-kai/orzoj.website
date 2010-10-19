@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Oct 18 21:57:46 2010 +0800
+ * $Date: Tue Oct 19 14:14:53 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -291,7 +291,7 @@ function _make_view_by_group_link($id, $name)
 }
 /**
  * convert problem information to HTML code
- * @param array $pinfo as $PROB_VIEW_PINFO described in problem.php
+ * @param array $pinfo as $PROB_VIEW_PINFO described in problem.php (statistics value may be absent)
  * @return string
  */
 function tf_get_prob_html($pinfo)
@@ -332,8 +332,8 @@ function tf_get_prob_html($pinfo)
 		.'<div id="prob-view-single-subtitle">'
 		. __('Time Limit: ') . $desc['time'] . '&nbsp;&nbsp;'
 		. __('Memory Limit: ') . $desc['memory'] . '<br />'
-		. __('Total Submit: ') . $pinfo['cnt_submit'] . '&nbsp;&nbsp;'
-		. __('Accepted: ') . $pinfo['cnt_ac'] . '<br />'
+		. __('Total Submissions: ') . $pinfo['cnt_submit'] . '&nbsp;&nbsp;'
+		. __('Accepted Submissions: ') . $pinfo['cnt_ac'] . '<br />'
 		. ($prob_grp_cnt == 1 ? __('Problem Group: ') : __('Problem Groups: ')). $prob_grp  . '<br />'
 		. __('Input: ') . '<span>' . $input . '</span>&nbsp;&nbsp;'
 		. __('Output: ') . '<span>' . $output . '</span>'
@@ -355,6 +355,21 @@ function tf_get_prob_html($pinfo)
 			$content .= '<div id="prob-view-single-content">'
 				. $item . '<br /></div>';
 		}
+	if (isset($pinfo['cnt_submit']))
+	{
+		$content .= '<p>' . __('Statistics') . '</p><div id="prob-view-single-content">';
+		$FIELDS = array(
+			'cnt_ac' => __('Accepted submissions:'),
+			'cnt_unac' => __('Unaccepted submissions:'),
+			'cnt_ce' => __('Compilation-error submissions:'),
+			'cnt_submit' => __('Total submissions:'),
+			'cnt_submit_user' => __('Number of users having submitted:'),
+			'cnt_ac_user' => __('Number of users with accepted submission: ')
+		);
+		foreach ($FIELDS as $f => $disp)
+			$content .= $disp . ' ' . $pinfo[$f] . '<br />';
+		$content .= '</div>';
+	}
 	$content .= '</div> <!-- id: prob-view-single-desc-->'
 		. '</div> <!-- id: prob-view-single -->';
 	return $content;

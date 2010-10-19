@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Tue Oct 19 00:38:02 2010 +0800
+ * $Date: Tue Oct 19 11:31:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,6 +31,10 @@ require_once $theme_path . 'prob_func.php';
 
 try
 {
+	$start_page = -1;
+	$sort_col = 'id';
+	$sort_way = 'ASC';
+	$gid = NULL;
 	if (isset($_POST['prob-filter'])) // for prob-filter
 	{
 		if (!isset($_POST['value']))
@@ -50,7 +54,7 @@ try
 			if ($db->get_number_of_rows('problems', array($DBOP['='], 'id', $pid)) == 0)
 				die(__('No such problem whose id is \'%d\'.', $pid));
 		}
-		else // prob-filter-code
+		else if ($_POST['prob-filter'] == 'prob-filter-code')// prob-filter-code
 		{
 			$code = $_POST['value'];
 			if (strlen($code) == 0)
@@ -59,7 +63,11 @@ try
 			if ($pid === NULL)
 				die(__('No such problem whose code is \'%s\'', $code));
 		}
-		$start_page = -1;
+		else
+		{
+			throw new Exc_inner(__('Unknown problem filter.'));
+		}
+
 	}
 	else
 		prob_view_single_parse_arg();
@@ -83,10 +91,13 @@ try
 	{
 		$gid = 0; 
 		$startpage = 1;
+		$sort_col = 'id';
+		$sort_way = 'ASC';
 	}
-	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page) 
+
+	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page, $sort_col, $sort_way, TRUE) 
 		. '" id="prob-view-single-back"'
-		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page, $sort_col, $sort_way, FALSE) . '"><button type="button">';
+		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page, $sort_col, $sort_way, $title_pattern_show, FALSE) . '"><button type="button">';
 	$content .= __('Back to list');
 	$content .= '</button></a>';
 
@@ -96,11 +107,11 @@ try
 	$content .= prob_view($pid);
 	// javascript
 	$content .= '
-	<script type="text/javascript">$("button").button();
-		$("#prob-submit-link").colorbox();
-		$("#prob-all-submissions").colorbox();
-		$("#prob-best-solutions").colorbox();
-		$("button").button();
+		<script type="text/javascript">$("button").button();
+$("#prob-submit-link").colorbox();
+$("#prob-all-submissions").colorbox();
+$("#prob-best-solutions").colorbox();
+$("button").button();
 	</script>
 	';
 	echo $content;

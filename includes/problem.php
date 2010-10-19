@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: 二 10月 19 08:48:03 2010 +0800
+ * $Date: Tue Oct 19 14:14:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,10 +31,11 @@ require_once $includes_path . 'contest/ctal.php';
 
 $PROB_SUBMIT_PINFO = array('id', 'code', 'perm', 'io');
 $PROB_VIEW_PINFO = array('id', 'title', 'code', 'desc', 'perm', 'io', 'time',
-	'cnt_submit', 'cnt_ac', 'cnt_unac', 'cnt_ce', 'difficulty', 'grp');
-// desc: exlained in simple-doc.txt or install/tables.php
+	'cnt_ac', 'cnt_unac', 'cnt_ce', 'cnt_submit', 'cnt_submit_user', 'cnt_ac_user', 'difficulty', 'grp');
+// desc: exlained in simple-doc.txt and install/tables.php
 // grp: array of problem group ids that this problem belongs to
 // io: array of input/output file name, or NULL if using stdio
+// cnt_submit: cnt_ac + cnt_unac + cnt_ce
 
 /**
  * check whether a user has permission for a problem
@@ -68,6 +69,7 @@ function prob_view($pid)
 {
 	global $db, $DBOP, $PROB_VIEW_PINFO, $user;
 	$row = $PROB_VIEW_PINFO;
+	unset($row[array_search('cnt_submit', $row)]);
 	unset($row[array_search('grp', $row)]);
 	$row = $db->select_from('problems', $row,
 		array($DBOP['='], 'id', $pid));
@@ -99,6 +101,8 @@ function prob_view($pid)
 		$row['io'] = unserialize($row['io']);
 	else $row['io'] = NULL;
 
+	$row['cnt_submit'] = $row['cnt_ac'] + $row['cnt_unac'] + $row['cnt_ce'];
+
 	if (!$is_super_submitter)
 	{
 		$ct = ctal_get_class($pid);
@@ -116,18 +120,23 @@ function prob_view($pid)
 /**
  * @ignore
  */
-function _prob_get_list_make_where($gid)
+function _prob_get_list_make_where($gid, $title_pattern)
 {
 	global $db, $DBOP;
-	if (is_null($gid))
-		return NULL;
-	return array($DBOP['in'], 'id', $db->select_from(
-		'map_prob_grp', 'pid', 
-		array($DBOP['in'], 'gid', $db->select_from(
-			'cache_pgrp_child', 'chid', array(
-				$DBOP['='], 'gid', $gid), array('chid' => 'ASC'), NULL, NULL,
-				array('chid' => 'gid'), TRUE),
-			), array('pid' => 'ASC'), NULL, NULL, array('pid' => 'id'), TRUE));
+	$where = NULL;
+	if (!is_null($gid))
+		$where = array($DBOP['in'], 'id', $db->select_from(
+			'map_prob_grp', 'pid', 
+			array($DBOP['in'], 'gid', $db->select_from(
+				'cache_pgrp_child', 'chid', array(
+					$DBOP['='], 'gid', $gid), array('chid' => 'ASC'), NULL, NULL,
+					array('chid' => 'gid'), TRUE),
+		), array('pid' => 'ASC'), NULL, NULL, array('pid' => 'id'), TRUE));
+
+	if (!is_null($title_pattern) && strlen($title_pattern))
+		db_where_add_and($where, array($DBOP['like'], 'title', $title_pattern));
+
+	return $where;
 }
 
 /**
@@ -135,11 +144,11 @@ function _prob_get_list_make_where($gid)
  * @param int|NULL $gid problem group id
  * @return int
  */
-function prob_get_amount($gid = NULL)
+function prob_get_amount($gid = NULL, $title_pattern = NULL)
 {
 	global $db, $DBOP;
 	return $db->get_number_of_rows('problems',
-		_prob_get_list_make_where($gid));
+		_prob_get_list_make_where($gid, $title_pattern));
 }
 
 /**
@@ -151,8 +160,10 @@ function prob_get_amount($gid = NULL)
  * @param int|NULL $cnt
  * @return array  Note: if some problems is not allowed to be viewd, the corresponding rows will be NULL 
  */
-function prob_get_list($fields, $gid = NULL, $order_by = NULL, $offset = NULL, $cnt = NULL)
+function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = NULL, $offset = NULL, $cnt = NULL)
 {
+	if (is_string($fields))
+		$fields = array($fields);
 	global $db, $DBOP, $user;
 	$fields_added = array();
 	if (!in_array('perm', $fields))
@@ -165,8 +176,20 @@ function prob_get_list($fields, $gid = NULL, $order_by = NULL, $offset = NULL, $
 		$fields[] = 'id';
 		$fields_added[] = 'id';
 	}
+	if (isset($fields['cnt_submit']))
+	{
+		$cnt_submit = TRUE;
+		unset($fields['cnt_submit']);
+		foreach (array('cnt_ac', 'cnt_unac', 'cnt_ce') as $f)
+			if (!in_array($f, $fields))
+			{
+				$fields[] = $f;
+				$fields_added[] = $f;
+			}
+	}
 	$rows = $db->select_from('problems',
-		$fields, _prob_get_list_make_where($gid),
+		$fields, 
+		_prob_get_list_make_where($gid, $title_pattern),
 		$order_by,
 		$offset, $cnt
 	);
@@ -203,12 +226,15 @@ function prob_get_list($fields, $gid = NULL, $order_by = NULL, $offset = NULL, $
 					$row['io'] = unserialize($row['io']);
 				else $row['io'] = NULL;
 			}
+			if (isset($cnt_submit))
+				$fields['cnt_submit'] = $fields['cnt_ac'] + $fields['cnt_unac'] + $fields['cnt_ce'];
 			foreach ($fields_added as $f)
 				unset($rows[$key][$f]);
 		}
 	}
 	return $rows;
 }
+
 
 /**
  * get problem id by code
