@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Tue Oct 19 14:16:12 2010 +0800
+ * $Date: Tue Oct 19 18:55:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,7 +26,7 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-$USERS_PER_PAGE = 10;
+$USERS_PER_PAGE = 50;
 
 $start_page = 1;
 if (isset($_POST['sort_col']) && isset($_POST['sort_way']))

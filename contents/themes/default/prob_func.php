@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_func.php
- * $Date: Tue Oct 19 11:31:38 2010 +0800
+ * $Date: Tue Oct 19 18:29:53 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,16 +27,18 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-function prob_view_by_group_get_a_href($gid, $start_page, $sort_col = 'id', $sort_way = 'ASC')
+function prob_view_by_group_get_a_href($gid, $start_page, $sort_col = 'id', $sort_way = 'ASC', $title_pattern_show = NULL)
 {
-	$arg = sprintf('%d|%d|%s|%s', $gid, $start_page, $sort_col, $sort_way);
+	if (is_null($title_pattern_show))
+		$title_pattern_show = '*';
+	$arg = sprintf('%d|%d|%s|%s', $gid, $start_page, $sort_col, $sort_way, $title_pattern_show);
 	return t_get_link('show-ajax-prob-view-by-group', $arg, TRUE, TRUE);
 }
 
 function prob_view_by_group_get_a_onclick($gid, $start_page, $sort_col = 'id', $sort_way = 'ASC', $title_pattern_show = NULL, $in_HTML = TRUE)
 {
 	if (is_null($title_pattern_show))
-		$title_pattern = '*';
+		$title_pattern_show = '*';
 	$arg = sprintf('%d|%d|%s|%s|%s', $gid, $start_page, $sort_col, $sort_way, $title_pattern_show);
 	return 'prob_view_set_content(\'' . t_get_link('ajax-prob-view-by-group', $arg, $in_HTML, TRUE) . '\'); return false;';
 }
@@ -86,7 +88,7 @@ function _get_string(&$pos, $str, $len)
 function prob_view_by_group_parse_arg()
 {
 	global $gid, $start_page, $page_arg, $sort_col, $sort_way, $title_pattern_show;
-	echo "page_arg: $page_arg";
+	//echo "page_arg: $page_arg";
 	if (is_null($page_arg))
 	{
 		$gid = NULL;
@@ -117,13 +119,13 @@ function prob_view_by_group_parse_arg()
 		$start_page = 1;
 }
 
-function prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern)
+function prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern_show)
 {
 	if (is_null($gid))
 		$gid = 0;
-	if (is_null($title_pattern))
-		$title_pattern = '*';
-	return "$pid|$gid|$start_page|$sort_col|$sort_way|$title_pattern";
+	if (is_null($title_pattern_show))
+		$title_pattern_show = '*';
+	return "$pid|$gid|$start_page|$sort_col|$sort_way|$title_pattern_show";
 }
 
 function prob_view_single_get_a_href($pid, $gid, $start_page)
@@ -132,11 +134,11 @@ function prob_view_single_get_a_href($pid, $gid, $start_page)
 	return t_get_link('show-ajax-prob-view-single', $arg, TRUE, TRUE);
 }
 
-function prob_view_single_get_a_onclick($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern = NULL, $in_HTML = FALSE)
+function prob_view_single_get_a_onclick($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern_show = NULL, $in_HTML = FALSE)
 {
-	if (is_null($title_pattern))
-		$title_pattern = '*';
-	$arg = prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern);
+	if (is_null($title_pattern_show))
+		$title_pattern_show = '*';
+	$arg = prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern_show);
 	return 'prob_view_set_content(\'' . t_get_link('ajax-prob-view-single', $arg, $in_HTML, TRUE) . '\'); return false;';
 }
 

@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Tue Oct 19 17:19:48 2010 +0800
+ * $Date: Tue Oct 19 20:13:37 2010 +0800
 
  This file is part of orzoj
 
@@ -387,13 +387,15 @@ div#prob-view-by-group-navigator-bottom
 {
 	float: right;
 	margin-right: 20px;
-	margin-top: 5px;
-	font-size: 14px;
+	margin-top: 6px;
 }
 
-div#prob-view-by-group-navigator-bottom span
+
+form#prob-view-by-group-goto-form
 {
-	font-size: 16px;
+	clear: both;
+	float: right;
+	margin-left: 20px;
 }
 
 div#prob-view-single

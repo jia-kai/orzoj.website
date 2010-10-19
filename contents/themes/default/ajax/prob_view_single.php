@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Tue Oct 19 11:31:52 2010 +0800
+ * $Date: Tue Oct 19 18:29:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -93,9 +93,10 @@ try
 		$startpage = 1;
 		$sort_col = 'id';
 		$sort_way = 'ASC';
+		$title_pattern_show = NULL;
 	}
 
-	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page, $sort_col, $sort_way, TRUE) 
+	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page, $sort_col, $sort_way, $title_pattern_show, TRUE)
 		. '" id="prob-view-single-back"'
 		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page, $sort_col, $sort_way, $title_pattern_show, FALSE) . '"><button type="button">';
 	$content .= __('Back to list');
