@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Tue Oct 19 11:26:19 2010 +0800
+ * $Date: Tue Oct 19 17:25:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,15 +34,22 @@ require_once $includes_path . 'avatar.php';
  */
 class User
 {
-	var $id, $username, $realname, $nickname,
+	var
+		// normal information (assign on construction)
+		$id, $username, $realname, $nickname,
 		$avatar_id, // avatar id
 		$avatar, // avatar URL
-		$email, $self_desc, $tid, $plang, $wlang,
-		$view_gid; // array of gid who can view the user's source
+		$tid, $plang, $wlang,
+		$view_gid, // array of gid who can view the user's source
+
+		// detailed information (assign by set_val_detail())
+		$email, $self_desc, 
+		$reg_time, $reg_ip, $last_login_time, $last_login_ip;
 
 	private
 		$groups = NULL, // array of ids of groups that the user blongs to
-		$admin_groups = NULL; // array of ids of groups where the user is an administrator
+		$admin_groups = NULL, // array of ids of groups where the user is an administrator
+		$detail_val_done = FALSE;
 
 	/**
 	 * @ignore
@@ -63,9 +70,30 @@ class User
 		return $a[$left] == $key;
 	}
 
+	/**
+	 * @exception Exc_runtime if user id does not exist
+	 */
 	public function __construct($uid)
 	{
 		$this->id = $uid;
+		global $db, $DBOP;
+		$row = $db->select_from('users', NULL,
+			array($DBOP['='], 'id', $uid));
+		if (count($row) != 1)
+			throw new Exc_runtime(__('user id %d does not exist', $uid));
+		$row = $row[0];
+
+		$VAL_SET = array('id', 'username', 'realname', 'nickname',
+			'email', 'self_desc', 'tid', 'plang', 'wlang');
+
+		foreach ($VAL_SET as $val)
+			$this->$val = $row[$val];
+
+		$this->avatar_id = $row['aid'];
+		$this->avatar = avatar_get_url($row['aid']);
+
+		$this->view_gid = json_decode($row['view_gid']);
+
 	}
 
 	/**
@@ -148,31 +176,26 @@ class User
 	}
 
 	/**
-	 * set attributes in this class
+	 * set attributes for detailed information in this class
 	 * @return void
-	 * @exception Exc_inner if user id does not exist
+	 * @exception Exc_runtime if user id does not exist
 	 */
-	function set_val()
+	function set_val_detail()
 	{
+		if ($this->detail_val_done)
+			return;
+		$this->detail_val_done = TRUE;
 		global $db, $DBOP;
-		$uid = $this->id;
-		$row = $db->select_from('users', NULL,
-			array($DBOP['='], 'id', $uid));
+		$VAL_SET = array('email', 'self_desc',
+			'reg_time', 'reg_ip', 'last_login_time', 'last_login_ip');
+		$row = $db->select_from('users', $VAL_SET,
+			array($DBOP['='], 'id', $this->id));
 		if (count($row) != 1)
-			throw new Exc_inner(__('user id %d does not exist', $uid));
+			throw new Exc_runtime(__('user id %d does not exist', $uid));
+
 		$row = $row[0];
-
-		$VAL_SET = array('id', 'username', 'realname', 'nickname',
-			'email', 'self_desc', 'tid', 'plang', 'wlang');
-
-		foreach ($VAL_SET as $val)
-			$this->$val = $row[$val];
-
-		$this->avatar_id = $row['aid'];
-		$this->avatar = avatar_get_url($row['aid']);
-
-		$this->view_gid = unserialize($row['view_gid']);
-
+		foreach ($VAL_SET as $v)
+			$this->$v = $row[$v];
 	}
 
 	public $STATISTICS_FIELDS = array(
@@ -183,7 +206,7 @@ class User
 	/**
 	 * get statistics value
 	 * @return array an array containing $this->STATISTICS_FIELDS
-	 * @exception Exc_inner if user id does not exist
+	 * @exception Exc_runtime if user id does not exist
 	 */
 	function &get_statistics()
 	{
@@ -194,7 +217,7 @@ class User
 		$cache = $db->select_from('users', $this->STATISTICS_FIELDS,
 			array($DBOP['='], 'id', $this->id));
 		if (count($cache) != 1)
-			throw new Exc_inner(__('user id %d does not exist', $this->id));
+			throw new Exc_runtime(__('user id %d does not exist', $this->id));
 		$cache = $cache[0];
 		$cache['ac_ratio'] = $cache['ac_ratio'] / DB_REAL_PRECISION;
 		return $cache;
@@ -270,7 +293,6 @@ function user_check_login($cookie_time = NULL)
 		array($DBOP['='], 'id', $uid));
 
 	$user = new User($uid);
-	$user->set_val();
 	return $_user_check_login_result = TRUE;
 }
 
@@ -514,7 +536,7 @@ function user_register($login_after_register = FALSE)
 	$val['realname'] = htmlencode($val['realname']);
 	$val['nickname'] = htmlencode($val['nickname']);
 	$val['email'] = htmlencode($val['email']);
-	$val['view_gid'] = serialize(array());
+	$val['view_gid'] = json_encode(array());
 	$val['reg_time'] = time();
 	$val['reg_ip'] = get_remote_addr();
 
@@ -585,12 +607,12 @@ function user_update_info_get_form()
 		tf_form_get_text_input(__('Real name'), 'realname', NULL, $user->realname) .
 		tf_form_get_text_input(__('Nickname'), 'nickname', NULL, $user->nickname) .
 		tf_form_get_text_input(__('E-mail:'), 'email', $_checker_id['email'], $user->email) .
-		tf_form_get_avatar_browser(__('Avatar:'), 'avatar', $user->avatar_id) .
+		tf_form_get_avatar_browser(__('Avatar:'), 'aid', $user->avatar_id) .
 		tf_form_get_select(__('Preferred programming language:'), 'plang', $_user_plang, $user->plang) .
 		tf_form_get_select(__('Preferred website language:'), 'wlang', $_user_wlang, $user->wlang) .
 		tf_form_get_gid_selector(__('User groups who can view your source:'), 'view_gid', $user->view_gid) .
 		tf_form_get_team_browser(__('Your team:'), 'tid', $user->tid) .
-		tf_form_get_long_text_input(__('Self description:'), 'self_desc', $user->self_desc);
+		tf_form_get_long_text_input(__('Self description(XHTML):'), 'self_desc', $user->self_desc);
 
 	echo filter_apply('after_user_update_info_form', $str);
 }
@@ -605,7 +627,7 @@ function user_update_info()
 	if (!user_check_login())
 		throw new Exc_runtime(__('Not logged in'));
 	global $db, $DBOP, $user;
-	$VAL_SET = array('realname', 'nickname', 'email', 'avatar',
+	$VAL_SET = array('realname', 'nickname', 'email', 'aid',
 		'plang', 'wlang', 'tid', 'self_desc');
 
 	$val = array();
@@ -613,6 +635,7 @@ function user_update_info()
 	{
 		if (!isset($_POST[$v]))
 			throw new Exc_runtime(__('incomplete post'));
+		$val[$v] = $_POST[$v];
 	}
 
 	try
@@ -628,7 +651,7 @@ function user_update_info()
 	$val['realname'] = htmlencode($val['realname']);
 	$val['nickname'] = htmlencode($val['nickname']);
 	$val['email'] = htmlencode($val['email']);
-	$val['view_gid'] = tf_form_get_gid_selector_value('view_gid');
+	$val['view_gid'] = json_encode(tf_form_get_gid_selector_value('view_gid'));
 
 	$val = filter_apply('before_user_update_info', $val);
 
@@ -708,7 +731,37 @@ function user_check_view_src_perm($uid)
 		array($DBOP['='], 'id', $uid));
 	if (count($row) != 1)
 		return TRUE;
-	$row = unserialize($row[0]['view_gid']);
+	$row = json_decode($row[0]['view_gid']);
 	return count(array_intersect($row, $grp)) > 0;
+}
+
+/**
+ * get user group name by group id
+ * @param int $gid group id
+ * @return string|NULL group name or NULL if no such group
+ */
+function user_grp_get_name_by_id($gid)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('user_grps', 'name', array(
+		$DBOP['='], 'id', $gid));
+	if (count($row) != 1)
+		return NULL;
+	return $row[0]['name'];
+}
+
+/**
+ * get user group id by group name
+ * @param int $name group name
+ * @return string|NULL group id or NULL if no such group
+ */
+function user_grp_get_id_by_name($name)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('user_grps', 'id', array(
+		$DBOP['=s'], 'name', $name));
+	if (count($row) != 1)
+		return NULL;
+	return $row[0]['id'];
 }
 

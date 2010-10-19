@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Oct 19 14:14:53 2010 +0800
+ * $Date: Tue Oct 19 15:21:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -118,6 +118,7 @@ function tf_form_get_rich_text_editor_data($editor_name)
  */
 function tf_form_get_theme_browser($prompt, $post_name, $default = NULL)
 {
+	die('unimplemented');
 }
 
 /**
@@ -126,6 +127,12 @@ function tf_form_get_theme_browser($prompt, $post_name, $default = NULL)
  */
 function tf_form_get_team_browser($prompt, $post_name, $default = NULL)
 {
+	global $db;
+	$rows = $db->select_from('user_teams', array('id', 'name'));
+	$opt = array();
+	foreach ($rows as $row)
+		$opt[$row['name']] = $row['id'];
+	return tf_form_get_select($prompt, $post_name, $opt, $default);
 }
 
 /**
@@ -165,6 +172,20 @@ EOF;
  */
 function tf_form_get_gid_selector_value($selector_name)
 {
+	if (!isset($_POST["gid_selector_$selector_name"]))
+		throw Exc_runtime(__('incomplete post'));
+	$val = $_POST["gid_selector_$selector_name"];
+	$ret = explode(',', $val);
+	if ($ret === FALSE)
+		throw Exc_runtime(__('wrong format for gid selector'));
+	foreach ($ret as &$val)
+	{
+		$id = user_grp_get_id_by_name($val);
+		if (is_null($id))
+			throw new Exc_runtime(__('No such user group: %s', $val));
+		$val = $id;
+	}
+	return $ret;
 }
 
 /**
@@ -278,6 +299,7 @@ function tf_form_get_select($prompt, $post_name, $options, $default = NULL)
  */
 function tf_form_get_hidden($post_name, $post_value)
 {
+	return "<input type=\"hidden\" name=\"post_name\" value=\"post_value\" />";
 }
 
 /**

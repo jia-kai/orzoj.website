@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: team.php
- * $Date: Wed Oct 06 10:20:56 2010 +0800
+ * $Date: Tue Oct 19 17:35:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,7 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+$_team_img_dir = $root_path . 'contents/uploads/team_image/';
 
 /**
  * user team structure
@@ -34,7 +35,7 @@ if (!defined('IN_ORZOJ'))
 class Team
 {
 	var $id, $name, $desc,
-		$img; // image file path related to /contents/uploads/team_image
+		$img; // image file URL, or NULL if not found
 
 	/**
 	 * set $this->desc according to $this->id
@@ -52,6 +53,26 @@ class Team
 			throw new Exc_inner(__('No such team #%d', $this->id));
 		$this->desc = $row[0]['desc'];
 	}
+
+	/**
+	 * set id, name and desc
+	 * @param int $id team id
+	 * @return bool whether successful
+	 */
+	function set_val($id)
+	{
+		$this->id = $id;
+		global $db, $DBOP, $_team_img_dir;
+		$row = $db->select_from('user_teams', NULL, array(
+			$DBOP['='], 'id', $id));
+		if (count($row) != 1)
+			return FALSE;
+		$row = $row[0];
+		$row['img'] = get_page_url($_team_img_dir . $row['img']);
+		$this->name = $row['name'];
+		$this->desc = $row['desc'];
+		return TRUE;
+	}
 }
 
 /**
@@ -61,7 +82,7 @@ class Team
  */
 function team_get_name_suggest($begin)
 {
-	global $db, $DBOP;
+	global $db, $DBOP, $_team_img_dir;
 	$rows = $db->select_from('user_teams', array('id', 'name', 'img'),
 		array($DBOP['like'], 'name', $begin . '%'));
 	$ret = array();
@@ -70,9 +91,7 @@ function team_get_name_suggest($begin)
 		$team = new Team();
 		$team->id = $row['id'];
 		$team->name = $row['name'];
-		$team->img = $row['img'];
-		if (!is_string($team->img) || !strlen($team->img))
-			$team->img = NULL;
+		$team->img = get_page_url($_team_img_dir . $row['img']);
 		$ret[] = $team;
 	}
 	return $ret;
@@ -100,7 +119,7 @@ function team_get_amount()
  */
 function team_get_list($offset = NULL, $cnt = NULL, $set_desc = FALSE)
 {
-	global $db;
+	global $db, $_team_img_dir;
 	$fields = array('id', 'name', 'img');
 	if ($set_desc)
 		$fields[] = 'desc';
@@ -109,6 +128,7 @@ function team_get_list($offset = NULL, $cnt = NULL, $set_desc = FALSE)
 	foreach ($rows as $row)
 	{
 		$t = new Team();
+		$row['img'] = get_page_url($_team_img_dir . $row['img']);
 		foreach ($fields as $f)
 			$t->$f = $row[$f];
 		$ret[] = $t;

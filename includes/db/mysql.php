@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Mon Oct 18 19:37:17 2010 +0800
+ * $Date: Tue Oct 19 15:34:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -448,13 +448,9 @@ class Dbal_mysql extends Dbal
 	{
 		$tablename = $this->table_prefix . $tablename;
 		$sql ='UPDATE `'.$tablename.'` SET ';
-		foreach ($newvalue as $key => $value)
-		{
-			if (is_array($value)) $value = $value['value'];
-			$newvalue[$key] = '`' . $key . '` = ' . _mysql_escape_string($value);
-		}
-		$sql .= implode(',', $newvalue);
-		$sql .= ' ';
+		foreach ($newvalue as $key => $val)
+			$sql .= '`' . $key . '` = ' . _mysql_escape_string($val) . ',';
+		$sql[strlen($sql) - 1] = ' ';
 		if (is_array($whereclause))
 			$sql .= _mysql_build_where_clause($whereclause);
 		if ($this->direct_query)

@@ -40,7 +40,7 @@
 |	|	|--	...
 |	|--	uploads/		store uploaded data such as images (permission: 777)
 |	|	|--	user_avatars/	user avatars
-|	|	|--	team_image/	team images
+|	|	|--	team_images/	team images
 |	|	|--	...
 |	|--	lang/			.mo files for various languages
 |   |   |--<lang_name>/	language name e.g. zh_CN, en_US

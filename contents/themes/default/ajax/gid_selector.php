@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: gid_selector.php
- * $Date: Mon Oct 18 21:22:03 2010 +0800
+ * $Date: Tue Oct 19 14:39:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -77,7 +77,7 @@ $init = explode(',', $_POST['cur_val']);
 if (is_array($init))
 	foreach ($init as $val)
 		if (strlen($val))
-			echo "<option class=\"gid-selector-option\">$val</option>\n";
+			echo "<option>$val</option>\n";
 ?>
 </select>
 </div>
@@ -114,8 +114,19 @@ function gid_selector_add()
 		return false;
 	}
 	for (var i = 0; i < node.length; i ++)
-		$("#gid-selector-select").append("<option class='gid-selector-option'>" +
-			$(node[i]).attr("name") + "</option>");
+	{
+		var ok = true, name = $(node[i]).attr("name"),
+			now = $("#gid-selector-select option");
+		for (var j = 0; j < now.length; j ++)
+			if ($(now[j]).html() == name)
+			{
+				ok = false;
+				break;
+			}
+		if (ok)
+			$("#gid-selector-select").append("<option>" + name
+			+ "</option>");
+	}
 }
 
 function gid_selector_remove()
@@ -125,6 +136,11 @@ function gid_selector_remove()
 
 function gid_selector_ok()
 {
+	var str = "";
+	$.each($("#gid-selector-select option"), function(key, val){
+		str = str + $(val).html() + ",";
+	});
+	$("#<?php echo $_POST['input_id']?>").val(str.substr(0, str.length - 1));
 }
 
 </script>

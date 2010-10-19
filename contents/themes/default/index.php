@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Tue Oct 19 11:27:09 2010 +0800
+ * $Date: Tue Oct 19 15:53:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -69,6 +69,7 @@ $PAGES_AJAX = array(
 	// <page name> => <file>
 	'ajax-user-register' => 'ajax/user_register.php',
 	'ajax-user-update-info' => 'ajax/user_update_info.php',
+	'ajax-user-info' => 'ajax/user_info.php',
 	'ajax-form-checker' => 'ajax/form_checker.php',
 	'ajax-avatar-browser' => 'ajax/avatar_browser.php',
 	'ajax-gid-selector' => 'ajax/gid_selector.php',
@@ -238,8 +239,8 @@ if (!user_check_login())
 {
 ?>
 					<form action="<?php t_get_link('action-login') ?>" method="post">
-						<?php _tf_form_generate_body('user_check_login_get_form'); ?>
 						<div style="float: right;">
+						<?php _tf_form_generate_body('user_check_login_get_form'); ?>
 						<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
 						<a href="<?php t_get_link('ajax-user-register'); ?>"
 						id="user-register"><button type="button" class="in-form" ><?php echo __('Register'); ?></button></a>
@@ -249,6 +250,7 @@ if (!user_check_login())
 }
 else
 {
+	$hello = __('Hello, %s!', $user->nickname);
 	$sts = &$user->get_statistics();
 	$p = __('AC: %d Submission: %d Ratio: %.2f%%',
 		$sts['cnt_ac_prob'], $sts['cnt_submit_prob'], $sts['ac_ratio'] * 100);
@@ -257,7 +259,7 @@ else
 <img src="$user->avatar" alt="avatar" style="max-height: 128px; max-width: 128px;" />
 </div>
 <div style="float: left; margin: 5px">
-$user->nickname <br />
+$hello<br />
 $p <br />
 <div id="user-options">
 EOF;

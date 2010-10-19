@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Tue Oct 19 09:59:37 2010 +0800
+ * $Date: Tue Oct 19 15:22:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -62,6 +62,8 @@ define('GID_SUPER_SUBMITTER', $cnt ++);
 define('GID_SUPER_RECORD_VIEWER', $cnt ++);
 // view all records and sources
 define('GID_UINFO_VIEWER', $cnt ++); // view register IP, submission IP, user real name etc.
+
+define('USER_TID_NONE', 1);
 
 define('JUDGE_STATUS_OFFLINE',0);
 define('JUDGE_STATUS_ONLINE',1);

@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Oct 18 21:30:14 2010 +0800
+ * $Date: Tue Oct 19 17:19:48 2010 +0800
 
  This file is part of orzoj
 
@@ -303,6 +303,7 @@ select#gid-selector-select
 	float: left;
 	height: 350px;
 	width: 200px;
+	margin-left: 30px;
 }
 
 div#prob-grp-tree a:hover
@@ -594,5 +595,14 @@ div#rank-title
 	color: blue;
 	font-size: 30px;
 	font-weight: bold;
+}
+
+div#user-info-self-desc
+{
+	float: left;
+	width: 400px;
+	height: 248px;
+	overflow: auto;
+	border: 1px blue solid;
 }
 

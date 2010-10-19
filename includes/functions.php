@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Oct 18 22:56:04 2010 +0800
+ * $Date: Tue Oct 19 17:17:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -205,12 +205,14 @@ function get_remote_addr()
 /**
  * get the URL pointing to $file
  * @param string $file file path
- * @return string the URL
+ * @return string|NULL the URL, or NULL if can not get file path
  */
 function get_page_url($file)
 {
 	global $website_root, $root_path;
 	$file = realpath($file);
+	if ($file === FALSE)
+		return NULL;
 	return $website_root . substr($file, strlen($root_path));
 }
 
