@@ -12,6 +12,38 @@ $db->delete_item('prob_grps');
 $db->delete_item('map_prob_grp');
 $db->delete_item('cache_pgrp_child');
 
+function _make_prob($title)
+{
+	global $db, $DBOP;
+	$db->insert_into('problems',
+		array(
+			'title' => $title,
+			'code' => rand(),
+			'perm' => serialize(array(0, 1, array(GID_ALL), array())),
+			'io' => '',
+			'time' => time(),
+			'cnt_ac' => rand(),
+			'cnt_unac' => rand(),
+			'cnt_ce' => rand(),
+			'cnt_submit_user' => rand(),
+			'cnt_ac_user' => rand(),
+			'difficulty' => rand(0, 10000),
+			'desc' => serialize(array(
+				'time' => rand(),
+				'memory' => rand(),
+				'desc' => rand(),
+				'input_fmt' => rand(),
+				'output_fmt' => rand(),
+				'input_samp' => rand(),
+				'output_samp' => rand(),
+				'source' => rand(),
+				'hint' => rand()
+			))
+		)
+	);
+
+}
+
 function make_prob()
 {
 	global $db, $DBOP;
@@ -29,10 +61,14 @@ function make_prob()
 			'output_fmt' => 'A number, the sum of a and b.',
 			'input_samp' => '1 2',
 			'output_samp' => '3',
-			'source' => 'Every OJ'
-	//		'hint' => '1 <= a, b <= 100000'
+			'source' => 'Every OJ',
+			'hint' => '1 <= a, b <= 100000'
 		))
 	));
+
+	_make_prob('**.**');
+	_make_prob('??.??');
+	_make_prob('**.??');
 
 	for ($i = 0; $i < NPROB - 1; $i ++)
 		$db->insert_into('problems',
@@ -78,9 +114,9 @@ function make_map()
 	global $db;
 	for ($i = 0; $i < NMAP; $i ++)
 		$db->insert_into('map_prob_grp', 
-			array('pid' => rand(1, NPROB),
-			'gid' => rand(1, NPGRP))
-		);
+		array('pid' => rand(1, NPROB),
+		'gid' => rand(1, NPGRP))
+	);
 }
 
 make_prob();

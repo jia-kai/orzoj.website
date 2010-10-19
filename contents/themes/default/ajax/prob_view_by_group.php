@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Tue Oct 19 20:12:06 2010 +0800
+ * $Date: Tue Oct 19 21:24:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,14 +38,26 @@ $title_pattern = NULL;
 $sort_col = 'id';
 $sort_way = 'ASC';
 $start_page = 1;
+function str_replace_no_diagonal($a, $b, &$s)
+{
+	$len = strlen($s);
+	for ($i = 0; $i < $len; $i ++)
+	{
+		if ($s[$i] == '\\')
+			$i ++;
+		else
+			if ($s[$i] == $a)
+				$s[$i] = $b;
+	}
+}
+
 function _tranform_pattern($tp)
 {
 	$tp = trim($tp);
-	$tp_show = $tp;
-	$tp = str_replace('_', '\_', $tp);
-	$tp = str_replace('%', '\%', $tp);
-	$tp = str_replace('*', '%', $tp);
-	$tp = str_replace('?', '_', $tp);
+	str_replace_no_diagonal('*', '%', $tp);
+	str_replace_no_diagonal('?', '_', $tp);
+	$tp = str_replace('\\*', '*', $tp);
+	$tp = str_replace('\\?', '?', $tp);
 	$tp = '%' . $tp . '%';
 	return $tp;
 }

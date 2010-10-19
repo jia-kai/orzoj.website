@@ -1,1 +1,8 @@
 what are username, real name and nickname?
+
+how to user problem navigator?
+	* => abitrary characters
+	? => once character
+	\* => character '*'
+	\? => character '?'
+
