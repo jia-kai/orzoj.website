@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Oct 18 21:29:52 2010 +0800
+ * $Date: Mon Oct 18 23:38:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -193,6 +193,7 @@ $tables = array(
 			'cnt_ac' => array('type' => 'INT32', 'default' => 0),
 			'cnt_unac' => array('type' => 'INT32', 'default' => 0),
 			'cnt_ce' => array('type' => 'INT32', 'default' => 0),
+			'ac_ratio' => array('type' => 'INT32', 'default' => 0) // floor((cnt_ac / cnt_submit) * 10000), which means two decimal number holds.
 		),
 		'primary_key' => 'id',
 		'index' => array(

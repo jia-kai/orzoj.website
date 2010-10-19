@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Mon Oct 18 21:30:18 2010 +0800
+ * $Date: Tue Oct 19 01:19:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -355,12 +355,20 @@ function increase_statistics_value($rid, $field)
 function update_ac_ratio($rid)
 {
 	global $db, $DBOP;
-	$uid = $db->select_from('records', array('uid'), array($DBOP['='], 'id', $rid));
-	$uid = $uid[0];
+
+	$rows = $db->select_from('records', array('uid', 'pid'), array($DBOP['='], 'id', $rid));
+
+	$uid = $rows[0];
 	$val = $db->select_from('users', array('cnt_submit', 'cnt_ac'), array($DBOP['='], 'id', $uid));
 	$val = $val[0];
-	$ac_ratio = floor(($val['cnt_ac'] / $val['cnt_submit']) * 10000);
+	$ac_ratio = ($val['cnt_submit'] == 0 ? -1 : floor(($val['cnt_ac'] / $val['cnt_submit']) * 10000));
 	$db->update_data('users', array('ac_ratio' => $ac_ratio), array($DBOP['='], 'id', $uid));
+
+	$pid = $rows[0];
+	$val = $db->select_from('problems', array('cnt_submit', 'cnt_ac'), array($DBOP['='], 'id', $pid));
+	$val = $val[0];
+	$ac_ratio = ($val['cnt_submit'] == 0 ? -1 : floor(($val['cnt_ac'] / $val['cnt_submit']) * 10000));
+	$db->update_data('problems', array('ac_ratio' => $ac_ratio), array($DBOP['-'], 'id', $pid));
 }
 
 /**
@@ -526,7 +534,8 @@ function report_prob_result()
 
 	$rid = $func_param->task;
 	increase_statistics_value($rid, $status == RECORD_STATUS_ACCEPTED ? 'cnt_ac' : 'cnt_unac');
-	update_ac_ratio($rid);
+	if ($status == RECORD_STATUS_ACCEPTED)
+		update_ac_ratio($rid);
 
 	$db->update_data('records',
 		array(

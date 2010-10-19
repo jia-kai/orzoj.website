@@ -25,6 +25,7 @@ function make_prob()
 		'cnt_ac' => 2,
 		'cnt_unac' => 4,
 		'cnt_ce' => 1,
+		'ac_ratio' => 103,
 		'desc' => serialize(array(
 			'time' => '1s',
 			'memory' => '256MB',
@@ -50,6 +51,7 @@ function make_prob()
 				'cnt_ac' => rand(),
 				'cnt_unac' => rand(),
 				'cnt_ce' => rand(),
+				'ac_ratio' => rand(0, 10000),
 				'desc' => serialize(array(
 					'time' => rand(),
 					'memory' => rand(),
