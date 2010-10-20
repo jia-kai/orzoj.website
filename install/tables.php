@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Oct 20 10:18:53 2010 +0800
+ * $Date: Wed Oct 20 12:24:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -297,7 +297,6 @@ $tables = array(
 	'contests_oi' => array( // OI contests
 		'cols' => array(
 			'cid' => array('type' => 'INT32'), // contest id
-			''
 		)
 	),
 

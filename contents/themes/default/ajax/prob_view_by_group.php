@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Wed Oct 20 09:24:11 2010 +0800
+ * $Date: Wed Oct 20 13:36:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -193,6 +193,7 @@ $show_fields= array(
 	array(__('Submited Users'), 'cnt_submit_user', 'DESC'),
 	array(__('Difficulty'), 'difficulty', 'ASC')
 );
+
 $sort_list = array(
 	array('id', 'ASC')
 //	array('cnt_ac_user', 'DESC'),
@@ -208,6 +209,15 @@ function _make_table_header($name, $col_name, $default_order)
 	global $title_pattern_show;
 	$t = ($title_pattern_show  == NULL ? '*' : $title_pattern_show);
 	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order', '$t'); return false;\">$name</a></th>";
+}
+
+$cnt_show_fields = count($show_fields);
+
+// user problem status
+if (user_check_login())
+{
+	echo '<th></th>';
+	$cnt_show_fields ++;
 }
 
 foreach ($show_fields as $field)
@@ -268,8 +278,6 @@ foreach ($sort_list as $val)
 	if ($val[0] != $sort_col)
 		$order_by[$val[0]] = ($is_default_order ? $val[1] : op_order($val[1]));
 
-var_dump($order_by);
-
 $probs = prob_get_list($fields, 
 	$gid, 
 	$title_pattern,
@@ -277,14 +285,28 @@ $probs = prob_get_list($fields,
 	($start_page - 1) * $PROB_VIEW_ROWS_PER_PAGE, 
 	$PROB_VIEW_ROWS_PER_PAGE);
 
+$prob_user_sts_icon_info = array(
+	STS_PROB_USER_UNTRIED => array(_url('images/prob_user_sts_untried.gif', TRUE), __('Untried')),
+	STS_PROB_USER_UNAC => array(_url('images/prob_user_sts_unac.gif', TRUE), __('UnAccepted')),
+	STS_PROB_USER_AC => array(_url('images/prob_user_sts_ac.gif', TRUE), __('Accepted')),
+	STS_PROB_USER_AC_BLINK => array(_url('images/prob_user_sts_ac_blink.gif', TRUE), __('Accepted Blink'))
+);
+
 foreach ($probs as $prob)
 {
 	echo '<tr>';
 	if (is_null($prob))
-		for ($i = count($show_fields); $i; $i --)
+		for ($i = $cnt_show_fields; $i; $i --)
 			echo '<td>---</td>';
 	else
 	{
+		if (user_check_login())
+		{
+			$sts = prob_get_prob_user_status($prob['id']);
+			$url = $prob_user_sts_icon_info[$sts][0];
+			$info = $prob_user_sts_icon_info[$sts][1];
+			echo "<td><img src=\"$url\" alt=\"$info\" title=\"$info\" /></td>";
+		}
 		echo '<td>' . $prob['id'] . '</td>'; // ID
 		_make_prob_link($prob['id'], $prob['title']);
 		_make_prob_link($prob['id'], $prob['code']);

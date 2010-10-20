@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Wed Oct 20 09:20:33 2010 +0800
+ * $Date: Wed Oct 20 13:36:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,7 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 $USERS_PER_PAGE = 50;
+$RANK_LIST_COLOR_SELF = '#7f7f7f';
 
 $start_page = 1;
 if (isset($_POST['sort_col']) && isset($_POST['sort_way']))
@@ -50,7 +51,7 @@ if (isset($page_arg))
 }
 
 $start_rank = ($start_page - 1) * $USERS_PER_PAGE + 1;
-
+$rank_delta = 1;
 ?>
 
 <script type="text/javascript">
@@ -154,17 +155,33 @@ foreach ($sort_list as $val)
 		$orderby[$val[0]] = ($is_default_order ? $val[1] : op_order($val[1]));
 
 $users = $db->select_from('users', 
-	array('id', 'nickname', 'cnt_submit_prob', 'cnt_ac_prob', 'ac_ratio'),
+	array('id', 'nickname', 'realname', 'cnt_submit_prob', 'cnt_ac_prob', 'ac_ratio'),
 	NULL,
 	$orderby,
 	($start_page - 1) * $USERS_PER_PAGE,
 	$USERS_PER_PAGE
 );
 
-foreach ($users as $user)
+if (!$is_default_order)
+{
+	$start_rank = user_get_user_amount() - $start_rank + 1;
+	$rank_delta = -1;
+}
+/**
+ * @ignore
+ */
+function _get_rank()
+{
+	global $start_rank, $rank_delta;
+	$ret = $start_rank;
+	$start_rank += $rank_delta;
+	return $ret;
+}
+
+foreach ($users as $_user)
 {
 	echo '<tr>'
-		. '<td>' . ($start_rank ++) . '</td>';
+		. '<td>' . _get_rank() . '</td>';
 	foreach ($heads as $head)
 	{
 		switch ($head[1])
@@ -172,16 +189,24 @@ foreach ($users as $user)
 		case 'rank':
 			break;
 		case 'ac_ratio':
-			echo '<td>' . ($user['ac_ratio'] / 100) . '%</td>';
+			echo '<td>' . ($_user['ac_ratio'] / 100) . '%</td>';
 			break;
 		case 'nickname':
-			$uid = $user['id'];
-			$url_href = t_get_link('show-ajax-user-info', "$uid", TRUE, TRUE);
-			$url_onclick = t_get_link('ajax-user-info', "$uid", TRUE, TRUE);
-			echo "<td><a class=\"rank-list-nickname-a\" href=\"$url_href\" onclick=\"$url_onclick\">" . $user['nickname'] . '</a></td>';
+			$uid = $_user['id'];
+			$url_href = t_get_link('ajax-user-info', "$uid", TRUE, TRUE);
+			$nickname = $_user['nickname'];
+			$realname = $_user['realname'];
+			$style = '';
+			if (user_check_login() && $uid == $user->id)
+			{
+				$style = "color: $RANK_LIST_COLOR_SELF;";
+				$realname = __('This is you!') . ' ' . $realname . '.';
+			}
+			//$url_href = t_get_link('problem', "$uid", TRUE, TRUE);
+			echo "<td><a class=\"rank-list-nickname-a\" href=\"$url_href\" style=\"$style\" title=\"$realname\">$nickname</a></td>";
 			break;
 		default:
-			echo '<td>' . $user[$head[1]] . '</td>';
+			echo '<td>' . $_user[$head[1]] . '</td>';
 		}
 	}
 	echo '</tr>';
@@ -237,6 +262,4 @@ if ($start_page < $total_page)
 </div> <!-- id: rank-list-navigator-bottom -->
 
 </div> <!-- id: rank-list-content -->
-
-
 

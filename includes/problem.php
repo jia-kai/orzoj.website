@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Tue Oct 19 14:14:33 2010 +0800
+ * $Date: Wed Oct 20 12:15:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -353,5 +353,26 @@ function prob_update_grp_cache_delete($gid)
 		array($DBOP['||'],
 		$DBOP['='], 'gid', $gid,
 		$DBOP['='], 'chid', $gid));
+}
+
+
+/**
+ * get the status of a problem of a specific user
+ * assume user is logined
+ * @param int $pid problem id
+ * @exception Exc_inner if user is not logined
+ * @return int @see includes/const.php
+ */
+function prob_get_prob_user_status($pid)
+{
+	if (!user_check_login())
+		throw new Exc_inner('User not logined: at prob_get_user_prob_status');
+	global $db, $DBOP, $user;
+	$status = $db->select_from('sts_prob_user', array('status'),
+		array($DBOP['&&'], $DBOP['='], 'pid', $pid, $DBOP['='], 'uid', $user->id)
+		);
+	if (count($status) == 0)
+		return STS_PROB_USER_UNTRIED;
+	return $status[0]['status'];
 }
 
