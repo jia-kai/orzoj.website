@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orzojweb-0.0.1-alpha\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-18 22:47+0800\n"
+"POT-Creation-Date: 2010-10-20 22:38+0800\n"
 "PO-Revision-Date: 2010-10-13 23:02+0800\n"
 "Last-Translator: fqj1994 <fqj1994@gmail.com>\n"
 "Language-Team: Chinese (simplified)\n"
@@ -50,14 +50,13 @@ msgstr "排名模式"
 msgid "Apply"
 msgstr "执行"
 
-#: contents/themes/default/ajax/gid_selector.php:113
-#, fuzzy
+#: contents/themes/default/ajax/gid_selector.php:138
 msgid "Please select a group first"
-msgstr "请先登录"
+msgstr "请先选择一个组"
 
 #: contents/themes/default/ajax/prob_submit.php:39
 msgid "Successful submission!"
-msgstr ""
+msgstr "提交成功！"
 
 #: contents/themes/default/ajax/prob_submit.php:44
 msgid "Failed to submit: "
@@ -82,67 +81,82 @@ msgid "Good luck"
 msgstr "祝你好运"
 
 #: contents/themes/default/ajax/prob_group_tree_ask.php:68
+#: contents/themes/default/ajax/prob_view_by_group.php:144
 msgid "All"
-msgstr ""
+msgstr "全部"
 
-#: contents/themes/default/ajax/rank_list.php:49
+#: contents/themes/default/ajax/rank_list.php:50
 msgid "Unknown argument."
-msgstr ""
+msgstr "未知参数。"
 
-#: contents/themes/default/ajax/rank_list.php:102
+#: contents/themes/default/ajax/rank_list.php:103
 #: contents/themes/default/index.php:49
 msgid "Rank"
 msgstr "排名"
 
-#: contents/themes/default/ajax/rank_list.php:103 includes/user.php:562
+#: contents/themes/default/ajax/rank_list.php:104 includes/user.php:608
 msgid "Nickname"
 msgstr "昵称"
 
-#: contents/themes/default/ajax/rank_list.php:104
-#: contents/themes/default/ajax/prob_view_by_group.php:41
-#: includes/record.php:125
-msgid "Accepted"
-msgstr "通过"
-
 #: contents/themes/default/ajax/rank_list.php:105
-#: contents/themes/default/ajax/prob_view_by_group.php:42
-msgid "Submited"
-msgstr "已提交"
+msgid "Accepted Prob."
+msgstr "通过题目数量"
 
 #: contents/themes/default/ajax/rank_list.php:106
-msgid "Ratio(AC/Solved)"
-msgstr ""
+msgid "Submited Prob."
+msgstr "已提交的题目数量"
 
-#: contents/themes/default/ajax/rank_list.php:197
+#: contents/themes/default/ajax/rank_list.php:107
+msgid "AC ratio"
+msgstr "通过率"
+
+#: contents/themes/default/ajax/rank_list.php:121
+msgid "Rank List"
+msgstr "排名表"
+
+#: contents/themes/default/ajax/rank_list.php:203
+msgid "This is you!"
+msgstr "这个是你！"
+
+#: contents/themes/default/ajax/rank_list.php:254
 #: contents/themes/default/ajax/status_list.php:344
-#: contents/themes/default/ajax/prob_view_by_group.php:124
+#: contents/themes/default/ajax/prob_view_by_group.php:368
 msgid "Prev"
 msgstr "上一"
 
-#: contents/themes/default/ajax/rank_list.php:202
+#: contents/themes/default/ajax/rank_list.php:259
 #: contents/themes/default/ajax/status_list.php:350
-#: contents/themes/default/ajax/prob_view_by_group.php:127
+#: contents/themes/default/ajax/prob_view_by_group.php:371
 msgid "Next"
 msgstr "下一"
 
-#: contents/themes/default/ajax/prob_filter.php:30
+#: contents/themes/default/ajax/prob_filter.php:31
 #: contents/themes/default/ajax/avatar_browser.php:103
 msgid "Go"
 msgstr "转到"
 
-#: contents/themes/default/ajax/prob_filter.php:78
+#: contents/themes/default/ajax/prob_filter.php:82
 msgid "Problem Nav."
 msgstr "题目导航"
 
-#: contents/themes/default/ajax/prob_filter.php:83
-#: contents/themes/default/ajax/prob_view_by_group.php:38
+#: contents/themes/default/ajax/prob_filter.php:87
+#: contents/themes/default/ajax/prob_view_by_group.php:208
 msgid "ID"
 msgstr "ID"
 
-#: contents/themes/default/ajax/prob_filter.php:84
-#: contents/themes/default/ajax/prob_view_by_group.php:40
+#: contents/themes/default/ajax/prob_filter.php:88
+#: contents/themes/default/ajax/prob_view_by_group.php:210
 msgid "Code"
 msgstr "代码"
+
+#: contents/themes/default/ajax/prob_filter.php:89
+#: contents/themes/default/ajax/prob_view_by_group.php:209
+msgid "Title"
+msgstr "标题"
+
+#: contents/themes/default/ajax/prob_filter.php:89
+msgid "Find"
+msgstr "查找"
 
 #: contents/themes/default/ajax/record_detail.php:54
 #, php-format
@@ -155,9 +169,9 @@ msgid "User: %s"
 msgstr "用户： %s"
 
 #: contents/themes/default/ajax/record_detail.php:62
-#, fuzzy, php-format
+#, php-format
 msgid "Problem: %s"
-msgstr "题目"
+msgstr "题目：%s"
 
 #: contents/themes/default/ajax/record_detail.php:68
 #, php-format
@@ -329,183 +343,312 @@ msgstr "排名"
 
 #: contents/themes/default/ajax/status_list.php:403
 msgid "Record detail"
-msgstr ""
+msgstr "记录详情"
 
 #: contents/themes/default/ajax/prob_group_tree.php:30
 msgid "Problem Groups"
 msgstr "题目组"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:39
-msgid "Title"
-msgstr "标题"
+#: contents/themes/default/ajax/prob_view_by_group.php:115
+#: contents/themes/default/ajax/prob_view_single.php:68
+msgid "Unknown problem filter."
+msgstr "未知题目过滤器。"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:43
-msgid "Difficulty"
-msgstr "难度"
+#: contents/themes/default/ajax/prob_view_by_group.php:137
+msgid "Problems filter"
+msgstr "题目过滤器："
 
-#: contents/themes/default/ajax/prob_view_by_group.php:61
+#: contents/themes/default/ajax/prob_view_by_group.php:152
 #: contents/themes/default/index.php:47
 msgid "Problems"
 msgstr "题目"
 
-#: contents/themes/default/ajax/prob_view_single.php:43
-msgid "Give me an id please."
-msgstr ""
+#: contents/themes/default/ajax/prob_view_by_group.php:211
+msgid "Accepted Users"
+msgstr "通过用户数"
+
+#: contents/themes/default/ajax/prob_view_by_group.php:212
+msgid "Submited Users"
+msgstr "提交用户数"
+
+#: contents/themes/default/ajax/prob_view_by_group.php:213
+msgid "Difficulty"
+msgstr "难度"
+
+#: contents/themes/default/ajax/prob_view_by_group.php:308
+msgid "Untried"
+msgstr "未尝试"
+
+#: contents/themes/default/ajax/prob_view_by_group.php:309
+msgid "Unaccepted"
+msgstr "未通过"
+
+#: contents/themes/default/ajax/prob_view_by_group.php:310
+#: includes/record.php:125
+msgid "Accepted"
+msgstr "通过"
+
+#: contents/themes/default/ajax/prob_view_by_group.php:311
+msgid "Accepted Blink"
+msgstr "一次性通过"
+
+#: contents/themes/default/ajax/prob_view_by_group.php:379
+msgid "Go to page"
+msgstr "跳转到页面"
+
+#: contents/themes/default/ajax/user_info.php:45 includes/user.php:488
+#: includes/user.php:610
+msgid "Avatar:"
+msgstr "头像："
+
+#: contents/themes/default/ajax/user_info.php:52
+msgid "Team:"
+msgstr "团队："
+
+#: contents/themes/default/ajax/user_info.php:56
+msgid "unknown"
+msgstr "未知"
+
+#: contents/themes/default/ajax/user_info.php:66
+msgid "Self description:"
+msgstr "自我描述："
+
+#: contents/themes/default/ajax/user_info.php:72
+msgid "Registration time:"
+msgstr "注册时间："
+
+#: contents/themes/default/ajax/user_info.php:77
+msgid "Last login time:"
+msgstr "上次登录时间："
+
+#: contents/themes/default/ajax/user_info.php:83
+msgid "User id:"
+msgstr "用户ID："
+
+#: contents/themes/default/ajax/user_info.php:84 includes/user.php:306
+#: includes/user.php:483
+msgid "Username:"
+msgstr "用户名："
+
+#: contents/themes/default/ajax/user_info.php:85 includes/user.php:486
+msgid "Nickname:"
+msgstr "昵称："
+
+#: contents/themes/default/ajax/user_info.php:86 includes/user.php:485
+msgid "Real name:"
+msgstr "真实姓名："
+
+#: contents/themes/default/ajax/user_info.php:87
+msgid "Email:"
+msgstr "电子邮箱："
+
+#: contents/themes/default/ajax/user_info.php:92
+msgid "Registration ip:"
+msgstr "注册IP："
+
+#: contents/themes/default/ajax/user_info.php:94
+msgid "Last login IP:"
+msgstr "上次登录IP："
+
+#: contents/themes/default/ajax/user_info.php:112
+#, php-format
+msgid "Failed to get user info: %s"
+msgstr "获取用户信息失败：%s"
 
 #: contents/themes/default/ajax/prob_view_single.php:47
-msgid "Give me an INT please - -!"
-msgstr ""
+msgid "Give me an id please."
+msgstr "请输入一个ID。"
 
 #: contents/themes/default/ajax/prob_view_single.php:51
-#, fuzzy, php-format
+msgid "Give me an INT please - -!"
+msgstr "请输入一个整数 --！"
+
+#: contents/themes/default/ajax/prob_view_single.php:55
+#, php-format
 msgid "No such problem whose id is '%d'."
-msgstr "没有编号为%d的主题"
+msgstr "没有编号为%d的题目。"
 
-#: contents/themes/default/ajax/prob_view_single.php:57
+#: contents/themes/default/ajax/prob_view_single.php:61
 msgid "Give me a code please."
-msgstr ""
+msgstr "请输入一个代码。"
 
-#: contents/themes/default/ajax/prob_view_single.php:60
-#, fuzzy, php-format
+#: contents/themes/default/ajax/prob_view_single.php:64
+#, php-format
 msgid "No such problem whose code is '%s'"
-msgstr "没有编号为%d的主题"
+msgstr "没有代码为%s的题目"
 
-#: contents/themes/default/ajax/prob_view_single.php:73
+#: contents/themes/default/ajax/prob_view_single.php:81
 msgid "Submit"
 msgstr "提交"
 
-#: contents/themes/default/ajax/prob_view_single.php:77
+#: contents/themes/default/ajax/prob_view_single.php:85
 msgid "Best solutions"
 msgstr "最优解"
 
-#: contents/themes/default/ajax/prob_view_single.php:90
+#: contents/themes/default/ajax/prob_view_single.php:102
 msgid "Back to list"
 msgstr "返回列表"
 
-#: contents/themes/default/ajax/prob_view_single.php:110
+#: contents/themes/default/ajax/prob_view_single.php:122
 #, php-format
 msgid "Hello buddy: %s"
 msgstr "你好，%s"
 
 #: contents/themes/default/ajax/user_update_info.php:34
 msgid "user information updated sucessfully"
-msgstr ""
+msgstr "用户信息更新成功"
 
 #: contents/themes/default/ajax/user_update_info.php:38
-#, fuzzy
 msgid "Failed to update user information: "
-msgstr "调用用户函数失败"
+msgstr "更新用户信息失败："
 
 #: contents/themes/default/ajax/user_update_info.php:47
 msgid "Update!"
-msgstr ""
+msgstr "更新！"
 
 #: contents/themes/default/ajax/user_register.php:34
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "Congratulations! You have successfully registered, and your user id is %d."
-msgstr "0恭喜！你已经成功注册，你的用户编号（UID）是%d"
+msgstr "恭喜！你已经成功注册，你的用户编号（UID）是%d"
 
 #: contents/themes/default/ajax/user_register.php:35
 msgid "Login in 2 seconds ..."
-msgstr ""
+msgstr "两秒后登录 ..."
 
 #: contents/themes/default/ajax/user_register.php:39
-#, fuzzy
 msgid "Failed to register: "
-msgstr "1注册失败："
+msgstr "注册失败："
 
 #: contents/themes/default/ajax/user_register.php:48
 msgid "Register!"
 msgstr "注册！"
 
-#: contents/themes/default/functions.php:193
+#: contents/themes/default/functions.php:176 includes/user.php:637
+#: includes/message.php:71
+msgid "incomplete post"
+msgstr "不完整的表单"
+
+#: contents/themes/default/functions.php:180
+msgid "wrong format for gid selector"
+msgstr "gid选择器处错误的格式"
+
+#: contents/themes/default/functions.php:185
+#, php-format
+msgid "No such user group: %s"
+msgstr "没有这个用户组：%s"
+
+#: contents/themes/default/functions.php:214
 msgid "imcomplete post"
 msgstr "不完整的帖子"
 
-#: contents/themes/default/functions.php:195
+#: contents/themes/default/functions.php:216
 msgid "Hi buddy, source please?"
 msgstr "Orz,代码呢？"
 
-#: contents/themes/default/functions.php:211
+#: contents/themes/default/functions.php:232
 msgid "Browse"
 msgstr "浏览"
 
-#: contents/themes/default/functions.php:333
+#: contents/themes/default/functions.php:355
 msgid "Time Limit: "
 msgstr "时间限制："
 
-#: contents/themes/default/functions.php:334
+#: contents/themes/default/functions.php:356
 msgid "Memory Limit: "
 msgstr "内存限制："
 
-#: contents/themes/default/functions.php:335
-msgid "Total Submit: "
-msgstr "总计提交："
+#: contents/themes/default/functions.php:357
+msgid "Total Submissions: "
+msgstr "总计提交次数："
 
-#: contents/themes/default/functions.php:336
-msgid "Accepted: "
-msgstr "通过："
+#: contents/themes/default/functions.php:358
+msgid "Accepted Submissions: "
+msgstr "通过次数："
 
-#: contents/themes/default/functions.php:337
-#, fuzzy
+#: contents/themes/default/functions.php:359
 msgid "Problem Group: "
-msgstr "题目组"
+msgstr "题目组："
 
-#: contents/themes/default/functions.php:337
-#, fuzzy
+#: contents/themes/default/functions.php:359
 msgid "Problem Groups: "
-msgstr "题目组"
+msgstr "题目组："
 
-#: contents/themes/default/functions.php:338
-#, fuzzy
+#: contents/themes/default/functions.php:360
 msgid "Input: "
 msgstr "输入格式："
 
-#: contents/themes/default/functions.php:339
-#, fuzzy
+#: contents/themes/default/functions.php:361
 msgid "Output: "
 msgstr "输出格式："
 
-#: contents/themes/default/functions.php:343
+#: contents/themes/default/functions.php:365
 msgid "Description"
 msgstr "描述："
 
-#: contents/themes/default/functions.php:344
+#: contents/themes/default/functions.php:366
 msgid "Input Format"
 msgstr "输入格式："
 
-#: contents/themes/default/functions.php:345
+#: contents/themes/default/functions.php:367
 msgid "Output Format"
 msgstr "输出格式："
 
-#: contents/themes/default/functions.php:346
+#: contents/themes/default/functions.php:368
 msgid "Input Sample"
 msgstr "输入样例"
 
-#: contents/themes/default/functions.php:347
+#: contents/themes/default/functions.php:369
 msgid "Output Sample"
 msgstr "输出样例"
 
-#: contents/themes/default/functions.php:348
+#: contents/themes/default/functions.php:370
 msgid "Source"
 msgstr "来源"
 
-#: contents/themes/default/functions.php:349
+#: contents/themes/default/functions.php:371
 msgid "Hint"
 msgstr "提示"
 
+#: contents/themes/default/functions.php:382
+msgid "Statistics"
+msgstr "状态"
+
+#: contents/themes/default/functions.php:384
+msgid "Accepted submissions:"
+msgstr "通过次数："
+
+#: contents/themes/default/functions.php:385
+msgid "Unaccepted submissions:"
+msgstr "未通过次数："
+
+#: contents/themes/default/functions.php:386
+msgid "Compilation-error submissions:"
+msgstr "编译错误的次数："
+
+#: contents/themes/default/functions.php:387
+msgid "Total submissions:"
+msgstr "总计提交次数："
+
+#: contents/themes/default/functions.php:388
+msgid "Number of users having submitted:"
+msgstr "提交的用户数："
+
+#: contents/themes/default/functions.php:389
+msgid "Number of users with accepted submission: "
+msgstr "通过的用户数："
+
 #: contents/themes/default/discuss.php:38
 msgid "Can not parse arg at discuss.php. "
-msgstr ""
+msgstr "不能在discuss.php出不能解析arg。"
 
 #: contents/themes/default/discuss.php:42
 msgid "Can not parse arg while trying to view single."
-msgstr ""
+msgstr "在尝试读取单个题目时不能解析arg。"
 
 #: contents/themes/default/discuss.php:48
 msgid "Can not parse arg while trying to view list."
-msgstr ""
+msgstr "在尝试读取列表时不能解析arg。"
 
 #: contents/themes/default/index.php:46
 msgid "Home"
@@ -535,80 +678,85 @@ msgstr "评测机"
 msgid "FAQ"
 msgstr "常见问题"
 
-#: contents/themes/default/index.php:140
+#: contents/themes/default/index.php:141
 msgid "Failed to login"
 msgstr "登录失败"
 
-#: contents/themes/default/index.php:144
+#: contents/themes/default/index.php:145
 msgid "Failed to login: "
 msgstr "登录失败："
 
-#: contents/themes/default/index.php:160
+#: contents/themes/default/index.php:161
 msgid "Error while logging out: "
 msgstr "登出失败："
 
-#: contents/themes/default/index.php:210 contents/themes/default/index.php:507
+#: contents/themes/default/index.php:211 contents/themes/default/index.php:511
 msgid "OK"
 msgstr "OK"
 
-#: contents/themes/default/index.php:243
+#: contents/themes/default/index.php:244
 msgid "Login"
 msgstr "登录"
 
-#: contents/themes/default/index.php:245
+#: contents/themes/default/index.php:246
 msgid "Register"
 msgstr "注册"
 
-#: contents/themes/default/index.php:252
+#: contents/themes/default/index.php:253
 #, php-format
-msgid "AC/Submission: %d/%d"
-msgstr "通过/提交： %d/%d"
+msgid "Hello, %s!"
+msgstr "你好，%s！"
 
-#: contents/themes/default/index.php:263
+#: contents/themes/default/index.php:255
+#, php-format
+msgid "AC: %d Submission: %d Ratio: %.2f%%"
+msgstr "通过：%d 提交：%d 通过率：%.2f%%"
+
+#: contents/themes/default/index.php:267
 msgid "User info."
 msgstr "用户信息"
 
-#: contents/themes/default/index.php:264
+#: contents/themes/default/index.php:268
 msgid "Update profile"
-msgstr ""
+msgstr "更新信息"
 
-#: contents/themes/default/index.php:265
+#: contents/themes/default/index.php:269
 msgid "Logout"
 msgstr "登出"
 
-#: contents/themes/default/index.php:294
+#: contents/themes/default/index.php:298
 #, php-format
 msgid "This is an AJAX page. Please visit %s to find the complete page."
 msgstr ""
 "这个是一个AJAX（异步式Javascript和XML）页面。请访问 %s 以找到完整的页面。"
 
-#: contents/themes/default/index.php:309
+#: contents/themes/default/index.php:313
 msgid "User group selector"
-msgstr ""
+msgstr "用户组选择器"
 
-#: contents/themes/default/index.php:315
+#: contents/themes/default/index.php:319
 msgid "Message"
 msgstr "消息"
 
-#: contents/themes/default/index.php:355 includes/user.php:471
+#: contents/themes/default/index.php:359 includes/user.php:517
 msgid "Passwords do not match"
 msgstr "两次输入的密码不一样"
 
-#: contents/themes/default/index.php:359
+#: contents/themes/default/index.php:363
 msgid "You must set a password"
-msgstr ""
+msgstr "你必须设置一个密码"
 
-#: contents/themes/default/index.php:498
+#: contents/themes/default/index.php:502
 msgid "ADD"
-msgstr ""
+msgstr "添加"
 
-#: contents/themes/default/index.php:501
+#: contents/themes/default/index.php:505
 msgid "REMOVE"
-msgstr ""
+msgstr "删除"
 
-#: contents/themes/default/index.php:504
+#: contents/themes/default/index.php:508
 msgid "CANCEL"
-msgstr ""
+msgstr "取消"
 
 #: install/index.php:156
 msgid ""
@@ -724,62 +872,58 @@ msgstr "未知索引类型：%s"
 msgid "unexpected SQL error"
 msgstr "未预料的SQL错误"
 
-#: includes/db/mysql.php:477
+#: includes/db/mysql.php:473
 msgid "nested transaction"
 msgstr "嵌套事务"
 
-#: includes/db/mysql.php:490
+#: includes/db/mysql.php:486
 msgid "attempt to commit before beginning transaction"
 msgstr "在事务开始前尝试提交它"
 
-#: includes/db/mysql.php:503
+#: includes/db/mysql.php:499
 msgid "attempt to rollback before beginning transaction"
 msgstr "在事务开始前尝试回滚它"
 
-#: includes/db/mysql.php:560
+#: includes/db/mysql.php:556
 #, php-format
 msgid "SQL query error [query: %s]: %s"
 msgstr "SQL请求错误·［请求：%s］：%s"
 
-#: includes/functions.php:236
-msgid "no such row"
-msgstr "没有该行："
-
-#: includes/functions.php:345
+#: includes/functions.php:319
 msgid "invalid email address: no at symbol (@) found"
 msgstr "不合法的邮件地址：没有@符号"
 
-#: includes/functions.php:351
+#: includes/functions.php:325
 msgid "invalid email address: local part length exceeded"
 msgstr "不合法的邮件地址：本地部分（@前面）超长"
 
-#: includes/functions.php:353
+#: includes/functions.php:327
 msgid "invalid email address: domain part length exceeded"
 msgstr "不合法的邮件地址：域名部分超长"
 
-#: includes/functions.php:355
+#: includes/functions.php:329
 msgid "invalid email address: local part starts or ends with dot(.)"
 msgstr "不合法的邮件地址：本地部分（@前面）以以点开始或结尾"
 
-#: includes/functions.php:357
+#: includes/functions.php:331
 msgid "invalid email address: local part has two consecutive dots"
 msgstr "不合法的邮件地址：本地部分（@前面）有两个连续的点"
 
-#: includes/functions.php:359
+#: includes/functions.php:333
 msgid "invalid email address: character not valid in domain part"
 msgstr "不合法的邮件地址：域名部分的字符不合法"
 
-#: includes/functions.php:361
+#: includes/functions.php:335
 msgid "invalid email address: domain part has two consecutive dots"
 msgstr "不合法的邮件地址：域名部分有两个连续的点"
 
-#: includes/functions.php:367
+#: includes/functions.php:341
 msgid ""
 "invalid email address: character not valid in local part unless local part "
 "is quoted"
 msgstr "不合法的邮件地址：如果本地部分没有在引号内，本地部分有不合法的字符"
 
-#: includes/functions.php:373
+#: includes/functions.php:347
 msgid "invalid email address: MX record not found in DNS"
 msgstr ""
 "不合法的邮件地址：域名部分的域名解析记录中没有邮件交换记录，这可能是一个不存"
@@ -806,9 +950,8 @@ msgid "Content:"
 msgstr "正文："
 
 #: includes/post.php:104
-#, fuzzy
 msgid "Problem id"
-msgstr "题目编号："
+msgstr "题目编号"
 
 #: includes/post.php:209
 msgid "Invalid post id: id <= 0"
@@ -826,140 +969,116 @@ msgstr "你没有权限修改这个帖子。"
 msgid "No post is specified."
 msgstr "没有帖子被指定。"
 
-#: includes/problem.php:75 includes/submit.php:157
+#: includes/problem.php:77 includes/submit.php:157
 #, php-format
 msgid "No such problem #%d"
 msgstr "没有这个题目#%d"
 
-#: includes/problem.php:89
+#: includes/problem.php:91
 msgid "Your are not permitted to view this problem"
 msgstr "你没有权限浏览该题"
 
-#: includes/user.php:161
+#: includes/user.php:83 includes/user.php:194 includes/user.php:220
 #, php-format
 msgid "user id %d does not exist"
 msgstr "用户ID %d 不存在"
 
-#: includes/user.php:260 includes/user.php:437
-msgid "Username:"
-msgstr "用户名："
-
-#: includes/user.php:261 includes/user.php:438
+#: includes/user.php:307 includes/user.php:484
 msgid "Password:"
 msgstr "密码："
 
-#: includes/user.php:379
+#: includes/user.php:425
 #, php-format
 msgid "username should not be shorter than %d characters"
 msgstr "用户名不应该短于%d个字符"
 
-#: includes/user.php:381
+#: includes/user.php:427
 #, php-format
 msgid "username should not be longer than %d characters"
 msgstr "用户名不应该长于%d个字符"
 
-#: includes/user.php:383
+#: includes/user.php:429
 msgid ""
 "username should begin with a letter and only contain letters, digits, dots"
 "(.) or underscores(_)"
 msgstr "用户名应该以字母开头，并且只包含字母、数、点（.）和下划线（_）"
 
-#: includes/user.php:385
+#: includes/user.php:431
 #, php-format
 msgid "username %s already exists"
 msgstr "用户名 %s 已经存在"
 
-#: includes/user.php:386
+#: includes/user.php:432
 msgid "Username avaliable"
 msgstr "用户名可用"
 
-#: includes/user.php:438
+#: includes/user.php:484
 msgid "Confirm password:"
 msgstr "确认密码："
 
-#: includes/user.php:439
-msgid "Real name:"
-msgstr "真实姓名："
-
-#: includes/user.php:440
-msgid "Nickname:"
-msgstr "昵称："
-
-#: includes/user.php:441 includes/user.php:563
+#: includes/user.php:487 includes/user.php:609
 msgid "E-mail:"
 msgstr "电子邮箱："
 
-#: includes/user.php:442 includes/user.php:564
-msgid "Avatar:"
-msgstr "头像："
-
-#: includes/user.php:443 includes/user.php:565
+#: includes/user.php:489 includes/user.php:611
 msgid "Preferred programming language:"
 msgstr "默认编程语言："
 
-#: includes/user.php:444 includes/user.php:566
+#: includes/user.php:490 includes/user.php:612
 msgid "Preferred website language:"
 msgstr "默认网站语言："
 
-#: includes/user.php:445
+#: includes/user.php:491 includes/user.php:615
 msgid "Self description(XHTML):"
 msgstr "自我描述（XHTML）:"
 
-#: includes/user.php:465
+#: includes/user.php:511
 #, php-format
 msgid "incomplete post: required field \"%s\" not found"
 msgstr "不完整的帖子：项目\"%s\"未找到"
 
-#: includes/user.php:467
+#: includes/user.php:513
 msgid "Every field in the register form must be filled."
 msgstr "每一项都必须被填写。"
 
-#: includes/user.php:474
+#: includes/user.php:520
 msgid "invalid username"
 msgstr "不合法的用户名"
 
-#: includes/user.php:476
+#: includes/user.php:522
 msgid "username already exists"
 msgstr "用户名已存在"
 
-#: includes/user.php:483 includes/user.php:599
+#: includes/user.php:529 includes/user.php:646
 #, php-format
 msgid "Error while validating self description: %s"
 msgstr "在验证自我描述时发生错误：%s"
 
-#: includes/user.php:531
+#: includes/user.php:577
 #, php-format
 msgid "uid %d does not exist"
 msgstr "UID %d 不存在"
 
-#: includes/user.php:536 includes/user.php:540
+#: includes/user.php:582 includes/user.php:586
 msgid "permission denied"
 msgstr "无权限"
 
-#: includes/user.php:557 includes/user.php:582 includes/submit.php:110
+#: includes/user.php:603 includes/user.php:628 includes/submit.php:110
 #: includes/message.php:64
 msgid "Not logged in"
 msgstr "未登录"
 
-#: includes/user.php:561
+#: includes/user.php:607
 msgid "Real name"
 msgstr "真实姓名"
 
-#: includes/user.php:567
+#: includes/user.php:613
 msgid "User groups who can view your source:"
 msgstr "可以浏览你代码的用户组："
 
-#: includes/user.php:568
+#: includes/user.php:614
 msgid "Your team:"
 msgstr "你的团队："
-
-#: includes/user.php:569
-msgid "Self description:"
-msgstr "自我描述："
-
-#: includes/user.php:591 includes/message.php:71
-msgid "incomplete post"
-msgstr "不完整的帖子"
 
 #: includes/submit.php:49
 msgid "Problem code:"
@@ -992,7 +1111,7 @@ msgstr "没有权限"
 #: includes/submit.php:83
 #, php-format
 msgid "source length exceeds the limit (%d bytes)"
-msgstr ""
+msgstr "源代码长度超过限制（%d 字节）"
 
 #: includes/submit.php:148
 #, php-format
@@ -1068,7 +1187,7 @@ msgstr "评测机忙碌"
 msgid "Error"
 msgstr "错误"
 
-#: includes/team.php:52
+#: includes/team.php:53
 #, php-format
 msgid "No such team #%d"
 msgstr "没有这个团队#%d"
@@ -1081,6 +1200,19 @@ msgstr "你必须先安装。<br />请运行 %sinstall."
 #: pre_include.php:52
 msgid "failed to connect to database"
 msgstr "连接数据库失败"
+
+#: orz.php:391
+#, php-format
+msgid "No corresponding user #%d for record #%d"
+msgstr "对记录#%2$d没有对应的用户#%1$d"
+
+#: orz.php:410
+#, php-format
+msgid "No corresponding problem #%d for record #%d"
+msgstr "对记录#%2$d没有对应的题目#%1$d"
+
+#~ msgid "no such row"
+#~ msgstr "没有该行："
 
 #~ msgid "Problem: <a href=\"%s\">%s</a>"
 #~ msgstr "题目：<a href=\"%s\">%s</a>"

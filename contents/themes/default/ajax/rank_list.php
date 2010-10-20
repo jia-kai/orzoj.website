@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Wed Oct 20 13:36:04 2010 +0800
+ * $Date: Wed Oct 20 22:37:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -118,7 +118,7 @@ $sort_list = array(
 </script>
 
 <?php if (!isset($post)) { ?>
-<div id="rank-title">Rank List</div>
+<div id="rank-title"><?php echo __('Rank List');?></div>
 <?php }?>
 
 <div id="rank-list-content">

@@ -15,8 +15,6 @@ code editor
 status filter:
 	a optional radio box contains code and id supposed to be setted
 
-incomplete post 应翻译为 不完整的表单
-
 rank list: ask rank of a specific user
 
 users.php: user_get_user_amount

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Wed Oct 20 18:28:42 2010 +0800
+ * $Date: Wed Oct 20 22:36:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -141,7 +141,7 @@ if ((!(isset($on_sort) && $on_sort == TRUE)) || (isset($goto_page_default)))
 		/* problem list title*/
 		$gname = '';
 		if ($gid == 0)
-			$gname = 'All';
+			$gname = __('All');
 		else
 		{
 			$gname = $db->select_from('prob_grps', array('name'), array($DBOP['='], 'id', $gid));
@@ -306,7 +306,7 @@ $probs = prob_get_list($fields,
 
 $prob_user_sts_icon_info = array(
 	STS_PROB_USER_UNTRIED => array(_url('images/prob_user_sts_untried.gif', TRUE), __('Untried')),
-	STS_PROB_USER_UNAC => array(_url('images/prob_user_sts_unac.gif', TRUE), __('UnAccepted')),
+	STS_PROB_USER_UNAC => array(_url('images/prob_user_sts_unac.gif', TRUE), __('Unaccepted')),
 	STS_PROB_USER_AC => array(_url('images/prob_user_sts_ac.gif', TRUE), __('Accepted')),
 	STS_PROB_USER_AC_BLINK => array(_url('images/prob_user_sts_ac_blink.gif', TRUE), __('Accepted Blink'))
 );
