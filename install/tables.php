@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Oct 19 17:24:42 2010 +0800
+ * $Date: Wed Oct 20 10:18:53 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -283,13 +283,21 @@ $tables = array(
 			'desc' => array('type' => 'TEXT'), // description
 			'time_start' => array('type' => 'INT64'),
 			'time_end' => array('type' => 'INT64'),
-			'perm' => array('type' => 'TEXT'), // see 'problems' table
-			'result_cache' => array('type' => 'TEXT') // result cache, maintained by specific contest type
+			'perm' => array('type' => 'TEXT') // see 'problems' table
 		),
 		'primary_key' => 'id',
 		'index' => array(
 			array('cols' => array('time_start', 'time_end')),
 			array('cols' => array('time_end'))
+		)
+	),
+	// every contest type should have a table
+
+	/* contests_oi */
+	'contests_oi' => array( // OI contests
+		'cols' => array(
+			'cid' => array('type' => 'INT32'), // contest id
+			''
 		)
 	),
 
