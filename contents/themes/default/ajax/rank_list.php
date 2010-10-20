@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Tue Oct 19 18:55:33 2010 +0800
+ * $Date: Wed Oct 20 09:20:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -101,10 +101,18 @@ function _make_table_header($name, $col_name, $default_order)
 $heads = array(
 	array(__('Rank'), 'rank', 'ASC'),
 	array(__('Nickname'), 'nickname', 'ASC'),
-	array(__('Accepted'), 'cnt_ac_prob', 'DESC'),
-	array(__('Submited'), 'cnt_submit_prob', 'DESC'),
+	array(__('Accepted Prob.'), 'cnt_ac_prob', 'DESC'),
+	array(__('Submited Prob.'), 'cnt_submit_prob', 'DESC'),
 	array(__('AC ratio'), 'ac_ratio', 'DESC')
 );
+
+$sort_list = array(
+	array('cnt_ac_prob', 'DESC'),
+	array('ac_ratio', 'DESC'),
+	array('cnt_submit_prob', 'DESC'),
+	array('nickname', 'DESC')
+);
+
 ?>
 </script>
 
@@ -121,10 +129,34 @@ foreach ($heads as $head)
 	_make_table_header($head[0], $head[1], $head[2]);
 echo '</tr>';
 
+$orderby = array();
+$orderby[$sort_col] = $sort_way;
+$is_default_order = FALSE;
+foreach ($sort_list as $val)
+	if ($val[0] == $sort_col)
+	{
+		if ($val[1] == $sort_way)
+			$is_default_order = TRUE;
+		else
+			$is_default_order = FALSE;
+		break;
+	}
+/**
+ * @ignore
+ */
+function op_order($order) 
+{
+	return $order == 'ASC' ? 'DESC' : 'ASC';
+}
+
+foreach ($sort_list as $val)
+	if ($val[0] != $sort_col)
+		$orderby[$val[0]] = ($is_default_order ? $val[1] : op_order($val[1]));
+
 $users = $db->select_from('users', 
 	array('id', 'nickname', 'cnt_submit_prob', 'cnt_ac_prob', 'ac_ratio'),
 	NULL,
-	array($sort_col  => $sort_way),
+	$orderby,
 	($start_page - 1) * $USERS_PER_PAGE,
 	$USERS_PER_PAGE
 );

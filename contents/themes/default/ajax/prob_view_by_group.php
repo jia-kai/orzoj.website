@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Tue Oct 19 21:24:09 2010 +0800
+ * $Date: Wed Oct 20 09:24:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -53,6 +53,8 @@ function str_replace_no_diagonal($a, $b, &$s)
 
 function _tranform_pattern($tp)
 {
+	if ($tp == NULL)
+		return NULL;
 	$tp = trim($tp);
 	str_replace_no_diagonal('*', '%', $tp);
 	str_replace_no_diagonal('?', '_', $tp);
@@ -76,6 +78,7 @@ if (isset($_POST['sort_col']) && isset($_POST['sort_way']))
 	if (isset($_POST['start_page']))
 		$start_page = intval($_POST['start_page']);
 	if (isset($_POST['title_pattern_show']))
+	
 	{
 		$title_pattern_show = $_POST['title_pattern_show'];
 		if ($title_pattern_show == '*')
@@ -94,23 +97,16 @@ else
 	}
 }
 
+$title_pattern = _tranform_pattern($title_pattern_show);
 if ($title_pattern_show == '*')
 	$title_pattern = NULL;
-else $title_pattern = _tranform_pattern($title_pattern_show);
 if ($title_pattern_show == '')
-	$title_pattern_show = NULL;
+	$title_pattern_show = $title_pattern = NULL;
+
 $start_prob = ($start_page - 1) * $PROB_VIEW_ROWS_PER_PAGE + 1;
 // parsed $gid, $start_page
 
 $fields = array('id', 'title', 'code', 'cnt_submit_user', 'cnt_ac_user', 'difficulty');
-$show_fields= array(
-	array(__('ID'), 'id', 'ASC'),
-	array(__('Title'), 'title', 'ASC'),
-	array(__('Code'), 'code', 'ASC'),
-	array(__('Accepted Users'), 'cnt_ac_user', 'DESC'),
-	array(__('Submited Users'), 'cnt_submit_user', 'DESC'),
-	array(__('Difficulty'), 'difficulty', 'ASC')
-);
 
 $prob_amount = prob_get_amount($gid, $title_pattern);
 
@@ -189,6 +185,21 @@ echo <<<EOF
 <tr>
 EOF;
 
+$show_fields= array(
+	array(__('ID'), 'id', 'ASC'),
+	array(__('Title'), 'title', 'ASC'),
+	array(__('Code'), 'code', 'ASC'),
+	array(__('Accepted Users'), 'cnt_ac_user', 'DESC'),
+	array(__('Submited Users'), 'cnt_submit_user', 'DESC'),
+	array(__('Difficulty'), 'difficulty', 'ASC')
+);
+$sort_list = array(
+	array('id', 'ASC')
+//	array('cnt_ac_user', 'DESC'),
+//	array('difficulty',  'ASC'),
+//	array('cnt_submit_user', 'DESC')
+);
+
 /**
  * @ignore
  */
@@ -198,6 +209,7 @@ function _make_table_header($name, $col_name, $default_order)
 	$t = ($title_pattern_show  == NULL ? '*' : $title_pattern_show);
 	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order', '$t'); return false;\">$name</a></th>";
 }
+
 foreach ($show_fields as $field)
 	_make_table_header($field[0], $field[1], $field[2]);
 echo '</tr>';
@@ -239,12 +251,29 @@ echo "gid:$GID, sort_col:$sort_col, sort_way:$sort_way, title_pattern_show: $tit
  */
 
 
+$is_default_order = TRUE;
+foreach ($sort_list as $val)
+	if ($val[0] == $sort_col)
+	{
+		$is_default_order = ($sort_way == $val[1] ? TRUE : FALSE);
+		break;
+	}
+/**
+ * @ignore
+ */
+function op_order($order) {return $order == 'ASC' ? 'DESC' : 'ASC';}
 
+$order_by[$sort_col] = $sort_way;
+foreach ($sort_list as $val)
+	if ($val[0] != $sort_col)
+		$order_by[$val[0]] = ($is_default_order ? $val[1] : op_order($val[1]));
+
+var_dump($order_by);
 
 $probs = prob_get_list($fields, 
 	$gid, 
 	$title_pattern,
-	array($sort_col => $sort_way), 
+	$order_by,
 	($start_page - 1) * $PROB_VIEW_ROWS_PER_PAGE, 
 	$PROB_VIEW_ROWS_PER_PAGE);
 
