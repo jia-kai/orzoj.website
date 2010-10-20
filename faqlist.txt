@@ -5,4 +5,5 @@ how to user problem navigator?
 	? => once character
 	\* => character '*'
 	\? => character '?'
+	\\ => character '\'
 

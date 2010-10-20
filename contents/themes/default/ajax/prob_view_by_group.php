@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Wed Oct 20 13:36:56 2010 +0800
+ * $Date: Wed Oct 20 18:28:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,30 +38,49 @@ $title_pattern = NULL;
 $sort_col = 'id';
 $sort_way = 'ASC';
 $start_page = 1;
-function str_replace_no_diagonal($a, $b, &$s)
-{
-	$len = strlen($s);
-	for ($i = 0; $i < $len; $i ++)
-	{
-		if ($s[$i] == '\\')
-			$i ++;
-		else
-			if ($s[$i] == $a)
-				$s[$i] = $b;
-	}
-}
 
+/**
+ * @ignore
+ */
 function _tranform_pattern($tp)
 {
 	if ($tp == NULL)
 		return NULL;
 	$tp = trim($tp);
-	str_replace_no_diagonal('*', '%', $tp);
-	str_replace_no_diagonal('?', '_', $tp);
-	$tp = str_replace('\\*', '*', $tp);
-	$tp = str_replace('\\?', '?', $tp);
-	$tp = '%' . $tp . '%';
-	return $tp;
+	$len = strlen($tp);
+	$s = '';
+	for ($i = 0; $i < $len; $i ++)
+		if ($tp[$i] == '\\')
+		{
+			$i ++;
+			if ($i < $len)
+			{
+				$ch = $tp[$i];
+				if ($ch == '*' || $ch == '?' || $ch == '\\')
+					$s .= ($ch == '\\' ? '\\\\' : $ch);
+				else if ($ch == '_' || $ch == '%')
+					$s .= '\\\\\\' . $ch;
+				else
+					$s .= '\\\\' . $ch;
+			}
+			else
+				$s .= '\\\\';
+		}
+		else
+		{
+			$ch = $tp[$i];
+			if ($ch == '%' || $ch == '_')
+				$s .= '\\' . $ch;
+			else if ($ch == '*')
+				$s .= '%';
+			else if ($ch == '_')
+				$s .= '_';
+			else
+				$s .= $ch;
+				
+		}
+	$s = '%' . $s . '%';
+	return $s;
 }
 
 if (isset($_POST['goto_page_default']))

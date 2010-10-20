@@ -69,7 +69,10 @@ function make_prob()
 	_make_prob('**.**');
 	_make_prob('??.??');
 	_make_prob('**.??');
-
+	_make_prob('%%.%%');
+	_make_prob('__.__');
+	_make_prob('\%, \_');
+	_make_prob('\*, \?');
 	for ($i = 0; $i < NPROB - 1; $i ++)
 		$db->insert_into('problems',
 			array(
