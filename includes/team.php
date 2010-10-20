@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: team.php
- * $Date: Tue Oct 19 17:35:45 2010 +0800
+ * $Date: Tue Oct 19 18:21:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,7 +27,7 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-$_team_img_dir = $root_path . 'contents/uploads/team_image/';
+$_team_img_dir = $root_path . 'contents/uploads/team_images/';
 
 /**
  * user team structure
@@ -68,9 +68,9 @@ class Team
 		if (count($row) != 1)
 			return FALSE;
 		$row = $row[0];
-		$row['img'] = get_page_url($_team_img_dir . $row['img']);
 		$this->name = $row['name'];
 		$this->desc = $row['desc'];
+		$this->img = get_page_url($_team_img_dir . $row['img']);
 		return TRUE;
 	}
 }

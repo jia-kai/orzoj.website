@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Tue Oct 19 20:13:37 2010 +0800
+ * $Date: Wed Oct 20 08:26:01 2010 +0800
 
  This file is part of orzoj
 
@@ -306,6 +306,13 @@ select#gid-selector-select
 	margin-left: 30px;
 }
 
+div#gid-selector-grp-desc
+{
+	height: 18px;
+	clear: both;
+	float: left;
+}
+
 div#prob-grp-tree a:hover
 {
 	color: #1F1962;
@@ -389,7 +396,6 @@ div#prob-view-by-group-navigator-bottom
 	margin-right: 20px;
 	margin-top: 6px;
 }
-
 
 form#prob-view-by-group-goto-form
 {
@@ -606,5 +612,12 @@ div#user-info-self-desc
 	height: 248px;
 	overflow: auto;
 	border: 1px blue solid;
+}
+
+img#user-info-team-img
+{
+	margin: 3px;
+	padding: 3px;
+	border: 1px solid blue;
 }
 

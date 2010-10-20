@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: gid_selector.php
- * $Date: Tue Oct 19 14:39:41 2010 +0800
+ * $Date: Wed Oct 20 08:31:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,6 +33,7 @@ if (!defined('IN_ORZOJ'))
  *			see index.php
  *		pgid: if this argument is set, return the children in json data for jstree
  *			pgid == 0 means all
+ *		gid: if this argument is set, return the description for this group
  */
 
 if (isset($_POST['pgid']))
@@ -64,6 +65,15 @@ if (isset($_POST['pgid']))
 	die(json_encode($ret));
 }
 
+if (isset($_POST['gid']))
+{
+	$row = $db->select_from('user_grps', 'desc', array(
+		$DBOP['='], 'id', $_POST['gid']));
+	if (count($row) != 1)
+		die('no such group');
+	die($row[0]['desc']);
+}
+
 if (!isset($_POST['input_id']) || !isset($_POST['cur_val']))
 	die('incomplete post');
 
@@ -80,6 +90,8 @@ if (is_array($init))
 			echo "<option>$val</option>\n";
 ?>
 </select>
+</div>
+<div id="gid-selector-grp-desc">
 </div>
 
 <script type="text/javascript">
@@ -103,6 +115,19 @@ $("#gid-treeview").jstree({
 		}
 	}
 });
+
+function show_desc(gid)
+{
+	$.ajax({
+		"type": "post",
+		"cache": "false",
+		"url": "<?php t_get_link('ajax-gid-selector')?>",
+		"data": ({"gid": gid}),
+		"success": function(data){
+			$("#gid-selector-grp-desc").html(data);
+		}
+	});
+}
 
 function gid_selector_add()
 {

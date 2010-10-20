@@ -11,8 +11,9 @@ $src = '
 #include <sys/time.h>
 int main()
 {
-	FILE *fin = fopen("a+b.in", "r"),
-		*fout = fopen("a+b.out", "w");
+	//FILE *fin = fopen("a+b.in", "r"),
+	//	*fout = fopen("a+b.out", "w");
+	FILE *fin = stdin, *fout = stdout;
 	int a, b;
 	fscanf(fin, "%d%d", &a, &b);
 
@@ -34,4 +35,5 @@ $rid = submit_add_record(prob_get_id_by_code('a+b'),
 	$row[0]['id'],
 	$src);
 
-submit_add_judge_req($rid, 'a+b.in', 'a+b.out');
+//submit_add_judge_req($rid, 'a+b.in', 'a+b.out');
+submit_add_judge_req($rid, '', '');
