@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_group_tree_ask.php
- * $Date: Tue Oct 19 18:49:23 2010 +0800
+ * $Date: Thu Oct 21 22:57:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,12 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+/*
+ * POST: 
+ *	'prob_grp_id': int
+ *		 returns all child group of a specific group in a organized way
+ */
 
 require_once $theme_path . 'prob_func.php';
 

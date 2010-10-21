@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Sat Oct 16 21:22:51 2010 +0800
+ * $Date: Thu Oct 21 22:51:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,12 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+/*
+ * page argument: [<problem code: int>]
+ *		problem code: if set, the specific problem will be showed, otherwise						the problem list will be showed.
+ */
+
 
 require_once $theme_path . 'prob_func.php';
 require_once $includes_path . 'problem.php';

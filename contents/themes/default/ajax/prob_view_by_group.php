@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Wed Oct 20 22:36:58 2010 +0800
+ * $Date: Thu Oct 21 23:18:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,6 +25,19 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+/*
+ *	POST:
+ *		[<goto_page_default: int>]: 
+ *			default value of goto-page-form in navigator bottom. just used as a symbol of where is in goto page mode.
+ *		[<sort_col: string><sort_way: string><gid: int><start_page: int><title_pattern_show: string><prob-filter: string>]
+ *			these are set the content of this page.
+ *			'sort_col' includes: 'id', 'title', 'code', 'cnt_submit_user', cnt_ac_user', 'difficulty', see $show_fields below.
+ *			'sort_way': either 'ASC' or 'DESC'
+ *			difference between title_pattern_show and prob-filter is where does the filter come from
+ *			gid: group id
+ *	page argument: parsed in ../prob_func.php : prob_view_by_group_parse_arg(), when $_POST['sort_col'] and $_POST['sort_way'] are not set.
+ */
+
 
 require_once $includes_path . 'problem.php';
 require_once $theme_path . 'prob_func.php';

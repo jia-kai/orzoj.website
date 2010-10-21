@@ -69,8 +69,10 @@ function make_prob()
 	_make_prob('**.**');
 	_make_prob('??.??');
 	_make_prob('**.??');
+	_make_prob('狼抓兔子');
 	_make_prob('%%.%%');
 	_make_prob('__.__');
+	_make_prob('陶陶玩红警');
 	_make_prob('\%, \_');
 	_make_prob('\*, \?');
 	for ($i = 0; $i < NPROB - 1; $i ++)

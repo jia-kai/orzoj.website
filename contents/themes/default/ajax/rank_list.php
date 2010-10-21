@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Thu Oct 21 20:51:02 2010 +0800
+ * $Date: Thu Oct 21 23:17:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,17 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+
+/*
+ * page argument: [<start_page: int>]
+ * POST:
+ *		'sort_col': string
+ *			see table head showing on the web 
+ *		'sort_way': string
+ *			'ASC' or 'DESC'
+ *		'start_page': int
+ * POST is for javascript, page argument is for search engine
+ */
 $USERS_PER_PAGE = 50;
 $RANK_LIST_COLOR_SELF = '#7f7f7f';
 

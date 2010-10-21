@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_best_solutions.php
- * $Date: Sat Oct 16 18:51:27 2010 +0800
+ * $Date: Thu Oct 21 22:54:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,6 +25,12 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+
+/*
+ * page argument: [<pid : int>]
+ *		pid: problem id
+ */
+
 $pid = 0;
 if (sscanf($page_arg, "%d", $pid) != 1)
 	die(__("Sir, what can I do for you?"));

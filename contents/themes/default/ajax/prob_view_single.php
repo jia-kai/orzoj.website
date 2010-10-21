@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Tue Oct 19 18:29:37 2010 +0800
+ * $Date: Thu Oct 21 23:19:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,12 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+/*
+ * page argument: parsed in ../prob_func.php : prob_view_single_parse_arg()
+ * POST:
+ *		'prob-filter': string
+ *			either 'prob-filter-id' or 'prob-filter-code'
+ */
 require_once $includes_path . 'problem.php';
 require_once $theme_path . 'prob_func.php';
 

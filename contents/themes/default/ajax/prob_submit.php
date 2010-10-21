@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Sun Oct 17 11:30:04 2010 +0800
+ * $Date: Thu Oct 21 22:59:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,6 +25,13 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+
+/*
+ * page argument:
+ *		[<pid: int>]
+ *			the id of a problem which is to submit
+ *		'submit' : inner argument
+ */
 
 if (!is_string($page_arg))
 	die("Hello? What are you doing?");
