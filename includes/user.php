@@ -200,7 +200,7 @@ class User
 
 	public $STATISTICS_FIELDS = array(
 		'cnt_ac', 'cnt_unac', 'cnt_ce', 'cnt_ac_prob', 'cnt_ac_prob_blink',
-		'cnt_ac_submit_sum', 'cnt_submit_prob', 'cnt_submit', 'ac_ratio'
+		'cnt_ac_submission_sum', 'cnt_submitted_prob', 'cnt_submit', 'ac_ratio'
 		// ac_ratio is a real number between 0 and 1
 	);
 	/**

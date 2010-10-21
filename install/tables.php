@@ -81,13 +81,13 @@ $tables = array(
 			// number of problems where the user submitted an accepted solution
 			'cnt_ac_prob_blink' => array('type' => 'INT32', 'default' => 0),
 			// number of problems where the user's first submission is accepted
-			'cnt_ac_submit_sum' => array('type' => 'INT32', 'default' => 0),
+			'cnt_ac_submission_sum' => array('type' => 'INT32', 'default' => 0),
 			// total number of submissions of which the corresponding problem does not
 			// have an accepted solution by this user before
-			'cnt_submit_prob' => array('type' => 'INT32', 'default' => 0),
+			'cnt_submitted_prob' => array('type' => 'INT32', 'default' => 0),
 			// number of problems where the user has ever submitted
 			'ac_ratio' => array('type' => 'INT32', 'default' => 0)
-			// accepted ratio: cnt_ac_prob / cnt_ac_submit_sum
+			// accepted ratio: cnt_ac_prob / cnt_ac_submission_sum
 		),
 		'primary_key' => 'id',
 		'index' => array(

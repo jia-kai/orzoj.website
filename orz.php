@@ -379,8 +379,8 @@ function update_statistics($rid, $type)
 	if (!count($old_sts))
 	{
 		$old_sts = NULL;
-		$update_col_user[] = 'cnt_submit_prob';
-		$update_col_user[] = 'cnt_ac_submit_sum';
+		$update_col_user[] = 'cnt_submitted_prob';
+		$update_col_user[] = 'cnt_ac_submission_sum';
 		$update_col_prob[] = 'cnt_submit_user';
 		if ($type == 'ac')
 		{
@@ -397,7 +397,7 @@ function update_statistics($rid, $type)
 		$old_sts = $old_sts[0]['status'];
 		if ($old_sts == STS_PROB_USER_UNAC)
 		{
-			$update_col_user[] = 'cnt_ac_submit_sum';
+			$update_col_user[] = 'cnt_ac_submission_sum';
 			if ($type == 'ac')
 			{
 				$update_col_user[] = 'cnt_ac_prob';
@@ -420,7 +420,7 @@ function update_statistics($rid, $type)
 	// update 'users' table
 	$where = array($DBOP['='], 'id', $row['uid']);
 	$cols = $update_col_user;
-	$update_sts = array('cnt_ac_prob', 'cnt_ac_submit_sum');
+	$update_sts = array('cnt_ac_prob', 'cnt_ac_submission_sum');
 	if (count(array_intersect($cols, $update_sts)))
 		$cols = array_unique(array_merge($cols, $update_sts));
 	else $update_sts = NULL;
@@ -432,7 +432,7 @@ function update_statistics($rid, $type)
 	foreach ($update_col_user as $c)
 		$tmp[$c] ++;
 	if (!is_null($update_sts))
-		$tmp['ac_ratio'] = floor($tmp['cnt_ac_prob'] * DB_REAL_PRECISION / $tmp['cnt_ac_submit_sum'] + 0.5);
+		$tmp['ac_ratio'] = floor($tmp['cnt_ac_prob'] * DB_REAL_PRECISION / $tmp['cnt_ac_submission_sum'] + 0.5);
 	$db->update_data('users', $tmp, $where);
 
 

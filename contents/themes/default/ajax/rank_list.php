@@ -32,7 +32,7 @@ $RANK_LIST_COLOR_SELF = '#7f7f7f';
 $sort_list = array(
 	array('cnt_ac_prob', 'DESC'),
 	array('ac_ratio', 'DESC'),
-	array('cnt_submit_prob', 'DESC')
+	array('cnt_submitted_prob', 'DESC')
 );
 
 
@@ -107,7 +107,7 @@ $heads = array(
 	array(__('Rank'), 'rank', 'ASC'),
 	array(__('Nickname'), 'nickname', 'ASC'),
 	array(__('Solved Prob.'), 'cnt_ac_prob', 'DESC'),
-	array(__('Submitted Prob.'), 'cnt_submit_prob', 'DESC'),
+	array(__('Submitted Prob.'), 'cnt_submitted_prob', 'DESC'),
 	array(__('AC ratio'), 'ac_ratio', 'DESC')
 );
 
@@ -172,7 +172,7 @@ foreach ($sort_list as $val)
 		$orderby[$val[0]] = ($is_default_order ? $val[1] : op_order($val[1]));
 
 $users = $db->select_from('users', 
-	array('id', 'nickname', 'realname', 'cnt_submit_prob', 'cnt_ac_prob', 'ac_ratio'),
+	array('id', 'nickname', 'realname', 'cnt_submitted_prob', 'cnt_ac_prob', 'ac_ratio'),
 	NULL,
 	$orderby,
 	($start_page - 1) * $USERS_PER_PAGE,

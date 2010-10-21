@@ -257,7 +257,7 @@ else
 	$hello = __('Hello, %s!', $user->nickname);
 	$sts = &$user->get_statistics();
 	$p = __('Solved prob.: %d Submitted prob.: %d <br />AC Ratio: %.2f%%',
-		$sts['cnt_ac_prob'], $sts['cnt_submit_prob'], $sts['ac_ratio'] * 100);
+		$sts['cnt_ac_prob'], $sts['cnt_submitted_prob'], $sts['ac_ratio'] * 100);
 	echo <<<EOF
 <div style="float: left">
 <img src="$user->avatar" alt="avatar" style="max-height: 128px; max-width: 128px;" />
