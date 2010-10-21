@@ -33,7 +33,5 @@ $row = $db->select_from('plang', 'id', array($DBOP['=s'], 'name', 'g++'));
 
 $rid = submit_add_record(prob_get_id_by_code('a+b'),
 	$row[0]['id'],
-	$src);
+	$src, array('', ''));
 
-//submit_add_judge_req($rid, 'a+b.in', 'a+b.out');
-submit_add_judge_req($rid, '', '');

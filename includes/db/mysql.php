@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Wed Oct 20 10:49:12 2010 +0800
+ * $Date: Thu Oct 21 17:26:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -218,6 +218,8 @@ class Dbal_mysql extends Dbal
 	{
 		if ($this->linker)
 		{
+			if ($this->in_transaction)
+				$this->transaction_rollback();
 			@mysql_close($this->linker);
 			$this->linker = NULL;
 		}
@@ -297,7 +299,7 @@ class Dbal_mysql extends Dbal
 		}
 		$status = $this->query($sql);
 		if ($result = $this->fetch_row($status))
-			return $result['ct'];
+			return intval($result['ct']);
 		throw new Exc_db(__('unexpected SQL error'));
 	}
 
@@ -472,13 +474,12 @@ class Dbal_mysql extends Dbal
 	{
 		if ($this->in_transaction)
 			throw new Exc_inner(__('nested transaction'));
+		$queries = array('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE', 'START TRANSACTION');
+		if (!$this->direct_query)
+			return $queries;
+		foreach ($queries as $q)
+			$this->query($q);
 		$this->in_transaction = TRUE;
-		if ($this->direct_query)
-		{
-			$this->query("BEGIN;");
-		}
-		else
-			return array("BEGIN;");
 	}
 
 	public function transaction_commit()
@@ -486,12 +487,11 @@ class Dbal_mysql extends Dbal
 		if (!$this->in_transaction)
 			throw new Exc_inner(__('attempt to commit before beginning transaction'));
 		$this->in_transaction = FALSE;
+		$query = 'COMMIT';
 		if ($this->direct_query)
-		{
-			$this->query("COMMIT;");
-		}
+			$this->query($query);
 		else
-			return array("COMMIT;");
+			return array($query);
 	}
 
 	public function transaction_rollback()
@@ -499,12 +499,11 @@ class Dbal_mysql extends Dbal
 		if (!$this->in_transaction)
 			throw new Exc_inner(__('attempt to rollback before beginning transaction'));
 		$this->in_transaction = FALSE;
+		$query = 'ROLLBACK';
 		if ($this->direct_query)
-		{
-			$this->query("ROLLBACK;");
-		}
+			$this->query($query);
 		else
-			return array("ROLLBACK;");
+			return array($query);
 	}
 
 	/**
@@ -551,6 +550,9 @@ class Dbal_mysql extends Dbal
 	private function query($query)
 	{
 		$this->query_cnt++;
+		if ($this->record_query)
+			array_push($this->query_log, $query);
+
 		$ret = @mysql_query($query, $this->linker);
 		if ($ret === FALSE)
 		{
@@ -559,8 +561,6 @@ class Dbal_mysql extends Dbal
 				$this->transaction_rollback();
 			throw new Exc_db($msg);
 		}
-		if ($this->record_query)
-			array_push($this->query_log, $query);
 		return $ret;
 	}
 

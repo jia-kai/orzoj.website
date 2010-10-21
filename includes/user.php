@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Oct 21 14:55:12 2010 +0800
+ * $Date: Thu Oct 21 20:42:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -200,7 +200,7 @@ class User
 
 	public $STATISTICS_FIELDS = array(
 		'cnt_ac', 'cnt_unac', 'cnt_ce', 'cnt_ac_prob', 'cnt_ac_prob_blink',
-		'cnt_ac_submit_sum', 'cnt_submit_prob', 'ac_ratio'
+		'cnt_ac_submit_sum', 'cnt_submit_prob', 'cnt_submit', 'ac_ratio'
 		// ac_ratio is a real number between 0 and 1
 	);
 	/**
@@ -214,7 +214,9 @@ class User
 		global $db, $DBOP;
 		if (!is_null($cache))
 			return $cache;
-		$cache = $db->select_from('users', $this->STATISTICS_FIELDS,
+		$f = $this->STATISTICS_FIELDS;
+		unset($f[array_search('cnt_submit', $f)]);
+		$cache = $db->select_from('users', $f,
 			array($DBOP['='], 'id', $this->id));
 		if (count($cache) != 1)
 			throw new Exc_runtime(__('user id %d does not exist', $this->id));

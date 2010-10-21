@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Mon Oct 18 14:54:29 2010 +0800
+ * $Date: Thu Oct 21 18:26:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -91,6 +91,8 @@ function judge_remove($id)
  */
 function judge_get_name_by_id($jid)
 {
+	if (!$jid)
+		return NULL;
 	static $cache = array();
 	if (array_key_exists($jid, $cache))
 		return $cache[$jid];

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Wed Oct 20 12:07:34 2010 +0800
+ * $Date: Thu Oct 21 21:14:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -61,7 +61,6 @@ abstract class Ctal
 
 	/**
 	 * this function is called when the contest is updated
-	 * and data in the 'contests' table are inserted
 	 * @return void
 	 */
 	abstract protected function update_contest();
@@ -93,12 +92,26 @@ abstract class Ctal
 	abstract protected function user_submit($pinfo, $lid, $src);
 
 	/**
+	 * this function is called when the judge process of a submission in this contest is finished
+	 * @param int $rid record id
+	 * @return void
+	 */
+	abstract protected function judge_done($rid);
+
+	/**
+	 * get the number of users participating in this contest
+	 * @param array|NULL $where where cluase for column 'uid'
+	 * @return int|NULL the number of users, or NULL if the result is unavailable currently
+	 */
+	abstract protected function get_user_amount($where = NULL);
+
+	/**
 	 * get final rank list of the problem
 	 * @param array|NULL $where additional where caluse for column 'uid' (see /includes/db/dbal.php for where clause syntax)
 	 * @return array a 2-dimension array representing the result
 	 *		[0][i]: table header for column i
 	 *		[i][j]: (i > 0)
-	 *			array(<text to be displayed>, <related record id>)
+	 *			array(&lt;text to be displayed&gt;, &lt;related record id, or 0 if unavailable&gt;)
 	 * @exception Exc_runtime if the result is unavailable
 	 */
 	abstract protected function get_rank_list($where = NULL, $offset = NULL, $cnt = NULL);
@@ -112,7 +125,7 @@ $CONTEST_TYPE2CLASS = array('oi', 'acm');
  * @param int $pid problem id
  * @return Ctal|NULL a Ctal instance or NULL if the problem does not belong to a problem
  */
-function ctal_get_class($pid)
+function ctal_get_class_by_pid($pid)
 {
 	global $db, $DBOP;
 	$now = time();
@@ -134,5 +147,73 @@ function ctal_get_class($pid)
 		return new $type($row);
 	} 
 	return NULL;
+}
+
+/**
+ * get the ctal class of a contest
+ * @param int $cid contest id
+ * @return Ctal instance
+ * @exception Exc_inner if no such contest
+ */
+function ctal_get_class_by_cid($cid)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('contests', NULL, array(
+		$DBOP['='], 'id', $cid));
+	if (count($row) != 1)
+		throw new Exc_inner(__('No such contest #%d', $cid));
+	$type = $CONTEST_TYPE2CLASS[$row[0]['type']];
+	require_once $includes_path . "contest/$type.php";
+	$type = "Ctal_$type";
+	return new $type($row);
+}
+
+/**
+ * get all contest types
+ * @return array(<type id> => <type name>)
+ */
+function &ctal_get_typename_all()
+{
+	static $TEXT = NULL;
+	if (is_null($TEXT))
+	{
+		$TEXT = array(
+			__('Olympiad in informatics'),
+			__('ACM/ICPC')
+		);
+	}
+	return $TEXT;
+}
+
+/**
+ * get contest type name by type id
+ * @param int $tid type id
+ * @return string
+ */
+function ctal_get_typename_by_type($tid)
+{
+	$t = &ctal_get_typename_all();
+	return $t[$tid];
+}
+
+/**
+ * get the number of contests in a list
+ * @param int $time specify requested contest time:
+ *		<0: past contests
+ *		=0: current contests
+ *		>0: future contests
+ * @return int
+ */
+function ctal_get_list_size($time)
+{
+}
+
+/**
+ * get a list of contests
+ * @param int $time @see ctal_get_list_size
+ * @return array array of Ctal instance
+ */
+function ctal_get_list($time)
+{
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: avatar_browser.php
- * $Date: Mon Oct 11 18:14:12 2010 +0800
+ * $Date: Thu Oct 21 19:16:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -57,7 +57,14 @@ $list = avatar_list($offset, $cnt);
 
 <div id="avatar-browser-container">
 
-<div style="text-align: center"><?php echo __('Avatar browser'); ?></div>
+<div style="text-align: center"><?php echo __('Avatar browser'); ?>
+	<div style="float: right">
+		<a title="<?php echo __('Close');?>" onclick="avatar_browser_close()">
+			<img src="<?php _url('images/close.gif');?>" alt="close" style="cursor: pointer" />
+		</a>
+	</div>
+</div>
+
 <div class="clearer"></div>
 
 <?php

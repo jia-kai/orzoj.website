@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Wed Oct 20 10:49:22 2010 +0800
+ * $Date: Thu Oct 21 17:13:57 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -202,7 +202,7 @@ abstract class Dbal
 	 * @param string $tablename name of table
 	 * @param array $newvalue new value array(row_name => VALUE);VALUE :: value OR array('type' => TYPE,'value' => value)
 	 * @param array $whereclause whereclause
-	 * @return int number of affected rows or TRUE
+	 * @return int number of affected rows
 	 * @see select_from
 	 */
 	abstract protected function update_data($tablename, $newvalue, $whereclause = NULL);
@@ -210,7 +210,7 @@ abstract class Dbal
 	/**
 	 * @ignore
 	 */
-	function __destruct()
+	public function __destruct()
 	{
 		$this->close();
 	}

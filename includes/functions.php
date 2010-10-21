@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Oct 19 17:17:49 2010 +0800
+ * $Date: Thu Oct 21 10:26:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -127,6 +127,8 @@ function db_init()
 		return;
 	$db_class = 'Dbal_' . $db_type;
 	$db = new $db_class;
+	if (defined('ORZOJ_DEBUG_MODE'))
+		$db->record_query = TRUE;
 	$db->connect($db_host, $db_port, $db_user, $db_password, $db_dbname);
 	$db_password = '';
 	$db->set_prefix($table_prefix);

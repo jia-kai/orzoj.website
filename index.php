@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Wed Oct 20 11:26:36 2010 +0800
+ * $Date: Thu Oct 21 19:42:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,94 +24,106 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$theme_name = '';
-$theme_path = '';
 
-require_once 'pre_include.php';
-require_once $includes_path . 'theme.php';
-require_once $includes_path . 'user.php';
-
-/*
- * Detect web server.
- * Copied from wordpress.
- */
-if (isset($_SERVER['SERVER_SOFTWARE']))
+try
 {
-	$is_Apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
-	$is_IIS = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer') !== false);
-	$is_IIS7 = $is_iis7 = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/7.') !== false);
+	$theme_path = '';
 
-	if ($is_Apache) $webserver = WEBSERVER_APACHE;
-	else if ($is_IIS7) $webserver = WEBSERVER_IIS7;
-	else if ($is_IIS) $webserver = WEBSERVER_IIS;
-	else $webserver = WEBSERVER_OTHERS;
+	require_once 'pre_include.php';
+	require_once $includes_path . 'theme.php';
+	require_once $includes_path . 'user.php';
 
-	unset($is_Apache,$is_IIS,$is_IIS7);
-}
+	/*
+	 * Detect web server.
+	 * Copied from wordpress.
+	 */
+	if (isset($_SERVER['SERVER_SOFTWARE']))
+	{
+		$is_Apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
+		$is_IIS = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'ExpressionDevServer') !== false);
+		$is_IIS7 = $is_iis7 = (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS/7.') !== false);
 
-/*
- * Detect UA Browser.
- * Copied from wordpress.
- */
-$userbrowser = USER_BROWSER_OTHERS;
+		if ($is_Apache) $webserver = WEBSERVER_APACHE;
+		else if ($is_IIS7) $webserver = WEBSERVER_IIS7;
+		else if ($is_IIS) $webserver = WEBSERVER_IIS;
+		else $webserver = WEBSERVER_OTHERS;
 
-if ( isset($_SERVER['HTTP_USER_AGENT']) ) {
-	if ( strpos($_SERVER['HTTP_USER_AGENT'], 'Lynx') !== false ) {
-		$userbrowser = USER_BROWSER_LYNX;
-	} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'chrome') !== false ) {
-		$userbrowser = USER_BROWSER_CHROME;
-	} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'safari') !== false ) {
-		$userbrowser = USER_BROWSER_SAFARI;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Gecko') !== false ) {
-		$userbrowser = USER_BROWSER_GECKO;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false ) {
-		$userbrowser = USER_BROWSER_MSIE;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Opera') !== false ) {
-		$userbrowser = USER_BROWSER_OPERA;
-	} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Nav') !== false && strpos($_SERVER['HTTP_USER_AGENT'], 'Mozilla/4.') !== false ) {
-		$userbrowser = USER_BROWSER_NETSCAPE;
+		unset($is_Apache,$is_IIS,$is_IIS7);
 	}
+
+	/*
+	 * Detect UA Browser.
+	 * Copied from wordpress.
+	 */
+	$userbrowser = USER_BROWSER_OTHERS;
+
+	if ( isset($_SERVER['HTTP_USER_AGENT']) ) {
+		if ( strpos($_SERVER['HTTP_USER_AGENT'], 'Lynx') !== false ) {
+			$userbrowser = USER_BROWSER_LYNX;
+		} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'chrome') !== false ) {
+			$userbrowser = USER_BROWSER_CHROME;
+		} elseif ( stripos($_SERVER['HTTP_USER_AGENT'], 'safari') !== false ) {
+			$userbrowser = USER_BROWSER_SAFARI;
+		} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Gecko') !== false ) {
+			$userbrowser = USER_BROWSER_GECKO;
+		} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false ) {
+			$userbrowser = USER_BROWSER_MSIE;
+		} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Opera') !== false ) {
+			$userbrowser = USER_BROWSER_OPERA;
+		} elseif ( strpos($_SERVER['HTTP_USER_AGENT'], 'Nav') !== false && strpos($_SERVER['HTTP_USER_AGENT'], 'Mozilla/4.') !== false ) {
+			$userbrowser = USER_BROWSER_NETSCAPE;
+		}
+	}
+
+	if ( $userbrowser == USER_BROWSER_SAFARI && stripos($_SERVER['HTTP_USER_AGENT'], 'mobile') !== false )
+		$is_iphone = USER_BROWSER_IPHONE;
+
+	/*
+	 * Detect UA Browser finished.
+	 */
+
+	/**
+	 * @ignore
+	 */
+	function _index_set_theme($name = NULL)
+	{
+		global $theme_path, $root_path;
+		if ($name == NULL)
+			$name = DEFAULT_THEME;
+		$theme_path = $root_path . 'contents/themes/' . $name . '/';
+	}
+
+	// TODO: user custom theme
+	//_index_set_theme(user_check_login() ? $user->theme_id : NULL);
+	_index_set_theme();
+
+	require_once $theme_path . 'functions.php';
+	user_init_form();
+
+	/*
+	 * TODO: Make rewrite more extendable. 
+	 */
+	if (isset($_GET['page']))
+		$cur_page = $_GET['page'];
+	else $cur_page = NULL;
+
+	if (isset($_GET['arg']))
+		$page_arg = $_GET['arg'];
+	else $page_arg = NULL;
+
+
+	require_once  $theme_path . 'index.php';
+
 }
-
-if ( $userbrowser == USER_BROWSER_SAFARI && stripos($_SERVER['HTTP_USER_AGENT'], 'mobile') !== false )
-	$is_iphone = USER_BROWSER_IPHONE;
-
-/*
- * Detect UA Browser finished.
- */
-
-/**
- * @ignore
- */
-function _index_set_theme($name = NULL)
+catch (Exc_orzoj $e)
 {
-	global $theme_path, $root_path;
-	if ($name == NULL)
-		$name = DEFAULT_THEME;
-	$theme_path = $root_path . 'contents/themes/' . $name . '/';
+	ob_clean();
+	echo '<html><body>There is an uncaucht exception, and execution of orzoj-website scripts is aborted. Please 
+		contact orzoj development team and report the bug at <a href="http://code.google.com/p/orzoj/issues">
+		http://code.google.com/p/orzoj/issues</a>, thanks!<br />';
+	echo 'Detailed information: <br />';
+	echo htmlencode($e->msg());
+	echo '</body></html>';
 }
 
-// TODO: user custom theme
-//_index_set_theme(user_check_login() ? $user->theme_id : NULL);
-_index_set_theme();
-
-require_once $theme_path . 'functions.php';
-user_init_form();
-
-/*
- * TODO: Make rewrite more extendable. 
- */
-if (isset($_GET['page']))
-	$cur_page = $_GET['page'];
-else $cur_page = NULL;
-
-if (isset($_GET['arg']))
-	$page_arg = $_GET['arg'];
-else $page_arg = NULL;
-
-
-// XXX: for debug only
-$db->record_query = TRUE;
-
-require_once  $theme_path . 'index.php';
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Oct 21 14:54:57 2010 +0800
+ * $Date: Thu Oct 21 20:51:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -256,8 +256,8 @@ else
 {
 	$hello = __('Hello, %s!', $user->nickname);
 	$sts = &$user->get_statistics();
-	$p = __('AC: %d Submission: %d Ratio: %.2f%%',
-		$sts['cnt_ac_prob'], $sts['cnt_submit'], $sts['ac_ratio'] * 100);
+	$p = __('Solved prob.: %d Submitted prob.: %d <br />AC Ratio: %.2f%%',
+		$sts['cnt_ac_prob'], $sts['cnt_submit_prob'], $sts['ac_ratio'] * 100);
 	echo <<<EOF
 <div style="float: left">
 <img src="$user->avatar" alt="avatar" style="max-height: 128px; max-width: 128px;" />
@@ -381,10 +381,10 @@ if (isset($startup_msg))
 			if (size == -1)
 			{
 				var ct = $("#avatar-browser-container");
-				w = ct.width();
-				if (w < 400)
+				w = ct.width() + 100;
+				if (w < 500)
 					ct.width(400); // can not IE see min-width in CSS ?!
-				w = ct.width();
+				w = ct.width() + 100;
 				h = ct.height();
 			} else
 			{
@@ -446,6 +446,11 @@ if (isset($startup_msg))
 		{
 			$("#" + img_id).attr("src", file);
 			$("#" + input_id).val(aid);
+			avatar_browser_close();
+		}
+
+		function avatar_browser_close()
+		{
 			$("#avatar-browser").css("display", "none");
 			$("#avatar-browser-overlay").css("display", "none");
 			$(document).unbind("resize", resize_avatar_browser_handler);
@@ -529,3 +534,4 @@ if (isset($startup_msg))
 </body>
 
 </html>
+

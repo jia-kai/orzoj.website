@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Mon Oct 18 11:29:04 2010 +0800
+ * $Date: Thu Oct 21 15:09:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -189,9 +189,11 @@ echo '</form></div>';
 ?>
 
 <div style="float:right">
+<a title="<?php echo __('Refresh')?>">
 	<img src="<?php _url('images/refresh.gif');?>" alt="&lt;refresh&gt;"
 	onclick="status_goto_page();" 
 	style="cursor: pointer;" />
+</a>
 </div>
 
 <?php

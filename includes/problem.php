@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Wed Oct 20 12:15:01 2010 +0800
+ * $Date: Thu Oct 21 10:22:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -105,7 +105,7 @@ function prob_view($pid)
 
 	if (!$is_super_submitter)
 	{
-		$ct = ctal_get_class($pid);
+		$ct = ctal_get_class_by_pid($pid);
 		if ($ct)
 			$ct->prob_view($grp, $row);
 	}
@@ -151,6 +151,9 @@ function prob_get_amount($gid = NULL, $title_pattern = NULL)
 		_prob_get_list_make_where($gid, $title_pattern));
 }
 
+$_cache_prob_title = array();
+$_cache_prob_code = array();
+
 /**
  * get problem list
  * @param array $fields the fields needed, which should be a subset of $PROB_VIEW_PINFO, and CAN NOT contain 'grp'
@@ -164,7 +167,7 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 {
 	if (is_string($fields))
 		$fields = array($fields);
-	global $db, $DBOP, $user;
+	global $db, $DBOP, $user, $_cache_prob_title, $_cache_prob_code;
 	$fields_added = array();
 	if (!in_array('perm', $fields))
 	{
@@ -202,7 +205,9 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 	}
 	else $grp = array(GID_GUEST);
 
-	$io_set = isset($fields['io']);
+	$io_set = in_array('io', $fields);
+	$title_set = in_array('title', $fields);
+	$code_set = in_array('code', $fields);
 
 	foreach ($rows as $key => $row)
 	{
@@ -210,7 +215,7 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 		{
 			if (prob_future_contest($row['id']))
 			{
-				$ct = ctal_get_class($row['id']);
+				$ct = ctal_get_class_by_pid($row['id']);
 				if (!$ct->view_in_list($grp))
 					$rows[$key] = NULL;
 			}
@@ -228,6 +233,12 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 			}
 			if (isset($cnt_submit))
 				$fields['cnt_submit'] = $fields['cnt_ac'] + $fields['cnt_unac'] + $fields['cnt_ce'];
+
+			if ($title_set)
+				$_cache_prob_title[$row['id']] = $row['title'];
+			if ($code_set)
+				$_cache_prob_code[$row['id']] = $row['code'];
+
 			foreach ($fields_added as $f)
 				unset($rows[$key][$f]);
 		}
@@ -256,16 +267,23 @@ function prob_get_id_by_code($pcode)
  */
 function _prob_get_title_code_by_id($pid)
 {
-	static $cache = array();
-	if (array_key_exists($pid, $cache))
-		return $cache[$pid];
-	global $db, $DBOP;
+	global $db, $DBOP, $_cache_prob_title, $_cache_prob_code;
+	if (array_key_exists($pid, $_cache_prob_title) && array_key_exists($pid, $_cache_prob_code))
+		return;
 	$row = $db->select_from('problems',
 		array('title', 'code'),
 		array($DBOP['='], 'id', $pid));
 	if (count($row) != 1)
-		return $cache[$pid] = NULL;
-	return $cache[$pid] = $row[0];
+	{
+		$_cache_prob_title[$pid] = NULL;
+		$_cache_prob_code[$pid] = NULL;
+	}
+	else
+	{
+		$row = $row[0];
+		$_cache_prob_title[$pid] = $row['title'];
+		$_cache_prob_code[$pid] = $row['code'];
+	}
 }
 
 /**
@@ -275,10 +293,9 @@ function _prob_get_title_code_by_id($pid)
  */
 function prob_get_title_by_id($pid)
 {
-	$t = _prob_get_title_code_by_id($pid);
-	if ($t == NULL)
-		return NULL;
-	return $t['title'];
+	global $_cache_prob_title;
+	_prob_get_title_code_by_id($pid);
+	return $_cache_prob_title[$pid];
 }
 
 /**
@@ -288,10 +305,9 @@ function prob_get_title_by_id($pid)
  */
 function prob_get_code_by_id($pid)
 {
-	$t = _prob_get_title_code_by_id($pid);
-	if ($t == NULL)
-		return NULL;
-	return $t['code'];
+	global $_cache_prob_code;
+	_prob_get_title_code_by_id($pid);
+	return $_cache_prob_code[$pid];
 }
 
 /**

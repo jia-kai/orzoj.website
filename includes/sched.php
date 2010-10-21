@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: sched.php
- * $Date: Fri Oct 01 16:07:09 2010 +0800
+ * $Date: Thu Oct 21 18:16:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,10 +28,10 @@ if (!defined('IN_ORZOJ'))
 
 
 /**
- * add a scheduled task
- * @param int $time task executing time (seconds since the Epoch)
+ * add a scheduled job
+ * @param int $time job executing time (seconds since the Epoch)
  * @param string $file which file $func is (it's usually __FILE__) must be in orzoj-website direcotry
- * @param callback $func the function to be called. It should not return NULL on success, and should not print anyting
+ * @param callback $func the function to be called
  * @param array $args
  * @return int job id
  */
@@ -45,11 +45,11 @@ function sched_add($time, $file, $func, $args)
 		'func' => $func,
 		'args' => serialize($args)
 		);
-	$db->insert_into('scheds', $value_array);
+	return $db->insert_into('scheds', $value_array);
 }
 
 /**
- * remove a scheduled task
+ * remove a scheduled job
  * @param int $id 
  * @return void
  */
@@ -63,7 +63,7 @@ function sched_remove($id)
 }
 
 /**
- * modify a scheduled task
+ * modify the time of a scheduled job
  * @param int $id
  * @param int $time
  */
@@ -79,31 +79,5 @@ function sched_update($id, $time)
 	$db->update_data('scheds', $value, $where_clause);
 }
 
-/**
- * 
- * find and execute jobs that should be executed now 
- * this function should be guaranteed to be executed frequently and regularly
- * @return int number of executed jobs
- * @exception Exc_orzoj if failed to call the function (maybe it returns NULL?)
- */
-function sched_work()
-{
-	global $db, $DBOP, $root_path;
-	$where_clause = array(
-		$DBOP['<='], 'time', time()
-		);
-	$ret = $db->select_from('scheds', NULL, $where_clause);
-	$cnt = 0;
-	foreach ($ret as $row)
-	{
-		require_once $root_path . $row['file'];
-		$func = $row['func'];
-		$args = unserialize($row['args']);
-		sched_remove($row['id']);
-		if (call_user_func_array($func, $args) === NULL)
-			throw new Exc_orzoj(__('failed to call user function'));
-		$cnt ++;
-	}
-	return $cnt;
-}
+// for sched_work, see orz.php
 

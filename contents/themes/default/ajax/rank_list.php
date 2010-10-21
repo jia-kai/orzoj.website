@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Thu Oct 21 14:43:13 2010 +0800
+ * $Date: Thu Oct 21 20:51:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -106,8 +106,8 @@ EOF;
 $heads = array(
 	array(__('Rank'), 'rank', 'ASC'),
 	array(__('Nickname'), 'nickname', 'ASC'),
-	array(__('Accepted Prob.'), 'cnt_ac_prob', 'DESC'),
-	array(__('Submited Prob.'), 'cnt_submit_prob', 'DESC'),
+	array(__('Solved Prob.'), 'cnt_ac_prob', 'DESC'),
+	array(__('Submitted Prob.'), 'cnt_submit_prob', 'DESC'),
 	array(__('AC ratio'), 'ac_ratio', 'DESC')
 );
 

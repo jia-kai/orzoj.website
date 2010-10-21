@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Tue Oct 19 11:41:22 2010 +0800
+ * $Date: Thu Oct 21 18:34:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,12 +25,41 @@
  */
 
 require_once 'pre_include.php';
-require_once $includes_path . 'user.php';
-require_once $includes_path . 'sched.php';
+
+if (isset($_GET['sched_work']))
+{
+	require_once $includes_path . 'sched.php';
+	global $db, $DBOP, $root_path;
+	$where_clause = array(
+		$DBOP['<='], 'time', time());
+	$db->transaction_begin();
+	$rows = $db->select_from('scheds', NULL, $where_clause);
+	$db->delete_item('scheds', $where_clause);
+	$db->transaction_commit();
+	$ok = TRUE;
+	foreach ($rows as $row)
+	{
+		require_once $root_path . $row['file'];
+		try
+		{
+			call_user_func_array($row['func'], unserialize($row['args']));
+		}
+		catch (Exc_orzoj $e)
+		{
+			$ok = FALSE;
+			echo $e->msg();
+		}
+	}
+	if ($ok)
+		echo '0';
+	die();
+}
+
 require_once $includes_path . 'judge.php';
 require_once $includes_path . 'exe_status.php';
 require_once $includes_path . 'plugin.php';
 require_once $includes_path . 'record.php';
+require_once $includes_path . 'contest/ctal.php';
 
 define('MSG_VERSION', 1);
 
@@ -42,13 +71,13 @@ $static_password = option_get('static_password');
 if ($static_password === FALSE)
 	die('static password is not set');
 
-if (isset($_REQUEST['action'])) // login
+if (isset($_GET['action'])) // login
 {
-	if ($_REQUEST['action'] == 'login1')
+	if ($_GET['action'] == 'login1')
 	{
-		if (!isset($_REQUEST['version']))
+		if (!isset($_GET['version']))
 			exit('0');
-		if (MSG_VERSION != $_REQUEST['version'])
+		if (MSG_VERSION != $_GET['version'])
 			exit('0');
 		$dynamic_password_array = option_get('dynamic_password_with_time');
 		$dp = unserialize($dynamic_password_array);
@@ -65,9 +94,9 @@ if (isset($_REQUEST['action'])) // login
 			exit($password);
 		}
 	}
-	else if ($_REQUEST['action'] == 'login2')
+	else if ($_GET['action'] == 'login2')
 	{
-		if (!isset($_REQUEST['checksum']))
+		if (!isset($_GET['checksum']))
 			exit('0');
 		$dynamic_password_array = option_get('dynamic_password_with_time');
 
@@ -77,20 +106,28 @@ if (isset($_REQUEST['action'])) // login
 
 		$stdchecksum = sha1(sha1($dp['password'] . $static_password));
 		$verify = sha1(sha1($dp['password']) . $static_password);
-		if ($_REQUEST['checksum'] == $stdchecksum)
+		if ($_GET['checksum'] == $stdchecksum)
 		{
 			option_set('dynamic_password', $dp['password']);
 			option_set('thread_req_id', serialize(array()));
+			if (isset($_GET['refetch']))
+				$db->update_data('records', array('status' => RECORD_STATUS_WAITING_TO_BE_FETCHED),
+					array($DBOP['='], 'status', RECORD_STATUS_WAITING_ON_SERVER));
 			exit($verify);
 		}
-		else exit('0');
-	} else exit('hello, world!');
+		else
+			exit('0');
+	}
+	else
+		exit('hello, world!');
 }
 
 // authentication and data decoding
-if (isset($_REQUEST['data']))
+if (isset($_POST['data']))
 {
-	$data = json_decode($_REQUEST['data']);
+	$data = json_decode($_POST['data']);
+	if (is_null($data))
+		die('invalid json encoded data');
 	if (isset($data->thread_id) && isset($data->data) && isset($data->checksum))
 	{
 		$thread_id = $data->thread_id;
@@ -223,52 +260,57 @@ function remove_judge()
 }
 
 /**
- * @ignore
- * throwing out this exception means a task is fetched.
- */
-class Exc_msg extends Exception
-{
-}
-
-/**
  * get a request from table 'orz_req'
  */
 function get_request()
 {
+	return FALSE;
+	// XXX: not implemented now
+}
+
+/**
+ * get a submission that has not been judged
+ */
+function get_unjudged_submission()
+{
 	global $db, $DBOP;
-	$req = $db->select_from('orz_req', NULL, NULL, array('id' => 'ASC'), NULL, 1);
-	if (count($req) > 0)
-	{
-		$req = $req[0];
-		$db->delete_item('orz_req', array($DBOP['='], 'id', $req['id']));
+	$row = $db->select_from('records', array('id', 'pid', 'lid', 'detail'),
+		array($DBOP['='], 'status', RECORD_STATUS_WAITING_TO_BE_FETCHED),
+		array('id' => 'ASC'), NULL, 1);
+	if (count($row) != 1)
+		return FALSE;
+	$row = $row[0];
+	$req = array('type' => 'src', 'id' => $row['id']);
 
-		$req = unserialize($req['data']);
-		if ($req['type'] == 'src')
-		{
-			$src = $db->select_from('sources', 'src',
-				array($DBOP['='], 'rid', $req['id']));
-			if (count($src) != 1)
-				throw new Exc_inner('source not found');
-			$req['src'] = $src[0]['src'];
-			$db->update_data('records', array('status' => RECORD_STATUS_WAITING_ON_SERVER),
-				array($DBOP['='], 'id', $req['id']));
-			$db->update_data('sources', array('sent' => 1),
-				array($DBOP['='], 'rid', $req['id']));
-		}
+	if (is_null($req['prob'] = prob_get_code_by_id($row['pid'])))
+		throw Exc_inner(sprintf('no such problem #%d', $row['pid']));
 
-		msg_write(MSG_STATUS_OK, $req);
-		throw new Exc_msg();
-	}
+	if (is_null($req['lang'] = plang_get_name_by_id($row['lid'])))
+		throw Exc_inner(sprintf('no such programming language #%d', $row['lid']));
+
+	$src = $db->select_from('sources', 'src',
+		array($DBOP['='], 'rid', $row['id']));
+	if (count($src) != 1)
+		throw new Exc_inner(sprintf('source for record #%d not found', $row['id']));
+	$req['src'] = $src[0]['src'];
+
+	$tmp = unserialize($row['detail']);
+	$req['input'] = $tmp[0];
+	$req['output'] = $tmp[1];
+
+	$db->update_data('records', array('status' => RECORD_STATUS_WAITING_ON_SERVER),
+		array($DBOP['='], 'id', $row['id']));
+	msg_write(MSG_STATUS_OK, $req);
+	return TRUE;
 }
 
 /**
  * no task
- * @return void throw a Exception Exc_msg
  */
 function no_task()
 {
 	msg_write(MSG_STATUS_OK, array('type' => 'none'));
-	throw new Exc_msg();
+	return TRUE;
 }
 
 /**
@@ -277,13 +319,7 @@ function no_task()
  */
 function fetch_task()
 {
-	sched_work();
-	try
-	{
-		get_request();
-		no_task();
-	}
-	catch (Exc_msg $e){}
+	get_request() || get_unjudged_submission() || no_task();
 }
 
 /**
@@ -324,11 +360,14 @@ function report_judge_waiting()
 function update_statistics($rid, $type)
 {
 	global $db, $DBOP;
-	$row = $db->select_from('records', array('uid', 'pid'),
+	$row = $db->select_from('records', array('uid', 'pid', 'cid'),
 		array($DBOP['='], 'id', $rid));
 	if (count($row) != 1)
 		throw new Exc_inner('No such record #%d', $rid);
 	$row = $row[0];
+	$cid = intval($row['cid']);
+
+	$db->transaction_begin();
 
 	$where = array($DBOP['&&'],
 		$DBOP['='], 'uid', $row['uid'],
@@ -418,6 +457,17 @@ function update_statistics($rid, $type)
 		$tmp['difficulty'] = floor(($s - $a) * DB_REAL_PRECISION / $s + 0.5);
 	}
 	$db->update_data('problems', $tmp, $where);
+
+	$db->update_data('sources', array('sent' => 1),
+		array($DBOP['='], 'rid', $rid));
+
+	$db->transaction_commit();
+
+	if ($cid)
+	{
+		$ct = ctal_get_class_by_cid($cid);
+		$ct->judge_done($rid);
+	}
 }
 
 /**

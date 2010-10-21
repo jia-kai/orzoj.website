@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Mon Oct 18 15:08:12 2010 +0800
+ * $Date: Thu Oct 21 10:27:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,7 +27,9 @@ $PAGE_START_TIME = microtime(TRUE);
 ob_start();
 date_default_timezone_set('GMT');
 error_reporting(E_ALL);
-define('IN_ORZOJ', true);
+define('IN_ORZOJ', TRUE);
+// XXX: debug mode on
+define('ORZOJ_DEBUG_MODE', TRUE);
 
 $root_path = rtrim(realpath(dirname(__FILE__)), '/') . '/';
 $includes_path = $root_path . 'includes/';

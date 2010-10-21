@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Mon Oct 18 09:51:03 2010 +0800
+ * $Date: Thu Oct 21 16:51:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -82,7 +82,7 @@ function submit_src()
 	if (strlen($src) > $max_src_length)
 		throw new Exc_runtime(__('source length exceeds the limit (%d bytes)', $max_src_length));
 
-	$ct = ctal_get_class($pid);
+	$ct = ctal_get_class_by_pid($pid);
 	if ($ct)
 		$ct->user_submit($row, $plang, $src);
 	else
@@ -90,8 +90,7 @@ function submit_src()
 		if (is_string($row['io']) && strlen($row['io']))
 			$io = unserialize($row['io']);
 		else $io = array('', '');
-		$rid = submit_add_record($pid, $plang, $src);
-		submit_add_judge_req($rid, $io[0], $io[1]);
+		submit_add_record($pid, $plang, $src, $io);
 	}
 }
 
@@ -100,11 +99,13 @@ function submit_src()
  * @param int $pid problem id
  * @param int $lid programming language id
  * @param string $src the source
+ * @param array $io array(<input filename>, <output filename>), empty string for stdio
  * @param int $status the initial status for this record
+ * @param int $cid contest id
  * @return int record id
  */
-function submit_add_record($pid, $lid, $src,
-	$status = RECORD_STATUS_WAITING_TO_BE_FETCHED)
+function submit_add_record($pid, $lid, $src, $io,
+	$status = RECORD_STATUS_WAITING_TO_BE_FETCHED, $cid = 0)
 {
 	if (!user_check_login())
 		throw new Exc_inner(__('Not logged in'));
@@ -115,10 +116,12 @@ function submit_add_record($pid, $lid, $src,
 			'uid' => $user->id,
 			'pid' => $pid,
 			'lid' => $lid,
+			'cid' => $cid,
 			'src_len' => strlen($src),
 			'status' => $status,
 			'stime' => time(),
-			'ip' => get_remote_addr()
+			'ip' => get_remote_addr(),
+			'detail' => serialize($io)
 		));
 	$db->insert_into('sources',
 		array(
@@ -128,59 +131,5 @@ function submit_add_record($pid, $lid, $src,
 		));
 	$db->transaction_commit();
 	return $rid;
-}
-
-/**
- * add a judge request so that the source will be judged soon
- * @param int $rid record id
- * @param string $input input file name, or empty string to use stdin
- * @param string $output output file name, or empty string to use stdout
- * @exception Exc_runtime
- * @return void
- */
-function submit_add_judge_req($rid, $input, $output)
-{
-	global $db, $DBOP;
-	$err_msg = NULL;
-	$row = $db->select_from('records', array('pid', 'lid'),
-		array($DBOP['='], 'id', $rid));
-	if (count($row) != 1)
-		throw new Exc_inner(__('No such record #%d', $rid));
-	$row = $row[0];
-	$pcode = $db->select_from('problems', 'code',
-		array($DBOP['='], 'id', $row['pid']));
-	if (count($pcode) != 1)
-	{
-		$db->update_data('records',
-			array(
-				'status' => RECORD_STATUS_ERROR,
-				'detail' => __('No such problem #%d', $row['pid'])
-			), array($DBOP['='], 'id', $rid));
-		return;
-	}
-	$pcode = $pcode[0]['code'];
-
-	$lang = $db->select_from('plang', 'name',
-		array($DBOP['='], 'id', $row['lid']));
-	if (count($lang) != 1)
-	{
-		$db->update_data('records',
-			array(
-				'status' => RECORD_STATUS_ERROR,
-				'detail' => __('No such programming language #%d', $row['lid'])
-			), array($DBOP['='], 'id', $rid));
-		return;
-	}
-	$lang = $lang[0]['name'];
-
-	$db->insert_into('orz_req', array(
-		'data' => serialize(array(
-			'type' => 'src',
-			'id' => $rid,
-			'prob' => $pcode,
-			'lang' => $lang,
-			'input' => $input,
-			'output' => $output
-		))));
 }
 

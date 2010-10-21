@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Wed Oct 13 16:16:02 2010 +0800
+ * $Date: Thu Oct 21 16:53:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,41 +32,191 @@ require_once $includes_path . 'problem.php';
 require_once $includes_path . 'sched.php';
 require_once $includes_path . 'record.php';
 
-// What a real mess!
-// TODO: solve all problems!!
-
 class Ctal_oi extends Ctal
 {
 	public function get_form_fields()
 	{
+		return NULL;
 	}
 
 	public function add_contest()
 	{
+		global $db;
+		$id = $this->data['id'];
+		$db->insert_into('contests_oi', array(
+			'cid' => $id,
+			'uid' => 0,
+			'total_score' => sched_add($this->data['time_end'], __FILE__, '_ctal_oi_judge', array($id))
+		));
+	}
+
+	public function update_contest()
+	{
+		global $db, $DBOP;
+		$row = $db->select_from('contests_oi', 'total_score',
+			array($DBOP['='], 'id', $this->data['id']));
+		if (count($row) != 1)
+			throw new Exc_inner(__('trying to update contest #%d before insertion'));
+		sched_update($row[0]['total_score'], $this->data['time_end']);
 	}
 
 	public function prob_view($user_grp, &$pinfo)
 	{
-		if (!prob_check_perm($user_grp, $this->data->perm))
-			throw new Exc_runtime('Sorry, you are not allowed to view this problem now');
+		if (!prob_check_perm($user_grp, $this->data['perm']))
+			throw new Exc_runtime(__('sorry, you are not allowed to view this problem now'));
 		if (is_null($pinfo['io']))
 			$pinfo['io'] = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
 	}
 
+	public function view_in_list($user_grp)
+	{
+		return time() >= $this->data['time_start'] && prob_check_perm($user_grp, $this->data['perm']);
+	}
+
 	public function user_submit($pinfo, $lid, $src)
 	{
+		if (time() < $this->data['time_start'])
+			throw new Exc_runtime(__('please do not submit before the contest starts'));
+		$ltype = plang_get_type_by_id($lid);
+		if (is_null($ltype) || !in_array($ltype, array('c', 'cpp', 'pas')))
+			throw new Exc_runtime(__('sorry, your programming language is unavailable in this contest'));
+
 		global $user, $db, $DBOP;
+		if (!user_check_login())
+			throw new Exc_runtime(__('please login first'));
 		$db->delete_item('records', array(
 			$DBOP['&&'], $DBOP['&&'], $DBOP['&&'],
 			$DBOP['='], 'uid', $user->id,
 			$DBOP['='], 'pid', $pinfo['id'],
-			$DBOP['='], 'status', RECORD_STATUS_WAITING_FOR_CONTEST));
-		submit_add_record($pinfo['id'], $lid, $src,
-			RECORD_STATUS_WAITING_FOR_CONTEST);
+			$DBOP['='], 'cid', $this->data['id']));
+		$io = $pinfo['io'];
+		if (is_null($io))
+			$io = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
+		submit_add_record($pinfo['id'], $lid, $src, $io,
+			RECORD_STATUS_WAITING_FOR_CONTEST, $this->data['id']);
 	}
 
-	public function get_rank_list()
+	public function judge_done($rid)
 	{
+		global $db, $DBOP;
+		$row = $db->select_from('records', array('status', 'pid', 'uid', 'score', 'time'),
+			array($DBOP['='], 'id', $rid));
+		if (count($row) != 1)
+			throw new Exc_inner(__('Ctal_oi::judge_done: no such record #%d', $rid));
+		$db->transaction_begin();
+		$row = $row[0];
+		$where = array(
+			$DBP['&&'],
+			$DBOP['='], 'cid', $this->data['id'],
+			$DBOP['='], 'uid', $row['uid']);
+		$val = $db->select_from('contests_oi', array('prob_result', 'total_score', 'total_time'), $where);
+		$res_new = array(
+				intval($row['status']), intval($row['score']),
+				intval($row['time']), intval($rid));
+		if (count($val) == 1)
+		{
+			$val = $val[0];
+			$val['total_score'] += $row['score'];
+			$val['total_time'] += $row['time'];
+			$res = json_decode($val['prob_result']);
+			$res[intval($row['pid'])] = $res_new;
+			$val['prob_result'] = json_encode($res);
+			$db->update_data('contests_oi', $val, $where);
+		} else
+		{
+			$val = array(
+				'cid' => $this->data['cid'],
+				'uid' => $row['uid'],
+				'total_score' => $row['score'],
+				'total_time' => $row['time'],
+				'prob_result' => json_encode(array(
+					intval($row['pid']) => $res_new)));
+			$db->insert_into('contests_oi', $val);
+		}
+
+		$where = array(
+			$DBP['&&'],
+			$DBOP['='], 'cid', $this->data['id'],
+			$DBOP['='], 'uid', 0);
+		$row = $db->select_from('contests_oi', 'total_score', $where);
+		if (count($row) != 1)
+		{
+			$db->transaction_rollback();
+			throw new Exc_inner(__('No data row for contest #%d', $this->data['id']));
+		}
+		$row = $row[0];
+		$row['total_score'] --;
+		if ($row['total_score'] == 0)
+			$db->delete_item('contests_oi', $where);
+		else
+			$db->update_data('contests_oi', $row, $where);
+
+		$db->transaction_commit();
 	}
+
+	public function get_user_amount($where = NULL)
+	{
+		global $db, $DBOP;
+		if ($db->get_number_of_rows('contests_oi', array(
+			$DBOP['&&'],
+			$DBOP['='], 'cid', $this->data['id'].
+			$DBOP['='], 'uid', 0)))
+			return NULL;
+		db_where_add_and(array($DBP['='], 'cid', $this->data['id']));
+		return $db->get_number_of_rows('contests_oi', $where);
+	}
+
+	public function get_rank_list($where = NULL, $offset = NULL, $cnt = NULL)
+	{
+		global $db, $DBOP;
+		if ($db->get_number_of_rows('contests_oi', array(
+			$DBOP['&&'],
+			$DBOP['='], 'cid', $this->data['id'].
+			$DBOP['='], 'uid', 0)))
+			return NULL;
+		$probs = $db->select_from('map_prob_ct', 'pid', array(
+			$DOP['='], 'cid', $this->data['id']), array('order' => 'ASC'));
+		foreach ($probs as &$p)
+			$p = $p['pid'];
+		$col = array(__('Nickname'), __('Real name'), __('Total score'), __('Total time'));
+		foreach ($probs as $p)
+			array_push($col, prob_get_title_by_id($p));
+		$ret = array($col);
+		db_where_add_and($where, array($DBOP['='], 'cid', $this->data['id']));
+		$rows = $db->select_from('contests_oi', NULL, $where,
+			array('total_score' => 'DESC', 'total_time' => 'ASC'),
+			$offset, $cnt);
+
+		foreach ($rows as $row)
+		{
+			$cols = array(user_get_nickname_by_id($row['uid']),
+				user_get_realname_by_id($row['uid']), $row['total_score'], $row['total_time']);
+			$res = json_decode($col['prob_result']);
+			foreach ($probs as $p)
+			{
+				if (isset($res[$p]))
+					$col = array(__('Status: %s<br />Score: %d<br />Time: %.3f[sec]<br />',
+						record_status_get_str($res[0]),
+						$res[1], $res[2] * 1e-6), $res[3]);
+				else
+					$col = array(__('Not submitted'), 0);
+				array_push($cols, $col);
+			}
+			array_push($ret, $cols);
+		}
+
+		return $ret;
+	}
+}
+
+function _ctal_oi_judge($cid)
+{
+	global $db, $DBOP;
+	$where = array($DBOP['='], 'cid', $cid);
+
+	$db->transaction_begin();
+	$num = $db->update_data('records', array('status' => RECORD_STATUS_WAITING_TO_BE_FETCHED), $where);
+	$db->update_data('contests_oi', array('total_score' => $num), $where);
+	$db->transaction_commit();
 }
 

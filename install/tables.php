@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Oct 20 12:02:11 2010 +0800
+ * $Date: Thu Oct 21 15:51:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,8 +52,8 @@ $tables = array(
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'username' => array('type' => 'TEXT200'),
-			'realname' => array('type' => 'TEXT200'), // only visiable by administrator
-			'nickname' => array('type' => 'TEXT200'), // display name
+			'realname' => array('type' => 'TEXT200'), 
+			'nickname' => array('type' => 'TEXT200'),
 			'passwd' => array('type' => 'TEXT200'),
 			'salt' => array('type' => 'TEXT200', 'default' => ''),
 			'aid' => array('type' => 'INT32'), // avatar id
@@ -301,11 +301,16 @@ $tables = array(
 			'cid' => array('type' => 'INT32'), // contest id
 			'uid' => array('type' => 'INT32'), // user id
 			'prob_result' => array('type' => 'TEXT'),
-			// json encoded array(array(<problem score>, <execution time (microsecond)>, <record id>)))
+			// json encoded array(<problem id> =>
+			//		array(<execution status>, <score>, <execution time (microsecond)>, <record id>)))
 			'total_score' => array('type' => 'INT32'),
+			// before the contest ends, scheduled job id is stored in column 'total_score'
+			// before judge process finishes, remaining number of unjudged submissions is stored in
+			//		column 'total_score' with 'uid' = 0
 			'total_time' => array('type' => 'INT32'), // microsecond
 		),
 		'index' => array(
+			array('cols' => array('cid', 'uid')),
 			array('cols' => array('cid', 'total_score', 'uid'))
 		)
 	),
@@ -315,18 +320,14 @@ $tables = array(
 		'cols' => array(
 			'pid' => array('type' => 'INT32'),
 			'cid' => array('type' => 'INT32'),
+			'order' => array('type' => 'INT32'), // used to specify the order of problems in a contest
 			'time_start' => array('type' => 'INT64'), // contest start time
 			'time_end' => array('type' => 'INT64') // contest end time
 		),
 		'index' => array(
-			array(
-				'type' => 'UNIQUE',
-				'cols' => array('pid')),
-			array(
-				'type' => 'UNIQUE',
-				'cols' => array('cid')),
-			array(
-				'cols' => array('pid', 'time_start', 'time_end')),
+			array('cols' => array('pid')),
+			array('cols' => array('cid')),
+			array('cols' => array('pid', 'time_start', 'time_end')),
 		)
 	),
 
@@ -370,6 +371,7 @@ $tables = array(
 			'pid' => array('type' => 'INT32'), // problem id
 			'jid' => array('type' => 'INT32', 'default' => 0), // judge id
 			'lid' => array('type' => 'INT32'), // language id
+			'cid' => array('type' => 'INT32'), // contest id, or 0 if no contest related
 			'src_len' => array('type' => 'INT32'), // source length in bytes
 			'status' => array('type' => 'INT32', 'default'), // see includes/record.php
 			'stime' => array('type' => 'INT64'), // submission time
@@ -385,15 +387,17 @@ $tables = array(
 			// encoded array of Case_result. see includes/exe_status.php
 			// or error info if judge process not started
 			// values in this field are not HTML encoded
+			//
+			// if status == RECORD_STATUS_WAITING_TO_BE_FETCHED,
+			//		serialized array(<input file name>, <output file name>) is stored in 'detail'
 		),
 		'primary_key' => 'id',
 		'index' => array(
-			array(
-				'cols' => array('uid', 'pid', 'status', 'lid')),
-			array(
-				'cols' => array('pid', 'status')),
-			array(
-				'cols' => array('score', 'time'))
+			array('cols' => array('uid', 'pid')),
+			array('cols' => array('pid', 'status')),
+			array('cols' => array('score', 'time')),
+			array('cols' => array('status', 'id')),
+			array('cols' => array('cid', 'status'))
 		)
 	),
 
@@ -406,7 +410,7 @@ $tables = array(
 		),
 		'primary_key' => 'rid',
 		'index' => array(
-			array('cols' => array('time', 'sent'))
+			array('cols' => array('sent', 'time'))
 		)
 	),
 
@@ -464,6 +468,7 @@ $tables = array(
 	),
 
 	/* orz_req */
+	/*
 	'orz_req' => array( // requests to orzoj-server in orz.php
 		'cols' => array(
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
@@ -473,6 +478,8 @@ $tables = array(
 		),
 		'primary_key' => 'id'
 	),
+	XXX: orz_req is not used currently, because data transfer from server to website has not been implemented
+	 */
 
 	/* messages */
 	'messages' => array( // user-to-user messages

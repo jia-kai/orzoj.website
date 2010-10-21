@@ -68,6 +68,23 @@ theme structure:
 	|--	functions.php	functions exported to the whole website
 	|--	...				theme specific files
 
+standard theme page names and arguments:
+	|---------------------------------------|
+	|	Name	|		Argument			|
+	|-----------+---------------------------|
+	| problem	|	none (problem list)		|
+	|-----------+---------------------------|
+	| problem	|	problem code:string		|
+	|-----------+---------------------------|
+	| contest	|	none (contest list)		|
+	|-----------+---------------------------|
+	| contest	|	contest id:int			|
+	|---------------------------------------|
+	| discuss	|	???						|
+	|---------------------------------------|
+	| discuss	|	???						|
+	|---------------------------------------|
+
 problem description (column desc) in the database is a serialized array of (<field name> => <value>)
 standard field names:
 	time: time limit 
