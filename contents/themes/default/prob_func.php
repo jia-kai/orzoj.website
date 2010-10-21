@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_func.php
- * $Date: Tue Oct 19 18:29:53 2010 +0800
+ * $Date: Wed Oct 20 22:43:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -130,8 +130,8 @@ function prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way
 
 function prob_view_single_get_a_href($pid, $gid, $start_page)
 {
-	$arg = prob_view_single_pack_arg($pid, $gid, $start_page, 'id', 'ASC', '*');
-	return t_get_link('show-ajax-prob-view-single', $arg, TRUE, TRUE);
+	$code = prob_get_code_by_id($pid);
+	return t_get_link('problem', $code, TRUE, TRUE);
 }
 
 function prob_view_single_get_a_onclick($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern_show = NULL, $in_HTML = FALSE)

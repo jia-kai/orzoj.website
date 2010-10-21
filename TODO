@@ -13,12 +13,10 @@ Problem page: discuss
 code editor
 
 status filter:
-	a optional radio box contains code and id is supposed to be setted
+	an optional radio box contains code and id supposed to be setted
 
-problem list:
-	color shows the status of a problem or something else
 
-incomplete post 应翻译为 不完整的表单
+users.php: user_get_user_amount
 
 题目打钩
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Tue Oct 19 17:25:48 2010 +0800
+ * $Date: Wed Oct 20 13:31:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -763,5 +763,16 @@ function user_grp_get_id_by_name($name)
 	if (count($row) != 1)
 		return NULL;
 	return $row[0]['id'];
+}
+
+/**
+ * TODO : any limitation?
+ * get user amount
+ * @return int
+ */
+function user_get_user_amount()
+{
+	global $db;
+	return $db->get_number_of_rows('users');
 }
 

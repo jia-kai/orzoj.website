@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Tue Oct 19 15:22:02 2010 +0800
+ * $Date: Wed Oct 20 11:46:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -70,9 +70,10 @@ define('JUDGE_STATUS_ONLINE',1);
 
 define('DYNAMIC_PASSWORD_LIFETIME', 10); // in seconds
 
-define('STS_PROB_USER_UNAC', 0);
-define('STS_PROB_USER_AC', 1);
-define('STS_PROB_USER_AC_BLINK', 2);
+define('STS_PROB_USER_UNTRIED', 0);
+define('STS_PROB_USER_UNAC', 1);
+define('STS_PROB_USER_AC', 2);
+define('STS_PROB_USER_AC_BLINK', 3);
 
 $cnt = 0;
 define('WEBSERVER_OTHERS', $cnt ++);

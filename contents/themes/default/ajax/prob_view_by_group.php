@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Wed Oct 20 09:24:11 2010 +0800
+ * $Date: Wed Oct 20 22:36:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,30 +38,49 @@ $title_pattern = NULL;
 $sort_col = 'id';
 $sort_way = 'ASC';
 $start_page = 1;
-function str_replace_no_diagonal($a, $b, &$s)
-{
-	$len = strlen($s);
-	for ($i = 0; $i < $len; $i ++)
-	{
-		if ($s[$i] == '\\')
-			$i ++;
-		else
-			if ($s[$i] == $a)
-				$s[$i] = $b;
-	}
-}
 
+/**
+ * @ignore
+ */
 function _tranform_pattern($tp)
 {
 	if ($tp == NULL)
 		return NULL;
 	$tp = trim($tp);
-	str_replace_no_diagonal('*', '%', $tp);
-	str_replace_no_diagonal('?', '_', $tp);
-	$tp = str_replace('\\*', '*', $tp);
-	$tp = str_replace('\\?', '?', $tp);
-	$tp = '%' . $tp . '%';
-	return $tp;
+	$len = strlen($tp);
+	$s = '';
+	for ($i = 0; $i < $len; $i ++)
+		if ($tp[$i] == '\\')
+		{
+			$i ++;
+			if ($i < $len)
+			{
+				$ch = $tp[$i];
+				if ($ch == '*' || $ch == '?' || $ch == '\\')
+					$s .= ($ch == '\\' ? '\\\\' : $ch);
+				else if ($ch == '_' || $ch == '%')
+					$s .= '\\\\\\' . $ch;
+				else
+					$s .= '\\\\' . $ch;
+			}
+			else
+				$s .= '\\\\';
+		}
+		else
+		{
+			$ch = $tp[$i];
+			if ($ch == '%' || $ch == '_')
+				$s .= '\\' . $ch;
+			else if ($ch == '*')
+				$s .= '%';
+			else if ($ch == '_')
+				$s .= '_';
+			else
+				$s .= $ch;
+				
+		}
+	$s = '%' . $s . '%';
+	return $s;
 }
 
 if (isset($_POST['goto_page_default']))
@@ -122,7 +141,7 @@ if ((!(isset($on_sort) && $on_sort == TRUE)) || (isset($goto_page_default)))
 		/* problem list title*/
 		$gname = '';
 		if ($gid == 0)
-			$gname = 'All';
+			$gname = __('All');
 		else
 		{
 			$gname = $db->select_from('prob_grps', array('name'), array($DBOP['='], 'id', $gid));
@@ -193,6 +212,7 @@ $show_fields= array(
 	array(__('Submited Users'), 'cnt_submit_user', 'DESC'),
 	array(__('Difficulty'), 'difficulty', 'ASC')
 );
+
 $sort_list = array(
 	array('id', 'ASC')
 //	array('cnt_ac_user', 'DESC'),
@@ -208,6 +228,15 @@ function _make_table_header($name, $col_name, $default_order)
 	global $title_pattern_show;
 	$t = ($title_pattern_show  == NULL ? '*' : $title_pattern_show);
 	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order', '$t'); return false;\">$name</a></th>";
+}
+
+$cnt_show_fields = count($show_fields);
+
+// user problem status
+if (user_check_login())
+{
+	echo '<th></th>';
+	$cnt_show_fields ++;
 }
 
 foreach ($show_fields as $field)
@@ -268,8 +297,6 @@ foreach ($sort_list as $val)
 	if ($val[0] != $sort_col)
 		$order_by[$val[0]] = ($is_default_order ? $val[1] : op_order($val[1]));
 
-var_dump($order_by);
-
 $probs = prob_get_list($fields, 
 	$gid, 
 	$title_pattern,
@@ -277,14 +304,28 @@ $probs = prob_get_list($fields,
 	($start_page - 1) * $PROB_VIEW_ROWS_PER_PAGE, 
 	$PROB_VIEW_ROWS_PER_PAGE);
 
+$prob_user_sts_icon_info = array(
+	STS_PROB_USER_UNTRIED => array(_url('images/prob_user_sts_untried.gif', TRUE), __('Untried')),
+	STS_PROB_USER_UNAC => array(_url('images/prob_user_sts_unac.gif', TRUE), __('Unaccepted')),
+	STS_PROB_USER_AC => array(_url('images/prob_user_sts_ac.gif', TRUE), __('Accepted')),
+	STS_PROB_USER_AC_BLINK => array(_url('images/prob_user_sts_ac_blink.gif', TRUE), __('Accepted Blink'))
+);
+
 foreach ($probs as $prob)
 {
 	echo '<tr>';
 	if (is_null($prob))
-		for ($i = count($show_fields); $i; $i --)
+		for ($i = $cnt_show_fields; $i; $i --)
 			echo '<td>---</td>';
 	else
 	{
+		if (user_check_login())
+		{
+			$sts = prob_get_prob_user_status($prob['id']);
+			$url = $prob_user_sts_icon_info[$sts][0];
+			$info = $prob_user_sts_icon_info[$sts][1];
+			echo "<td><img src=\"$url\" alt=\"$info\" title=\"$info\" /></td>";
+		}
 		echo '<td>' . $prob['id'] . '</td>'; // ID
 		_make_prob_link($prob['id'], $prob['title']);
 		_make_prob_link($prob['id'], $prob['code']);
