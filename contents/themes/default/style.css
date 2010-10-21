@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Oct 20 08:26:01 2010 +0800
+ * $Date: Thu Oct 21 11:30:34 2010 +0800
 
  This file is part of orzoj
 
@@ -603,6 +603,19 @@ div#rank-title
 	color: blue;
 	font-size: 30px;
 	font-weight: bold;
+}
+
+form#rank-list-goto-form
+{
+	float: right;
+	margin-left: 20px;
+}
+
+div#rank-list-navigator-bottom
+{
+	float: right;
+	margin-right: 20px;
+	margin-top: 6px;
 }
 
 div#user-info-self-desc
