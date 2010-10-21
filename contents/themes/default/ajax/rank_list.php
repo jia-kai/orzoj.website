@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Thu Oct 21 13:42:47 2010 +0800
+ * $Date: Thu Oct 21 14:43:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -103,14 +103,6 @@ function table_sort_by(col, default_order)
 </script>
 EOF;
 
-/**
- * @ignore
- */
-function _make_table_header($name, $col_name, $default_order)
-{
-	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order'); return false;\">$name</a></th>";
-}
-
 $heads = array(
 	array(__('Rank'), 'rank', 'ASC'),
 	array(__('Nickname'), 'nickname', 'ASC'),
@@ -119,11 +111,22 @@ $heads = array(
 	array(__('AC ratio'), 'ac_ratio', 'DESC')
 );
 
+/**
+ * @ignore
+ */
+function _make_table_header($name, $col_name, $default_order)
+{
+	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order'); return false;\">$name</a></th>";
+}
+
 ?>
 </script>
 
 <?php if (!isset($post)) { ?>
 <div id="rank-title"><?php echo __('Rank List');?></div>
+<?php if (user_check_login()) {?>
+<div>Your current rank: <?php echo _get_single_rank($user->id);?></div>
+<?php }?>
 <?php }?>
 
 <div id="rank-list-content">
@@ -177,75 +180,66 @@ $users = $db->select_from('users',
 );
 
 
-$get_rank_vesion = 2;
-if ($get_rank_vesion == 1)
+/**
+ * @ignore
+ */
+function _get_single_rank($uid)
 {
-	/* get rank version 1 */
-	/**
-	 * @ignore
-	 */
-	function _get_rank($uid)
-	{
-		global $db, $DBOP, $sort_list;
-		$tmp = NULL;
-		$_get_rank_where = NULL;
-		foreach ($sort_list as $sort)
-		{
-			$t = $tmp;
-			$val = $db->select_from('users', array($sort[0]), array($DBOP['='], 'id', $uid));
-			$val = $val[0][$sort[0]];
-			db_where_add_and($t, array($DBOP[$sort[1] == 'ASC' ? '<' : '>'], $sort[0], $val));
-			db_where_add_or($_get_rank_where, $t);
-			db_where_add_and($tmp, array($DBOP['='], $sort[0], $val));
-		}
-		return $db->get_number_of_rows('users', $_get_rank_where) + 1;
-	}
-}
-else if ($get_rank_vesion == 2)
-{
-	/* get rank version 2 */
-	$order_by = array();
-	$cols = array('id');
+	global $db, $DBOP, $sort_list;
+	$tmp = NULL;
+	$_get_rank_where = NULL;
 	foreach ($sort_list as $sort)
 	{
-		$order_by[$sort[0]] = $sort[1];
-		$cols[] = $sort[0];
+		$t = $tmp;
+		$val = $db->select_from('users', array($sort[0]), array($DBOP['='], 'id', $uid));
+		$val = $val[0][$sort[0]];
+		db_where_add_and($t, array($DBOP[$sort[1] == 'ASC' ? '<' : '>'], $sort[0], $val));
+		db_where_add_or($_get_rank_where, $t);
+		db_where_add_and($tmp, array($DBOP['='], $sort[0], $val));
 	}
-	$tmp = $db->select_from('users', $cols, NULL, $order_by);
-	$id2rank = array();
-	$cnt = 0;
-	$now = 1;
-	function cmp($user1, $user2)
-	{
-		global $sort_list;
-		foreach($sort_list as $sort)
-			if ($user1[$sort[0]] != $user2[$sort[0]])
-			{
-				return $sort[1] == 'ASC' ? ($user1[$sort[0]] < $user2[$sort[0]]) : ($user1[$sort[0]] > $user2[$sort[0]]);
-			}
-		return false;
-	}
-	$prev_user = NULL;
-	foreach ($tmp as $_user)
-	{
-		if ($cnt > 0 && !cmp($prev_user, $_user))
-			$id2rank[$_user['id']] = $now;
-		else
-			$id2rank[$_user['id']] = $now = $cnt + 1;
-		$cnt ++;
-		$prev_user = $_user;
-	}
-	function _get_rank($uid)
-	{
-		global $id2rank;
-		return $id2rank[$uid];
-	}
+	return $db->get_number_of_rows('users', $_get_rank_where) + 1;
 }
+
+
+// calculate all users rank
+$order_by = array();
+$cols = array('id');
+foreach ($sort_list as $sort)
+{
+	$order_by[$sort[0]] = $sort[1];
+	$cols[] = $sort[0];
+}
+$tmp = $db->select_from('users', $cols, NULL, $order_by);
+$id2rank = array();
+$cnt = 0;
+$now = 1;
+function cmp($user1, $user2)
+{
+	global $sort_list;
+	foreach($sort_list as $sort)
+		if ($user1[$sort[0]] != $user2[$sort[0]])
+		{
+			return $sort[1] == 'ASC' ? ($user1[$sort[0]] < $user2[$sort[0]]) : ($user1[$sort[0]] > $user2[$sort[0]]);
+		}
+	return false;
+}
+$prev_user = NULL;
+foreach ($tmp as $_user)
+{
+	if ($cnt > 0 && !cmp($prev_user, $_user))
+		$id2rank[$_user['id']] = $now;
+	else
+		$id2rank[$_user['id']] = $now = $cnt + 1;
+	$cnt ++;
+	$prev_user = $_user;
+}
+
+
 
 foreach ($users as $_user)
 {
 	echo '<tr>'
-		. '<td>' . _get_rank($_user['id']) . '</td>';
+		. '<td>' . $id2rank[$_user['id']] . '</td>';
 	foreach ($heads as $head)
 	{
 		switch ($head[1])
