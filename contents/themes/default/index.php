@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Oct 21 13:32:25 2010 +0800
+ * $Date: Thu Oct 21 14:54:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -257,7 +257,7 @@ else
 	$hello = __('Hello, %s!', $user->nickname);
 	$sts = &$user->get_statistics();
 	$p = __('AC: %d Submission: %d Ratio: %.2f%%',
-		$sts['cnt_ac_prob'], $sts['cnt_submission'], $sts['ac_ratio'] * 100);
+		$sts['cnt_ac_prob'], $sts['cnt_submit'], $sts['ac_ratio'] * 100);
 	echo <<<EOF
 <div style="float: left">
 <img src="$user->avatar" alt="avatar" style="max-height: 128px; max-width: 128px;" />

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Oct 21 13:31:40 2010 +0800
+ * $Date: Thu Oct 21 14:55:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -220,7 +220,7 @@ class User
 			throw new Exc_runtime(__('user id %d does not exist', $this->id));
 		$cache = $cache[0];
 		$cache['ac_ratio'] = $cache['ac_ratio'] / DB_REAL_PRECISION;
-		$cache['cnt_submission'] = $cache['cnt_ac'] + $cache['cnt_unac'] + $cache['cnt_ce'];
+		$cache['cnt_submit'] = $cache['cnt_ac'] + $cache['cnt_unac'] + $cache['cnt_ce'];
 		return $cache;
 	}
 }
