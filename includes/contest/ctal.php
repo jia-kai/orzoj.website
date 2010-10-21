@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Sun Oct 17 09:37:33 2010 +0800
+ * $Date: Wed Oct 20 12:07:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -94,10 +94,14 @@ abstract class Ctal
 
 	/**
 	 * get final rank list of the problem
-	 * @param array|NULL $users if not NULL, specify the ids of users needed to be ranked
-	 * @return array|NULL a 2-dimension array representing a complete table of the final rank list (including table headers)
+	 * @param array|NULL $where additional where caluse for column 'uid' (see /includes/db/dbal.php for where clause syntax)
+	 * @return array a 2-dimension array representing the result
+	 *		[0][i]: table header for column i
+	 *		[i][j]: (i > 0)
+	 *			array(<text to be displayed>, <related record id>)
+	 * @exception Exc_runtime if the result is unavailable
 	 */
-	abstract protected function get_rank_list($users);
+	abstract protected function get_rank_list($where = NULL, $offset = NULL, $cnt = NULL);
 }
 
 $CONTEST_TYPE2CLASS = array('oi', 'acm');

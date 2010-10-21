@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Oct 19 15:21:12 2010 +0800
+ * $Date: Wed Oct 20 11:56:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -175,6 +175,8 @@ function tf_form_get_gid_selector_value($selector_name)
 	if (!isset($_POST["gid_selector_$selector_name"]))
 		throw Exc_runtime(__('incomplete post'));
 	$val = $_POST["gid_selector_$selector_name"];
+	if (!strlen($val))
+		return array();
 	$ret = explode(',', $val);
 	if ($ret === FALSE)
 		throw Exc_runtime(__('wrong format for gid selector'));

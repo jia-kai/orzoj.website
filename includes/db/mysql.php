@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Tue Oct 19 15:34:50 2010 +0800
+ * $Date: Wed Oct 20 10:49:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -187,7 +187,8 @@ class Dbal_mysql extends Dbal
 			'INT32' => 'INT',
 			'INT64' => 'BIGINT',
 			'TEXT' => 'TEXT',
-			'TEXT200' => 'VARCHAR(200)'
+			'TEXT200' => 'VARCHAR(200)',
+			'BINARY' => 'BLOB'
 		),
 
 		/**
@@ -271,7 +272,7 @@ class Dbal_mysql extends Dbal
 				{
 					$sql_index .= '`' . $col . '`';
 					$t = $structure['cols'][$col]['type'];
-					if ($t == 'TEXT' || $t == 'TEXT200')
+					if ($t == 'TEXT' || $t == 'TEXT200' || $t == 'BINARY')
 						$sql_index .= '(' . $structure['index_len'][$col] . ')';
 					$sql_index .= ',';
 				}

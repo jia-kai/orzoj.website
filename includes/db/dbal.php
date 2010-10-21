@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Tue Oct 19 10:41:44 2010 +0800
+ * $Date: Wed Oct 20 10:49:22 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -89,7 +89,7 @@ abstract class Dbal
 	 * @param mixed $structure structure of the table <pre>
 	 *    array(
 	 *    'cols' =&gt; array(
-	 *     &lt;col name&gt; =&gt; array('type' =&gt; &lt;coltype&gt;:INT32|INT64|TEXT|TEXT200, 
+	 *     &lt;col name&gt; =&gt; array('type' =&gt; &lt;coltype&gt;:INT32|INT64|TEXT|TEXT200|BINARY, 
 	 *						'default' =&gt; &lt;default value&gt; , 
 	 *						'auto_increment' =&gt; true|false)
 	 *    ),
@@ -103,7 +103,7 @@ abstract class Dbal
 	 *	 ['index_len' =&gt; array(
 	 *		 &lt;col name&gt; =&gt; &lt;length of index on this col&gt;
 	 *	 )]]
-	 *   for columns of type TEXT, length must be specified if you want to create an
+	 *   for columns of type TEXT and BINARY, length must be specified if you want to create an
 	 *	 index on it </pre>
 	 * @return void
 	 */

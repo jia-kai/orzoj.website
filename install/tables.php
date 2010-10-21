@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Oct 20 10:18:53 2010 +0800
+ * $Date: Wed Oct 20 12:02:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -291,13 +291,22 @@ $tables = array(
 			array('cols' => array('time_end'))
 		)
 	),
-	// every contest type should have a table
+	// every contest type should have a table, where
+	// result for each user is stored
+	// required column: uid
 
 	/* contests_oi */
 	'contests_oi' => array( // OI contests
 		'cols' => array(
 			'cid' => array('type' => 'INT32'), // contest id
-			''
+			'uid' => array('type' => 'INT32'), // user id
+			'prob_result' => array('type' => 'TEXT'),
+			// json encoded array(array(<problem score>, <execution time (microsecond)>, <record id>)))
+			'total_score' => array('type' => 'INT32'),
+			'total_time' => array('type' => 'INT32'), // microsecond
+		),
+		'index' => array(
+			array('cols' => array('cid', 'total_score', 'uid'))
 		)
 	),
 
@@ -372,7 +381,7 @@ $tables = array(
 			// if status == RECORD_STATUS_RUNNING,
 			//		current case number (starting at 0) is stored in 'time',
 			//		and total number of cases is stored in 'mem'
-			'detail' => array('type' => 'TEXT', 'default' => '')
+			'detail' => array('type' => 'BINARY', 'default' => '')
 			// encoded array of Case_result. see includes/exe_status.php
 			// or error info if judge process not started
 			// values in this field are not HTML encoded

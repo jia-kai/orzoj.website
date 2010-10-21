@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: exe_status.php
- * $Date: Mon Oct 18 12:08:04 2010 +0800
+ * $Date: Wed Oct 20 10:50:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -98,7 +98,7 @@ function case_result_array_encode($data)
 			$tmp[] = $d->$v;
 		$ret[] = $tmp;
 	}
-	return json_encode($ret);
+	return gzcompress(json_encode($ret));
 }
 
 /**
@@ -111,6 +111,7 @@ function case_result_array_decode($str)
 	global $case_result_vars;
 	$ret = array();
 	$cnt = count($case_result_vars);
+	$str = gzuncompress($str);
 	foreach (json_decode($str) as $d)
 	{
 		$tmp = new Case_result();

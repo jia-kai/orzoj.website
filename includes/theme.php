@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Tue Oct 19 09:03:12 2010 +0800
+ * $Date: Wed Oct 20 12:00:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -117,5 +117,19 @@ function t_get_src_download_url($rid)
 {
 	global $website_root;
 	return $website_root . "src_download.php?rid=$rid";
+}
+
+/**
+ * initialize website language
+ * @return void
+ */
+function t_init_wlang()
+{
+	global $db, $user, $DBOP, $root_path;
+	$id = DEFAULT_WLANG_ID;
+	if (user_check_login())
+		$id = $user->wlang;
+	$result = $db->select_from('wlang', array('file'), array($DBOP['='], 'id', $id));
+	l10n_add_directory($root_path . 'contents/lang/' . $result[0]['file'] . '/');
 }
 

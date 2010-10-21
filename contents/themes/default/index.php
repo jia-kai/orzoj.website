@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Tue Oct 19 15:53:15 2010 +0800
+ * $Date: Wed Oct 20 11:33:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,29 +38,8 @@ function _url($file, $return_str = FALSE)
 	echo get_page_url($theme_path . $file);
 }
 
-/*
- * pages for user accessing
- */
-$PAGES = array(
-	// <page name> => array(<display name>, <file>)
-	'home' => array(__('Home'), 'home.php'),
-	'problem' => array(__('Problems'), 'problem.php'),
-	'status' => array(__('Status'), 'status.php'),
-	'rank' => array(__('Rank'), 'rank.php'),
-	'contest' => array(__('Contest'), 'contest.php'),
-	'discuss' => array(__('Discuss'), 'discuss.php'),
-	'team' => array(__('User Teams'), 'team.php'),
-	'judge' => array(__('Judges'), 'judge.php'),
-	'faq' => array(__('FAQ'), 'faq.php')
-);
-
-if (isset($_POST['index_navigate_ajax']))
-{
-	if (!isset($PAGES[$cur_page]))
-		die('nothing what you are looking for');
-	require_once $theme_path . 'ajax/index_content_with_nav.php';
-	die;
-}
+if (is_null($cur_page))
+	$cur_page = 'home';
 
 /*
  * pages for AJAX
@@ -94,8 +73,42 @@ $PAGES_ACTION = array(
 	'action-logout' => '_action_logout'
 );
 
-if ($cur_page == 'index')
-	$cur_page = 'home';
+if (!isset($PAGES_ACTION[$cur_page]))
+	t_init_wlang();
+else
+{
+	$msg = $PAGES_ACTION[$cur_page]();
+	if (is_string($msg))
+		$startup_msg = htmlencode($msg);
+	t_init_wlang();
+}
+
+/*
+ * pages for user accessing
+ */
+$PAGES = array(
+	// <page name> => array(<display name>, <file>)
+	'home' => array(__('Home'), 'home.php'),
+	'problem' => array(__('Problems'), 'problem.php'),
+	'status' => array(__('Status'), 'status.php'),
+	'rank' => array(__('Rank'), 'rank.php'),
+	'contest' => array(__('Contest'), 'contest.php'),
+	'discuss' => array(__('Discuss'), 'discuss.php'),
+	'team' => array(__('User Teams'), 'team.php'),
+	'judge' => array(__('Judges'), 'judge.php'),
+	'faq' => array(__('FAQ'), 'faq.php')
+);
+
+if (isset($PAGES_ACTION[$cur_page]))
+	_restore_page();
+
+if (isset($_POST['index_navigate_ajax']))
+{
+	if (!isset($PAGES[$cur_page]))
+		die('nothing what you are looking for');
+	require_once $theme_path . 'ajax/index_content_with_nav.php';
+	die;
+}
 
 if (substr($cur_page, 0, 10) == 'show-ajax-')
 {
@@ -134,7 +147,6 @@ function _restore_page()
  */
 function _action_login()
 {
-	_restore_page();
 	try
 	{
 		if (!user_check_login())
@@ -151,7 +163,6 @@ function _action_login()
  */
 function _action_logout()
 {
-	_restore_page();
 	try
 	{
 		user_logout();
@@ -160,13 +171,6 @@ function _action_logout()
 	{
 		return __('Error while logging out: ') . $e->msg();
 	}
-}
-
-if (isset($PAGES_ACTION[$cur_page]))
-{
-	$msg = $PAGES_ACTION[$cur_page]();
-	if (is_string($msg))
-		$startup_msg = htmlencode($msg);
 }
 
 ?>
