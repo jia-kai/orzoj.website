@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Thu Oct 21 13:21:46 2010 +0800
+ * $Date: Thu Oct 21 13:42:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -47,8 +47,8 @@ if (isset($_POST['sort_col']) && isset($_POST['sort_way']))
 }
 else
 {
-	$sort_col = $sort_list[0][0];
-	$sort_way = $sort_list[0][1];
+	$sort_col = 'rank';
+	$sort_way = 'ASC';
 }
 
 if (isset($page_arg))
