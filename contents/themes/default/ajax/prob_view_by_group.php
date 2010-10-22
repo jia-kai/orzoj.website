@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Thu Oct 21 23:18:57 2010 +0800
+ * $Date: Fri Oct 22 22:21:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -238,9 +238,13 @@ $sort_list = array(
  */
 function _make_table_header($name, $col_name, $default_order)
 {
-	global $title_pattern_show;
+	global $title_pattern_show, $sort_col, $sort_way;
 	$t = ($title_pattern_show  == NULL ? '*' : $title_pattern_show);
-	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order', '$t'); return false;\">$name</a></th>";
+	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order', '$t'); return false;\">$name";
+	if ($col_name == $sort_col)
+		printf('<img src="%s" alt="sort way" style="float:right" />',
+			_url('images/arrow_' . ($sort_way == 'ASC' ? 'up' : 'down') . '.gif', TRUE));
+	echo '</a></th>';
 }
 
 $cnt_show_fields = count($show_fields);
@@ -286,11 +290,6 @@ $total_page = ceil($prob_amount / $PROB_VIEW_ROWS_PER_PAGE);
 
 _adjust_val($start_page, 1, $total_page);
 $goto_page_default = $start_page;
-
-/*
-$GID = ($gid === NULL ? "NULL" : $gid);
-echo "gid:$GID, sort_col:$sort_col, sort_way:$sort_way, title_pattern_show: $title_pattern_show";
- */
 
 
 $is_default_order = TRUE;
