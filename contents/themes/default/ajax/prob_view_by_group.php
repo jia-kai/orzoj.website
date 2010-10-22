@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 22 22:32:08 2010 +0800
+ * $Date: Fri Oct 22 22:38:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -42,7 +42,7 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'problem.php';
 require_once $theme_path . 'prob_func.php';
 
-$fields = array('id', 'title', 'code', 'cnt_submit_user', 'cnt_ac_user', 'difficulty');
+
 
 // XXX: this should be a setting of theme
 $PROB_VIEW_ROWS_PER_PAGE = 20;
@@ -101,9 +101,9 @@ if (isset($_POST['goto_page_default']))
 	$goto_page_default = $_POST['goto_page_default'];
 if (isset($_POST['sort_col']) && isset($_POST['sort_way']))
 {
-	$sort_col = $_POST['sort_col'];
+	$sort_col = $_POST['sort_col'];	
 	if (!in_array($sort_col, $fields))
-		die('FxxK');
+		die('Man should be polite.');
 	$sort_way = $_POST['sort_way'];
 	$on_sort = TRUE;
 	if (isset($_POST['gid']))
@@ -240,9 +240,13 @@ $sort_list = array(
  */
 function _make_table_header($name, $col_name, $default_order)
 {
-	global $title_pattern_show;
+	global $title_pattern_show, $sort_col, $sort_way;
 	$t = ($title_pattern_show  == NULL ? '*' : $title_pattern_show);
-	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order', '$t'); return false;\">$name</a></th>";
+	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order', '$t'); return false;\">$name";
+	if ($col_name == $sort_col)
+		printf('<img src="%s" alt="sort way" style="float:right" />',
+			_url('images/arrow_' . ($sort_way == 'ASC' ? 'up' : 'down') . '.gif', TRUE));
+	echo '</a></th>';
 }
 
 $cnt_show_fields = count($show_fields);
@@ -288,11 +292,6 @@ $total_page = ceil($prob_amount / $PROB_VIEW_ROWS_PER_PAGE);
 
 _adjust_val($start_page, 1, $total_page);
 $goto_page_default = $start_page;
-
-/*
-$GID = ($gid === NULL ? "NULL" : $gid);
-echo "gid:$GID, sort_col:$sort_col, sort_way:$sort_way, title_pattern_show: $title_pattern_show";
- */
 
 
 $is_default_order = TRUE;

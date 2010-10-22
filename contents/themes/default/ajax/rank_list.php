@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Thu Oct 21 23:17:25 2010 +0800
+ * $Date: Fri Oct 22 22:34:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -127,7 +127,12 @@ $heads = array(
  */
 function _make_table_header($name, $col_name, $default_order)
 {
-	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order'); return false;\">$name</a></th>";
+	global $sort_col, $sort_way;
+	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order'); return false;\">$name";
+	if ($col_name == $sort_col)
+		printf('<img src="%s" alt="sort way" style="float: right />"',
+			_url('images/arrow_' . ($sort_way == 'ASC' ?'up' : 'down') . '.gif', TRUE));
+	echo '</a></th>';
 }
 
 ?>
@@ -159,8 +164,11 @@ function op_order($order)
 
 
 $orderby = array();
+$flag = false;
 if ($sort_col == 'rank')
 {
+	$flag = true;
+	$orig_sort_way = $sort_way;
 	$sort_col = $sort_list[0][0];
 	if ($sort_way == 'ASC')
 		$sort_way = $sort_list[0][1];
@@ -181,6 +189,12 @@ foreach ($sort_list as $val)
 foreach ($sort_list as $val)
 	if ($val[0] != $sort_col)
 		$orderby[$val[0]] = ($is_default_order ? $val[1] : op_order($val[1]));
+
+if ($flag)
+{
+	$sort_col = 'rank';
+	$sort_way = $orig_sort_way;
+}
 
 $users = $db->select_from('users', 
 	array('id', 'nickname', 'realname', 'cnt_submitted_prob', 'cnt_ac_prob', 'ac_ratio'),
