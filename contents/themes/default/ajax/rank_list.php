@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Fri Oct 22 22:34:47 2010 +0800
+ * $Date: Fri Oct 22 22:43:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -129,6 +129,7 @@ function _make_table_header($name, $col_name, $default_order)
 {
 	global $sort_col, $sort_way;
 	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order'); return false;\">$name";
+	// FIXME: why is the image on the left side?
 	if ($col_name == $sort_col)
 		printf('<img src="%s" alt="sort way" style="float: right />"',
 			_url('images/arrow_' . ($sort_way == 'ASC' ?'up' : 'down') . '.gif', TRUE));
