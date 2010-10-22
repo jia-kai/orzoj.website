@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Tue Oct 19 08:27:43 2010 +0800
+ * $Date: Thu Oct 21 23:47:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -88,6 +88,17 @@ function l10n_add_file($filename)
 }
 
 /**
+ * Clean translation files list
+ * @return void
+ */
+function l10n_clean_files()
+{
+	global $translations,$translators;
+	$translators = array();
+	$translations = array();
+}
+
+/**
  * Add an directory for translation
  * @param string $dir directory
  */
@@ -108,3 +119,55 @@ function l10n_add_directory($dir)
 	}
 }
 
+
+/**
+ * initialize website language before conecting database
+ * @return void
+ */
+function l10n_init_wlang_before_db()
+{
+	global $root_path;
+	if (isset($_SERVER['HTTP_USER_AGENT']))
+		$ua = $_SERVER['HTTP_USER_AGENT'];
+	else
+		$ua = '';
+	if (preg_match('/([a-z][a-z]-[A-Z][A-Z])/',$ua,$matches))
+	{
+		$locale = str_replace('-','_',$matches[0]);
+	}
+	else
+		$locale = 'en_US';
+	l10n_clean_files();
+	l10n_add_directory($root_path . 'contents/lang/' . $locale . '/');
+}
+
+/**
+ * initialize website language
+ * @return void
+ */
+
+function l10n_init_wlang()
+{
+	global $db, $user, $DBOP, $root_path;
+	if (user_check_login())
+		$id = $user->wlang;
+	else
+	{
+		$ua = $_SERVER['HTTP_USER_AGENT'];
+		if (preg_match('/([a-z][a-z]-[A-Z][A-Z])/',$ua,$matches))
+		{
+			$locale = str_replace('-','_',$matches[0]);
+		}
+	}
+	if (!isset($locale) && !isset($id))
+	{
+		$id = DEFAULT_WLANG_ID;
+	}
+	if (isset($id))
+	{
+		$result = $db->select_from('wlang', array('file'), array($DBOP['='], 'id', $id));
+		$locale = $result[0]['file'];
+	}
+	l10n_clean_files();
+	l10n_add_directory($root_path . 'contents/lang/' . $locale . '/');
+}
