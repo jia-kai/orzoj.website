@@ -1,5 +1,5 @@
 #!/bin/bash -e
-list_ui='core widget mouse button draggable position resizable dialog'
+list_ui='core widget mouse button draggable position resizable dialog tabs'
 list_effects='core fade scale'
 
 rm ui.js

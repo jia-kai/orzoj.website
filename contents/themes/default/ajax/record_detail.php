@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Mon Oct 18 15:40:14 2010 +0800
+ * $Date: Fri Oct 22 11:09:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -41,7 +41,8 @@ require_once $includes_path . 'record.php';
 require_once $root_path . 'contents/highlighters/geshi/geshi.php';
 
 // whether to display realname and submission IP
-$disp_info = user_check_login() && $user->is_grp_member(GID_UINFO_VIEWER);
+$disp_info = user_check_login() && ($user->is_grp_member(GID_UINFO_VIEWER) ||
+	$user->is_grp_member(GID_ADMIN_USER));
 
 // fd: field
 function _fd_user()

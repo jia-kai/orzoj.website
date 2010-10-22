@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Thu Oct 21 10:27:17 2010 +0800
+ * $Date: Fri Oct 22 17:35:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,7 +25,7 @@
  */
 $PAGE_START_TIME = microtime(TRUE);
 ob_start();
-date_default_timezone_set('GMT');
+date_default_timezone_set('Asia/Shanghai');
 error_reporting(E_ALL);
 define('IN_ORZOJ', TRUE);
 // XXX: debug mode on

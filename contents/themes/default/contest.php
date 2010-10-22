@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest.php
- * $Date: Thu Oct 21 21:00:08 2010 +0800
+ * $Date: Fri Oct 22 20:06:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,4 +32,38 @@ if (!defined('IN_ORZOJ'))
  *		contest id: if set, display information about this contest
  */
 
+if (!is_null($page_arg))
+{
+	$_POST['id'] = $page_arg;
+	require_once $theme_path . 'ajax/contest_view.php';
+	die;
+}
+
+?>
+
+<div id="contest-page">
+<div id="contest-tabs">
+	<ul>
+	<li><a href="<?php t_get_link('show-ajax-contest-list', 'all');?>"
+		id="contest-tabs-list-all"><?php echo __('All Contests');?></a></li>
+
+	<li><a href="<?php t_get_link('show-ajax-contest-list', 'past');?>"
+		id="contest-tabs-list-past"><?php echo __('Past Contests');?></a></li>
+
+	<li><a href="<?php t_get_link('show-ajax-contest-list', 'current');?>"
+		id="contest-tabs-list-current"><?php echo __('Current Contests');?></a></li>
+
+	<li><a href="<?php t_get_link('show-ajax-contest-list', 'upcoming');?>"
+		id="contest-tabs-list-upcoming"><?php echo __('Upcoming Contests');?></a></li>
+	</ul>
+</div>
+</div>
+
+<script type="text/javascript">
+<?php
+foreach (array('all', 'past', 'current', 'upcoming') as $f)
+	echo "$('#contest-tabs-list-$f').attr('href', '" . t_get_link('ajax-contest-list', $f, FALSE, TRUE) ."');";
+?>
+$("#contest-tabs").tabs();
+</script>
 

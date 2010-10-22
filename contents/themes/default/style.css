@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Thu Oct 21 19:24:46 2010 +0800
+ * $Date: Fri Oct 22 18:04:10 2010 +0800
 
  This file is part of orzoj
 
@@ -514,6 +514,7 @@ table.page-table th
 {
 	background-color: #070614;
 	color: #F0CC10;
+	text-decoration: none;
 }
 
 div#page a.status-ac:link, div#page a.status-ac:visited
@@ -634,4 +635,50 @@ img#user-info-team-img
 	padding: 3px;
 	border: 1px solid blue;
 }
+
+div.contest-list th
+{
+	min-width: 50px;
+}
+
+div.contest-list th a:visited, div.contest-list th a
+{
+	cursor: pointer;
+	color: #F0CC10;
+	text-decoration: none;
+}
+
+div.contest-list th a:hover
+{
+	color: #F0CC10;
+	text-decoration: underline;
+}
+
+div.contest-list-nav
+{
+	clear: both;
+	float: right;
+	margin-top: 20px;
+	font-size: 12px;
+}
+
+div.contest-list-nav form
+{
+	float: left;
+}
+
+div.contest-list-nav input
+{
+	width: 25px;
+	height: 12px;
+	margin: 0px;
+	padding: 0px;
+	border: none;
+}
+
+div.contest-list-nav input:hover
+{
+	border: none;
+}
+
 

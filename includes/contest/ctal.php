@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Thu Oct 21 21:14:05 2010 +0800
+ * $Date: Fri Oct 22 17:18:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,8 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+
+require_once $includes_path . 'problem.php';
 
 /**
  * contest abstract layer
@@ -197,23 +199,85 @@ function ctal_get_typename_by_type($tid)
 }
 
 /**
+ * @ignore
+ */
+function _ctal_get_list_make_where($time)
+{
+	global $DBOP;
+	if (is_null($time))
+		return NULL;
+	$now = time();
+	if ($time < 0)
+		return array($DBOP['<='], 'time_end', $now);
+	if ($time == 0)
+		return array($DBOP['&&'],
+			$DBOP['<='], 'time_start', $now,
+			$DBOP['>'], 'time_end', $now);
+
+	return array($DBOP['>'], 'time_start', $now);
+}
+
+
+/**
  * get the number of contests in a list
- * @param int $time specify requested contest time:
+ * @param int|NULL $time specify requested contest time:
  *		<0: past contests
  *		=0: current contests
  *		>0: future contests
+ *
+ *		if $time is NULL, return all contests
  * @return int
  */
-function ctal_get_list_size($time)
+function ctal_get_list_size($time = NULL)
 {
+	global $db;
+	return $db->get_number_of_rows('contests', _ctal_get_list_make_where($time));
 }
 
 /**
  * get a list of contests
- * @param int $time @see ctal_get_list_size
- * @return array array of Ctal instance
+ * @param array $fields requested fields, which must be a subset of
+ *		id, type, name, desc, time_start, time_end, perm
+ * @param int $time @see function ctal_get_list_size
+ * @order_by array|NULL @see /includes/db/dbal.php
+ * @param int|NULL $offset
+ * @param int|NULL $cnt
+ * @return array array of contest information containing requested fields.
+ *		Note: some elements in the returned array may be NULL because permission denied for the contest
  */
-function ctal_get_list($time)
+function ctal_get_list($fields, $time = NULL, $order_by = NULL, $offset = NULL, $cnt = NULL)
 {
+	global $db, $user;
+	$fileds_added = array();
+	if (!in_array('perm', $fields))
+	{
+		$fileds_added[] = 'perm';
+		$fields[] = 'perm';
+	}
+
+	$rows = $db->select_from('contests', $fields, _ctal_get_list_make_where($time),
+		$order_by, $offset, $cnt);
+
+	if (user_check_login())
+	{
+		$user_grps = $user->get_groups();
+		$super_perm = $user->is_grp_member(GID_ADMIN_CONTEST);
+	}
+	else
+	{
+		$super_perm = FALSE;
+		$user_grps = array(GID_GUEST);
+	}
+
+	foreach ($rows as &$row)
+	{
+		if (!$super_perm)
+			if (!prob_check_perm($user_grps, $row['perm']))
+				$row = NULL;
+		if ($row != NULL)
+			foreach ($fileds_added as $f)
+				unset($row[$f]);
+	}
+	return $rows;
 }
 
