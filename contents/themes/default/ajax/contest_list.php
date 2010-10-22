@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_list.php
- * $Date: Fri Oct 22 20:41:00 2010 +0800
+ * $Date: Fri Oct 22 22:48:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -262,6 +262,6 @@ $("#contest-list-nav-form-<?php echo $ct_time_str;?>").bind("submit", function()
 	contest_list_nav($("#contest-list-nav-input-<?php echo $ct_time_str?>").val());
 	return false;
 })
-
+table_set_double_bgcolor();
 </script>
 
