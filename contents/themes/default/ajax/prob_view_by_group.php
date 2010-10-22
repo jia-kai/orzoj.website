@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 22 22:38:30 2010 +0800
+ * $Date: Fri Oct 22 22:41:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -96,6 +96,8 @@ function _tranform_pattern($tp)
 	$s = '%' . $s . '%';
 	return $s;
 }
+
+$fields = array('id', 'title', 'code', 'cnt_submit_user', 'cnt_ac_user', 'difficulty');
 
 if (isset($_POST['goto_page_default']))
 	$goto_page_default = $_POST['goto_page_default'];
