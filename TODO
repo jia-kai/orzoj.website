@@ -23,4 +23,3 @@ users.php: user_get_user_amount
 
 删除久远的代码
 
-prob_view_by_group.php  sort_col ： mysql注入漏洞 ?

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Thu Oct 21 23:18:57 2010 +0800
+ * $Date: Fri Oct 22 22:32:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -42,6 +42,7 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'problem.php';
 require_once $theme_path . 'prob_func.php';
 
+$fields = array('id', 'title', 'code', 'cnt_submit_user', 'cnt_ac_user', 'difficulty');
 
 // XXX: this should be a setting of theme
 $PROB_VIEW_ROWS_PER_PAGE = 20;
@@ -101,6 +102,8 @@ if (isset($_POST['goto_page_default']))
 if (isset($_POST['sort_col']) && isset($_POST['sort_way']))
 {
 	$sort_col = $_POST['sort_col'];
+	if (!in_array($sort_col, $fields))
+		die('FxxK');
 	$sort_way = $_POST['sort_way'];
 	$on_sort = TRUE;
 	if (isset($_POST['gid']))
@@ -138,7 +141,6 @@ if ($title_pattern_show == '')
 $start_prob = ($start_page - 1) * $PROB_VIEW_ROWS_PER_PAGE + 1;
 // parsed $gid, $start_page
 
-$fields = array('id', 'title', 'code', 'cnt_submit_user', 'cnt_ac_user', 'difficulty');
 
 $prob_amount = prob_get_amount($gid, $title_pattern);
 
