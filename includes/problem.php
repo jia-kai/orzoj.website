@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Sat Oct 23 21:09:43 2010 +0800
+ * $Date: Sat Oct 23 21:51:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -110,7 +110,7 @@ function prob_view($pid)
 	$row['cnt_submit'] = $row['cnt_ac'] + $row['cnt_unac'] + $row['cnt_ce'];
 
 	if (isset($ct))
-		$ct->prob_view($row);
+		$ct->view_prob($row);
 
 	$row = filter_apply('before_prob_html', $row);
 
@@ -217,11 +217,7 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 		if (!$is_super_submiter)
 		{
 			if (prob_future_contest($row['id']))
-			{
-				$ct = ctal_get_class_by_pid($row['id']);
-				if (!$ct->prob_view_allowed())
-					$rows[$key] = NULL;
-			}
+				$rows[$key] = NULL;
 			else
 				if (!prob_check_perm($grp, $row['perm']))
 					$rows[$key] = NULL;

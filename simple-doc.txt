@@ -115,7 +115,7 @@ Note:
 
 		to file config.php
 	8. if a problem belongs to an upcoming contest, the permission set for the contest will override
-		that for the problem
+		that for the problem, and this problem can only be viewd in the corresponding contest
 	
 
 

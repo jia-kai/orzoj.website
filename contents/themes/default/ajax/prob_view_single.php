@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Thu Oct 21 23:19:10 2010 +0800
+ * $Date: Sat Oct 23 21:49:03 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -77,6 +77,10 @@ try
 	}
 	else
 		prob_view_single_parse_arg();
+
+	if (prob_future_contest($pid))
+		die(__('This problem belongs to an upcoming contest and you should not try to view it here.'));
+
 	/* ----- navigation button ----*/
 	$content = '';
 
