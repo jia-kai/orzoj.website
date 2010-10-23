@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Fri Oct 22 11:07:16 2010 +0800
+ * $Date: Sat Oct 23 21:09:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -87,9 +87,15 @@ function prob_view($pid)
 		$is_super_submitter = FALSE;
 	}
 
-	if (!$is_super_submitter && !prob_check_perm($grp, $row['perm']))
-		throw new Exc_runtime(__('Your are not permitted to view this problem'));
-
+	if (!$is_super_submitter)
+	{
+		$ct = ctal_get_class_by_pid($pid);
+		if (!$ct)
+		{
+			if (!prob_check_perm($grp, $row['perm']))
+				throw new Exc_runtime(__('Your are not permitted to view this problem'));
+		}
+	}
 	$row_grp = array();
 	$grps = $db->select_from('map_prob_grp', 'gid',
 		array($DBOP['='], 'pid', $pid));
@@ -103,12 +109,8 @@ function prob_view($pid)
 
 	$row['cnt_submit'] = $row['cnt_ac'] + $row['cnt_unac'] + $row['cnt_ce'];
 
-	if (!$is_super_submitter)
-	{
-		$ct = ctal_get_class_by_pid($pid);
-		if ($ct)
-			$ct->prob_view($grp, $row);
-	}
+	if (isset($ct))
+		$ct->prob_view($row);
 
 	$row = filter_apply('before_prob_html', $row);
 
@@ -217,7 +219,7 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 			if (prob_future_contest($row['id']))
 			{
 				$ct = ctal_get_class_by_pid($row['id']);
-				if (!$ct->view_in_list($grp))
+				if (!$ct->prob_view_allowed())
 					$rows[$key] = NULL;
 			}
 			else
@@ -392,5 +394,20 @@ function prob_get_prob_user_status($pid)
 	if (count($status) == 0)
 		return STS_PROB_USER_UNTRIED;
 	return $status[0]['status'];
+}
+
+/**
+ * get problem group name by group id
+ * @param int $gid group id
+ * @return string|NULL the problem group name, or NULL if no such group
+ */
+function prob_grp_get_name_by_id($gid)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('prob_grps', 'name', array(
+		$DBOP['='], 'id', $gid));
+	if (count($row) != 1)
+		return NULL;
+	return $row[0]['name'];
 }
 

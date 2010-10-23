@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Oct 20 11:56:57 2010 +0800
+ * $Date: Sat Oct 23 21:00:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -321,27 +321,20 @@ function _make_view_by_group_link($id, $name)
 function tf_get_prob_html($pinfo)
 {
 	global $db, $DBOP;
-	$prob_grps = $db->select_from('map_prob_grp', array('gid'),
-		array($DBOP['='], 'pid', $pinfo['id']));
 	$prob_grp = '';
-	$prob_grp_cnt = count($prob_grps);
-	foreach ($prob_grps as $grp)
-	{
-		$grp = $db->select_from('prob_grps', array('id', 'name'),
-			array($DBOP['='], 'id', $grp['gid']));
-		$grp = $grp[0];
-		$prob_grp .= _make_view_by_group_link($grp['id'], $grp['name']);
-	}
+	$prob_grp_cnt = count($pinfo['grp']);
+	foreach ($pinfo['grp'] as $grp)
+		$prob_grp .= _make_view_by_group_link($grp, prob_grp_get_name_by_id($grp));
 	if ($prob_grp_cnt == 0)
 	{
 		$prob_grp_cnt = 1;
-		$prob_grp = _make_view_by_group_link(0, 'All');
+		$prob_grp = _make_view_by_group_link(0, __('All'));
 	}
 
 	if ($pinfo['io'] === NULL)
 	{
-		$input = 'stdin';
-		$output = 'stdout';
+		$input = __('standard input');
+		$output = __('standard output');
 	}
 	else
 	{

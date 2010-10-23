@@ -14,7 +14,7 @@ function make($s, $t)
 	$db->insert_into('contests', array(
 		'type' => rand(0, 1),
 		'name' => 'contest-' . rand(),
-		'desc' => 'thie is contest #' . rand(),
+		'desc' => 'this is contest #' . rand(),
 		'time_start' => $s,
 		'time_end' => $t,
 		'perm' => serialize(array(0, 1, array(GID_ALL), array()))

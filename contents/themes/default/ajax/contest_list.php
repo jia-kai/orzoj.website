@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_list.php
- * $Date: Fri Oct 22 22:48:39 2010 +0800
+ * $Date: Sat Oct 23 20:48:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -213,6 +213,9 @@ if ($echo_div_contest_list)
 	echo '</div>';
 
 ?>
+
+<div style="clear:both">&nbsp;</div>
+<!-- I need this div to make ui.tabs work properly?? -->
 
 <script type="text/javascript">
 function change_sort(col)

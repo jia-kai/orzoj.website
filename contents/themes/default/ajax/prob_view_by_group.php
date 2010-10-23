@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Sat Oct 23 10:38:16 2010 +0800
+ * $Date: Sat Oct 23 21:03:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -160,10 +160,7 @@ if ((!(isset($on_sort) && $on_sort == TRUE)) || (isset($goto_page_default)))
 		if ($gid == 0)
 			$gname = __('All');
 		else
-		{
-			$gname = $db->select_from('prob_grps', array('name'), array($DBOP['='], 'id', $gid));
-			$gname = $gname[0]['name'];
-		}
+			$gname = prob_grp_get_name_by_id($gid);
 
 		// XXX: how to translate items in problem group?
 		echo __('Problems') . ' - ' . '<span>' . $gname . '</span>';

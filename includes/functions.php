@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Thu Oct 21 10:26:32 2010 +0800
+ * $Date: Sat Oct 23 20:04:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -358,5 +358,39 @@ function email_validate($email)
 function time2str($time)
 {
 	return strftime('%a %b %d %H:%M:%S %Y %Z', $time);
+}
+
+/**
+ * convert a time interval to human readable string
+ * @param int $len the length of the interval in seconds
+ * @return string
+ */
+function time_interval_to_str($len)
+{
+	static $UNITS = NULL;
+	if (is_null($UNITS))
+	{
+		$UNITS = array(
+			array(60, __('second'), __('seconds')),
+			array(60, __('minute'), __('minutes')),
+			array(24, __('hour'), __('hours')),
+			array(365, __('day'), __('days')),
+			array(0, __('year'), __('years'))
+		);
+	}
+	foreach ($UNITS as $val)
+	{
+		if (!$len)
+			break;
+		if (!$val[0])
+			$cur = $len;
+		else
+			$cur = $len % $val[0];
+		$ret[] = $cur . ' ' . $val[1 + intval($cur >= 2)];
+		if ($val[0])
+			$len = floor($len / $val[0]);
+		else break;
+	}
+	return implode(' ', array_reverse($ret));
 }
 

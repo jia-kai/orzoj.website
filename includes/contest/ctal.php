@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Fri Oct 22 17:18:07 2010 +0800
+ * $Date: Sat Oct 23 21:21:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,7 +37,7 @@ abstract class Ctal
 	/**
 	 * @ignore
 	 */
-	protected $data;
+	public $data;
 
 	/**
 	 * construction function
@@ -69,20 +69,30 @@ abstract class Ctal
 
 	/**
 	 * called when user tries to view a problem in this contest before the contest ends
-	 * @param array $user_grp the ids of groups the user belonging to
 	 * @param array $pinfo problem information, containing $PROB_VIEW_PINFO (defined in problem.php)
 	 *		may be modified
 	 * @return void
 	 * @exception Exc_runtime if permission denied
 	 */
-	abstract protected function prob_view($user_grp, &$pinfo);
+	abstract protected function prob_view(&$pinfo);
 
 	/**
 	 * whether a problem in this contest is allowed to appear in the problem list
-	 * @param array $user_grp
 	 * @return bool
 	 */
-	abstract protected function view_in_list($user_grp);
+	abstract protected function prob_view_allowed();
+
+	/**
+	 * get a list of problems in the contest
+	 * @return array a 2-dimension array, in the following format:
+	 *		[0][i]: (0 <= i < m)
+	 *			head text for the ith column
+	 *		[i][j]: (0 <= i < n, 0 <= j < m):
+	 *			text in the ith row, jth column
+	 *		[i][m]:
+	 *			id of the ith problem
+	 */
+	abstract protected function get_prob_list();
 
 	/**
 	 * deal with user submissions for problems in this contest
@@ -141,7 +151,7 @@ function ctal_get_class_by_pid($pid)
 		$row = $db->select_from('contests', NULL,
 			array($DBOP['='], 'id', $row[0]['cid']));
 		if (count($row) != 1)
-			throw new Exc_inner(__('contest not found'));
+			throw new Exc_inner(__('contest for problem #%d not found', $pid));
 		$row = $row[0];
 		$type = $CONTEST_TYPE2CLASS[$row['type']];
 		require_once $includes_path . "contest/$type.php";
@@ -159,12 +169,13 @@ function ctal_get_class_by_pid($pid)
  */
 function ctal_get_class_by_cid($cid)
 {
-	global $db, $DBOP;
+	global $db, $DBOP, $CONTEST_TYPE2CLASS, $includes_path;
 	$row = $db->select_from('contests', NULL, array(
 		$DBOP['='], 'id', $cid));
 	if (count($row) != 1)
 		throw new Exc_inner(__('No such contest #%d', $cid));
-	$type = $CONTEST_TYPE2CLASS[$row[0]['type']];
+	$row = $row[0];
+	$type = $CONTEST_TYPE2CLASS[$row['type']];
 	require_once $includes_path . "contest/$type.php";
 	$type = "Ctal_$type";
 	return new $type($row);

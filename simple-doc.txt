@@ -103,17 +103,19 @@ Note:
 	1. for required functions for theme, see theme-functions-template.php
 	2. see also filter_list.txt
 	3. all the pages accessed by user except those in install are in / and /admin
-	4. themes should not operate on database directly except when quering for records (because record queries
-		are usually highly customized, so no API is provided)
+	4. theme implementations should try to avoid accessing database directly, unless there is no
+		orzoj-website system call provided or efficiency is very important
 	5. One problem can only belong to one contest simultaneously
 	6. all text data saved in database should be properly HTML encoded
 	7. if you are running this website on nginx and can not open 
-		open pages whose url seems like 'http://localhost/orzoj-website/problem/',
+		pages whose url seems like 'http://localhost/orzoj-website/problem/',
 		please append:
 
 			define('DISABLE_URI_REWRITE', TRUE);
 
 		to file config.php
+	8. if a problem belongs to an upcoming contest, the permission set for the contest will override
+		that for the problem
 	
 
 

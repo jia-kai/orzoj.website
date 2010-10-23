@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Thu Oct 21 16:53:14 2010 +0800
+ * $Date: Sat Oct 23 19:26:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -60,17 +60,28 @@ class Ctal_oi extends Ctal
 		sched_update($row[0]['total_score'], $this->data['time_end']);
 	}
 
-	public function prob_view($user_grp, &$pinfo)
+	public function prob_view(&$pinfo)
 	{
-		if (!prob_check_perm($user_grp, $this->data['perm']))
+		global $user;
+		if (user_check_login())
+			$user_grp = $user->get_groups();
+		else $user_grp = array(GID_GUEST);
+		if (time() < $this->data['time_start'] ||
+			!prob_check_perm($user_grp, $this->data['perm']))
 			throw new Exc_runtime(__('sorry, you are not allowed to view this problem now'));
 		if (is_null($pinfo['io']))
 			$pinfo['io'] = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
 	}
 
-	public function view_in_list($user_grp)
+	public function prob_view_allowed()
 	{
-		return time() >= $this->data['time_start'] && prob_check_perm($user_grp, $this->data['perm']);
+		if (time() < $this->data['time_start'])
+			return FALSE;
+		global $user;
+		if (user_check_login())
+			$user_grp = $user->get_groups();
+		else $user_grp = array(GID_GUEST);
+		return prob_check_perm($user_grp, $this->data['perm']);
 	}
 
 	public function user_submit($pinfo, $lid, $src)
@@ -162,7 +173,7 @@ class Ctal_oi extends Ctal
 			$DBOP['='], 'cid', $this->data['id'].
 			$DBOP['='], 'uid', 0)))
 			return NULL;
-		db_where_add_and(array($DBP['='], 'cid', $this->data['id']));
+		db_where_add_and($where, array($DBP['='], 'cid', $this->data['id']));
 		return $db->get_number_of_rows('contests_oi', $where);
 	}
 
