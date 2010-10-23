@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_filter.php
- * $Date: Tue Oct 19 18:28:24 2010 +0800
+ * $Date: Sat Oct 23 10:17:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -94,3 +94,4 @@ _make_input(__('Title'), 'prob-filter-title', 'title', 'by-group', __('Find'));
 <script type="text/javascript">
 $(".prob-filter-input-button").button();
 </script>
+

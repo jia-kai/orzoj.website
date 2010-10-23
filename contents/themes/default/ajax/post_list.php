@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Mon Oct 18 14:58:19 2010 +0800
+ * $Date: Sat Oct 23 10:11:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,6 +25,5 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
-
 
 

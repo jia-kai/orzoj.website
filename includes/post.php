@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Mon Oct 18 14:43:38 2010 +0800
+ * $Date: Sat Oct 23 09:10:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -106,7 +106,7 @@ function post_add_get_form($id)
 }
 
 /**
- * get post list wiht  a specific limitation
+ * get post list in a specific limitation
  * @param int|NULL $uid int a user's id or NULL means all
  * @param bool $concrete TRUE means need concrete information, FALSE means the opposite.
  * @param bool|NULL $is_top specific whether the post is toped. NULL means no limit.

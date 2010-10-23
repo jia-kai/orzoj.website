@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 22 22:41:37 2010 +0800
+ * $Date: Sat Oct 23 10:38:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -87,7 +87,7 @@ function _tranform_pattern($tp)
 				$s .= '\\' . $ch;
 			else if ($ch == '*')
 				$s .= '%';
-			else if ($ch == '_')
+			else if ($ch == '?')
 				$s .= '_';
 			else
 				$s .= $ch;

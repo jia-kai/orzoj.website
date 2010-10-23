@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: discuss.php
- * $Date: Tue Oct 19 09:02:11 2010 +0800
+ * $Date: Sat Oct 23 10:12:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,7 +28,9 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once $includes_path . 'post.php';
-
+?>
+<div id="post-view">
+<?php
 $POSTS_PER_PAGE = 20;
 
 // parse arg
@@ -50,5 +52,9 @@ if (isset($page_arg))
 	}
 }
 else
+{
+	$start_page = 1;
 	require_once $theme_path . 'ajax/post_list.php';
+}
 ?>
+</div>
