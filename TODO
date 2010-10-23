@@ -23,3 +23,5 @@ users.php: user_get_user_amount
 
 删除久远的代码
 
+how about changing all recursive functions to manual stack?
+

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Thu Oct 21 15:51:21 2010 +0800
+ * $Date: Sat Oct 23 14:02:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -516,9 +516,10 @@ $tables = array(
 			'rid' => array('type' => 'INT32'), // root post id
 			'score' => array('type' => 'INT32'), // user can grade this post from 0 to 100
 			'is_top' => array('type' => 'INT32', 'default' => 0), //whether the post should be one the top, ordering by time if more than one. root post only
-			// TODO: commented things will be supported next version or later
-			//'attrib' => array('type' => 'TEXT'),
-			/* a serialize array of following attributes, should be only setted on root post
+			// TODO: two features below are not supported yet
+			//'view_gid' => array('type' => 'TEXT'),
+			'type' => array('type' => 'TEXT'),
+			/* a serialize array(or json encoded array?) of following attributes, should be only setted on root post
 			 * 'type' => string : one of {'question', 'normal', 'solution'}
 			 */
 			'last_reply_time' => array('type' => 'INT64'),

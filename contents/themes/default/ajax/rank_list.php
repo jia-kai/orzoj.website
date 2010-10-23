@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Fri Oct 22 22:43:51 2010 +0800
+ * $Date: Sat Oct 23 14:40:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -308,7 +308,7 @@ foreach ($users as $_user)
 function _make_page_link($promt, $page)
 {
 	$url = t_get_link('show-ajax-rank-list', "$page", TRUE, TRUE);
-	echo "<a href=\"$url\" onclick=\"rank_list_naviage($page); return false;\">$promt</a>";
+	echo "<a href=\"$url\" onclick=\"rank_list_navigate($page); return false;\">$promt</a>";
 }
 
 if ($start_page > 1)
@@ -337,18 +337,18 @@ EOF;
 </div> <!-- id: rank-list-content -->
 
 <script type="text/javascript">
-function rank_list_naviage(page)
+function rank_list_navigate(page)
 {
 	var t = $("#rank-list-content");
 	t.animate({"opacity" : 0.5}, 1);
 	$.ajax({
 		"type" : "post",
-			"cache" : false,
-			"url" : "<?php t_get_link('ajax-rank-list', NULL, FALSE); ?>", 
-			"data" : ({"sort_col" : "<?php echo $sort_col; ?>", 
+		"cache" : false,
+		"url" : "<?php t_get_link('ajax-rank-list', NULL, FALSE); ?>", 
+		"data" : ({"sort_col" : "<?php echo $sort_col; ?>", 
 			"sort_way" : "<?php echo $sort_way; ?>",
 			"start_page" : page
-			}),
+		}),
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
 			t.html(data);
@@ -359,7 +359,7 @@ function rank_list_naviage(page)
 function rank_list_goto()
 {
 	var page = $("#rank-list-goto-form input").val();
-	rank_list_naviage(page);
+	rank_list_navigate(page);
 }
 
 $(".rank-list-nickname-a").colorbox();

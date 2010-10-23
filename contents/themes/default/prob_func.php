@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_func.php
- * $Date: Thu Oct 21 23:17:59 2010 +0800
+ * $Date: Sat Oct 23 14:22:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -119,7 +119,7 @@ function prob_view_by_group_parse_arg()
 		$start_page = 1;
 }
 
-function prob_view_single_pack_arg($pid, $gid, $start_page, $sort_col, $sort_way, $title_pattern_show)
+function prob_view_single_pack_arg($pid, $gid = 0, $start_page = 1, $sort_col = 'id', $sort_way = 'ASC', $title_pattern_show = NULL)
 {
 	if (is_null($gid))
 		$gid = 0;
@@ -145,6 +145,7 @@ function prob_view_single_get_a_onclick($pid, $gid, $start_page, $sort_col, $sor
 function prob_view_single_parse_arg()
 {
 	global $pid, $gid, $start_page, $page_arg, $sort_col, $sort_way, $title_pattern_show;
+	// pid|gid|start_page|sort_col|sort_way|title_pattern_show
 	if (!isset($pid))
 	{
 		try

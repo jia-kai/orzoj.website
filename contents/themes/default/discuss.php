@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: discuss.php
- * $Date: Sat Oct 23 10:12:31 2010 +0800
+ * $Date: Sat Oct 23 15:44:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,34 +27,43 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-require_once $includes_path . 'post.php';
+/*
+ * page argumnet:
+ *		id: int
+ *			the id of post
+ */
 ?>
+
 <div id="post-view">
+
 <?php
 $POSTS_PER_PAGE = 20;
 
 // parse arg
 if (isset($page_arg))
 {
-	if (sscanf($page_arg, '%c', $char) != 1)
-		die(__('Can not parse arg at discuss.php. '));
-	if ($char == 's') // single
-	{
-		if (sscanf($page_arg, 's%d', $id) != 1)
-			die(__('Can not parse arg while trying to view single.'));
-		require_once $theme_path . 'ajax/post_view_single.php';
-	}
-	else if ($char == 'l') // list
-	{
-		if (sscanf($page_arg, 'l%d', $start_page) != 1)
-			die(__('Can not parse arg while trying to view list.'));
-		require_once $theme_path . 'ajax/post_list.php';
-	}
+	$page_arg = $page_arg . '|1';
+	require_once $theme_path . 'ajax/post_view_single.php';
 }
 else
 {
-	$start_page = 1;
+	$page_arg = '1';
 	require_once $theme_path . 'ajax/post_list.php';
 }
 ?>
-</div>
+</div><!-- id: post-view -->
+<script type="text/javascript">
+function post_view_set_content(addr)
+{
+	var t = $("#post-view");
+	t.animate({"opacity" : 0.5}, 1);
+	$.ajax({
+		"url" : addr,
+		"success" : function(data) {
+			t.animate({"opacity" : 1}, 1);
+			t.html(data);
+		}
+	});
+}
+</script>
+

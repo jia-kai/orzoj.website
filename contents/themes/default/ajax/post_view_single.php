@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Mon Oct 18 14:50:09 2010 +0800
+ * $Date: Sat Oct 23 15:52:19 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,4 +26,32 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+require_once $theme_path . 'post_func.php';
+/*
+ * page argument: 
+ *		id: int
+ *			post id
+ *		start_page: int
+ *			the page reveal after click back to posts
+ */
+
+if (!isset($page_arg))
+	die('No arguments...');
+
+post_view_single_parse_arg();
+
+$post = $db->select_from('posts', NULL,
+	array($DBOP['='], 'id', $id)
+);
+$post = $post[0];
+
+// TODO: set top
+?>
+<div id="post-view-single">
+	<div id="post-view-single-subject">
+		<?php echo $post['subject']; ?>
+	</div>
+	<div>
+	</div>
+</div>
 

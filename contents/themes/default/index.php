@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri Oct 22 20:06:48 2010 +0800
+ * $Date: Sat Oct 23 11:42:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -61,7 +61,9 @@ $PAGES_AJAX = array(
 	'ajax-status-list' => 'ajax/status_list.php',
 	'ajax-rank-list' => 'ajax/rank_list.php',
 	'ajax-contest-list' => 'ajax/contest_list.php',
-	'ajax-contest-view' => 'ajax/contest_view.php'
+	'ajax-contest-view' => 'ajax/contest_view.php',
+	'ajax-post-list' => 'ajax/post_list.php',
+	'ajax-post-view-single' => 'ajax/post_view_single.php'
 );
 
 /**

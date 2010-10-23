@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Fri Oct 22 18:04:10 2010 +0800
+ * $Date: Sat Oct 23 15:52:27 2010 +0800
 
  This file is part of orzoj
 
@@ -681,4 +681,17 @@ div.contest-list-nav input:hover
 	border: none;
 }
 
+div#post-tree
+{
+	background-color: transparent;
+	float: left;
+	text-align: left;
+}
+
+div#post-view-single-subject
+{
+	color: blue;
+	font-size: 30px;
+	font-weight: bold;
+}
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Sat Oct 23 09:10:05 2010 +0800
+ * $Date: Sat Oct 23 14:58:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,17 +27,6 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-class Post
-{
-	var $id, $time, $uid, 
-		$prob_id, // related problem or 0 means no problem is related
-		$pid,  // parent id, 0 means a root post
-	//	$attrib, // only the root post has attributes
-		$score, // see install/tables.php
-		$subject, $content,
-		$last_reply_time, $last_reply_user,
-		$last_modify_time, $last_modify_user;
-}
 
 $POST_VAL_SET = array('id', 'time', 'uid', 'pid', 'prob_id', 'rid', 'subject', 'content'); 
 /**
@@ -107,24 +96,26 @@ function post_add_get_form($id)
 
 /**
  * get post list in a specific limitation
- * @param int|NULL $uid int a user's id or NULL means all
- * @param bool $concrete TRUE means need concrete information, FALSE means the opposite.
+ * @param bool $concrete TRUE means need content of the post
  * @param bool|NULL $is_top specific whether the post is toped. NULL means no limit.
- * @param int $offset 
- * @param int $count how many post do you want, this does not include post replies
+ * @param int|NULL $offset 
+ * @param int|NULL $count how many post do you want, this does not include post replies
+ * @param int|NULL $depth depth of the post you want
+ * @param int|NULL $uid if this is specified, post published by a certain user will be returned.
  * @param string $post_sort_way 'ASC' or 'DESC', sort by last_reply_time
  * @param string $post_reply_sort_way 'ASC' or 'DESC', sort by time
- * @param int $uid if this is specified, post published by a certain user will be returned.
- * @return array an recursive array of post, in each array, index 0 stores the post, 
+ * @return array an recursive array of post, in each array, index 0 stores the post in a array, keys see install/tables.php
  *		and from index 1 to end is array, except the first layer. the first layer will be a 
  *		array of array.
  */
-function post_get_post_list($concrete = FALSE, $is_top = NULL, $offset = NULL, $count = NULL, $post_sort_way = 'DESC', $post_reply_sort_way = 'ASC', $uid = NULL)
+function post_get_post_list($concrete = FALSE, $is_top = NULL, $offset = NULL, $count = NULL, $depth = NULL, $uid = NULL, $post_sort_way = 'DESC', $post_reply_sort_way = 'ASC')
 {
 	global $db, $DBOP, $POST_VAL_SET;
 	$where = array($DBOP['='], 'pid', 0);
 	if ($is_top !== NULL)
 		db_where_add_and($where, array($DBOP['='], 'is_top', ($is_top ? 1 : 0)));
+	if ($uid != NULL)
+		db_where_add_and($where, array($DBOP['='], 'uid', $uid));
 	$ret = array();
 	$posts = $db->select_from(
 		'posts', 
@@ -135,7 +126,7 @@ function post_get_post_list($concrete = FALSE, $is_top = NULL, $offset = NULL, $
 		$count
 	);
 	foreach ($posts as $post)
-		$ret[] = _build_post_list($post['id'], $concrete, $post_reply_sort_way);
+		$ret[] = _build_post_list($post['id'], $concrete, $post_reply_sort_way, $depth);
 	return filter_apply('after_post_list', $ret);
 }
 
@@ -151,33 +142,42 @@ function _post_top_amount()
  * get list of post in a specific limitaion, top post included
  * @see post_get_post_list()
  */
-function post_get_list($concrete = FALSE, $offset = NULL, $count = NULL, $post_sort_way = 'DESC', $post_reply_sort_way = 'ASC', $uid = NULL)
+function post_get_list($concrete = FALSE, $offset = NULL, $count = NULL, $depth = NULL, $uid = NULL, $post_sort_way = 'DESC', $post_reply_sort_way = 'ASC')
 {
-	$top_post_amount = _post_top_amount();
-	if ($offset <= $top_post_amount) // some top posts are included
+	if (user_check_login())
 	{
-		if ($offset + $count - 1 <= $top_post_amount) // all top posts
+		// XXX
+		// view permission check
+	}
+	else
+	{
+		// XXX
+	}
+	$top_post_amount = _post_top_amount();
+	if ($offset + 1 <= $top_post_amount) // some top posts are included
+	{
+		if ($offset + $count <= $top_post_amount) // all top posts
 		{
-			return post_get_post_list($concrete, TRUE, $offset, $count, $post_sort_way, $post_reply_sort_way, $uid);
+			return post_get_post_list($concrete, TRUE, $offset, $count, $depth, $uid, $post_sort_way, $post_reply_sort_way);
 		}
 		else // some are top posts
 		{
-			$top_post_amount = $top_post_amount - $offset + 1;
-			$ret = post_get_post_list($concrete, TRUE, $offset, $top_post_amount, $post_sort_way, $post_reply_sort_way, $uid);
+			$top_post_amount = $top_post_amount - $offset;
+			$ret = post_get_post_list($concrete, TRUE, $offset, $top_post_amount, $depth, $uid, $post_sort_way, $post_reply_sort_way);
 			$remain_amount = $count - $top_post_amount;
-			$ret[] = post_get_post_list($concrete, FALSE, 0, $remain_amount, $post_sort_way, $post_reply_sort_way, $uid);
+			$ret[] = post_get_post_list($concrete, FALSE, 0, $remain_amount, $depth, $uid, $post_sort_way, $post_reply_sort_way);
 			return $ret;
 		}
 	}
 	else // no top posts are included
 	{
-		return post_get_post_list($concrete, FALSE, $offset - $top_post_amount, $post_sort_way, $post_reply_sort_way, $uid);
+		return post_get_post_list($concrete, FALSE, $offset, $count, $depth, $uid, $post_sort_way, $post_reply_sort_way);
 	}
 }
 /**
  * @ignore
  */
-function _build_post_list($id, $concrete = FALSE, $sort_way = 'ASC')
+function _build_post_list($id, $concrete = FALSE, $sort_way = 'ASC', $depth = NULL)
 {
 	global $db, $DBOP, $POST_VAL_SET;
 	$ret = array();
@@ -185,14 +185,12 @@ function _build_post_list($id, $concrete = FALSE, $sort_way = 'ASC')
 	if (!$concrete)
 		unset($value['content']);
 	$posts = $db->select_from('posts', $value, array($DBOP['='], 'id', $id));
-	$post = new Post();
-	foreach ($posts[0] as $key => $val)
-		$post->$key == $val;
-	$ret[] = $post;
+	$ret[] = $posts[0];
 
 	$posts = $db->select_from('posts', array('id'), array($DBOP['='], 'pid', $id), array('time' => $sort_way));
-	foreach ($posts as $post)
-		$ret[] = _build_post_list($post['id'], $concrete, $sort_way);
+	if (is_null($depth) || ((!is_null($depth) && $depth > 1)))
+		foreach ($posts as $post)
+			$ret[] = _build_post_list($post['id'], $concrete, $sort_way, is_null($depth) ? NULL : $depth - 1);
 	return $ret;
 }
 
@@ -282,4 +280,5 @@ function post_set_top_status($id, $status = TRUE)
 	$db->update_data('posts', array('is_top' => $state),
 		array($DBOP['='], 'id', $status === TRUE ? 1 : 0));
 }
+
 
