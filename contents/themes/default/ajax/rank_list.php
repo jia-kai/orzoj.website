@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Fri Oct 22 22:43:51 2010 +0800
+ * $Date: Fri Oct 22 23:54:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -142,7 +142,7 @@ function _make_table_header($name, $col_name, $default_order)
 <?php if (!isset($post)) { ?>
 <div id="rank-title"><?php echo __('Rank List');?></div>
 <?php if (user_check_login()) {?>
-<div>Your current rank: <?php echo _get_single_rank($user->id);?></div>
+<div><?php echo __('Your current rank:');echo _get_single_rank($user->id);?></div>
 <?php }?>
 <?php }?>
 

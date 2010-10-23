@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orzoj-website-0.0.1-alpha\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-21 21:00+0800\n"
+"POT-Creation-Date: 2010-10-22 23:44+0800\n"
 "PO-Revision-Date: 2010-10-21 21:00+0800\n"
 "Last-Translator: \n"
 "Language-Team: Chinese (traditional)\n"
@@ -49,93 +49,102 @@ msgstr "排名模式"
 msgid "Apply"
 msgstr "執行"
 
+#: contents/themes/default/status.php:192
+msgid "Refresh"
+msgstr ""
+
 #: contents/themes/default/ajax/gid_selector.php:138
 msgid "Please select a group first"
 msgstr "請先選擇一個組"
 
-#: contents/themes/default/ajax/prob_submit.php:39
+#: contents/themes/default/ajax/prob_submit.php:46
 msgid "Successful submission!"
 msgstr "提交成功！"
 
-#: contents/themes/default/ajax/prob_submit.php:44
+#: contents/themes/default/ajax/prob_submit.php:51
 msgid "Failed to submit: "
 msgstr ""
 
-#: contents/themes/default/ajax/prob_submit.php:50
-#: contents/themes/default/ajax/prob_best_solutions.php:30
+#: contents/themes/default/ajax/prob_submit.php:57
+#: contents/themes/default/ajax/prob_best_solutions.php:36
 msgid "Sir, what can I do for you?"
 msgstr "你好，我能為你做什麼？"
 
-#: contents/themes/default/ajax/prob_submit.php:53
-#: contents/themes/default/ajax/prob_best_solutions.php:32
+#: contents/themes/default/ajax/prob_submit.php:60
+#: contents/themes/default/ajax/prob_best_solutions.php:38
 msgid "Please login first."
 msgstr "請先登錄。"
 
-#: contents/themes/default/ajax/prob_submit.php:61
+#: contents/themes/default/ajax/prob_submit.php:68
 msgid "Good Luck^ ^"
 msgstr "祝你好運^_^"
 
-#: contents/themes/default/ajax/prob_submit.php:118
+#: contents/themes/default/ajax/prob_submit.php:125
 msgid "Good luck"
 msgstr "祝你好運"
 
-#: contents/themes/default/ajax/prob_group_tree_ask.php:68
-#: contents/themes/default/ajax/prob_view_by_group.php:144
+#: contents/themes/default/ajax/prob_group_tree_ask.php:74
+#: contents/themes/default/ajax/prob_view_by_group.php:161
 msgid "All"
 msgstr "全部"
 
-#: contents/themes/default/ajax/rank_list.php:57
+#: contents/themes/default/ajax/rank_list.php:68
 msgid "Unknown argument."
 msgstr "未知參數。"
 
-#: contents/themes/default/ajax/rank_list.php:107
-#: contents/themes/default/index.php:94
+#: contents/themes/default/ajax/rank_list.php:118
+#: contents/themes/default/index.php:96
 msgid "Rank"
 msgstr "排名"
 
-#: contents/themes/default/ajax/rank_list.php:108 includes/user.php:609
+#: contents/themes/default/ajax/rank_list.php:119 includes/contest/oi.php:181
+#: includes/user.php:611
 msgid "Nickname"
 msgstr "昵稱"
 
-#: contents/themes/default/ajax/rank_list.php:109
-msgid "Accepted Prob."
-msgstr "通過題目數量"
-
-#: contents/themes/default/ajax/rank_list.php:110
-msgid "Submited Prob."
+#: contents/themes/default/ajax/rank_list.php:120
+#, fuzzy
+msgid "Solved Prob."
 msgstr "已提交的題目數量"
 
-#: contents/themes/default/ajax/rank_list.php:111
+#: contents/themes/default/ajax/rank_list.php:121
+#, fuzzy
+msgid "Submitted Prob."
+msgstr "已提交的題目數量"
+
+#: contents/themes/default/ajax/rank_list.php:122
 msgid "AC ratio"
 msgstr "通過率"
 
-#: contents/themes/default/ajax/rank_list.php:126
+#: contents/themes/default/ajax/rank_list.php:143
 msgid "Rank List"
 msgstr "排名表"
 
-#: contents/themes/default/ajax/rank_list.php:261
+#: contents/themes/default/ajax/rank_list.php:287
 msgid "This is you!"
 msgstr "這個是你！"
 
-#: contents/themes/default/ajax/rank_list.php:289
+#: contents/themes/default/ajax/rank_list.php:315
 #: contents/themes/default/ajax/status_list.php:344
-#: contents/themes/default/ajax/prob_view_by_group.php:368
+#: contents/themes/default/ajax/prob_view_by_group.php:384
+#: contents/themes/default/ajax/contest_list.php:191
 msgid "Prev"
-msgstr "上一"
+msgstr "上一頁"
 
-#: contents/themes/default/ajax/rank_list.php:294
+#: contents/themes/default/ajax/rank_list.php:320
 #: contents/themes/default/ajax/status_list.php:350
-#: contents/themes/default/ajax/prob_view_by_group.php:371
+#: contents/themes/default/ajax/prob_view_by_group.php:387
+#: contents/themes/default/ajax/contest_list.php:206
 msgid "Next"
-msgstr "下一"
+msgstr "下一頁"
 
-#: contents/themes/default/ajax/rank_list.php:298
-#: contents/themes/default/ajax/prob_view_by_group.php:379
+#: contents/themes/default/ajax/rank_list.php:324
+#: contents/themes/default/ajax/prob_view_by_group.php:395
 msgid "Go to page"
 msgstr "跳轉到頁面"
 
 #: contents/themes/default/ajax/prob_filter.php:31
-#: contents/themes/default/ajax/avatar_browser.php:103
+#: contents/themes/default/ajax/avatar_browser.php:110
 msgid "Go"
 msgstr "轉到"
 
@@ -144,17 +153,18 @@ msgid "Problem Nav."
 msgstr "題目導航"
 
 #: contents/themes/default/ajax/prob_filter.php:87
-#: contents/themes/default/ajax/prob_view_by_group.php:208
+#: contents/themes/default/ajax/prob_view_by_group.php:225
+#: contents/themes/default/ajax/contest_list.php:116
 msgid "ID"
 msgstr "ID"
 
 #: contents/themes/default/ajax/prob_filter.php:88
-#: contents/themes/default/ajax/prob_view_by_group.php:210
+#: contents/themes/default/ajax/prob_view_by_group.php:227
 msgid "Code"
 msgstr "代碼"
 
 #: contents/themes/default/ajax/prob_filter.php:89
-#: contents/themes/default/ajax/prob_view_by_group.php:209
+#: contents/themes/default/ajax/prob_view_by_group.php:226
 msgid "Title"
 msgstr "標題"
 
@@ -162,127 +172,127 @@ msgstr "標題"
 msgid "Find"
 msgstr "查找"
 
-#: contents/themes/default/ajax/record_detail.php:54
+#: contents/themes/default/ajax/record_detail.php:55
 #, php-format
 msgid "real name: %s"
 msgstr "真實姓名：%s"
 
-#: contents/themes/default/ajax/record_detail.php:55
+#: contents/themes/default/ajax/record_detail.php:56
 #, php-format
 msgid "User: %s"
 msgstr "用戶： %s"
 
-#: contents/themes/default/ajax/record_detail.php:62
+#: contents/themes/default/ajax/record_detail.php:63
 #, php-format
 msgid "Problem: %s"
 msgstr "題目：%s"
 
-#: contents/themes/default/ajax/record_detail.php:68
+#: contents/themes/default/ajax/record_detail.php:69
 #, php-format
 msgid "Programming language: %s"
 msgstr "編程語言：%s"
 
-#: contents/themes/default/ajax/record_detail.php:74
+#: contents/themes/default/ajax/record_detail.php:75
 #, php-format
 msgid "Status: %s"
 msgstr "狀態：%s"
 
-#: contents/themes/default/ajax/record_detail.php:84
+#: contents/themes/default/ajax/record_detail.php:85
 #, php-format
 msgid "Score: %s"
 msgstr "分數：%s"
 
-#: contents/themes/default/ajax/record_detail.php:95
+#: contents/themes/default/ajax/record_detail.php:96
 #, php-format
 msgid "%.6lf [sec]"
 msgstr "%.6lf [秒]"
 
-#: contents/themes/default/ajax/record_detail.php:97
+#: contents/themes/default/ajax/record_detail.php:98
 #, php-format
 msgid "Total CPU time: %s"
 msgstr "總共CPU時間：%s"
 
-#: contents/themes/default/ajax/record_detail.php:105
+#: contents/themes/default/ajax/record_detail.php:106
 #, php-format
 msgid "%d [kb]"
 msgstr "%d [千位元組]"
 
-#: contents/themes/default/ajax/record_detail.php:106
+#: contents/themes/default/ajax/record_detail.php:107
 #, php-format
 msgid "Maximal memory: %s"
 msgstr "最大內存：%s"
 
-#: contents/themes/default/ajax/record_detail.php:115
+#: contents/themes/default/ajax/record_detail.php:116
 #, php-format
 msgid "Judge: %s"
 msgstr "評測機：%s"
 
-#: contents/themes/default/ajax/record_detail.php:125
+#: contents/themes/default/ajax/record_detail.php:126
 #, php-format
 msgid "%d [b]"
 msgstr "%d [位元組]"
 
-#: contents/themes/default/ajax/record_detail.php:126
+#: contents/themes/default/ajax/record_detail.php:127
 #, php-format
 msgid "%.3f [kb]"
 msgstr "%.3f [千位元組]"
 
-#: contents/themes/default/ajax/record_detail.php:128
+#: contents/themes/default/ajax/record_detail.php:129
 #, php-format
 msgid "Source code length: %s"
 msgstr "代碼長度：%s"
 
-#: contents/themes/default/ajax/record_detail.php:135
+#: contents/themes/default/ajax/record_detail.php:136
 #, php-format
 msgid "When submitted: %s"
 msgstr "提交時間：%s"
 
-#: contents/themes/default/ajax/record_detail.php:145
+#: contents/themes/default/ajax/record_detail.php:146
 #, php-format
 msgid "When judged: %s"
 msgstr "評測時間：%s"
 
-#: contents/themes/default/ajax/record_detail.php:151
+#: contents/themes/default/ajax/record_detail.php:152
 #, php-format
 msgid "Submission ip: %s"
 msgstr "提交IP位址：%s"
 
-#: contents/themes/default/ajax/record_detail.php:184
+#: contents/themes/default/ajax/record_detail.php:185
 msgid "Details:"
 msgstr "詳情："
 
-#: contents/themes/default/ajax/record_detail.php:192
+#: contents/themes/default/ajax/record_detail.php:193
 msgid "CASE"
 msgstr "測試點"
 
-#: contents/themes/default/ajax/record_detail.php:193
+#: contents/themes/default/ajax/record_detail.php:194
 #: contents/themes/default/ajax/status_list.php:253
 msgid "STATUS"
 msgstr "狀態"
 
-#: contents/themes/default/ajax/record_detail.php:194
+#: contents/themes/default/ajax/record_detail.php:195
 #: contents/themes/default/ajax/status_list.php:255
 msgid "SCORE"
 msgstr "分數"
 
-#: contents/themes/default/ajax/record_detail.php:195
+#: contents/themes/default/ajax/record_detail.php:196
 #: contents/themes/default/ajax/status_list.php:256
 msgid "TIME[sec]"
 msgstr "時間[秒]"
 
-#: contents/themes/default/ajax/record_detail.php:196
+#: contents/themes/default/ajax/record_detail.php:197
 msgid "MEMORY[kb]"
 msgstr "內存[千位元組]"
 
-#: contents/themes/default/ajax/record_detail.php:197
+#: contents/themes/default/ajax/record_detail.php:198
 msgid "Extra infomation"
 msgstr "額外的信息"
 
-#: contents/themes/default/ajax/record_detail.php:231
+#: contents/themes/default/ajax/record_detail.php:232
 msgid "not found"
 msgstr "未找到"
 
-#: contents/themes/default/ajax/record_detail.php:233
+#: contents/themes/default/ajax/record_detail.php:234
 msgid "Source:"
 msgstr "源代碼："
 
@@ -290,20 +300,24 @@ msgstr "源代碼："
 msgid "Avatar browser"
 msgstr "頭像瀏覽器"
 
-#: contents/themes/default/ajax/avatar_browser.php:83
+#: contents/themes/default/ajax/avatar_browser.php:62
+msgid "Close"
+msgstr ""
+
+#: contents/themes/default/ajax/avatar_browser.php:90
 msgid "&lt; Previous page"
 msgstr "&lt; 上一頁"
 
-#: contents/themes/default/ajax/avatar_browser.php:91
+#: contents/themes/default/ajax/avatar_browser.php:98
 #, php-format
 msgid "Page %d of %d"
 msgstr "共%2$d頁，第%1$d頁"
 
-#: contents/themes/default/ajax/avatar_browser.php:95
+#: contents/themes/default/ajax/avatar_browser.php:102
 msgid "Next page &gt;"
 msgstr "下一頁 &gt;"
 
-#: contents/themes/default/ajax/avatar_browser.php:102
+#: contents/themes/default/ajax/avatar_browser.php:109
 #: contents/themes/default/ajax/status_list.php:357
 msgid "Go to page:"
 msgstr "跳轉到頁面："
@@ -353,51 +367,51 @@ msgstr "記錄詳情"
 msgid "Problem Groups"
 msgstr "題目組"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:115
-#: contents/themes/default/ajax/prob_view_single.php:68
+#: contents/themes/default/ajax/prob_view_by_group.php:133
+#: contents/themes/default/ajax/prob_view_single.php:74
 msgid "Unknown problem filter."
 msgstr "未知題目過濾器。"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:137
+#: contents/themes/default/ajax/prob_view_by_group.php:154
 msgid "Problems filter"
 msgstr "題目過濾器："
 
-#: contents/themes/default/ajax/prob_view_by_group.php:152
-#: contents/themes/default/index.php:92
+#: contents/themes/default/ajax/prob_view_by_group.php:169
+#: contents/themes/default/index.php:94
 msgid "Problems"
 msgstr "題目"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:211
+#: contents/themes/default/ajax/prob_view_by_group.php:228
 msgid "Accepted Users"
 msgstr "通過用戶數"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:212
+#: contents/themes/default/ajax/prob_view_by_group.php:229
 msgid "Submited Users"
 msgstr "提交用戶數"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:213
+#: contents/themes/default/ajax/prob_view_by_group.php:230
 msgid "Difficulty"
 msgstr "難度"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:308
+#: contents/themes/default/ajax/prob_view_by_group.php:324
 msgid "Untried"
 msgstr "未嘗試"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:309
+#: contents/themes/default/ajax/prob_view_by_group.php:325
 msgid "Unaccepted"
 msgstr "未通過"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:310
+#: contents/themes/default/ajax/prob_view_by_group.php:326
 #: includes/record.php:125
 msgid "Accepted"
 msgstr "通過"
 
-#: contents/themes/default/ajax/prob_view_by_group.php:311
+#: contents/themes/default/ajax/prob_view_by_group.php:327
 msgid "Accepted Blink"
 msgstr "一次性通過"
 
-#: contents/themes/default/ajax/user_info.php:45 includes/user.php:489
-#: includes/user.php:611
+#: contents/themes/default/ajax/user_info.php:45 includes/user.php:491
+#: includes/user.php:613
 msgid "Avatar:"
 msgstr "頭像："
 
@@ -425,16 +439,16 @@ msgstr "上次登錄時間："
 msgid "User id:"
 msgstr "用戶ID："
 
-#: contents/themes/default/ajax/user_info.php:84 includes/user.php:307
-#: includes/user.php:484
+#: contents/themes/default/ajax/user_info.php:84 includes/user.php:309
+#: includes/user.php:486
 msgid "Username:"
 msgstr "用戶名："
 
-#: contents/themes/default/ajax/user_info.php:85 includes/user.php:487
+#: contents/themes/default/ajax/user_info.php:85 includes/user.php:489
 msgid "Nickname:"
 msgstr "昵稱："
 
-#: contents/themes/default/ajax/user_info.php:86 includes/user.php:486
+#: contents/themes/default/ajax/user_info.php:86 includes/user.php:488
 msgid "Real name:"
 msgstr "真實姓名："
 
@@ -450,49 +464,65 @@ msgstr "註冊IP："
 msgid "Last login IP:"
 msgstr "上次登錄IP："
 
-#: contents/themes/default/ajax/user_info.php:112
+#: contents/themes/default/ajax/user_info.php:113
 #, php-format
 msgid "Failed to get user info: %s"
 msgstr "獲取用戶信息失敗：%s"
 
-#: contents/themes/default/ajax/prob_view_single.php:47
+#: contents/themes/default/ajax/prob_view_single.php:53
 msgid "Give me an id please."
 msgstr "請輸入一個ID。"
 
-#: contents/themes/default/ajax/prob_view_single.php:51
+#: contents/themes/default/ajax/prob_view_single.php:57
 msgid "Give me an INT please - -!"
 msgstr "請輸入一個整數 --！"
 
-#: contents/themes/default/ajax/prob_view_single.php:55
+#: contents/themes/default/ajax/prob_view_single.php:61
 #, php-format
 msgid "No such problem whose id is '%d'."
 msgstr "沒有編號為%d的題目。"
 
-#: contents/themes/default/ajax/prob_view_single.php:61
+#: contents/themes/default/ajax/prob_view_single.php:67
 msgid "Give me a code please."
 msgstr "請輸入一個代碼。"
 
-#: contents/themes/default/ajax/prob_view_single.php:64
+#: contents/themes/default/ajax/prob_view_single.php:70
 #, php-format
 msgid "No such problem whose code is '%s'"
 msgstr "沒有代碼為%s的題目"
 
-#: contents/themes/default/ajax/prob_view_single.php:81
+#: contents/themes/default/ajax/prob_view_single.php:87
 msgid "Submit"
 msgstr "提交"
 
-#: contents/themes/default/ajax/prob_view_single.php:85
+#: contents/themes/default/ajax/prob_view_single.php:91
 msgid "Best solutions"
 msgstr "最優解"
 
-#: contents/themes/default/ajax/prob_view_single.php:102
+#: contents/themes/default/ajax/prob_view_single.php:108
 msgid "Back to list"
 msgstr "返回列表"
 
-#: contents/themes/default/ajax/prob_view_single.php:122
+#: contents/themes/default/ajax/prob_view_single.php:128
 #, php-format
 msgid "Hello buddy: %s"
 msgstr "你好，%s"
+
+#: contents/themes/default/ajax/contest_list.php:117
+msgid "TYPE"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_list.php:118
+msgid "NAME"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_list.php:119
+msgid "START"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_list.php:120
+msgid "END"
+msgstr ""
 
 #: contents/themes/default/ajax/user_update_info.php:34
 msgid "user information updated sucessfully"
@@ -524,7 +554,26 @@ msgstr "註冊失敗："
 msgid "Register!"
 msgstr "註冊！"
 
-#: contents/themes/default/functions.php:176 includes/user.php:638
+#: contents/themes/default/contest.php:48
+#, fuzzy
+msgid "All Contests"
+msgstr "比賽"
+
+#: contents/themes/default/contest.php:51
+#, fuzzy
+msgid "Past Contests"
+msgstr "比賽"
+
+#: contents/themes/default/contest.php:54
+#, fuzzy
+msgid "Current Contests"
+msgstr "比賽"
+
+#: contents/themes/default/contest.php:57
+msgid "Upcoming Contests"
+msgstr ""
+
+#: contents/themes/default/functions.php:176 includes/user.php:640
 #: includes/message.php:71
 msgid "incomplete post"
 msgstr "不完整的表單"
@@ -650,110 +699,111 @@ msgstr "在嘗試讀取單個題目時不能解析arg。"
 msgid "Can not parse arg while trying to view list."
 msgstr "在嘗試讀取列表時不能解析arg。"
 
-#: contents/themes/default/index.php:91
+#: contents/themes/default/index.php:93
 msgid "Home"
 msgstr "主頁"
 
-#: contents/themes/default/index.php:93
+#: contents/themes/default/index.php:95
 msgid "Status"
 msgstr "狀態"
 
-#: contents/themes/default/index.php:95
+#: contents/themes/default/index.php:97
 msgid "Contest"
 msgstr "比賽"
 
-#: contents/themes/default/index.php:96
+#: contents/themes/default/index.php:98
 msgid "Discuss"
 msgstr "討論"
 
-#: contents/themes/default/index.php:97
+#: contents/themes/default/index.php:99
 msgid "User Teams"
 msgstr "用戶團隊"
 
-#: contents/themes/default/index.php:98
+#: contents/themes/default/index.php:100
 msgid "Judges"
 msgstr "評測機"
 
-#: contents/themes/default/index.php:99
+#: contents/themes/default/index.php:101
 msgid "FAQ"
 msgstr "常見問題"
 
-#: contents/themes/default/index.php:153
+#: contents/themes/default/index.php:155
 msgid "Failed to login"
 msgstr "登錄失敗"
 
-#: contents/themes/default/index.php:157
+#: contents/themes/default/index.php:159
 msgid "Failed to login: "
 msgstr "登錄失敗："
 
-#: contents/themes/default/index.php:172
+#: contents/themes/default/index.php:174
 msgid "Error while logging out: "
 msgstr "登出失敗："
 
-#: contents/themes/default/index.php:215 contents/themes/default/index.php:515
+#: contents/themes/default/index.php:217 contents/themes/default/index.php:522
 msgid "OK"
 msgstr "OK"
 
-#: contents/themes/default/index.php:248
+#: contents/themes/default/index.php:250
 msgid "Login"
 msgstr "登錄"
 
-#: contents/themes/default/index.php:250
+#: contents/themes/default/index.php:252
 msgid "Register"
 msgstr "註冊"
 
-#: contents/themes/default/index.php:257
+#: contents/themes/default/index.php:259
 #, php-format
 msgid "Hello, %s!"
 msgstr "你好，%s！"
 
-#: contents/themes/default/index.php:259
-#, php-format
-msgid "AC: %d Submission: %d Ratio: %.2f%%"
+#: contents/themes/default/index.php:261
+#, fuzzy, php-format
+msgid "Solved prob.: %d Submitted prob.: %d <br />AC Ratio: %.2f%%"
 msgstr "通過：%d 提交：%d 通過率：%.2f%%"
 
-#: contents/themes/default/index.php:271
+#: contents/themes/default/index.php:273
 msgid "User info."
 msgstr "用戶信息"
 
-#: contents/themes/default/index.php:272
+#: contents/themes/default/index.php:274
 msgid "Update profile"
 msgstr "更新信息"
 
-#: contents/themes/default/index.php:273
+#: contents/themes/default/index.php:275
 msgid "Logout"
 msgstr "登出"
 
-#: contents/themes/default/index.php:302
+#: contents/themes/default/index.php:304
 #, php-format
 msgid "This is an AJAX page. Please visit %s to find the complete page."
-msgstr "這個是一個AJAX（非同步式Javascript和XML）頁面。請訪問 %s 以找到完整的頁面。"
+msgstr ""
+"這個是一個AJAX（非同步式Javascript和XML）頁面。請訪問 %s 以找到完整的頁面。"
 
-#: contents/themes/default/index.php:317
+#: contents/themes/default/index.php:319
 msgid "User group selector"
 msgstr "用戶組選擇器"
 
-#: contents/themes/default/index.php:323
+#: contents/themes/default/index.php:325
 msgid "Message"
 msgstr "消息"
 
-#: contents/themes/default/index.php:363 includes/user.php:518
+#: contents/themes/default/index.php:365 includes/user.php:520
 msgid "Passwords do not match"
 msgstr "兩次輸入的密碼不一樣"
 
-#: contents/themes/default/index.php:367
+#: contents/themes/default/index.php:369
 msgid "You must set a password"
 msgstr "你必須設置一個密碼"
 
-#: contents/themes/default/index.php:506
+#: contents/themes/default/index.php:513
 msgid "ADD"
 msgstr "添加"
 
-#: contents/themes/default/index.php:509
+#: contents/themes/default/index.php:516
 msgid "REMOVE"
 msgstr "刪除"
 
-#: contents/themes/default/index.php:512
+#: contents/themes/default/index.php:519
 msgid "CANCEL"
 msgstr "取消"
 
@@ -761,11 +811,9 @@ msgstr "取消"
 msgid ""
 "Installation completed. Please move install/config.php to the top direcotry "
 "of orzoj-website and delete \"install\" directory."
-msgstr "安裝完成。請將install/config.php移動到orzoj-website的頂層目錄並刪除\"install" "\"目錄。"
-
-#: includes/sched.php:104
-msgid "failed to call user function"
-msgstr "調用用戶函數失敗"
+msgstr ""
+"安裝完成。請將install/config.php移動到orzoj-website的頂層目錄並刪除\"install"
+"\"目錄。"
 
 #: includes/theme.php:57
 #, php-format
@@ -773,14 +821,17 @@ msgid ""
 "%d database queries | Page execution time: %d milliseconds | Powered by <a "
 "style=\"color: blue\" href=\"http://code.google.com/p/orzoj/\" target="
 "\"_blank\">Orz Online Judge</a> %s<br />"
-msgstr "%d次資料庫請求|頁面執行時間：%d毫秒|由<a href=\"http://code.google.com/p/" "orzoj/\" target=\"_blank\">Orz Online Judge</a> %s 強力驅動"
+msgstr ""
+"%d次資料庫請求|頁面執行時間：%d毫秒|由<a href=\"http://code.google.com/p/"
+"orzoj/\" target=\"_blank\">Orz Online Judge</a> %s 強力驅動"
 
 #: includes/exception.php:36
 #, php-format
 msgid ""
 "error at %s:%d:\n"
 "%s"
-msgstr "錯誤發生在%s:%d:\n"
+msgstr ""
+"錯誤發生在%s:%d:\n"
 "%s"
 
 #: includes/exception.php:48
@@ -789,7 +840,10 @@ msgid ""
 "inner error at %s:%d:\n"
 "%s\n"
 "Traceback: %s"
-msgstr "內部錯誤發生在%s:%d:\n" "%s\n" "溯源：%s"
+msgstr ""
+"內部錯誤發生在%s:%d:\n"
+"%s\n"
+"溯源：%s"
 
 #: includes/plugin.php:84
 #, php-format
@@ -836,9 +890,78 @@ msgstr "非零返回值"
 msgid "System error"
 msgstr "系統錯誤"
 
-#: includes/contest/ctal.php:129
+#: includes/contest/oi.php:59
+#, php-format
+msgid "trying to update contest #%d before insertion"
+msgstr ""
+
+#: includes/contest/oi.php:66
+#, fuzzy
+msgid "sorry, you are not allowed to view this problem now"
+msgstr "你沒有許可權瀏覽該題"
+
+#: includes/contest/oi.php:79
+msgid "please do not submit before the contest starts"
+msgstr ""
+
+#: includes/contest/oi.php:82
+msgid "sorry, your programming language is unavailable in this contest"
+msgstr ""
+
+#: includes/contest/oi.php:86
+#, fuzzy
+msgid "please login first"
+msgstr "請先登錄"
+
+#: includes/contest/oi.php:105
+#, php-format
+msgid "Ctal_oi::judge_done: no such record #%d"
+msgstr ""
+
+#: includes/contest/oi.php:145
+#, fuzzy, php-format
+msgid "No data row for contest #%d"
+msgstr "因比賽而等待"
+
+#: includes/contest/oi.php:181 includes/user.php:610
+msgid "Real name"
+msgstr "真實姓名"
+
+#: includes/contest/oi.php:181
+msgid "Total score"
+msgstr ""
+
+#: includes/contest/oi.php:181
+#, fuzzy
+msgid "Total time"
+msgstr "總共CPU時間：%s"
+
+#: includes/contest/oi.php:198
+#, php-format
+msgid "Status: %s<br />Score: %d<br />Time: %.3f[sec]<br />"
+msgstr ""
+
+#: includes/contest/oi.php:202
+#, fuzzy
+msgid "Not submitted"
+msgstr "提交時間：%s"
+
+#: includes/contest/ctal.php:144
 msgid "contest not found"
 msgstr "比賽未找到"
+
+#: includes/contest/ctal.php:166
+#, fuzzy, php-format
+msgid "No such contest #%d"
+msgstr "沒有這個團隊#%d"
+
+#: includes/contest/ctal.php:183
+msgid "Olympiad in informatics"
+msgstr ""
+
+#: includes/contest/ctal.php:184
+msgid "ACM/ICPC"
+msgstr ""
 
 #: includes/db/mysql.php:129 includes/db/mysql.php:152
 msgid "invalid where clause"
@@ -854,20 +977,20 @@ msgstr "SQL錯誤：%s"
 msgid "failed to conenct to database: %s"
 msgstr "連接資料庫失敗：%s"
 
-#: includes/db/mysql.php:267
+#: includes/db/mysql.php:269
 #, php-format
 msgid "unknown index type: %s"
 msgstr "未知索引類型：%s"
 
-#: includes/db/mysql.php:301
+#: includes/db/mysql.php:303
 msgid "unexpected SQL error"
 msgstr "未預料的SQL錯誤"
 
-#: includes/db/mysql.php:474
+#: includes/db/mysql.php:476
 msgid "nested transaction"
 msgstr "嵌套事務"
 
-#: includes/db/mysql.php:487
+#: includes/db/mysql.php:488
 msgid "attempt to commit before beginning transaction"
 msgstr "在事務開始前嘗試提交它"
 
@@ -875,48 +998,50 @@ msgstr "在事務開始前嘗試提交它"
 msgid "attempt to rollback before beginning transaction"
 msgstr "在事務開始前嘗試回滾它"
 
-#: includes/db/mysql.php:557
+#: includes/db/mysql.php:559
 #, php-format
 msgid "SQL query error [query: %s]: %s"
 msgstr "SQL請求錯誤·［請求：%s］：%s"
 
-#: includes/functions.php:319
+#: includes/functions.php:321
 msgid "invalid email address: no at symbol (@) found"
 msgstr "不合法的郵件地址：沒有@符號"
 
-#: includes/functions.php:325
+#: includes/functions.php:327
 msgid "invalid email address: local part length exceeded"
 msgstr "不合法的郵件地址：本地部分（@前面）超長"
 
-#: includes/functions.php:327
+#: includes/functions.php:329
 msgid "invalid email address: domain part length exceeded"
 msgstr "不合法的郵件地址：域名部分超長"
 
-#: includes/functions.php:329
+#: includes/functions.php:331
 msgid "invalid email address: local part starts or ends with dot(.)"
 msgstr "不合法的郵件地址：本地部分（@前面）以點開始或結尾"
 
-#: includes/functions.php:331
+#: includes/functions.php:333
 msgid "invalid email address: local part has two consecutive dots"
 msgstr "不合法的郵件地址：本地部分（@前面）有兩個連續的點"
 
-#: includes/functions.php:333
+#: includes/functions.php:335
 msgid "invalid email address: character not valid in domain part"
 msgstr "不合法的郵件地址：域名部分的字元不合法"
 
-#: includes/functions.php:335
+#: includes/functions.php:337
 msgid "invalid email address: domain part has two consecutive dots"
 msgstr "不合法的郵件地址：域名部分有兩個連續的點"
 
-#: includes/functions.php:341
+#: includes/functions.php:343
 msgid ""
 "invalid email address: character not valid in local part unless local part "
 "is quoted"
 msgstr "不合法的郵件地址：如果本地部分沒有在引號內，本地部分有不合法的字元"
 
-#: includes/functions.php:347
+#: includes/functions.php:349
 msgid "invalid email address: MX record not found in DNS"
-msgstr "不合法的郵件地址：域名部分的域名解析記錄中沒有郵件交換記錄，這可能是一個不存在的郵箱"
+msgstr ""
+"不合法的郵件地址：域名部分的域名解析記錄中沒有郵件交換記錄，這可能是一個不存"
+"在的郵箱"
 
 #: includes/post.php:75 includes/post.php:211 includes/post.php:238
 msgid "Please login first"
@@ -958,7 +1083,7 @@ msgstr "你沒有許可權修改這個帖子。"
 msgid "No post is specified."
 msgstr "沒有帖子被指定。"
 
-#: includes/problem.php:77 includes/submit.php:157
+#: includes/problem.php:77
 #, php-format
 msgid "No such problem #%d"
 msgstr "沒有這個題目#%d"
@@ -967,105 +1092,101 @@ msgstr "沒有這個題目#%d"
 msgid "Your are not permitted to view this problem"
 msgstr "你沒有許可權瀏覽該題"
 
-#: includes/user.php:83 includes/user.php:194 includes/user.php:220
+#: includes/user.php:83 includes/user.php:194 includes/user.php:222
 #, php-format
 msgid "user id %d does not exist"
 msgstr "用戶ID %d 不存在"
 
-#: includes/user.php:308 includes/user.php:485
+#: includes/user.php:310 includes/user.php:487
 msgid "Password:"
 msgstr "密碼："
 
-#: includes/user.php:426
+#: includes/user.php:428
 #, php-format
 msgid "username should not be shorter than %d characters"
 msgstr "用戶名不應該短於%d個字元"
 
-#: includes/user.php:428
+#: includes/user.php:430
 #, php-format
 msgid "username should not be longer than %d characters"
 msgstr "用戶名不應該長於%d個字元"
 
-#: includes/user.php:430
+#: includes/user.php:432
 msgid ""
 "username should begin with a letter and only contain letters, digits, dots"
 "(.) or underscores(_)"
 msgstr "用戶名應該以字母開頭，並且只包含字母、數、點（.）和下劃線（_）"
 
-#: includes/user.php:432
+#: includes/user.php:434
 #, php-format
 msgid "username %s already exists"
 msgstr "用戶名 %s 已經存在"
 
-#: includes/user.php:433
+#: includes/user.php:435
 msgid "Username avaliable"
 msgstr "用戶名可用"
 
-#: includes/user.php:485
+#: includes/user.php:487
 msgid "Confirm password:"
 msgstr "確認密碼："
 
-#: includes/user.php:488 includes/user.php:610
+#: includes/user.php:490 includes/user.php:612
 msgid "E-mail:"
 msgstr "電子郵箱："
 
-#: includes/user.php:490 includes/user.php:612
+#: includes/user.php:492 includes/user.php:614
 msgid "Preferred programming language:"
 msgstr "默認編程語言："
 
-#: includes/user.php:491 includes/user.php:613
+#: includes/user.php:493 includes/user.php:615
 msgid "Preferred website language:"
 msgstr "默認網站語言："
 
-#: includes/user.php:492 includes/user.php:616
+#: includes/user.php:494 includes/user.php:618
 msgid "Self description(XHTML):"
 msgstr "自我描述（XHTML）:"
 
-#: includes/user.php:512
+#: includes/user.php:514
 #, php-format
 msgid "incomplete post: required field \"%s\" not found"
 msgstr "不完整的帖子：項目\"%s\"未找到"
 
-#: includes/user.php:514
+#: includes/user.php:516
 msgid "Every field in the register form must be filled."
 msgstr "每一項都必須被填寫。"
 
-#: includes/user.php:521
+#: includes/user.php:523
 msgid "invalid username"
 msgstr "不合法的用戶名"
 
-#: includes/user.php:523
+#: includes/user.php:525
 msgid "username already exists"
 msgstr "用戶名已存在"
 
-#: includes/user.php:530 includes/user.php:647
+#: includes/user.php:532 includes/user.php:649
 #, php-format
 msgid "Error while validating self description: %s"
 msgstr "在驗證自我描述時發生錯誤：%s"
 
-#: includes/user.php:578
+#: includes/user.php:580
 #, php-format
 msgid "uid %d does not exist"
 msgstr "UID %d 不存在"
 
-#: includes/user.php:583 includes/user.php:587
+#: includes/user.php:585 includes/user.php:589
 msgid "permission denied"
 msgstr "無許可權"
 
-#: includes/user.php:604 includes/user.php:629 includes/submit.php:110
+#: includes/user.php:606 includes/user.php:631 includes/submit.php:111
 #: includes/message.php:64
 msgid "Not logged in"
 msgstr "未登錄"
 
-#: includes/user.php:608
-msgid "Real name"
-msgstr "真實姓名"
-
-#: includes/user.php:614
+#: includes/user.php:616
 msgid "User groups who can view your source:"
 msgstr "可以瀏覽你代碼的用戶組："
 
-#: includes/user.php:615
+#: includes/user.php:617
 msgid "Your team:"
 msgstr "你的團隊："
 
@@ -1101,16 +1222,6 @@ msgstr "沒有許可權"
 #, php-format
 msgid "source length exceeds the limit (%d bytes)"
 msgstr "源代碼長度超過限制（%d 位元組）"
-
-#: includes/submit.php:148
-#, php-format
-msgid "No such record #%d"
-msgstr "沒有編號為%d的記錄"
-
-#: includes/submit.php:170
-#, php-format
-msgid "No such programming language #%d"
-msgstr "沒有該編程語言#%d"
 
 #: includes/message.php:51
 msgid "attempt to read non-existent message"
@@ -1181,21 +1292,33 @@ msgstr "錯誤"
 msgid "No such team #%d"
 msgstr "沒有這個團隊#%d"
 
-#: pre_include.php:41
+#: pre_include.php:43
 #, php-format
 msgid "You must install first.<br />Please run %sinstall."
 msgstr "你必須先安裝。<br/>請運行 %sinstall."
 
-#: pre_include.php:52
+#: pre_include.php:54
 msgid "failed to connect to database"
 msgstr "連接資料庫失敗"
 
-#: orz.php:391
+#: orz.php:430
 #, php-format
 msgid "No corresponding user #%d for record #%d"
 msgstr "對記錄#%2$d沒有對應的用戶#%1$d"
 
-#: orz.php:410
+#: orz.php:449
 #, php-format
 msgid "No corresponding problem #%d for record #%d"
 msgstr "對記錄#%2$d沒有對應的題目#%1$d"
+
+#~ msgid "Accepted Prob."
+#~ msgstr "通過題目數量"
+
+#~ msgid "failed to call user function"
+#~ msgstr "調用用戶函數失敗"
+
+#~ msgid "No such record #%d"
+#~ msgstr "沒有編號為%d的記錄"
+
+#~ msgid "No such programming language #%d"
+#~ msgstr "沒有該編程語言#%d"
