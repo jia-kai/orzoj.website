@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Sat Oct 23 21:51:48 2010 +0800
+ * $Date: Sun Oct 24 12:04:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -77,19 +77,21 @@ abstract class Ctal
 	abstract protected function view_prob(&$pinfo);
 
 	/**
-	 * whether a problem in this contest is allowed to appear in the problem list
+	 * whether problem or result of the contest is allowed to be viewed
 	 * @return bool
 	 */
-	abstract protected function view_prob_allowed();
+	abstract protected function allow_viewing();
 
 	/**
 	 * get a list of problems in the contest
 	 * @return array a 2-dimension array, in the following format:
 	 *		[0][i]: (0 <= i < m)
 	 *			head text for the ith column
-	 *		[i][j]: (0 <= i < n, 0 <= j < m):
+	 *		[i]: (1 <= i < n):
+	 *			NULL if the problem is not allowed to be viewd
+	 *		[i][j]: (1 <= i < n, 0 <= j < m):
 	 *			text in the ith row, jth column
-	 *		[i][m]:
+	 *		[i][m]: (1<= i < n)
 	 *			id of the ith problem
 	 */
 	abstract protected function get_prob_list();
@@ -111,6 +113,12 @@ abstract class Ctal
 	abstract protected function judge_done($rid);
 
 	/**
+	 * whether contest result is ready
+	 * @return bool
+	 */
+	abstract protected function result_is_ready();
+
+	/**
 	 * get the number of users participating in this contest
 	 * @param array|NULL $where where cluase for column 'uid'
 	 * @return int|NULL the number of users, or NULL if the result is unavailable currently
@@ -127,6 +135,13 @@ abstract class Ctal
 	 * @exception Exc_runtime if the result is unavailable
 	 */
 	abstract protected function get_rank_list($where = NULL, $offset = NULL, $cnt = NULL);
+
+	/**
+	 * this function is called when an unprivileged user wants to view a record that is not submitted by himself
+	 *		before the contest ends
+	 * @param &array $row a $row from the record table
+	 */
+	abstract protected function filter_record(&$row);
 }
 
 $CONTEST_TYPE2CLASS = array('oi', 'acm');
@@ -135,29 +150,15 @@ $CONTEST_TYPE2CLASS = array('oi', 'acm');
 /**
  * get the ctal class related to the problem
  * @param int $pid problem id
- * @return Ctal|NULL a Ctal instance or NULL if the problem does not belong to a problem
+ * @return Ctal|NULL a Ctal instance or NULL if the problem does not belong to a contest
  */
 function ctal_get_class_by_pid($pid)
 {
 	global $db, $DBOP;
 	$now = time();
-	$row = $db->select_from('map_prob_ct', 'cid',
-		array($DBOP['&&'], 
-		$DBOP['='], 'pid', $pid,
-		$DBOP['>'], 'time_end', $now),
-		array('time_start' => 'ASC'));
-	if (count($row))
-	{
-		$row = $db->select_from('contests', NULL,
-			array($DBOP['='], 'id', $row[0]['cid']));
-		if (count($row) != 1)
-			throw new Exc_inner(__('contest for problem #%d not found', $pid));
-		$row = $row[0];
-		$type = $CONTEST_TYPE2CLASS[$row['type']];
-		require_once $includes_path . "contest/$type.php";
-		$type = "Ctal_$type";
-		return new $type($row);
-	} 
+	$cid = prob_future_contest($pid);
+	if (is_int($cid))
+		return ctal_get_class_by_cid($cid);
 	return NULL;
 }
 
@@ -170,15 +171,33 @@ function ctal_get_class_by_pid($pid)
 function ctal_get_class_by_cid($cid)
 {
 	global $db, $DBOP, $CONTEST_TYPE2CLASS, $includes_path;
-	$row = $db->select_from('contests', NULL, array(
-		$DBOP['='], 'id', $cid));
-	if (count($row) != 1)
-		throw new Exc_inner(__('No such contest #%d', $cid));
-	$row = $row[0];
-	$type = $CONTEST_TYPE2CLASS[$row['type']];
-	require_once $includes_path . "contest/$type.php";
+	static $cache = array();
+	if (!isset($cahce[$cid]))
+	{
+		$row = $db->select_from('contests', NULL, array(
+			$DBOP['='], 'id', $cid));
+		if (count($row) != 1)
+			throw new Exc_inner(__('No such contest #%d', $cid));
+		$row = $row[0];
+		$type = $CONTEST_TYPE2CLASS[$row['type']];
+		require_once $includes_path . "contest/$type.php";
+		$cache[$cid] = array($type, $row);
+	}
+	list($type, $row) = $cache[$cid];
 	$type = "Ctal_$type";
 	return new $type($row);
+}
+
+/**
+ * filter a row in the record table according to its contest type
+ * @param int $cid contest id
+ * @param &array $row
+ * @return void
+ */
+function ctal_filter_record($cid, &$row)
+{
+	$ct = ctal_get_class_by_cid($cid);
+	$ct->filter_record($row);
 }
 
 /**

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 23 21:00:33 2010 +0800
+ * $Date: Sun Oct 24 12:11:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -321,14 +321,18 @@ function _make_view_by_group_link($id, $name)
 function tf_get_prob_html($pinfo)
 {
 	global $db, $DBOP;
-	$prob_grp = '';
-	$prob_grp_cnt = count($pinfo['grp']);
-	foreach ($pinfo['grp'] as $grp)
-		$prob_grp .= _make_view_by_group_link($grp, prob_grp_get_name_by_id($grp));
-	if ($prob_grp_cnt == 0)
+	$show_grp = function_exists('prob_view_by_group_get_a_href');
+	if ($show_grp)
 	{
-		$prob_grp_cnt = 1;
-		$prob_grp = _make_view_by_group_link(0, __('All'));
+		$prob_grp = '';
+		$prob_grp_cnt = count($pinfo['grp']);
+		foreach ($pinfo['grp'] as $grp)
+			$prob_grp .= _make_view_by_group_link($grp, prob_grp_get_name_by_id($grp));
+		if ($prob_grp_cnt == 0)
+		{
+			$prob_grp_cnt = 1;
+			$prob_grp = _make_view_by_group_link(0, __('All'));
+		}
 	}
 
 	if ($pinfo['io'] === NULL)
@@ -348,11 +352,18 @@ function tf_get_prob_html($pinfo)
 		. $pinfo['title'] . '(' . $pinfo['code']. ')</div>' 
 		.'<div id="prob-view-single-subtitle">'
 		. __('Time Limit: ') . $desc['time'] . '&nbsp;&nbsp;'
-		. __('Memory Limit: ') . $desc['memory'] . '<br />'
-		. __('Total Submissions: ') . $pinfo['cnt_submit'] . '&nbsp;&nbsp;'
-		. __('Accepted Submissions: ') . $pinfo['cnt_ac'] . '<br />'
-		. ($prob_grp_cnt == 1 ? __('Problem Group: ') : __('Problem Groups: ')). $prob_grp  . '<br />'
-		. __('Input: ') . '<span>' . $input . '</span>&nbsp;&nbsp;'
+		. __('Memory Limit: ') . $desc['memory'] . '<br />';
+
+	if (isset($pinfo['cnt_submit']) && isset($pinfo['cnt_ac']))
+		$content .=
+			__('Total Submissions: ') . $pinfo['cnt_submit'] . '&nbsp;&nbsp;'
+			. __('Accepted Submissions: ') . $pinfo['cnt_ac'] . '<br />';
+
+	if ($show_grp)
+		$content .= ($prob_grp_cnt == 1 ? __('Problem Group: ') : __('Problem Groups: ')). $prob_grp  . '<br />';
+
+	$content .=
+		__('Input: ') . '<span>' . $input . '</span>&nbsp;&nbsp;'
 		. __('Output: ') . '<span>' . $output . '</span>'
 		. '</div> <!-- id: prob-view-single-subtitle-->'
 		. '<div id="prob-view-single-desc">';

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_view.php
- * $Date: Sat Oct 23 21:31:02 2010 +0800
+ * $Date: Sun Oct 24 11:29:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -91,11 +91,14 @@ echo '</div>';
 
 echo '</div>';
 
+echo '<div style="clear: both; text-align: center; margin-top: 100px;">';
 
-if (!$ct->view_prob_allowed())
+
+if (!$ct->allow_viewing())
 	echo __('Sorry, you are not allowed to view problems in this contest now');
 else
 {
+	echo __('Problems') . '<br />';
 	$list = $ct->get_prob_list();
 	echo '<table class="page-table">';
 	echo '<tr>';
@@ -108,16 +111,25 @@ else
 	{
 		echo '<tr>';
 		$row = &$list[$i];
-		for ($j = 0; $j < $ncol; $j ++)
-			printf("<td><a href='%s' onclick='contest_view_prob(%d) return false;'>%s</a></td>",
-				t_get_link('show-ajax-contest-view-prob', $row[$ncol], TRUE, TRUE),
-				$row[$ncol],
-				$row[$j]);
+		if (is_null($row))
+			for ($j = $ncol; $j; $j --)
+				echo '<td>---</td>';
+		else
+		{
+			for ($j = 0; $j < $ncol; $j ++)
+				printf('<td><a href="%s" onclick="contest_view_prob(\'%d\'); return false;">%s</a></td>',
+					t_get_link('show-ajax-contest-view-prob', $row[$ncol] . '|' . $cid, TRUE, TRUE),
+					$row[$ncol],
+					$row[$j]);
+		}
+		unset($row);
 		echo '</tr>';
 	}
 
 	echo '</table>';
 }
+
+echo '</div>';
 
 ?>
 
@@ -128,8 +140,19 @@ else
 
 <script type="text/javascript">
 
+table_set_double_bgcolor();
+
 function contest_view_prob(pid)
 {
+	$.ajax({
+		"type": "post",
+		"cache": false,
+		"url": "<?php t_get_link('ajax-contest-view-prob', NULL, FALSE);?>",
+		"data": ({"arg": pid + "|<?php echo $cid;?>"}),
+		"success": function(data) {
+			$("#contest-page").html(data);
+		}
+	});
 }
 
 <?php

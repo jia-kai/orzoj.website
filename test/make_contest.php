@@ -2,23 +2,41 @@
 
 require_once '../pre_include.php';
 
-define('NPAST', 100);
-define('NCURRENT', 100);
-define('NFUTURE', 100);
+if(defined('TEST_CONTEST_LIST'))
+{
+	define('NPAST', 100);
+	define('NCURRENT', 100);
+	define('NFUTURE', 100);
+}
+else
+{
+	define('NPAST', 0);
+	define('NCURRENT', 1);
+	define('NFUTURE', 0);
+}
 
 $db->delete_item('contests');
+$db->delete_item('map_prob_ct');
 
 function make($s, $t)
 {
 	global $db;
-	$db->insert_into('contests', array(
-		'type' => rand(0, 1),
+	$cid = $db->insert_into('contests', array(
+		'type' => defined('TEST_CONTEST_LIST') ? rand(0, 1) : 0,
 		'name' => 'contest-' . rand(),
 		'desc' => 'this is contest #' . rand(),
 		'time_start' => $s,
 		'time_end' => $t,
 		'perm' => serialize(array(0, 1, array(GID_ALL), array()))
 	));
+	for ($i = 0; $i < 4; $i ++)
+		$db->insert_into('map_prob_ct', array(
+			'cid' => $cid,
+			'pid' => rand(10, 20),
+			'order' => $i,
+			'time_start' => $s,
+			'time_end' => $t
+		));
 }
 
 for ($i = 0; $i < NPAST; $i ++)

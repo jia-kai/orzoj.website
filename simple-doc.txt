@@ -105,7 +105,7 @@ Note:
 	3. all the pages accessed by user except those in install are in / and /admin
 	4. theme implementations should try to avoid accessing database directly, unless there is no
 		orzoj-website system call provided or efficiency is very important
-	5. One problem can only belong to one contest simultaneously
+	5. One problem can only belong to one unfinished contest
 	6. all text data saved in database should be properly HTML encoded
 	7. if you are running this website on nginx and can not open 
 		pages whose url seems like 'http://localhost/orzoj-website/problem/',

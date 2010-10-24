@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Mon Oct 18 11:28:31 2010 +0800
+ * $Date: Sun Oct 24 10:33:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -98,10 +98,13 @@ function record_filter_rows(&$rows)
 	global $user;
 	if (user_check_login() && $user->is_grp_member(GID_SUPER_RECORD_VIEWER))
 		return;
-	foreach ($rows as $k => $row)
-		if (prob_future_contest($row['pid']))
+	foreach ($rows as &$row)
+	{
+		$cid = prob_future_contest($row['pid']);
+		if (is_int($cid))
 			if (!user_check_login() || $user->id != $row['uid'])
-				$rows[$k] = NULL;
+				ctal_filter_record($cid, $row);
+	}
 }
 
 /**

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Sat Oct 23 21:51:28 2010 +0800
+ * $Date: Sun Oct 24 12:05:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,6 +32,7 @@ require_once $includes_path . 'contest/ctal.php';
 $PROB_SUBMIT_PINFO = array('id', 'code', 'perm', 'io');
 $PROB_VIEW_PINFO = array('id', 'title', 'code', 'desc', 'perm', 'io', 'time',
 	'cnt_ac', 'cnt_unac', 'cnt_ce', 'cnt_submit', 'cnt_submit_user', 'cnt_ac_user', 'difficulty', 'grp');
+$PROB_VIEW_PINFO_STATISTICS = array('cnt_ac', 'cnt_unac', 'cnt_ce', 'cnt_submit', 'cnt_submit_user', 'cnt_ac_user', 'difficulty');
 // desc: exlained in simple-doc.txt and install/tables.php
 // grp: array of problem group ids that this problem belongs to
 // io: array of input/output file name, or NULL if using stdio
@@ -313,7 +314,7 @@ function prob_get_code_by_id($pid)
 /**
  * test whether a problem belongs to an upcoming contest
  * @param int $pid problem id
- * @return bool
+ * @return int|FALSE the contest id the problem belongs to, or FALSE
  */
 function prob_future_contest($pid)
 {
@@ -321,17 +322,20 @@ function prob_future_contest($pid)
 	if (is_null($cache))
 	{
 		global $db, $DBOP;
-		$rows = $db->select_from('map_prob_ct', 'pid',
+		$rows = $db->select_from('map_prob_ct', array('pid', 'cid'),
 			array($DBOP['in'], 'cid', $db->select_from('contests',
-			'id', array($DBOP['>='], 'time_start', time()),
+			'id', array($DBOP['>'], 'time_end', time()),
 			NULL, NULL, NULL, array('id' => 'cid'), TRUE)));
 
 		$cache = array();
 
 		foreach ($rows as $row)
-			$cache[$row['pid']] = TRUE;
+			$cache[intval($row['pid'])] = intval($row['cid']);
 	}
-	return isset($cache[$pid]);
+	$pid = intval($pid);
+	if (!isset($cache[$pid]))
+		return FALSE;
+	return $cache[$pid];
 }
 
 /**

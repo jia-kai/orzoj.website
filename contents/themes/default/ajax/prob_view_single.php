@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Sat Oct 23 21:49:03 2010 +0800
+ * $Date: Sun Oct 24 11:48:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -78,9 +78,6 @@ try
 	else
 		prob_view_single_parse_arg();
 
-	if (prob_future_contest($pid))
-		die(__('This problem belongs to an upcoming contest and you should not try to view it here.'));
-
 	/* ----- navigation button ----*/
 	$content = '';
 
@@ -115,7 +112,14 @@ try
 	$content .= '</div>';  // id: prob-view-single-navigator-top
 
 	/* problem description */
-	$content .= prob_view($pid);
+
+	if (prob_future_contest($pid))
+		$content .= '<div style="clear: both;">' .
+			__('This problem belongs to an upcoming contest and you should not try to view it here.') .
+			'</div>';
+	else
+		$content .= prob_view($pid);
+
 	// javascript
 	$content .= '
 		<script type="text/javascript">$("button").button();

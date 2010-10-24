@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest.php
- * $Date: Fri Oct 22 20:06:13 2010 +0800
+ * $Date: Sun Oct 24 11:34:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -36,7 +36,7 @@ if (!is_null($page_arg))
 {
 	$_POST['id'] = $page_arg;
 	require_once $theme_path . 'ajax/contest_view.php';
-	die;
+	return;
 }
 
 ?>

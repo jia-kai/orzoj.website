@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Sat Oct 23 19:26:50 2010 +0800
+ * $Date: Sun Oct 24 12:07:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -60,34 +60,77 @@ class Ctal_oi extends Ctal
 		sched_update($row[0]['total_score'], $this->data['time_end']);
 	}
 
-	public function prob_view(&$pinfo)
+	public function view_prob(&$pinfo)
 	{
-		global $user;
-		if (user_check_login())
-			$user_grp = $user->get_groups();
-		else $user_grp = array(GID_GUEST);
-		if (time() < $this->data['time_start'] ||
-			!prob_check_perm($user_grp, $this->data['perm']))
+		global $PROB_VIEW_PINFO_STATISTICS;
+		if (!$this->allow_viewing())
 			throw new Exc_runtime(__('sorry, you are not allowed to view this problem now'));
+		if (time() >= $this->data['time_end'] &&  prob_future_contest($pinfo['id']))
+			throw new Exc_runtime(__('sorry, this problem belongs to a future contest and you are not allowed
+ to view it here'));
 		if (is_null($pinfo['io']))
 			$pinfo['io'] = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
+		$pinfo['grp'] = array();
+
+		foreach ($PROB_VIEW_PINFO_STATISTICS as $f)
+			if (isset($pinfo[$f]))
+				unset($pinfo[$f]);
 	}
 
-	public function prob_view_allowed()
+	public function allow_viewing()
 	{
+		if (isset($this->res_allow_viewing))
+			return $this->res_allow_viewing;
 		if (time() < $this->data['time_start'])
-			return FALSE;
+			return $this->res_allow_viewing = FALSE;
 		global $user;
 		if (user_check_login())
 			$user_grp = $user->get_groups();
 		else $user_grp = array(GID_GUEST);
-		return prob_check_perm($user_grp, $this->data['perm']);
+		return $this->res_allow_viewing = prob_check_perm($user_grp, $this->data['perm']);
+	}
+
+	public function get_prob_list()
+	{
+		global $db, $DBOP;
+		$ret = array(array(
+			__('NO.'), __('TITLE'), __('TIME'), __('MEMORY'), __('INPUT'), __('OUTPUT')
+		));
+		$rows = $db->select_from('map_prob_ct', 'pid', array(
+			$DBOP['='], 'cid', $this->data['id']), array('order' => 'ASC'));
+		$contest_end = time() >= $this->data['time_end'];
+		for ($i = 0; $i < count($rows); $i ++)
+		{
+			$id = $rows[$i]['pid'];
+			if ($contest_end && prob_future_contest($id))
+				array_push($ret, NULL);
+			else
+			{
+				$pinfo = $db->select_from('problems', array('code', 'io', 'desc'),
+					array($DBOP['='], 'id', $id));
+				if (count($pinfo) != 1)
+					throw new Exc_inner(__('no such problem #%d for contest #%d',
+						$id, $this->data['id']));
+				$pinfo = $pinfo[0];
+				if (strlen($pinfo['io']))
+					$io = unserialize($pinfo['io']);
+				else
+					$io = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
+				$desc = unserialize($pinfo['desc']);
+				array_push($ret, array($i + 1, prob_get_title_by_id($id), 
+					$desc['time'], $desc['memory'], $io[0], $io[1],
+					$id));
+			}
+		}
+		return $ret;
 	}
 
 	public function user_submit($pinfo, $lid, $src)
 	{
 		if (time() < $this->data['time_start'])
 			throw new Exc_runtime(__('please do not submit before the contest starts'));
+		if (time() >= $this->data['time_end'])
+			throw new Exc_runtime(__('you can not submit after the contest ends'));
 		$ltype = plang_get_type_by_id($lid);
 		if (is_null($ltype) || !in_array($ltype, array('c', 'cpp', 'pas')))
 			throw new Exc_runtime(__('sorry, your programming language is unavailable in this contest'));
@@ -95,6 +138,8 @@ class Ctal_oi extends Ctal
 		global $user, $db, $DBOP;
 		if (!user_check_login())
 			throw new Exc_runtime(__('please login first'));
+		if (!prob_check_perm($user->get_groups(), $this->data['perm']))
+			throw new Exc_runtime(__('sorry, you are not allowed to submit in this contest'));
 		$db->delete_item('records', array(
 			$DBOP['&&'], $DBOP['&&'], $DBOP['&&'],
 			$DBOP['='], 'uid', $user->id,
@@ -165,13 +210,23 @@ class Ctal_oi extends Ctal
 		$db->transaction_commit();
 	}
 
+	public function result_is_ready()
+	{
+		if (isset($this->res_result_is_ready))
+			return $this->res_result_is_ready;
+		if (!$this->allow_viewing())
+			return $this->res_result_is_ready = FALSE;
+		global $db, $DBOP;
+		return $this->res_result_is_ready = ($db->get_number_of_rows('contests_oi', array(
+			$DBOP['&&'],
+			$DBOP['='], 'cid', $this->data['id'].
+			$DBOP['='], 'uid', 0)) == 0);
+	}
+
 	public function get_user_amount($where = NULL)
 	{
 		global $db, $DBOP;
-		if ($db->get_number_of_rows('contests_oi', array(
-			$DBOP['&&'],
-			$DBOP['='], 'cid', $this->data['id'].
-			$DBOP['='], 'uid', 0)))
+		if (!$this->result_is_ready())
 			return NULL;
 		db_where_add_and($where, array($DBP['='], 'cid', $this->data['id']));
 		return $db->get_number_of_rows('contests_oi', $where);
@@ -180,10 +235,7 @@ class Ctal_oi extends Ctal
 	public function get_rank_list($where = NULL, $offset = NULL, $cnt = NULL)
 	{
 		global $db, $DBOP;
-		if ($db->get_number_of_rows('contests_oi', array(
-			$DBOP['&&'],
-			$DBOP['='], 'cid', $this->data['id'].
-			$DBOP['='], 'uid', 0)))
+		if (!$this->result_is_ready())
 			return NULL;
 		$probs = $db->select_from('map_prob_ct', 'pid', array(
 			$DOP['='], 'cid', $this->data['id']), array('order' => 'ASC'));
@@ -217,6 +269,11 @@ class Ctal_oi extends Ctal
 		}
 
 		return $ret;
+	}
+
+	public function filter_record(&$row)
+	{
+		$row = NULL;
 	}
 }
 
