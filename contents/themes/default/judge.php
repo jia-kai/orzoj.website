@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: judge.php
- * $Date: Sun Oct 24 21:28:48 2010 +0800
+ * $Date: Sun Oct 24 21:45:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -65,10 +65,10 @@ foreach ($aJudgeList as $judge)
 {
 ?>
 <div style="width:800px;">
-<div id="preview_<?php echo $judge->id;?>"><a href="#"><?php echo __('Judge ID: %d | Status : %s',$judge->id,$judge_status_array[$judge->status]);?></a></div>
+<div id="preview_<?php echo $judge->id;?>"><a href="#"><?php echo __('Judge ID: %d | Judge Name: %s | Status : %s',$judge->id,htmlencode($judge->name),$judge_status_array[$judge->status]);?></a></div>
 <table id="judge_<?php echo $judge->id;?>" class="page-table">
 <?php
-echo '<tr><td width="30">', __('Judge ID'), '</td><td>', $judge->id, '</td></tr>';
+echo '<tr><td>', __('Judge ID'), '</td><td>', $judge->id, '</td></tr>';
 echo '<tr><td>', __('Judge Name'), '</td><td>', htmlencode($judge->name), '</td></tr>';
 echo '<tr><Td>', __('Status'), '</td><td>' , $judge_status_array[$judge->status] , '</td></tr>';
 echo '<tr><td>', __('Supported Language'), '</td><td>', _judge_supported_languages($judge), '</td></tr>';
