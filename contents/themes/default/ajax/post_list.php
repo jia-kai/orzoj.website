@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Sat Oct 23 15:44:43 2010 +0800
+ * $Date: Mon Oct 25 13:13:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -123,7 +123,7 @@ $s = '"core" : {"initially_open" : [ ' . $s . ' ]},';
 
 <?php
 /**
- *
+ * @ignore
  */
 function _make_page_link($promt, $page)
 {

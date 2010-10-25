@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_func.php
- * $Date: Sat Oct 23 15:43:37 2010 +0800
+ * $Date: Mon Oct 25 12:06:17 2010 +0800
  */
 /**
  * @package orzoj-website

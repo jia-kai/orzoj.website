@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: discuss.php
- * $Date: Sat Oct 23 15:44:40 2010 +0800
+ * $Date: Mon Oct 25 13:09:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,8 +34,12 @@ if (!defined('IN_ORZOJ'))
  */
 ?>
 
-<div id="post-view">
+<div id="post-navigator">
+<button href="<?php t_get_link('ajax-post-new-topic'); ?>"><?php echo __('New Topic'); ?></button>
+<button href="<?php t_get_link('ajax-post-list'); ?>"><?php echo __('Back to list'); ?></button>
+</div>
 
+<div id="post-view" style="clear: both;">
 <?php
 $POSTS_PER_PAGE = 20;
 
@@ -65,5 +69,7 @@ function post_view_set_content(addr)
 		}
 	});
 }
+$("button").button();
+$("button").colorbox();
 </script>
 

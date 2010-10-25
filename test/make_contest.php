@@ -2,6 +2,8 @@
 
 require_once '../pre_include.php';
 
+define('TEST_CONTEST_LIST', TRUE);
+
 if(defined('TEST_CONTEST_LIST'))
 {
 	define('NPAST', 100);
