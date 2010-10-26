@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Tue Oct 26 20:06:54 2010 +0800
+ * $Date: Tue Oct 26 22:01:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -24,10 +24,8 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-if (!defined('IN_ORZOJ')) exit;
-
-require_once $includes_path . 'pomo/mo.php';
-require_once $includes_path . 'pomo/po.php';
+if (!defined('IN_ORZOJ'))
+	exit;
 
 $translators = array();
 
@@ -155,6 +153,11 @@ function l10n_init_wlang_before_db()
 function l10n_init_wlang()
 {
 	global $db, $user, $DBOP, $root_path, $_l10n_init_done;
+	if (!isset($db) || !function_exists('user_check_login'))
+	{
+		l10n_init_wlang_before_db();
+		return;
+	}
 	if ($_l10n_init_done)
 		return;
 	$_l10n_init_done = TRUE;
