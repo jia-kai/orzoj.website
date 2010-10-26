@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: judge.php
- * $Date: Sun Oct 24 21:45:40 2010 +0800
+ * $Date: Tue Oct 26 13:14:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -73,7 +73,6 @@ echo '<tr><td>', __('Judge Name'), '</td><td>', htmlencode($judge->name), '</td>
 echo '<tr><Td>', __('Status'), '</td><td>' , $judge_status_array[$judge->status] , '</td></tr>';
 echo '<tr><td>', __('Supported Language'), '</td><td>', _judge_supported_languages($judge), '</td></tr>';
 echo '<tr><td>', __('Detail'), '</td><td>', _judge_detail($judge) , '</td></tr>';
-EOF;
 ?>
 </table>
 </div>
