@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Thu Oct 21 19:42:52 2010 +0800
+ * $Date: Tue Oct 26 19:24:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -119,8 +119,9 @@ catch (Exc_orzoj $e)
 {
 	ob_clean();
 	echo '<html><body>There is an uncaucht exception, and execution of orzoj-website scripts is aborted. Please 
-		contact orzoj development team and report the bug at <a href="http://code.google.com/p/orzoj/issues">
-		http://code.google.com/p/orzoj/issues</a>, thanks!<br />';
+		contact orzoj development team and report the bug at <a href="';
+	echo ORZOJ_BUG_REPORT_ADDR;
+	echo '">' . ORZOJ_BUG_REPORT_ADDR . '</a>, thanks!<br />';
 	echo 'Detailed information: <br />';
 	echo htmlencode($e->msg());
 	echo '</body></html>';

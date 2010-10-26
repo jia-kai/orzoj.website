@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sat Oct 23 14:02:37 2010 +0800
+ * $Date: Tue Oct 26 19:52:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -320,14 +320,11 @@ $tables = array(
 		'cols' => array(
 			'pid' => array('type' => 'INT32'),
 			'cid' => array('type' => 'INT32'),
-			'order' => array('type' => 'INT32'), // used to specify the order of problems in a contest
-			'time_start' => array('type' => 'INT64'), // contest start time
-			'time_end' => array('type' => 'INT64') // contest end time
+			'order' => array('type' => 'INT32') // used to specify the order of problems in a contest
 		),
 		'index' => array(
 			array('cols' => array('pid')),
-			array('cols' => array('cid')),
-			array('cols' => array('pid', 'time_start', 'time_end')),
+			array('cols' => array('cid'))
 		)
 	),
 

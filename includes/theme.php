@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Fri Oct 22 00:04:26 2010 +0800
+ * $Date: Tue Oct 26 20:12:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,12 +52,11 @@ EOF
  */
 function t_get_footer()
 {
-	global $db, $PAGE_START_TIME, $ORZOJ_VERSION;
-	$str = "<br />" .
-		__('%d database queries | Page execution time: %d milliseconds |' .
-		' Powered by <a style="color: blue" href="http://code.google.com/p/orzoj/" target="_blank">Orz Online Judge</a> %s<br />',
-		$db->get_query_amount(),
-			(microtime(TRUE) - $PAGE_START_TIME) * 1000, $ORZOJ_VERSION);
+	global $db, $PAGE_START_TIME;
+	$str = __('%d database queries | Page execution time: %d milliseconds | Powered by %s',
+			$db->get_query_amount(),
+			(microtime(TRUE) - $PAGE_START_TIME) * 1000,
+			'<a target="_blank" href="' . ORZOJ_OFFICIAL_WEBSITE . '">Orz Online Judge ' . ORZOJ_VERSION . '</a>');
 	if ($db->record_query)
 		$str .= '<br /> <div style="text-align: left">Queries:' . htmlencode(print_r($db->query_log, TRUE)) . '</div>';
 	echo filter_apply('after_footer', $str);
@@ -119,12 +118,4 @@ function t_get_src_download_url($rid)
 	return $website_root . "src_download.php?rid=$rid";
 }
 
-/**
- * initialize website language
- * @return void
- */
-function t_init_wlang()
-{
-	l10n_init_wlang();
-}
 

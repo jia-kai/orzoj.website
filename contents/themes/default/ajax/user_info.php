@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user_info.php
- * $Date: Fri Oct 22 11:08:41 2010 +0800
+ * $Date: Tue Oct 26 10:43:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -96,7 +96,7 @@ $fields = array(
 );
 
 if (!user_check_login() || !($user->is_grp_member(GID_UINFO_VIEWER) ||
-	$user->is_grp_member(GID_ADMIN_USER)))
+	$user->is_grp_member(GID_ADMIN_USER) || $user->id == $uid))
 {
 	unset($fields['realname']);
 	unset($fields['reg_ip']);

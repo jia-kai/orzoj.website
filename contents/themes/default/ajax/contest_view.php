@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_view.php
- * $Date: Sun Oct 24 11:29:13 2010 +0800
+ * $Date: Tue Oct 26 16:26:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -36,6 +36,7 @@ require_once $includes_path . 'contest/ctal.php';
  *		id: int  contest id
  *		optional:
  *			time, sort_col, sort_way, page_num: used for back to list
+ *			back_to_list: encoded array of variables used for going back to list
  *
  */
 
@@ -50,18 +51,61 @@ try
 }
 catch (Exc_orzoj $e)
 {
-	die(__('Failed to get contest information: %s', htmlencode($e->msg())));
+	echo __('Failed to get contest information: %s', htmlencode($e->msg()));
+	echo '</div>';
+	return;
 }
+
+$html_id_page = _tf_get_random_id();
+
+echo "<div id='$html_id_page'>";
 
 echo '<div class="contest-view-content">';
 
-if (isset($_POST['time']) && isset($_POST['sort_col']) && isset($_POST['sort_way']) && isset($_POST['page_num']))
+$back_to_list_var = array('time', 'sort_col', 'sort_way', 'page_num');
+$have_back_to_list = TRUE;
+
+if (isset($_POST['back_to_list']))
 {
-	$have_back_to_list = TRUE;
-	echo '<div style="float:left;"><button onclick="back_to_list()">' . __('Back to list') . '</button></div>';
+	$tmp = explode('|', $_POST['back_to_list']);
+	if (count($tmp) != count($back_to_list_var))
+		$have_back_to_list = FALSE;
+	else
+	{
+		$idx = 0;
+		foreach ($back_to_list_var as $v)
+			$_POST[$v] = $tmp[$idx ++];
+		unset($idx);
+	}
+	unset($tmp);
 }
 else
-	$have_back_to_list = FALSE;
+{
+	foreach ($back_to_list_var as $v)
+		if (!isset($_POST[$v]))
+		{
+			$have_back_to_list = FALSE;
+			break;
+		}
+}
+
+if ($have_back_to_list)
+{
+	echo '<div style="float:left;"><button onclick="back_to_list()">' . __('Back to list') . '</button></div>';
+
+	$tmp = array();
+	foreach ($back_to_list_var as $v)
+		$tmp[$v] = $_POST[$v];
+	$back_to_list_encoded = implode('|', $tmp);
+	unset($tmp);
+}
+
+echo '<div style="float: right;"><a onclick="refresh(); return false;" title="' . __('Refresh') .
+	'" href="';
+t_get_link('contest', $cid);
+echo '"><img alt="refresh" src="';
+_url('images/refresh.gif');
+echo '" /></a></div>';
 
 echo '<div class="contest-name">' . $ct->data['name'] . '</div>';
 
@@ -77,16 +121,42 @@ echo '<div class="contest-description">';
 echo $ct->data['desc'];
 echo '</div>';
 
-echo '<div style="clear: both; float: left;">';
-echo __('Start time: %s', time2str($ct->data['time_start'])) . '<br />';
-echo __('End time: %s', time2str($ct->data['time_end'])) . '<br />';
-echo __('Contest duration: %s', time_interval_to_str($ct->data['time_end'] - $ct->data['time_start'])) . '<br />';
+$ct_time_start = intval($ct->data['time_start']);
+$ct_time_end = intval($ct->data['time_end']);
 
-echo '<div class="contest-countdown">';
-if (time() < $ct->data['time_start'])
-	echo __('The contest will start in %s', time_interval_to_str($ct->data['time_start'] - time())) . '<br />';
-else if (time() < $ct->data['time_end'])
-	echo __('The contest will end in %s', time_interval_to_str($ct->data['time_end'] - time())) . '<br />';
+echo '<div style="clear: both; float: left;">';
+echo __('Start time: %s', time2str($ct_time_start)) . '<br />';
+echo __('End time: %s', time2str($ct_time_end)) . '<br />';
+echo __('Contest duration: %s', time_interval_to_str($ct_time_end - $ct_time_start)) . '<br />';
+
+
+$html_id_countdown = _tf_get_random_id();
+$now = time();
+
+echo '<div class="contest-result">';
+if ($now < $ct_time_start)
+{
+	$count_down_len = $ct_time_start - $now;
+	echo __('The contest will start in %s',
+		"<span id='$html_id_countdown' class='contest-countdown'>" .
+			time_interval_to_str($count_down_len) . '</span>');
+}
+else if ($now < $ct_time_end)
+{
+	$count_down_len = $ct_time_end - $now;
+	echo __('The contest will end in %s',
+		"<span id='$html_id_countdown' class='contest-countdown'>" .
+			time_interval_to_str($count_down_len) . '</span>');
+}
+else
+{
+	if ($ct->result_is_ready())
+		printf('<a onclick="view_result(); return false;" href="%s">%s</a>',
+			t_get_link('show-ajax-contest-view-result', $cid, TRUE, TRUE),
+			__('View contest result'));
+	else
+		echo __('Please wait for a few minutes to see the contest result. (You can go to the status page to see judge progress)');
+}
 echo '</div>';
 
 echo '</div>';
@@ -98,14 +168,16 @@ if (!$ct->allow_viewing())
 	echo __('Sorry, you are not allowed to view problems in this contest now');
 else
 {
-	echo __('Problems') . '<br />';
+	echo __('Problem list') . '<br />';
 	$list = $ct->get_prob_list();
+	$ncol = count($list[0]) - 1;
+	$col_link = intval($list[0][$ncol]);
+
 	echo '<table class="page-table">';
 	echo '<tr>';
-	foreach ($list[0] as $col)
-		echo '<th>' . $col . '</th>';
+	for ($i = 0; $i < $ncol; $i ++)
+		echo '<th>' . $list[0][$i] . '</th>';
 	echo '</tr>';
-	$ncol = count($list[0]);
 
 	for ($i = 1; $i < count($list); $i ++)
 	{
@@ -117,10 +189,15 @@ else
 		else
 		{
 			for ($j = 0; $j < $ncol; $j ++)
-				printf('<td><a href="%s" onclick="contest_view_prob(\'%d\'); return false;">%s</a></td>',
-					t_get_link('show-ajax-contest-view-prob', $row[$ncol] . '|' . $cid, TRUE, TRUE),
-					$row[$ncol],
-					$row[$j]);
+			{
+				if ($j == $col_link)
+					printf('<td><a href="%s" onclick="contest_view_prob(\'%d\'); return false;">%s</a></td>',
+						t_get_link('show-ajax-contest-view-prob', $row[$ncol] . '|' . $cid, TRUE, TRUE),
+						$row[$ncol],
+						$row[$j]);
+				else
+					echo '<td>' . $row[$j] . '</td>';
+			}
 		}
 		unset($row);
 		echo '</tr>';
@@ -138,6 +215,8 @@ echo '</div>';
 <div style="clear:both">&nbsp;</div>
 <!-- I need this div to make ui.tabs work properly?? -->
 
+</div>
+
 <script type="text/javascript">
 
 table_set_double_bgcolor();
@@ -148,12 +227,70 @@ function contest_view_prob(pid)
 		"type": "post",
 		"cache": false,
 		"url": "<?php t_get_link('ajax-contest-view-prob', NULL, FALSE);?>",
-		"data": ({"arg": pid + "|<?php echo $cid;?>"}),
+		"data": ({"arg": pid + "|<?php echo $cid;?>"
+			<?php if ($have_back_to_list) echo ", 'back_to_list': '$back_to_list_encoded'"; ?>
+		}),
 		"success": function(data) {
-			$("#contest-page").html(data);
+<?php
+		if ($have_back_to_list)
+			echo '$("#contest-list-' . $_POST['time'] . '").html(data);';
+		else
+			echo '$("#contest-page").html(data);';
+?>
+
 		}
 	});
 }
+
+function refresh()
+{
+	//console.log("refresh() executed");
+	$.ajax({
+		"type": "post",
+		"cache": false,
+		"url": "<?php t_get_link('ajax-contest-view', NULL, FALSE);?>",
+		"data": ({"id": <?php echo $cid;
+		if ($have_back_to_list)
+			echo ", 'back_to_list': '$back_to_list_encoded'";
+?>}),
+		"success": function(data) {
+			$("#<?php echo $html_id_page;?>").parent().html(data);
+		}
+	});
+}
+
+<?php
+if (isset($count_down_len))
+{
+	echo time_interval_to_str_gen_js('time_interval_to_str');
+?>
+
+	function count_down()
+	{
+		//console.log("count_down() executed");
+		var d = new Date;
+		if (typeof(count_down.time_end) == 'undefined')
+			count_down.time_end = d.getTime() + <?php echo $count_down_len;?> * 1000;
+		len = Math.floor((count_down.time_end - d.getTime()) / 1000);
+		if (len < 0)
+		{
+			refresh();
+			return;
+		}
+		t = $("#<?php echo $html_id_countdown;?>");
+		if (t.length)
+		{
+			t.html(time_interval_to_str(len));
+			setTimeout("count_down()", 500);
+		}
+	}
+
+	count_down();
+
+
+<?php
+}
+?>
 
 <?php
 if ($have_back_to_list)
@@ -172,6 +309,28 @@ if ($have_back_to_list)
 				<?php echo "'sort_col': '$_POST[sort_col]', 'sort_way': '$_POST[sort_way]', 'page_num': '$_POST[page_num]'";?>}),
 			"success": function(data) {
 				$("#contest-list-<?php echo $_POST['time'];?>").html(data);
+			}
+		});
+	}
+
+<?php
+}
+if ($ct->result_is_ready())
+{
+?>
+
+	function view_result()
+	{
+		$.ajax({
+			"type": "post",
+			"cache": false,
+			"url": "<?php t_get_link('ajax-contest-view-result', $cid, FALSE);?>",
+<?php
+			if ($have_back_to_list)
+				echo "'data': ({'back_to_list': '$back_to_list_encoded'}),\n";
+?>
+			"success": function(data) {
+				$("#<?php echo $html_id_page;?>").parent().html(data);
 			}
 		});
 	}

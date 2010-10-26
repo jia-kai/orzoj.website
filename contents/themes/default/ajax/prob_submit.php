@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Thu Oct 21 22:59:24 2010 +0800
+ * $Date: Tue Oct 26 10:01:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -48,7 +48,7 @@ if ($page_arg == 'submit')
 	}
 	catch (Exc_orzoj $e)
 	{
-		die('1' . __('Failed to submit: ') . $e->msg());
+		die('1' . __('Failed to submit: %s', $e->msg()));
 	}
 }
 
@@ -58,8 +58,6 @@ if (sscanf($page_arg, "%d", $pid) != 1)
 
 if (!user_check_login())
 	die(__("Please login first."));
-
-require_once $includes_path . 'submit.php';
 ?>
 
 <form action="<?php t_get_link($cur_page, 'submit');?>" id="submit-form" method="post">

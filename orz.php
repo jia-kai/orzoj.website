@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Thu Oct 21 18:34:48 2010 +0800
+ * $Date: Tue Oct 26 14:32:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -630,8 +630,6 @@ function report_prob_result()
 		$status = determin_record_status($result);
 
 	$rid = $func_param->task;
-	update_statistics($rid, $status == RECORD_STATUS_ACCEPTED ? 'ac' : 'unac');
-
 	$db->update_data('records',
 		array(
 			'status' => $status,
@@ -642,6 +640,7 @@ function report_prob_result()
 		),
 		array($DBOP['='], 'id', $rid));
 
+	update_statistics($rid, $status == RECORD_STATUS_ACCEPTED ? 'ac' : 'unac');
 	msg_write(MSG_STATUS_OK, NULL);
 }
 

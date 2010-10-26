@@ -65,6 +65,24 @@ function make_prob()
 			'hint' => '1 <= a, b <= 100000'
 		))
 	));
+	$db->insert_into('problems',
+		array('title' => 'A+B Problem, too',
+		'code' => 'a+b2',
+		'perm' => serialize(array(0, 1, array(GID_ALL), array())),
+		'io' => serialize(array('a+b.in', 'a+b.out')),
+		'time' => time(),
+		'desc' => serialize(array(
+			'time' => '1s',
+			'memory' => '256MB',
+			'desc' => 'Calculate a + b',
+			'input_fmt' => 'Two numbers in a single row.',
+			'output_fmt' => 'A number, the sum of a and b.',
+			'input_samp' => '1 2',
+			'output_samp' => '3',
+			'source' => 'Every OJ',
+			'hint' => '1 <= a, b <= 100000'
+		))
+	));
 
 	_make_prob('**.**');
 	_make_prob('??.??');

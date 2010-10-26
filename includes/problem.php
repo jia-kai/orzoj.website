@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Sun Oct 24 12:05:15 2010 +0800
+ * $Date: Tue Oct 26 14:20:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -314,7 +314,7 @@ function prob_get_code_by_id($pid)
 /**
  * test whether a problem belongs to an upcoming contest
  * @param int $pid problem id
- * @return int|FALSE the contest id the problem belongs to, or FALSE
+ * @return int|NULL the contest id the problem belongs to, or NULL
  */
 function prob_future_contest($pid)
 {
@@ -334,7 +334,7 @@ function prob_future_contest($pid)
 	}
 	$pid = intval($pid);
 	if (!isset($cache[$pid]))
-		return FALSE;
+		return NULL;
 	return $cache[$pid];
 }
 

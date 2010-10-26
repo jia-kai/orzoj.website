@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 23 20:04:48 2010 +0800
+ * $Date: Tue Oct 26 13:16:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -363,7 +363,8 @@ function time2str($time)
 /**
  * convert a time interval to human readable string
  * @param int $len the length of the interval in seconds
- * @return string
+ *		if $len == -1, the time units used will be returned
+ * @return string|array
  */
 function time_interval_to_str($len)
 {
@@ -378,19 +379,74 @@ function time_interval_to_str($len)
 			array(0, __('year'), __('years'))
 		);
 	}
+	if ($len == -1)
+		return $UNITS;
 	foreach ($UNITS as $val)
 	{
 		if (!$len)
 			break;
-		if (!$val[0])
-			$cur = $len;
-		else
-			$cur = $len % $val[0];
-		$ret[] = $cur . ' ' . $val[1 + intval($cur >= 2)];
+		$cur = $len;
 		if ($val[0])
+		{
+			$cur %= $val[0];
 			$len = floor($len / $val[0]);
-		else break;
+		}
+		$ret[] = $cur . ' ' . $val[1 + intval($cur >= 2)];
 	}
 	return implode(' ', array_reverse($ret));
+}
+
+/**
+ * generate a javascript function that takes an integer as argument
+ * and returns a string representing the time interval length
+ * @param string $func the javascript function name
+ * @return string the js function
+ */
+function time_interval_to_str_gen_js($func)
+{
+	$ret = "
+	function  $func(len)
+	{
+		if (typeof($func.units) == 'undefined')
+			$func.units = [";
+	foreach (time_interval_to_str(-1) as $item)
+	{
+		$ret .= '[';
+		foreach ($item as $v)
+		{
+			if (is_string($v))
+				$ret .= '"';
+			$ret .= $v;
+			if (is_string($v))
+				$ret .= '"';
+			$ret .= ',';
+		}
+		$ret[strlen($ret) - 1] = ']';
+		$ret .= ',';
+	}
+
+	$ret[strlen($ret) - 1] = ']';
+	$ret .= ";
+		var units = $func.units;";
+	
+	$ret .= '
+		var ret = new Array();
+		for (var i = 0; i < units.length && len; i ++)
+		{
+			var cur = len;
+			if (units[i][0])
+			{
+				cur %= units[i][0];
+				len = Math.floor(len / units[i][0]);
+			}
+			if (cur < 2)
+				ret = ret.concat([cur + " " + units[i][1]]);
+			else
+				ret = ret.concat([cur + " " + units[i][2]]);
+		}
+		ret.reverse();
+		return ret.join(" ");
+	}';
+	return $ret;
 }
 

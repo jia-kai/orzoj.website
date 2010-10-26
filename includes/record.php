@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Sun Oct 24 10:33:08 2010 +0800
+ * $Date: Tue Oct 26 21:47:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -89,7 +89,7 @@ function record_make_where()
 
 /**
  * filter the records which are not allowed to be accessed
- * @param &array $rows the rows selected from database, which must contain columns 'pid' and 'uid'
+ * @param &array $rows the rows selected from database, which must contain columns 'cid', 'pid' and 'uid'
  * disallowed records will be set to NULL
  * @return void
  */
@@ -98,12 +98,16 @@ function record_filter_rows(&$rows)
 	global $user;
 	if (user_check_login() && $user->is_grp_member(GID_SUPER_RECORD_VIEWER))
 		return;
-	foreach ($rows as &$row)
+	foreach ($rows as $key => $row)
 	{
-		$cid = prob_future_contest($row['pid']);
-		if (is_int($cid))
+		$cid = intval($row['cid']);
+		if ($cid)
+		{
 			if (!user_check_login() || $user->id != $row['uid'])
-				ctal_filter_record($cid, $row);
+				ctal_filter_record($cid, $rows[$key]);
+		}
+		else if (prob_future_contest($row['pid']))
+			$rows[$key] = NULL;
 	}
 }
 

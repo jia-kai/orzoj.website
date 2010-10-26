@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Fri Oct 22 11:09:04 2010 +0800
+ * $Date: Tue Oct 26 16:37:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,8 +27,7 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 /**
- * page argument:
- *	record id
+ * page argument: <record id:int>
  */
 
 if (!is_string($page_arg))
@@ -38,35 +37,52 @@ require_once $includes_path . 'exe_status.php';
 require_once $includes_path . 'problem.php';
 require_once $includes_path . 'judge.php';
 require_once $includes_path . 'record.php';
+require_once $includes_path . 'contest/ctal.php';
 require_once $root_path . 'contents/highlighters/geshi/geshi.php';
 
 // whether to display realname and submission IP
-$disp_info = user_check_login() && ($user->is_grp_member(GID_UINFO_VIEWER) ||
+$disp_uinfo = user_check_login() && ($user->is_grp_member(GID_UINFO_VIEWER) ||
 	$user->is_grp_member(GID_ADMIN_USER));
 
 // fd: field
 function _fd_user()
 {
-	global $row, $disp_info;
+	global $row, $disp_uinfo;
 	$uid = $row['uid'];
 	$str = user_get_nickname_by_id($uid) .
 		'(' . user_get_username_by_id($uid) . ')';
-	if ($disp_info)
+	if ($disp_uinfo)
 		$str .= ' (' . __('real name: %s', user_get_realname_by_id($uid)) . ') ';
-	echo __('User: %s', $str);
+	echo __('User: %s', '<a class="record-detail-colorbox" href="' .
+		t_get_link('ajax-user-info', $uid, TRUE, TRUE) . '">' . $str . '</a>');
 }
 
 function _fd_prob()
 {
 	global $row;
 	$pid = $row['pid'];
-	echo __('Problem: %s', prob_get_title_by_id($pid));
+	echo __('Problem: %s', '<a href="' .
+		t_get_link('problem', prob_get_code_by_id($pid), TRUE, TRUE) .
+		'">' . prob_get_title_by_id($pid) .
+		'</a>');
 }
 
 function _fd_lang()
 {
 	global $row;
 	echo __('Programming language: %s', plang_get_name_by_id($row['lid']));
+}
+
+function _fd_contest()
+{
+	global $row;
+	if ($row['cid'] == 0)
+		$str = __('None');
+	else
+		$str = '<a href="' . t_get_link('contest', $row['cid'], TRUE, TRUE) . '">' .
+			ct_get_name_by_id($row['cid']) . '</a>';
+
+	echo __('Contest: %s', $str);
 }
 
 function _fd_status()
@@ -245,6 +261,7 @@ $cols = array(
 	'pid' => '_fd_prob',
 	'jid' => '_fd_judge',
 	'lid' => '_fd_lang',
+	'cid' => '_fd_contest',
 	'src_len' => '_fd_srclen',
 	'status' => '_fd_status',
 	'stime' => '_fd_stime',
@@ -252,9 +269,6 @@ $cols = array(
 	'ip' => '_fd_ip',
 	'detail' => '_fd_detail'
 );
-
-if (!$disp_info)
-	unset($cols['ip']);
 
 $where = array($DBOP['='], 'id', $page_arg);
 db_where_add_and($where, record_make_where());
@@ -267,10 +281,21 @@ if (count($row) != 1)
 
 record_filter_rows($row);
 
+
+if (count($row) != 1 || is_null($row[0]))
+	die('no such record');
+
 $row = $row[0];
 
-if (is_null($row))
-	die('no such record');
+if (!$disp_uinfo)
+	$disp_uinfo = user_check_login() && $user->id == $row['uid'];
+
+if (!$disp_uinfo)
+	unset($cols['ip']);
+
+if ($row['status'] == RECORD_STATUS_WAITING_FOR_CONTEST)
+	foreach (array('jid', 'jtime', 'detail') as $f)
+		unset($cols[$f]);
 
 $plang_type = plang_get_type_by_id($row['lid']);
 
@@ -287,5 +312,6 @@ foreach ($cols as $col => $func)
 
 <script type="text/javascript">
 load_js_css_file("<?php echo get_page_url($root_path . "contents/highlighters/geshi/geshi-styles/$plang_type.css");?>", 'css');
+$(".record-detail-colorbox").colorbox();
 </script>
 

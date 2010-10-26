@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Thu Oct 21 23:47:12 2010 +0800
+ * $Date: Tue Oct 26 20:06:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,6 +33,8 @@ $translators = array();
 
 $translations = array();
 
+$_l10n_init_done = FALSE;
+
 /**
  * Get translation
  * @param string $fmt format, like that of printf in C
@@ -41,7 +43,9 @@ $translations = array();
  */
 function _gettext($fmt)
 {
-	global $translators,$translations;
+	global $translators, $translations, $_l10n_init_done;
+	if (!$_l10n_init_done)
+		l10n_init_wlang();
 	static $called = false;
 	$args = func_get_args();
 	if (!$called)
@@ -93,7 +97,7 @@ function l10n_add_file($filename)
  */
 function l10n_clean_files()
 {
-	global $translations,$translators;
+	global $translations, $translators;
 	$translators = array();
 	$translations = array();
 }
@@ -109,11 +113,11 @@ function l10n_add_directory($dir)
 	{
 		while (($file = readdir($dr)) !== false)
 		{
-			switch (strstr(strtolower($file),'.'))
+			switch (strrchr(strtolower($file), '.'))
 			{
-			case '.php':
-				l10n_add_file($dir . $file);
-				break;
+				case '.php':
+					l10n_add_file($dir . $file);
+					break;
 			}
 		}
 	}
@@ -126,7 +130,10 @@ function l10n_add_directory($dir)
  */
 function l10n_init_wlang_before_db()
 {
-	global $root_path;
+	global $root_path, $_l10n_init_done;
+	if ($_l10n_init_done)
+		return;
+	$_l10n_init_done = TRUE;
 	if (isset($_SERVER['HTTP_USER_AGENT']))
 		$ua = $_SERVER['HTTP_USER_AGENT'];
 	else
@@ -145,10 +152,12 @@ function l10n_init_wlang_before_db()
  * initialize website language
  * @return void
  */
-
 function l10n_init_wlang()
 {
-	global $db, $user, $DBOP, $root_path;
+	global $db, $user, $DBOP, $root_path, $_l10n_init_done;
+	if ($_l10n_init_done)
+		return;
+	$_l10n_init_done = TRUE;
 	if (user_check_login())
 		$id = $user->wlang;
 	else
@@ -171,3 +180,4 @@ function l10n_init_wlang()
 	l10n_clean_files();
 	l10n_add_directory($root_path . 'contents/lang/' . $locale . '/');
 }
+

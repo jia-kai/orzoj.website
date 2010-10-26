@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Thu Oct 21 16:51:13 2010 +0800
+ * $Date: Tue Oct 26 14:26:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -82,14 +82,18 @@ function submit_src()
 	if (strlen($src) > $max_src_length)
 		throw new Exc_runtime(__('source length exceeds the limit (%d bytes)', $max_src_length));
 
+	if (!empty($row['io']))
+		$row['io'] = unserialize($row['io']);
+	else $row['io'] = NULL;
+
 	$ct = ctal_get_class_by_pid($pid);
 	if ($ct)
 		$ct->user_submit($row, $plang, $src);
 	else
 	{
-		if (is_string($row['io']) && strlen($row['io']))
-			$io = unserialize($row['io']);
-		else $io = array('', '');
+		$io = $row['io'];
+		if (is_null($io))
+			$io = array('', '');
 		submit_add_record($pid, $plang, $src, $io);
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_list.php
- * $Date: Sat Oct 23 20:48:15 2010 +0800
+ * $Date: Tue Oct 26 18:23:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -176,7 +176,7 @@ foreach ($rows as $cur_row)
 
 echo '</table>';
 
-echo '<div class="contest-list-nav">';
+echo '<div class="contest-nav">';
 function _make_link($prompt, $pg)
 {
 	global $ct_time_str;
@@ -207,7 +207,7 @@ if ($pg_num + 1 < $tot_page)
 	echo '&gt;</div>';
 }
 
-echo '</div> <!-- class: contest-list-nav -->';
+echo '</div> <!-- class: contest-nav -->';
 
 if ($echo_div_contest_list)
 	echo '</div>';

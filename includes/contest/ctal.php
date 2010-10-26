@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Sun Oct 24 12:04:46 2010 +0800
+ * $Date: Tue Oct 26 21:34:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -87,6 +87,8 @@ abstract class Ctal
 	 * @return array a 2-dimension array, in the following format:
 	 *		[0][i]: (0 <= i < m)
 	 *			head text for the ith column
+	 *		[0][m]:
+	 *			column index to contain the link to the problem
 	 *		[i]: (1 <= i < n):
 	 *			NULL if the problem is not allowed to be viewd
 	 *		[i][j]: (1 <= i < n, 0 <= j < m):
@@ -131,14 +133,16 @@ abstract class Ctal
 	 * @return array a 2-dimension array representing the result
 	 *		[0][i]: table header for column i
 	 *		[i][j]: (i > 0)
-	 *			array(&lt;text to be displayed&gt;, &lt;related record id, or 0 if unavailable&gt;)
+	 *			string text to be displayed
+	 *				-- or --
+	 *			array(&lt;text to be displayed&gt;, &lt;related record id, or NULL if unavailable&gt;)
 	 * @exception Exc_runtime if the result is unavailable
 	 */
 	abstract protected function get_rank_list($where = NULL, $offset = NULL, $cnt = NULL);
 
 	/**
-	 * this function is called when an unprivileged user wants to view a record that is not submitted by himself
-	 *		before the contest ends
+	 * this function is called when an unprivileged user wants to view a record of this contest
+	 * that is not submitted by himself
 	 * @param &array $row a $row from the record table
 	 */
 	abstract protected function filter_record(&$row);
@@ -299,15 +303,30 @@ function ctal_get_list($fields, $time = NULL, $order_by = NULL, $offset = NULL, 
 		$user_grps = array(GID_GUEST);
 	}
 
-	foreach ($rows as &$row)
+	foreach ($rows as $key => $row)
 	{
 		if (!$super_perm)
 			if (!prob_check_perm($user_grps, $row['perm']))
-				$row = NULL;
+				$rows[$key] = NULL;
 		if ($row != NULL)
 			foreach ($fileds_added as $f)
-				unset($row[$f]);
+				unset($rows[$key][$f]);
 	}
 	return $rows;
+}
+
+/**
+ * get contest name by contest id
+ * @param int $cid contest id
+ * @return string|NULL contest name or NULL if no such contest
+ */
+function ct_get_name_by_id($cid)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('contests', 'name', array(
+		$DBOP['='], 'id', $cid));
+	if (count($row) != 1)
+		return NULL;
+	return $row[0]['name'];
 }
 

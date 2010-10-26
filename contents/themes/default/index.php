@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Mon Oct 25 13:06:15 2010 +0800
+ * $Date: Tue Oct 26 20:11:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -63,6 +63,8 @@ $PAGES_AJAX = array(
 	'ajax-contest-list' => 'ajax/contest_list.php',
 	'ajax-contest-view' => 'ajax/contest_view.php',
 	'ajax-contest-view-prob' => 'ajax/contest_view_prob.php',
+	'ajax-contest-view-result' => 'ajax/contest_view_result.php',
+	'ajax-contest-submit' => 'ajax/contest_submit.php',
 	'ajax-post-list' => 'ajax/post_list.php',
 	'ajax-post-view-single' => 'ajax/post_view_single.php',
 	'ajax-post-new-topic' => 'ajax/post_new_topic.php'
@@ -79,14 +81,11 @@ $PAGES_ACTION = array(
 	'action-logout' => '_action_logout'
 );
 
-if (!isset($PAGES_ACTION[$cur_page]))
-	t_init_wlang();
-else
+if (isset($PAGES_ACTION[$cur_page]))
 {
 	$msg = $PAGES_ACTION[$cur_page]();
 	if (is_string($msg))
 		$startup_msg = htmlencode($msg);
-	t_init_wlang();
 }
 
 /*

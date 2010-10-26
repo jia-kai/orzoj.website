@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Fri Oct 22 17:35:30 2010 +0800
+ * $Date: Tue Oct 26 19:23:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,13 +28,16 @@ ob_start();
 date_default_timezone_set('Asia/Shanghai');
 error_reporting(E_ALL);
 define('IN_ORZOJ', TRUE);
+
+define('ORZOJ_VERSION', '0.0.1-alpha');
+define('ORZOJ_OFFICIAL_WEBSITE', 'http://code.google.com/p/orzoj');
+define('ORZOJ_BUG_REPORT_ADDR', 'http://code.google.com/p/orzoj/issues');
+
 // XXX: debug mode on
 define('ORZOJ_DEBUG_MODE', TRUE);
 
 $root_path = rtrim(realpath(dirname(__FILE__)), '/') . '/';
 $includes_path = $root_path . 'includes/';
-
-$ORZOJ_VERSION = '0.0.1-alpha';
 
 require_once $root_path . 'config.php';
 require_once $includes_path . 'const.php';

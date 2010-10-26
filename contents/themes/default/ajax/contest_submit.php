@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: user_register.php
- * $Date: Tue Oct 26 10:01:40 2010 +0800
+ * $File: contest_submit.php
+ * $Date: Tue Oct 26 10:02:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,50 +23,55 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 if (!defined('IN_ORZOJ'))
 	exit;
+
+/*
+ * page argument: <problem id:int>|"do"
+ */
+
+if (!is_string($page_arg) || empty($page_arg))
+	die('give me the problem id, please');
+
+if (!user_check_login())
+	die(__('Please login first.'));
+
+require_once $includes_path . 'submit.php';
 
 if ($page_arg == 'do')
 {
 	try
 	{
-		$id = user_register(TRUE);
-		die('0' . __('Congratulations! You have successfully registered, and your user id is %d.', $id) .
-			'<br />' . __('Login in 2 seconds ...'));
-	}
-	catch (Exc_orzoj $e)
+		submit_src();
+		die('0' . __('Successful submission!'));
+	} catch (Exc_orzoj $e)
 	{
-		die('1' . __('Failed to register: ') . $e->msg());
-		// htmlencode is not needed because the message will be displayed in alert
+		die('1' . __('Failed to submit: %s', $e->msg()));
 	}
 }
-
 ?>
 
-<form action="#" id="register-form">
-<?php _tf_form_generate_body('user_register_get_form'); ?>
+<form action="<?php t_get_link('show-ajax-contest-submit', 'do');?>" method="post" id="contest-submit-form">
+<?php  _tf_form_generate_body('submit_src_get_form', intval($page_arg)); ?>
 <div style="text-align: right">
-	<button id="register-button" type="submit" class="in-form" ><?php echo __('Register!'); ?></button>
+	<button type="submit" class="in-form"><?php echo __("Good Luck^ ^"); ?></button>
 </div>
 </form>
 
 <script type="text/javascript">
-
-$("#register-button").button();
-$("#register-form").bind("submit", function(){
+$("button").button();
+$("#contest-submit-form").bind("submit", function(){
 	$.ajax({
 		"type": "post",
 		"cache": false,
-		"url": "<?php t_get_link($cur_page, 'do', FALSE);?>",
-		"data": $("#register-form").serializeArray(),
+		"url": "<?php t_get_link('ajax-contest-submit', 'do', FALSE);?>",
+		"data": $("#contest-submit-form").serializeArray(),
 		"success": function(data) {
-			if (data.charAt(0) == '1')
+			if (data.charAt(0) == "1")
 				alert(data.substr(1));
 			else
-			{
 				$.colorbox({"html": data.substr(1)});
-				setTimeout("window.location='<?php t_get_link('action-login');?>'", 2000);
-			}
 		}
 	});
 	return false;

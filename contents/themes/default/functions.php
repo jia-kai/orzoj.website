@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sun Oct 24 12:11:37 2010 +0800
+ * $Date: Tue Oct 26 21:35:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -180,12 +180,12 @@ function tf_form_get_gid_selector_value($selector_name)
 	$ret = explode(',', $val);
 	if ($ret === FALSE)
 		throw Exc_runtime(__('wrong format for gid selector'));
-	foreach ($ret as &$val)
+	foreach ($ret as $key => $val)
 	{
 		$id = user_grp_get_id_by_name($val);
 		if (is_null($id))
 			throw new Exc_runtime(__('No such user group: %s', $val));
-		$val = $id;
+		$ret[$key] = $id;
 	}
 	return $ret;
 }

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Mon Oct 18 14:56:55 2010 +0800
+ * $Date: Tue Oct 26 10:36:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -96,7 +96,7 @@ $FILETER_ALLOWED = array('uid', 'pid', 'lid', 'status');
 
 $where = NULL;
 $select_cols = array(
-	'id', 'uid', 'pid', 'jid', 'lid', 'src_len', 'status',
+	'id', 'uid', 'pid', 'cid', 'jid', 'lid', 'src_len', 'status',
 	'stime', 'score', 'time', 'mem'
 );
 $order_by = array('id' => 'DESC');
@@ -175,7 +175,8 @@ function _cv_status()
 	if ($s == RECORD_STATUS_RUNNING)
 		$str = sprintf('%s (%d / %d)', $str, $cur_row['time'] + 1, $cur_row['mem']);
 		// see /install/tables.php
-	if (!record_status_finished($s))
+
+	if (!record_status_finished($s) && $s != RECORD_STATUS_WAITING_FOR_CONTEST)
 		return '<img src="' . _url('images/loading.gif', TRUE) . '" alt="loading" />' . $str;
 	if ($s == RECORD_STATUS_ACCEPTED)
 		$class = 'class="status-ac"';
@@ -319,7 +320,8 @@ foreach ($rows as $cur_row)
 			$func = $col[1];
 			echo '<td>' . $func() . '</td>';
 		}
-		if (!record_status_finished($cur_row['status']))
+		if (!record_status_finished($cur_row['status'])
+			&& $cur_row['status'] != RECORD_STATUS_WAITING_FOR_CONTEST)
 			$records_unfinished[] = "'$id'";
 	}
 	echo '</tr>';

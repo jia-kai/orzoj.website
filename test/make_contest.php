@@ -4,10 +4,11 @@ require_once '../pre_include.php';
 
 define('TEST_CONTEST_LIST', TRUE);
 
+define('CT_NUSER', 102);
 if(defined('TEST_CONTEST_LIST'))
 {
 	define('NPAST', 100);
-	define('NCURRENT', 100);
+	define('NCURRENT', 5);
 	define('NFUTURE', 100);
 }
 else
@@ -20,12 +21,12 @@ else
 $db->delete_item('contests');
 $db->delete_item('map_prob_ct');
 
-function make($s, $t)
+function make($s, $t, $test_result = FALSE)
 {
 	global $db;
 	$cid = $db->insert_into('contests', array(
-		'type' => defined('TEST_CONTEST_LIST') ? rand(0, 1) : 0,
-		'name' => 'contest-' . rand(),
+		'type' => defined('TEST_CONTEST_LIST') && !$test_result ? rand(0, 1) : 0,
+		'name' => $test_result ? 'test-result-list' : 'contest-' . rand(),
 		'desc' => 'this is contest #' . rand(),
 		'time_start' => $s,
 		'time_end' => $t,
@@ -35,10 +36,19 @@ function make($s, $t)
 		$db->insert_into('map_prob_ct', array(
 			'cid' => $cid,
 			'pid' => rand(10, 20),
-			'order' => $i,
-			'time_start' => $s,
-			'time_end' => $t
+			'order' => $i
 		));
+
+	if ($test_result)
+		for ($i = 0; $i < CT_NUSER; $i ++)
+			$db->insert_into('contests_oi',
+				array(
+					'cid' => $cid,
+					'uid' => $i + 1,
+					'prob_result' => json_encode(array()),
+					'total_score' => rand(),
+					'total_time' => rand()
+				));
 }
 
 for ($i = 0; $i < NPAST; $i ++)
@@ -55,4 +65,6 @@ for ($i = 0; $i < NFUTURE; $i ++)
 	$start = time() + rand(3600 * 24 * 365, 3600 * 24 * 3650);
 	make($start, $start + rand(1000, 10000));
 }
+
+make(time() - 10, time() - 5, TRUE);
 
