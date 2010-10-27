@@ -7,6 +7,18 @@ $odb->connect($db_host, $db_port, $db_user, $db_password, 'orzoj');
 
 $trans_plang = array(1 => 3, 2 => 2, 3 => 1);
 
+function odb_convert_username($name, $id)
+{
+	try
+	{
+		user_validate_username($name);
+		return strtolower($name);
+	} catch (Exc_orzoj $e)
+	{
+		return "user.$id";
+	}
+}
+
 function odb_get_prob_code($pid)
 {
 	global $odb, $DBOP;
@@ -25,7 +37,7 @@ function odb_user_get_name_by_id($uid)
 		$DBOP['='], 'id', $uid));
 	if (empty($row))
 		return NULL;
-	return $row[0]['username'];
+	return odb_convert_username($row[0]['username'], $uid);
 }
 
 function odb_simulate_user_login($username)

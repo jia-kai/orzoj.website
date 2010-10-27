@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Oct 27 18:38:19 2010 +0800
+ * $Date: Wed Oct 27 19:36:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -245,8 +245,13 @@ function user_check_login($cookie_time = NULL)
 		filter_apply_no_iter('before_user_login');
 		$username = $_POST['username'];
 		$password = $_POST['password'];
-		if (!user_check_name($username))
+		try
+		{
+			user_validate_username($username);
+		} catch (Exc_orzoj $e)
+		{
 			return $_user_check_login_result = FALSE;
+		}
 		$username = strtolower($username);
 
 		$row = $db->select_from('users', array('id', 'passwd'),
@@ -353,18 +358,6 @@ function _user_check_passwd($username, $passwd, $passwd_encr)
 }
 
 /**
- * check whether the username is a valid one
- * @param string $name username
- * @return bool
- */
-function user_check_name($name)
-{
-	if (strlen($name) > USERNAME_LEN_MAX || strlen($name) < USERNAME_LEN_MIN)
-		return FALSE;
-	return count(preg_grep('#^[a-zA-Z][a-zA-Z0-9_.]*$#', array($name))) > 0;
-}
-
-/**
  * @ignore
  */
 function _user_make_passwd_v01($username, $passwd)
@@ -421,34 +414,73 @@ function user_get_id_by_name($name)
 function user_init_form()
 {
 	global $_checker_id;
-	$_checker_id['user'] = tf_form_register_checker('user_check_name_string_output');
-	$_checker_id['email'] = tf_form_register_checker('user_check_email');
+	$_checker_id['user'] = tf_form_register_checker('_user_check_name_form');
+	$_checker_id['email'] = tf_form_register_checker('_user_check_email');
 }
 
 /**
- * check whether the username is a valid one
- * @param string $name username
- * @return string a human readable string describing the result
+ * @ignore
  */
-function user_check_name_string_output($name)
+function _user_check_name_form($name)
 {
-	if (strlen($name) < USERNAME_LEN_MIN)
-		return __('username should not be shorter than %d characters', USERNAME_LEN_MIN);
-	if (strlen($name) > USERNAME_LEN_MAX)
-		return __('username should not be longer than %d characters', USERNAME_LEN_MAX);
-	if (count(preg_grep('#^[a-zA-Z][a-zA-Z0-9_.]*$#', array($name))) != 1)
-		return __('username should begin with a letter and only contain letters, digits, dots(.) or underscores(_)');
+	try
+	{
+		user_validate_username($name);
+	} catch (Exc_runtime $e)
+	{
+		return $e->msg();
+	}
 	if (user_get_id_by_name($name))
 		return __('username %s already exists', $name);
 	return __('Username avaliable');
 }
 
 /**
- * check whether email address is valid
- * @param string $email email address
- * @return string a human readable string describing the result, or '' on success
+ * check whether the username is a valid one
+ * @param string $name username
+ * @exception Exc_runtime on error
+ * @return void
  */
-function user_check_email($email)
+function user_validate_username($name)
+{
+	if (strlen($name) < USERNAME_LEN_MIN)
+		throw new Exc_runtime(__('username should not be shorter than %d characters', USERNAME_LEN_MIN));
+	if (strlen($name) > USERNAME_LEN_MAX)
+		throw new Exc_runtime(__('username should not be longer than %d characters', USERNAME_LEN_MAX));
+	if (count(preg_grep('#^[a-zA-Z][a-zA-Z0-9_.]*$#', array($name))) != 1)
+		throw new Exc_runtime(
+			__('username should begin with a letter and only contain letters, digits, dots(.) or underscores(_)'));
+}
+
+/**
+ * check whether the nickname is a valid one
+ * @param string $name nickname
+ * @exception Exc_runtime on error
+ * @return void
+ */
+function user_validate_nickname($name)
+{
+	if (strlen($name) > NICKNAME_LEN_MAX)
+		throw new Exc_runtime(__('nickname should not be longer than %d characters', NICKNAME_LEN_MAX));
+}
+
+/**
+ * check whether the real name is a valid one
+ * @param string $name real name
+ * @exception Exc_runtime on error
+ * @return void
+ */
+function user_validate_realname($name)
+{
+	if (strlen($name) > REALNAME_LEN_MAX)
+		throw new Exc_runtime(__('realname should not be longer than %d characters', NICKNAME_LEN_MAX));
+}
+
+
+/**
+ * @ignore
+ */
+function _user_check_email($email)
 {
 	try
 	{
@@ -527,8 +559,8 @@ function user_register($login_after_register = FALSE)
 	if ($val['passwd'] != $val['passwd_confirm'])
 		throw new Exc_runtime(__('Passwords do not match'));
 	unset($val['passwd_confirm']);
-	if (!user_check_name($_POST['username']))
-		throw new Exc_runtime(__('invalid username'));
+
+	user_validate_username($_POST['username']);
 	if (user_get_id_by_name($_POST['username']))
 		throw new Exc_runtime(__('username already exists'));
 
@@ -539,6 +571,9 @@ function user_register($login_after_register = FALSE)
 	{
 		throw new Exc_runtime(__('Error while validating self description: %s', $e->msg()));
 	}
+
+	user_validate_realname($val['realname']);
+	user_validate_nickname($val['nickname']);
 
 	email_validate($val['email']);
 
@@ -658,6 +693,10 @@ function user_update_info()
 	{
 		throw new Exc_runtime(__('Error while validating self description: %s', $e->msg()));
 	}
+
+	user_validate_realname($val['realname']);
+	user_validate_nickname($val['nickname']);
+
 
 	email_validate($val['email']);
 

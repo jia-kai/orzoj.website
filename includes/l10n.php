@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: l10n.php
- * $Date: Tue Oct 26 22:01:10 2010 +0800
+ * $Date: Wed Oct 27 19:58:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -165,7 +165,10 @@ function l10n_init_wlang()
 		$id = $user->wlang;
 	else
 	{
-		$ua = $_SERVER['HTTP_USER_AGENT'];
+		if (isset($_SERVER['HTTP_USER_AGENT']))
+			$ua = $_SERVER['HTTP_USER_AGENT'];
+		else
+			$ua = '';
 		if (preg_match('/([a-z][a-z]-[A-Z][A-Z])/',$ua,$matches))
 		{
 			$locale = str_replace('-','_',$matches[0]);
