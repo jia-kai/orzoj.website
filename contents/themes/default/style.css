@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Oct 27 11:03:30 2010 +0800
+ * $Date: Wed Oct 27 14:48:32 2010 +0800
 
  This file is part of orzoj
 
@@ -441,9 +441,10 @@ div#prob-view-single-subtitle span
 	color: #02f010;
 }
 
-div#prob-view-single-desc p
+div.prob-view-single-desc-title
 {
 	font-size: 20px;
+	margin-bottom: 10px;
 	color: green;
 	text-align: left;
 }

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Oct 27 09:58:52 2010 +0800
+ * $Date: Wed Oct 27 14:46:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -379,7 +379,7 @@ function tf_get_prob_html($pinfo)
 	foreach ($desc as $key => $item)
 		if (isset($translate[$key]))
 		{
-			$content .= '<p>' . $translate[$key] . '</p>';
+			$content .= '<div class="prob-view-single-desc-title">' . $translate[$key] . '</div>';
 			$content .= '<div id="prob-view-single-content">'
 				. $item . '<br /></div>';
 		}

@@ -107,7 +107,7 @@ function make_prob()
 				'cnt_ce' => rand(),
 				'cnt_submit_user' => rand(),
 				'cnt_ac_user' => rand(),
-				'cnt_ac_submission_sum ' => rand(),
+				'cnt_ac_submission_sum' => rand(),
 				'difficulty' => rand(0, 10000),
 				'desc' => serialize(array(
 					'time' => rand(),
