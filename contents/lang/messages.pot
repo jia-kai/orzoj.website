@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orzoj-website-0.0.1-alpha\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-24 21:37+0800\n"
+"POT-Creation-Date: 2010-10-27 21:23+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,28 +29,33 @@ msgstr ""
 msgid "problem code"
 msgstr ""
 
-#: contents/themes/default/status.php:167
-#: contents/themes/default/status.php:174
+#: contents/themes/default/status.php:164
+msgid "contest id"
+msgstr ""
+
+#: contents/themes/default/status.php:168
+#: contents/themes/default/status.php:175
 msgid "ALL"
 msgstr ""
 
-#: contents/themes/default/status.php:173
+#: contents/themes/default/status.php:174
 msgid "lang."
 msgstr ""
 
-#: contents/themes/default/status.php:174
+#: contents/themes/default/status.php:175
 msgid "status"
 msgstr ""
 
-#: contents/themes/default/status.php:177
+#: contents/themes/default/status.php:178
 msgid "Ranklist Mode"
 msgstr ""
 
-#: contents/themes/default/status.php:179
+#: contents/themes/default/status.php:180
 msgid "Apply"
 msgstr ""
 
-#: contents/themes/default/status.php:192
+#: contents/themes/default/status.php:193
+#: contents/themes/default/ajax/contest_view.php:103
 msgid "Refresh"
 msgstr ""
 
@@ -59,11 +64,14 @@ msgid "Please select a group first"
 msgstr ""
 
 #: contents/themes/default/ajax/prob_submit.php:46
+#: contents/themes/default/ajax/contest_submit.php:47
 msgid "Successful submission!"
 msgstr ""
 
 #: contents/themes/default/ajax/prob_submit.php:51
-msgid "Failed to submit: "
+#: contents/themes/default/ajax/contest_submit.php:50
+#, php-format
+msgid "Failed to submit: %s"
 msgstr ""
 
 #: contents/themes/default/ajax/prob_submit.php:57
@@ -72,15 +80,17 @@ msgid "Sir, what can I do for you?"
 msgstr ""
 
 #: contents/themes/default/ajax/prob_submit.php:60
+#: contents/themes/default/ajax/contest_submit.php:38
 #: contents/themes/default/ajax/prob_best_solutions.php:38
 msgid "Please login first."
 msgstr ""
 
-#: contents/themes/default/ajax/prob_submit.php:68
+#: contents/themes/default/ajax/prob_submit.php:66
+#: contents/themes/default/ajax/contest_submit.php:58
 msgid "Good Luck^ ^"
 msgstr ""
 
-#: contents/themes/default/ajax/prob_submit.php:125
+#: contents/themes/default/ajax/prob_submit.php:123
 msgid "Good luck"
 msgstr ""
 
@@ -95,12 +105,11 @@ msgid "Unknown argument."
 msgstr ""
 
 #: contents/themes/default/ajax/rank_list.php:118
-#: contents/themes/default/index.php:99
+#: contents/themes/default/index.php:100
 msgid "Rank"
 msgstr ""
 
-#: contents/themes/default/ajax/rank_list.php:119 includes/contest/oi.php:244
-#: includes/user.php:611
+#: contents/themes/default/ajax/rank_list.php:119 includes/user.php:656
 msgid "Nickname"
 msgstr ""
 
@@ -129,7 +138,8 @@ msgid "This is you!"
 msgstr ""
 
 #: contents/themes/default/ajax/rank_list.php:315
-#: contents/themes/default/ajax/status_list.php:344
+#: contents/themes/default/ajax/contest_view_result.php:228
+#: contents/themes/default/ajax/status_list.php:345
 #: contents/themes/default/ajax/prob_view_by_group.php:381
 #: contents/themes/default/ajax/contest_list.php:191
 #: contents/themes/default/ajax/post_list.php:141
@@ -137,7 +147,8 @@ msgid "Prev"
 msgstr ""
 
 #: contents/themes/default/ajax/rank_list.php:320
-#: contents/themes/default/ajax/status_list.php:350
+#: contents/themes/default/ajax/contest_view_result.php:246
+#: contents/themes/default/ajax/status_list.php:351
 #: contents/themes/default/ajax/prob_view_by_group.php:384
 #: contents/themes/default/ajax/contest_list.php:206
 #: contents/themes/default/ajax/post_list.php:145
@@ -147,6 +158,46 @@ msgstr ""
 #: contents/themes/default/ajax/rank_list.php:324
 #: contents/themes/default/ajax/prob_view_by_group.php:392
 msgid "Go to page"
+msgstr ""
+
+#: contents/themes/default/ajax/user_chpasswd.php:30
+msgid "Please log in first."
+msgstr ""
+
+#: contents/themes/default/ajax/user_chpasswd.php:35
+#: contents/themes/default/functions.php:176 includes/user.php:685
+#: includes/message.php:71
+msgid "incomplete post"
+msgstr ""
+
+#: contents/themes/default/ajax/user_chpasswd.php:37
+#: contents/themes/default/index.php:370 includes/user.php:560
+msgid "Passwords do not match"
+msgstr ""
+
+#: contents/themes/default/ajax/user_chpasswd.php:41
+msgid "Password succesfullly changed. Log out in 2 seconds ..."
+msgstr ""
+
+#: contents/themes/default/ajax/user_chpasswd.php:45
+msgid "Failed to change password: "
+msgstr ""
+
+#: contents/themes/default/ajax/user_chpasswd.php:52
+msgid "Old password:"
+msgstr ""
+
+#: contents/themes/default/ajax/user_chpasswd.php:53
+msgid "New passowrd:"
+msgstr ""
+
+#: contents/themes/default/ajax/user_chpasswd.php:53
+msgid "Confirm new passowrd:"
+msgstr ""
+
+#: contents/themes/default/ajax/user_chpasswd.php:61
+#: contents/themes/default/index.php:221 contents/themes/default/index.php:527
+msgid "OK"
 msgstr ""
 
 #: contents/themes/default/ajax/prob_filter.php:31
@@ -188,117 +239,126 @@ msgstr ""
 msgid "User: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:63
+#: contents/themes/default/ajax/record_detail.php:65
 #, php-format
-msgid "Problem: %s"
+msgid "Problem: %s (CODE: %s)"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:69
+#: contents/themes/default/ajax/record_detail.php:74
 #, php-format
 msgid "Programming language: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:75
+#: contents/themes/default/ajax/record_detail.php:81
+msgid "None"
+msgstr ""
+
+#: contents/themes/default/ajax/record_detail.php:86
+#, php-format
+msgid "Contest: %s"
+msgstr ""
+
+#: contents/themes/default/ajax/record_detail.php:92
 #, php-format
 msgid "Status: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:85
+#: contents/themes/default/ajax/record_detail.php:102
 #, php-format
 msgid "Score: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:96
+#: contents/themes/default/ajax/record_detail.php:113
 #, php-format
 msgid "%.6lf [sec]"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:98
+#: contents/themes/default/ajax/record_detail.php:115
 #, php-format
 msgid "Total CPU time: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:106
+#: contents/themes/default/ajax/record_detail.php:123
 #, php-format
 msgid "%d [kb]"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:107
+#: contents/themes/default/ajax/record_detail.php:124
 #, php-format
 msgid "Maximal memory: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:116
+#: contents/themes/default/ajax/record_detail.php:133
 #, php-format
 msgid "Judge: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:126
+#: contents/themes/default/ajax/record_detail.php:143
 #, php-format
 msgid "%d [b]"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:127
+#: contents/themes/default/ajax/record_detail.php:144
 #, php-format
 msgid "%.3f [kb]"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:129
+#: contents/themes/default/ajax/record_detail.php:146
 #, php-format
 msgid "Source code length: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:136
+#: contents/themes/default/ajax/record_detail.php:153
 #, php-format
 msgid "When submitted: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:146
+#: contents/themes/default/ajax/record_detail.php:163
 #, php-format
 msgid "When judged: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:152
+#: contents/themes/default/ajax/record_detail.php:169
 #, php-format
 msgid "Submission ip: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:185
+#: contents/themes/default/ajax/record_detail.php:202
 msgid "Details:"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:193
+#: contents/themes/default/ajax/record_detail.php:210
 msgid "CASE"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:194
+#: contents/themes/default/ajax/record_detail.php:211
 #: contents/themes/default/ajax/status_list.php:253
 msgid "STATUS"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:195
+#: contents/themes/default/ajax/record_detail.php:212
 #: contents/themes/default/ajax/status_list.php:255
 msgid "SCORE"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:196
+#: contents/themes/default/ajax/record_detail.php:213
 #: contents/themes/default/ajax/status_list.php:256
 msgid "TIME[sec]"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:197
+#: contents/themes/default/ajax/record_detail.php:214
 msgid "MEMORY[kb]"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:198
+#: contents/themes/default/ajax/record_detail.php:215
 msgid "Extra infomation"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:232
+#: contents/themes/default/ajax/record_detail.php:249
 msgid "not found"
 msgstr ""
 
-#: contents/themes/default/ajax/record_detail.php:234
+#: contents/themes/default/ajax/record_detail.php:251
 msgid "Source:"
 msgstr ""
 
@@ -324,11 +384,48 @@ msgid "Next page &gt;"
 msgstr ""
 
 #: contents/themes/default/ajax/avatar_browser.php:109
-#: contents/themes/default/ajax/status_list.php:357
+#: contents/themes/default/ajax/status_list.php:358
 msgid "Go to page:"
 msgstr ""
 
-#: contents/themes/default/ajax/status_list.php:158
+#: contents/themes/default/ajax/contest_view_result.php:64
+#: contents/themes/default/ajax/contest_view_prob.php:56
+msgid "Back to contest"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view_result.php:67
+msgid "Download as a single XHTML page"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view_result.php:97
+msgid "contest result is not available"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view_result.php:107
+#: contents/themes/default/ajax/contest_view.php:54
+#, php-format
+msgid "Failed to get contest information: %s"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view_result.php:123
+#, php-format
+msgid "Contest result of %d"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view_result.php:146
+msgid "CONTEST RESULT"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view_result.php:174
+#, php-format
+msgid "Generated by %s"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view_result.php:204
+msgid "record detail"
+msgstr ""
+
+#: contents/themes/default/ajax/status_list.php:157
 #, php-format
 msgid "Problem code: %s"
 msgstr ""
@@ -362,10 +459,11 @@ msgid "DATE"
 msgstr ""
 
 #: contents/themes/default/ajax/status_list.php:265
+#: includes/contest/oi.php:255
 msgid "RANK"
 msgstr ""
 
-#: contents/themes/default/ajax/status_list.php:403
+#: contents/themes/default/ajax/status_list.php:405
 msgid "Record detail"
 msgstr ""
 
@@ -383,8 +481,7 @@ msgid "Problems filter"
 msgstr ""
 
 #: contents/themes/default/ajax/prob_view_by_group.php:166
-#: contents/themes/default/ajax/contest_view.php:101
-#: contents/themes/default/index.php:97
+#: contents/themes/default/index.php:98
 msgid "Problems"
 msgstr ""
 
@@ -409,7 +506,7 @@ msgid "Unaccepted"
 msgstr ""
 
 #: contents/themes/default/ajax/prob_view_by_group.php:323
-#: includes/record.php:128
+#: includes/record.php:135
 msgid "Accepted"
 msgstr ""
 
@@ -417,116 +514,181 @@ msgstr ""
 msgid "Accepted Blink"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:53
-#, php-format
-msgid "Failed to get contest information: %s"
+#: contents/themes/default/ajax/contest_view_prob.php:59
+#: contents/themes/default/ajax/prob_view_single.php:88
+msgid "Submit"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:61
+#: contents/themes/default/ajax/contest_view_prob.php:91
+#, php-format
+msgid ""
+"Sorry, this problem belongs to a future contest #%d and you are not alloed "
+"to view it now"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view_prob.php:100
+#, php-format
+msgid "Failed to view problem: %s"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view.php:94
 #: contents/themes/default/ajax/prob_view_single.php:109
+#: contents/themes/default/discuss.php:39
 msgid "Back to list"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:69
+#: contents/themes/default/ajax/contest_view.php:113
 #, php-format
 msgid "Contest ID: %d"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:70
+#: contents/themes/default/ajax/contest_view.php:114
 #, php-format
 msgid "Contest type: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:73
+#: contents/themes/default/ajax/contest_view.php:117
 msgid "Contest description:"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:81
+#: contents/themes/default/ajax/contest_view.php:128
 #, php-format
 msgid "Start time: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:82
+#: contents/themes/default/ajax/contest_view.php:129
 #, php-format
 msgid "End time: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:83
+#: contents/themes/default/ajax/contest_view.php:130
 #, php-format
 msgid "Contest duration: %s"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:87
+#: contents/themes/default/ajax/contest_view.php:140
 #, php-format
 msgid "The contest will start in %s"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:89
+#: contents/themes/default/ajax/contest_view.php:147
 #, php-format
 msgid "The contest will end in %s"
 msgstr ""
 
-#: contents/themes/default/ajax/contest_view.php:98
+#: contents/themes/default/ajax/contest_view.php:156
+msgid "View contest result"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view.php:158
+msgid ""
+"Please wait for a few minutes to see the contest result. (You can go to the "
+"status page to see judge progress)"
+msgstr ""
+
+#: contents/themes/default/ajax/contest_view.php:168
 msgid "Sorry, you are not allowed to view problems in this contest now"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:45 includes/user.php:491
-#: includes/user.php:613
+#: contents/themes/default/ajax/contest_view.php:171
+msgid "Problem list"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:59 includes/user.php:531
+#: includes/user.php:658
 msgid "Avatar:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:52
+#: contents/themes/default/ajax/user_info.php:65
 msgid "Team:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:56
+#: contents/themes/default/ajax/user_info.php:68
 msgid "unknown"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:66
+#: contents/themes/default/ajax/user_info.php:76
 msgid "Self description:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:72
+#: contents/themes/default/ajax/user_info.php:82
 msgid "Registration time:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:77
+#: contents/themes/default/ajax/user_info.php:88
 msgid "Last login time:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:83
+#: contents/themes/default/ajax/user_info.php:95
 msgid "User id:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:84 includes/user.php:309
-#: includes/user.php:486
+#: contents/themes/default/ajax/user_info.php:96 includes/user.php:314
+#: includes/user.php:526
 msgid "Username:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:85 includes/user.php:489
+#: contents/themes/default/ajax/user_info.php:97 includes/user.php:529
 msgid "Nickname:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:86 includes/user.php:488
+#: contents/themes/default/ajax/user_info.php:98 includes/user.php:528
 msgid "Real name:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:87
+#: contents/themes/default/ajax/user_info.php:99
 msgid "Email:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:92
+#: contents/themes/default/ajax/user_info.php:104
 msgid "Registration ip:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:94
+#: contents/themes/default/ajax/user_info.php:106
 msgid "Last login IP:"
 msgstr ""
 
-#: contents/themes/default/ajax/user_info.php:113
+#: contents/themes/default/ajax/user_info.php:125
 #, php-format
 msgid "Failed to get user info: %s"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:145
+msgid "Accepted submissions"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:146
+msgid "Unaccepted submissions"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:147
+msgid "Compilation-error submissions"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:148
+msgid "Total submissions"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:149
+msgid "Problems solved"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:150
+#: contents/themes/default/ajax/user_info.php:151
+msgid "Problems solved on first submission"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:152
+msgid "Problems ever submitted"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:153
+msgid "Sum of submissions until first AC for each problem"
+msgstr ""
+
+#: contents/themes/default/ajax/user_info.php:156
+#: contents/themes/default/functions.php:395
+msgid "Statistics"
 msgstr ""
 
 #: contents/themes/default/ajax/prob_view_single.php:53
@@ -549,10 +711,6 @@ msgstr ""
 #: contents/themes/default/ajax/prob_view_single.php:70
 #, php-format
 msgid "No such problem whose code is '%s'"
-msgstr ""
-
-#: contents/themes/default/ajax/prob_view_single.php:88
-msgid "Submit"
 msgstr ""
 
 #: contents/themes/default/ajax/prob_view_single.php:92
@@ -612,7 +770,7 @@ msgstr ""
 msgid "Failed to register: "
 msgstr ""
 
-#: contents/themes/default/ajax/user_register.php:48
+#: contents/themes/default/ajax/user_register.php:49
 msgid "Register!"
 msgstr ""
 
@@ -630,11 +788,6 @@ msgstr ""
 
 #: contents/themes/default/contest.php:57
 msgid "Upcoming Contests"
-msgstr ""
-
-#: contents/themes/default/functions.php:176 includes/user.php:640
-#: includes/message.php:71
-msgid "incomplete post"
 msgstr ""
 
 #: contents/themes/default/functions.php:182
@@ -719,145 +872,154 @@ msgid "Output Sample"
 msgstr ""
 
 #: contents/themes/default/functions.php:376
-msgid "Source"
+msgid "Range"
 msgstr ""
 
 #: contents/themes/default/functions.php:377
 msgid "Hint"
 msgstr ""
 
-#: contents/themes/default/functions.php:388
-msgid "Statistics"
+#: contents/themes/default/functions.php:378
+msgid "Source"
 msgstr ""
 
-#: contents/themes/default/functions.php:390
+#: contents/themes/default/functions.php:386
+#, php-format
+msgid "Extra info %s"
+msgstr ""
+
+#: contents/themes/default/functions.php:397
 msgid "Accepted submissions:"
 msgstr ""
 
-#: contents/themes/default/functions.php:391
+#: contents/themes/default/functions.php:398
 msgid "Unaccepted submissions:"
 msgstr ""
 
-#: contents/themes/default/functions.php:392
+#: contents/themes/default/functions.php:399
 msgid "Compilation-error submissions:"
 msgstr ""
 
-#: contents/themes/default/functions.php:393
+#: contents/themes/default/functions.php:400
 msgid "Total submissions:"
 msgstr ""
 
-#: contents/themes/default/functions.php:394
+#: contents/themes/default/functions.php:401
 msgid "Number of users having submitted:"
 msgstr ""
 
-#: contents/themes/default/functions.php:395
+#: contents/themes/default/functions.php:402
 msgid "Number of users with accepted submission: "
 msgstr ""
 
-#: contents/themes/default/index.php:96
+#: contents/themes/default/functions.php:403
+msgid "Sum of submissions until the first accepted submission for each user: "
+msgstr ""
+
+#: contents/themes/default/discuss.php:38
+msgid "New Topic"
+msgstr ""
+
+#: contents/themes/default/index.php:97
 msgid "Home"
 msgstr ""
 
-#: contents/themes/default/index.php:98 contents/themes/default/judge.php:73
+#: contents/themes/default/index.php:99 contents/themes/default/judge.php:73
 msgid "Status"
 msgstr ""
 
-#: contents/themes/default/index.php:100
+#: contents/themes/default/index.php:101
 msgid "Contest"
 msgstr ""
 
-#: contents/themes/default/index.php:101
+#: contents/themes/default/index.php:102
 msgid "Discuss"
 msgstr ""
 
-#: contents/themes/default/index.php:102
+#: contents/themes/default/index.php:103
 msgid "User Teams"
 msgstr ""
 
-#: contents/themes/default/index.php:103
+#: contents/themes/default/index.php:104
 msgid "Judges"
 msgstr ""
 
-#: contents/themes/default/index.php:104
+#: contents/themes/default/index.php:105
 msgid "FAQ"
 msgstr ""
 
-#: contents/themes/default/index.php:158
+#: contents/themes/default/index.php:159
 msgid "Failed to login"
 msgstr ""
 
-#: contents/themes/default/index.php:162
+#: contents/themes/default/index.php:163
 msgid "Failed to login: "
 msgstr ""
 
-#: contents/themes/default/index.php:177
+#: contents/themes/default/index.php:178
 msgid "Error while logging out: "
 msgstr ""
 
-#: contents/themes/default/index.php:220 contents/themes/default/index.php:525
-msgid "OK"
-msgstr ""
-
-#: contents/themes/default/index.php:253
+#: contents/themes/default/index.php:254
 msgid "Login"
 msgstr ""
 
-#: contents/themes/default/index.php:255
+#: contents/themes/default/index.php:256
 msgid "Register"
 msgstr ""
 
-#: contents/themes/default/index.php:262
+#: contents/themes/default/index.php:263
 #, php-format
 msgid "Hello, %s!"
 msgstr ""
 
-#: contents/themes/default/index.php:264
+#: contents/themes/default/index.php:265
 #, php-format
 msgid "Solved prob.: %d Submitted prob.: %d <br />AC Ratio: %.2f%%"
 msgstr ""
 
-#: contents/themes/default/index.php:276
+#: contents/themes/default/index.php:277
 msgid "User info."
 msgstr ""
 
-#: contents/themes/default/index.php:277
+#: contents/themes/default/index.php:278
 msgid "Update profile"
 msgstr ""
 
-#: contents/themes/default/index.php:278
+#: contents/themes/default/index.php:279
+msgid "Change password"
+msgstr ""
+
+#: contents/themes/default/index.php:280
 msgid "Logout"
 msgstr ""
 
-#: contents/themes/default/index.php:307
+#: contents/themes/default/index.php:309
 #, php-format
 msgid "This is an AJAX page. Please visit %s to find the complete page."
 msgstr ""
 
-#: contents/themes/default/index.php:322
+#: contents/themes/default/index.php:324
 msgid "User group selector"
 msgstr ""
 
-#: contents/themes/default/index.php:328
+#: contents/themes/default/index.php:330
 msgid "Message"
 msgstr ""
 
-#: contents/themes/default/index.php:368 includes/user.php:520
-msgid "Passwords do not match"
-msgstr ""
-
-#: contents/themes/default/index.php:372
+#: contents/themes/default/index.php:374
 msgid "You must set a password"
 msgstr ""
 
-#: contents/themes/default/index.php:516
+#: contents/themes/default/index.php:518
 msgid "ADD"
 msgstr ""
 
-#: contents/themes/default/index.php:519
+#: contents/themes/default/index.php:521
 msgid "REMOVE"
 msgstr ""
 
-#: contents/themes/default/index.php:522
+#: contents/themes/default/index.php:524
 msgid "CANCEL"
 msgstr ""
 
@@ -903,7 +1065,7 @@ msgstr ""
 msgid "Detail"
 msgstr ""
 
-#: contents/themes/default/judge.php:84
+#: contents/themes/default/judge.php:83
 #, php-format
 msgid ""
 "This judge list was generated at %s and we don't guarantee it a realtime "
@@ -916,12 +1078,10 @@ msgid ""
 "of orzoj-website and delete \"install\" directory."
 msgstr ""
 
-#: includes/theme.php:57
+#: includes/theme.php:56
 #, php-format
 msgid ""
-"%d database queries | Page execution time: %d milliseconds | Powered by <a "
-"style=\"color: blue\" href=\"http://code.google.com/p/orzoj/\" target="
-"\"_blank\">Orz Online Judge</a> %s<br />"
+"%d database queries | Page execution time: %d milliseconds | Powered by %s"
 msgstr ""
 
 #: includes/exception.php:36
@@ -952,11 +1112,11 @@ msgstr ""
 msgid "Partially right"
 msgstr ""
 
-#: includes/exe_status.php:53 includes/record.php:129
+#: includes/exe_status.php:53 includes/record.php:136
 msgid "Wrong answer"
 msgstr ""
 
-#: includes/exe_status.php:54 includes/record.php:130
+#: includes/exe_status.php:54 includes/record.php:137
 msgid "Time limit exceeded"
 msgstr ""
 
@@ -1023,72 +1183,84 @@ msgstr ""
 msgid "OUTPUT"
 msgstr ""
 
-#: includes/contest/oi.php:112
+#: includes/contest/oi.php:101
+msgid "SUBMITTED?"
+msgstr ""
+
+#: includes/contest/oi.php:116
 #, php-format
 msgid "no such problem #%d for contest #%d"
 msgstr ""
 
-#: includes/contest/oi.php:131
+#: includes/contest/oi.php:127
+msgid "YES"
+msgstr ""
+
+#: includes/contest/oi.php:138
 msgid "please do not submit before the contest starts"
 msgstr ""
 
-#: includes/contest/oi.php:133
+#: includes/contest/oi.php:140
 msgid "you can not submit after the contest ends"
 msgstr ""
 
-#: includes/contest/oi.php:136
+#: includes/contest/oi.php:143
 msgid "sorry, your programming language is unavailable in this contest"
 msgstr ""
 
-#: includes/contest/oi.php:140
+#: includes/contest/oi.php:147
 msgid "please login first"
 msgstr ""
 
-#: includes/contest/oi.php:142
+#: includes/contest/oi.php:149
 msgid "sorry, you are not allowed to submit in this contest"
 msgstr ""
 
-#: includes/contest/oi.php:161
+#: includes/contest/oi.php:172
 #, php-format
 msgid "Ctal_oi::judge_done: no such record #%d"
 msgstr ""
 
-#: includes/contest/oi.php:201
+#: includes/contest/oi.php:212
 #, php-format
 msgid "No data row for contest #%d"
 msgstr ""
 
-#: includes/contest/oi.php:244 includes/user.php:610
-msgid "Real name"
+#: includes/contest/oi.php:255
+msgid "USERNAME"
 msgstr ""
 
-#: includes/contest/oi.php:244
-msgid "Total score"
+#: includes/contest/oi.php:255
+msgid "REAL NAME"
 msgstr ""
 
-#: includes/contest/oi.php:244
-msgid "Total time"
+#: includes/contest/oi.php:256
+msgid "TOTAL SCORE"
 msgstr ""
 
-#: includes/contest/oi.php:261
+#: includes/contest/oi.php:256
+msgid "TOTAL TIME [SEC]"
+msgstr ""
+
+#: includes/contest/oi.php:285
 #, php-format
-msgid "Status: %s<br />Score: %d<br />Time: %.3f[sec]<br />"
+msgid "Status: %s<br />Score: %d<br />Time: %.3f[sec]"
 msgstr ""
 
-#: includes/contest/oi.php:265
+#: includes/contest/oi.php:291
 msgid "Not submitted"
 msgstr ""
 
-#: includes/contest/ctal.php:180
+#: includes/contest/ctal.php:192
 #, php-format
 msgid "No such contest #%d"
 msgstr ""
 
-#: includes/contest/ctal.php:213
+#: includes/contest/ctal.php:225
 msgid "Olympiad in informatics"
 msgstr ""
 
-#: includes/contest/ctal.php:214
+#: includes/contest/ctal.php:226
 msgid "ACM/ICPC"
 msgstr ""
 
@@ -1132,81 +1304,81 @@ msgstr ""
 msgid "SQL query error [query: %s]: %s"
 msgstr ""
 
-#: includes/functions.php:321
+#: includes/functions.php:324
 msgid "invalid email address: no at symbol (@) found"
 msgstr ""
 
-#: includes/functions.php:327
+#: includes/functions.php:330
 msgid "invalid email address: local part length exceeded"
 msgstr ""
 
-#: includes/functions.php:329
+#: includes/functions.php:332
 msgid "invalid email address: domain part length exceeded"
 msgstr ""
 
-#: includes/functions.php:331
+#: includes/functions.php:334
 msgid "invalid email address: local part starts or ends with dot(.)"
 msgstr ""
 
-#: includes/functions.php:333
+#: includes/functions.php:336
 msgid "invalid email address: local part has two consecutive dots"
 msgstr ""
 
-#: includes/functions.php:335
+#: includes/functions.php:338
 msgid "invalid email address: character not valid in domain part"
 msgstr ""
 
-#: includes/functions.php:337
+#: includes/functions.php:340
 msgid "invalid email address: domain part has two consecutive dots"
 msgstr ""
 
-#: includes/functions.php:343
+#: includes/functions.php:346
 msgid ""
 "invalid email address: character not valid in local part unless local part "
 "is quoted"
 msgstr ""
 
-#: includes/functions.php:349
+#: includes/functions.php:352
 msgid "invalid email address: MX record not found in DNS"
 msgstr ""
 
-#: includes/functions.php:374
+#: includes/functions.php:378
 msgid "second"
 msgstr ""
 
-#: includes/functions.php:374
+#: includes/functions.php:378
 msgid "seconds"
 msgstr ""
 
-#: includes/functions.php:375
+#: includes/functions.php:379
 msgid "minute"
 msgstr ""
 
-#: includes/functions.php:375
+#: includes/functions.php:379
 msgid "minutes"
 msgstr ""
 
-#: includes/functions.php:376
+#: includes/functions.php:380
 msgid "hour"
 msgstr ""
 
-#: includes/functions.php:376
+#: includes/functions.php:380
 msgid "hours"
 msgstr ""
 
-#: includes/functions.php:377
+#: includes/functions.php:381
 msgid "day"
 msgstr ""
 
-#: includes/functions.php:377
+#: includes/functions.php:381
 msgid "days"
 msgstr ""
 
-#: includes/functions.php:378
+#: includes/functions.php:382
 msgid "year"
 msgstr ""
 
-#: includes/functions.php:378
+#: includes/functions.php:382
 msgid "years"
 msgstr ""
 
@@ -1250,12 +1422,12 @@ msgstr ""
 msgid "No post is specified."
 msgstr ""
 
-#: includes/problem.php:78
+#: includes/problem.php:80
 #, php-format
 msgid "No such problem #%d"
 msgstr ""
 
-#: includes/problem.php:97
+#: includes/problem.php:99
 msgid "Your are not permitted to view this problem"
 msgstr ""
 
@@ -1264,24 +1436,8 @@ msgstr ""
 msgid "user id %d does not exist"
 msgstr ""
 
-#: includes/user.php:310 includes/user.php:487
+#: includes/user.php:315 includes/user.php:527
 msgid "Password:"
-msgstr ""
-
-#: includes/user.php:428
-#, php-format
-msgid "username should not be shorter than %d characters"
-msgstr ""
-
-#: includes/user.php:430
-#, php-format
-msgid "username should not be longer than %d characters"
-msgstr ""
-
-#: includes/user.php:432
-msgid ""
-"username should begin with a letter and only contain letters, digits, dots"
-"(.) or underscores(_)"
 msgstr ""
 
 #: includes/user.php:434
@@ -1293,67 +1449,97 @@ msgstr ""
 msgid "Username avaliable"
 msgstr ""
 
-#: includes/user.php:487
+#: includes/user.php:447
+#, php-format
+msgid "username should not be shorter than %d characters"
+msgstr ""
+
+#: includes/user.php:449
+#, php-format
+msgid "username should not be longer than %d characters"
+msgstr ""
+
+#: includes/user.php:452
+msgid ""
+"username should begin with a letter and only contain letters, digits, dots"
+"(.) or underscores(_)"
+msgstr ""
+
+#: includes/user.php:464
+#, php-format
+msgid "nickname should not be longer than %d characters"
+msgstr ""
+
+#: includes/user.php:476
+#, php-format
+msgid "realname should not be longer than %d characters"
+msgstr ""
+
+#: includes/user.php:527
 msgid "Confirm password:"
 msgstr ""
 
-#: includes/user.php:490 includes/user.php:612
+#: includes/user.php:530 includes/user.php:657
 msgid "E-mail:"
 msgstr ""
 
-#: includes/user.php:492 includes/user.php:614
+#: includes/user.php:532 includes/user.php:659
 msgid "Preferred programming language:"
 msgstr ""
 
-#: includes/user.php:493 includes/user.php:615
+#: includes/user.php:533 includes/user.php:660
 msgid "Preferred website language:"
 msgstr ""
 
-#: includes/user.php:494 includes/user.php:618
+#: includes/user.php:534 includes/user.php:663
 msgid "Self description(XHTML):"
 msgstr ""
 
-#: includes/user.php:514
+#: includes/user.php:554
 #, php-format
 msgid "incomplete post: required field \"%s\" not found"
 msgstr ""
 
-#: includes/user.php:516
+#: includes/user.php:556
 msgid "Every field in the register form must be filled."
 msgstr ""
 
-#: includes/user.php:523
-msgid "invalid username"
-msgstr ""
-
-#: includes/user.php:525
+#: includes/user.php:565
 msgid "username already exists"
 msgstr ""
 
-#: includes/user.php:532 includes/user.php:649
+#: includes/user.php:572 includes/user.php:694
 #, php-format
 msgid "Error while validating self description: %s"
 msgstr ""
 
-#: includes/user.php:580
+#: includes/user.php:623
 #, php-format
 msgid "uid %d does not exist"
 msgstr ""
 
-#: includes/user.php:585 includes/user.php:589
+#: includes/user.php:628 includes/user.php:632
 msgid "permission denied"
 msgstr ""
 
-#: includes/user.php:606 includes/user.php:631 includes/submit.php:111
+#: includes/user.php:634
+msgid "old password is not correct"
+msgstr ""
+
+#: includes/user.php:651 includes/user.php:676 includes/submit.php:115
 #: includes/message.php:64
 msgid "Not logged in"
 msgstr ""
 
-#: includes/user.php:616
+#: includes/user.php:655
+msgid "Real name"
+msgstr ""
+
+#: includes/user.php:661
 msgid "User groups who can view your source:"
 msgstr ""
 
-#: includes/user.php:617
+#: includes/user.php:662
 msgid "Your team:"
 msgstr ""
 
@@ -1406,51 +1592,51 @@ msgstr ""
 msgid "Title:"
 msgstr ""
 
-#: includes/record.php:120
+#: includes/record.php:127
 msgid "Waiting to be fetched"
 msgstr ""
 
-#: includes/record.php:121
+#: includes/record.php:128
 msgid "Waiting for contest"
 msgstr ""
 
-#: includes/record.php:122
+#: includes/record.php:129
 msgid "Waiting on orzoj-server"
 msgstr ""
 
-#: includes/record.php:124
+#: includes/record.php:131
 msgid "Compiling"
 msgstr ""
 
-#: includes/record.php:125
+#: includes/record.php:132
 msgid "Succesfully compiled"
 msgstr ""
 
-#: includes/record.php:126
+#: includes/record.php:133
 msgid "Compilation error"
 msgstr ""
 
-#: includes/record.php:127
+#: includes/record.php:134
 msgid "Running"
 msgstr ""
 
-#: includes/record.php:131
+#: includes/record.php:138
 msgid "Memory limit exceeded"
 msgstr ""
 
-#: includes/record.php:132
+#: includes/record.php:139
 msgid "Runtime error"
 msgstr ""
 
-#: includes/record.php:133
+#: includes/record.php:140
 msgid "Data not found"
 msgstr ""
 
-#: includes/record.php:134
+#: includes/record.php:141
 msgid "Judge is busy"
 msgstr ""
 
-#: includes/record.php:135
+#: includes/record.php:142
 msgid "Error"
 msgstr ""
 
@@ -1459,21 +1645,21 @@ msgstr ""
 msgid "No such team #%d"
 msgstr ""
 
-#: pre_include.php:43
+#: pre_include.php:46
 #, php-format
 msgid "You must install first.<br />Please run %sinstall."
 msgstr ""
 
-#: pre_include.php:54
+#: pre_include.php:57
 msgid "failed to connect to database"
 msgstr ""
 
-#: orz.php:430
+#: orz.php:432
 #, php-format
 msgid "No corresponding user #%d for record #%d"
 msgstr ""
 
-#: orz.php:449
+#: orz.php:451
 #, php-format
 msgid "No corresponding problem #%d for record #%d"
 msgstr ""
