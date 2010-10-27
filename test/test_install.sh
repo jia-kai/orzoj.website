@@ -1,6 +1,5 @@
 #!/bin/bash -e
-list=`find . -name 'make*'`;
-for file in $list 
+for file in make*.php
 do
 	echo php $file ...
 	php $file

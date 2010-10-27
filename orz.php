@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Wed Oct 27 09:50:37 2010 +0800
+ * $Date: Wed Oct 27 15:51:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -557,8 +557,14 @@ function determin_record_status($details)
 				$cnt[$s] = 1;
 			else $cnt[$s] ++;
 		}
-	asort($cnt);
-	$s = key($cnt);
+
+	$max_val = -1;
+	foreach ($cnt as $key => $val)
+		if ($val > $max_val)
+		{
+			$max_val = $val;
+			$s = $key;
+		}
 
 	if ($s == EXESTS_WRONG_ANSWER)
 		return RECORD_STATUS_WRONG_ANSWER;

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Oct 27 14:46:42 2010 +0800
+ * $Date: Wed Oct 27 18:30:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -373,19 +373,26 @@ function tf_get_prob_html($pinfo)
 		'output_fmt' => __('Output Format'), 
 		'input_samp' => __('Input Sample'), 
 		'output_samp' => __('Output Sample'),
-		'source' => __('Source'), 
-		'hint' => __('Hint')
+		'range' => __('Range'),
+		'hint' => __('Hint'),
+		'source' => __('Source')
 	);
+	unset($desc['time']);
+	unset($desc['memory']);
 	foreach ($desc as $key => $item)
-		if (isset($translate[$key]))
+		if (!empty($item))
 		{
-			$content .= '<div class="prob-view-single-desc-title">' . $translate[$key] . '</div>';
-			$content .= '<div id="prob-view-single-content">'
+			if (!isset($translate[$key]))
+				$field = __('Extra info %s', $key);
+			else
+				$field = $translate[$key];
+			$content .= '<div class="prob-view-single-desc-title">' . $field . '</div>';
+			$content .= '<div class="prob-view-single-content">'
 				. $item . '<br /></div>';
 		}
 	if (isset($pinfo['cnt_submit']))
 	{
-		$content .= '<p>' . __('Statistics') . '</p><div id="prob-view-single-content">';
+		$content .= '<div class="prob-view-single-desc-title">' . __('Statistics') . '</div><div class="prob-view-single-content">';
 		$FIELDS = array(
 			'cnt_ac' => __('Accepted submissions:'),
 			'cnt_unac' => __('Unaccepted submissions:'),

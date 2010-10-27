@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Oct 27 14:48:32 2010 +0800
+ * $Date: Wed Oct 27 18:28:49 2010 +0800
 
  This file is part of orzoj
 
@@ -455,12 +455,17 @@ div#prob-view-single-navigator-top
 	float: left;
 }
 
-div#prob-view-single-content
+div.prob-view-single-content
 {
 	clear: both;
 	text-align: left;
 	margin-left: 20px;
 	margin-bottom: 20px;
+}
+
+div.prob-view-single-content pre
+{
+	white-space: normal;
 }
 
 div.prob-view-box-container

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Thu Oct 21 17:26:06 2010 +0800
+ * $Date: Wed Oct 27 11:59:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -206,7 +206,7 @@ class Dbal_mysql extends Dbal
 		$this->close();
 		if ($port > 0)
 			$host = $host . ':' . $port;
-		if ($this->linker = @mysql_connect($host, $user, $passwd))
+		if ($this->linker = @mysql_connect($host, $user, $passwd, TRUE))
 		{
 			$this->query("SET NAMES {$this->charset}", $this->linker);
 			if (!@mysql_select_db($database, $this->linker))

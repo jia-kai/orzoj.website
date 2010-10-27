@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Oct 27 08:46:42 2010 +0800
+ * $Date: Wed Oct 27 12:03:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -371,6 +371,14 @@ function _user_make_passwd_v01($username, $passwd)
 {
 	$passwd .= '$' . strtolower($username);
 	return sha1(md5($passwd) . $passwd . sha1($passwd));
+}
+
+/**
+ * @ignore
+ */
+function _user_make_passwd_vold($username, $passwd)
+{
+	return md5(md5($passwd).sha1($passwd).crc32($passwd).md5(base64_encode($passwd)));
 }
 
 /**

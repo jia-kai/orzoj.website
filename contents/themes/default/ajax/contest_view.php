@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_view.php
- * $Date: Tue Oct 26 16:26:08 2010 +0800
+ * $Date: Wed Oct 27 14:11:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -191,7 +191,7 @@ else
 			for ($j = 0; $j < $ncol; $j ++)
 			{
 				if ($j == $col_link)
-					printf('<td><a href="%s" onclick="contest_view_prob(\'%d\'); return false;">%s</a></td>',
+					printf('<td style="text-align: left"><a href="%s" onclick="contest_view_prob(\'%d\'); return false;">%s</a></td>',
 						t_get_link('show-ajax-contest-view-prob', $row[$ncol] . '|' . $cid, TRUE, TRUE),
 						$row[$ncol],
 						$row[$j]);

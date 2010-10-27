@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Oct 26 13:16:00 2010 +0800
+ * $Date: Wed Oct 27 16:20:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -130,7 +130,8 @@ function db_init()
 	if (defined('ORZOJ_DEBUG_MODE'))
 		$db->record_query = TRUE;
 	$db->connect($db_host, $db_port, $db_user, $db_password, $db_dbname);
-	$db_password = '';
+	if (!defined('ORZOJ_DEBUG_MODE'))
+		$db_password = '';
 	$db->set_prefix($table_prefix);
 }
 
@@ -201,6 +202,8 @@ function option_set($key, $value)
  */
 function get_remote_addr()
 {
+	if (!isset($_SERVER['REMOTE_ADDR']))
+		return 'mars';
 	return $_SERVER['REMOTE_ADDR'];
 }
 
