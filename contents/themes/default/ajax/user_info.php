@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user_info.php
- * $Date: Tue Oct 26 10:43:28 2010 +0800
+ * $Date: Wed Oct 27 10:50:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -40,41 +40,53 @@ if (!is_string($page_arg))
 } else
 	$uid = intval($page_arg);
 
-function _fd_avatar($val)
+function make_field_name($val)
 {
-	echo '<div style="float: left">' . __('Avatar:') . '</div>
-		<img src="' . $val . '" alt="avatar" style="float:left" />';
+	echo '<div class="user-info-field-name">';
+	echo $val;
+	echo '</div>';
 }
 
-function _fd_team($val)
+function make_field_value($val)
 {
-	echo '<div style="float: left">';
-	echo __('Team:');
+	echo '<div class="user-info-field-value">';
+	echo $val;
+	echo '</div>';
+}
+
+function fd_avatar($val)
+{
+	make_field_name(__('Avatar:'));
+	make_field_value('<img src="' . $val . '" alt="avatar" style="float:left" />');
+}
+
+function fd_team($val)
+{
+	make_field_name(__('Team:'));
 	$tmp = new Team();
 	if (!$tmp->set_val($val))
-	{
-		echo '&lt;' . __('unknown') . '&gt;</div>';
-		return;
-	}
-	echo '</div>
-	<img id="user-info-team-img" src="' . $tmp->img . '" alt="&lt;team image&gt;" />';
-	echo $tmp->name;
+		make_field_value('&lt;' . __('unknown') . '&gt;');
+	else
+		make_field_value('<img class="user-info-team-img" src="' . $tmp->img . '" alt="&lt;team image&gt;" />' .
+			$tmp->name);
 }
 
-function _fd_self_desc($val)
+function fd_self_desc($val)
 {
-	echo '<div style="float:left">' . __('Self description:') . '</div>';
-	echo '<div id="user-info-self-desc">' . $val . '</div>';
+	make_field_name(__('Self description:'));
+	make_field_value('<div class="user-info-self-desc">' . $val . '</div>');
 }
 
-function _fd_reg_time($val)
+function fd_reg_time($val)
 {
-	echo __('Registration time:') . ' ' . time2str($val);
+	make_field_name(__('Registration time:'));
+	make_field_value(time2str($val));
 }
 
-function _fd_last_login_time($val)
+function fd_last_login_time($val)
 {
-	echo __('Last login time:') . ' ' . time2str($val);
+	make_field_name(__('Last login time:'));
+	make_field_value(time2str($val));
 }
 
 $fields = array(
@@ -85,12 +97,12 @@ $fields = array(
 	'nickname' => __('Nickname:'),
 	'realname' => __('Real name:'),
 	'email' => __('Email:'),
-	'avatar' => array('_fd_avatar'),
-	'tid' => array('_fd_team'),
-	'self_desc' => array('_fd_self_desc'),
-	'reg_time' => array('_fd_reg_time'),
+	'avatar' => array('fd_avatar'),
+	'tid' => array('fd_team'),
+	'self_desc' => array('fd_self_desc'),
+	'reg_time' => array('fd_reg_time'),
 	'reg_ip' => __('Registration ip:'),
-	'last_login_time' => array('_fd_last_login_time'),
+	'last_login_time' => array('fd_last_login_time'),
 	'last_login_ip' => __('Last login IP:')
 
 );
@@ -113,14 +125,42 @@ catch (Exc_orzoj $e)
 	die(__('Failed to get user info: %s', htmlencode($e->msg())));
 }
 
+echo '<div class="user-info-page">';
+
 foreach ($fields as $f => $disp)
 {
-	echo '<div style="clear: both; float: left;">';
 	if (is_array($disp))
 	{
 		$func = $disp[0];
 		$func($tuser->$f);
-	} else echo $disp . ' ' . $tuser->$f;
-	echo '</div>';
+	}
+	else
+	{
+		make_field_name($disp);
+		make_field_value($tuser->$f);
+	}
 }
+
+$sts_fields = array(
+	'cnt_ac' => __('Accepted submissions'),
+	'cnt_unac' => __('Unaccepted submissions'),
+	'cnt_ce' => __('Compilation-error submissions'),
+	'cnt_submit' => __('Total submissions'),
+	'cnt_ac_prob' => __('Problems solved'),
+	'cnt_ac_prob_blink' => __('Problems solved on first submission'),
+	'cnt_ac_prob_blink' => __('Problems solved on first submission'),
+	'cnt_submitted_prob' => __('Problems ever submitted'),
+	'cnt_ac_submission_sum' => __('Sum of submissions until first AC for each problem')
+);
+
+make_field_name(__('Statistics'));
+$content = '<table class="colorbox-table">';
+$sts = &$tuser->get_statistics();
+foreach ($sts_fields as $f => $disp)
+	$content .= "<tr><td>$disp</td><td>$sts[$f]</td></tr>";
+$content .= '</table>';
+make_field_value($content);
+
+
+echo '</div>';
 

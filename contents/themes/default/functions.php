@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Oct 26 21:35:52 2010 +0800
+ * $Date: Wed Oct 27 09:58:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -392,7 +392,8 @@ function tf_get_prob_html($pinfo)
 			'cnt_ce' => __('Compilation-error submissions:'),
 			'cnt_submit' => __('Total submissions:'),
 			'cnt_submit_user' => __('Number of users having submitted:'),
-			'cnt_ac_user' => __('Number of users with accepted submission: ')
+			'cnt_ac_user' => __('Number of users with accepted submission: '),
+			'cnt_ac_submission_sum' => __('Sum of submissions until the first accepted submission for each user: ')
 		);
 		foreach ($FIELDS as $f => $disp)
 			$content .= $disp . ' ' . $pinfo[$f] . '<br />';

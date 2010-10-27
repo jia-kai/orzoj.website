@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Tue Oct 26 21:50:21 2010 +0800
+ * $Date: Wed Oct 27 11:03:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -252,7 +252,7 @@ class Ctal_oi extends Ctal
 			$DBOP['='], 'cid', $this->data['id']), array('order' => 'ASC'));
 		foreach ($probs as $key => $p)
 			$probs[$key] = $p['pid'];
-		$col = array(__('RANK'), __('NICKNAME'), __('REAL NAME'),
+		$col = array(__('RANK'), __('USERNAME'), __('REAL NAME'),
 			__('TOTAL SCORE'), __('TOTAL TIME [SEC]'));
 		foreach ($probs as $p)
 			array_push($col, prob_future_contest($p) ? '---' : prob_get_title_by_id($p));
@@ -268,7 +268,7 @@ class Ctal_oi extends Ctal
 			$rank = 0;
 		foreach ($rows as $row)
 		{
-			$cols = array(++ $rank, user_get_nickname_by_id($row['uid']),
+			$cols = array(++ $rank, user_get_username_by_id($row['uid']),
 				user_get_realname_by_id($row['uid']), $row['total_score'],
 				sprintf('%.3f', $row['total_time'] / 1000000));
 			$res = json_decode($row['prob_result'], TRUE);
@@ -299,8 +299,14 @@ class Ctal_oi extends Ctal
 
 	public function filter_record(&$row)
 	{
-		if (time() < $this->data['time_end'] || prob_future_contest($row['pid']))
+		global $user;
+		if (time() < $this->data['time_end'] && (!user_check_login() || $user->id != $row['uid']))
 			$row = NULL;
+	}
+
+	public function allow_view_src($uid)
+	{
+		return time() >= $this->data['time_end'];
 	}
 
 	/**

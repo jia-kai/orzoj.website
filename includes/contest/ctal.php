@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Tue Oct 26 21:34:09 2010 +0800
+ * $Date: Wed Oct 27 08:44:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -142,10 +142,18 @@ abstract class Ctal
 
 	/**
 	 * this function is called when an unprivileged user wants to view a record of this contest
-	 * that is not submitted by himself
 	 * @param &array $row a $row from the record table
+	 * @return void
 	 */
 	abstract protected function filter_record(&$row);
+
+	/**
+	 * whether the source of a record in this contest is allowed to be viewed by an unprivileged user
+	 * who is not the submitter of this record
+	 * @param int $uid the uid of the record
+	 * @return bool
+	 */
+	abstract protected function allow_view_src($uid);
 }
 
 $CONTEST_TYPE2CLASS = array('oi', 'acm');

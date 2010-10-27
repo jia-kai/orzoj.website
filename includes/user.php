@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Oct 21 20:42:23 2010 +0800
+ * $Date: Wed Oct 27 08:46:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -725,11 +725,8 @@ function user_check_view_src_perm($uid)
 {
 	global $db, $DBOP, $user;
 	if (user_check_login())
-	{
-		if ($user->id == $uid || $user->is_grp_member(GID_SUPER_RECORD_VIEWER))
-			return TRUE;
 		$grp = $user->get_groups();
-	} else $grp = array(GID_GUEST);
+	else $grp = array(GID_GUEST);
 	$row = $db->select_from('users', 'view_gid',
 		array($DBOP['='], 'id', $uid));
 	if (count($row) != 1)

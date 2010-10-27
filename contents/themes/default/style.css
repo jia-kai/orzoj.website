@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Tue Oct 26 18:24:24 2010 +0800
+ * $Date: Wed Oct 27 11:03:30 2010 +0800
 
  This file is part of orzoj
 
@@ -635,7 +635,16 @@ div#rank-list-navigator-bottom
 	margin-top: 6px;
 }
 
-div#user-info-self-desc
+div.user-info-page
+{
+	width: 600px;
+	float: left;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+}
+
+div.user-info-self-desc
 {
 	float: left;
 	width: 400px;
@@ -644,11 +653,29 @@ div#user-info-self-desc
 	border: 1px blue solid;
 }
 
-img#user-info-team-img
+img.user-info-team-img
 {
 	margin: 3px;
 	padding: 3px;
 	border: 1px solid blue;
+}
+
+div.user-info-field-name
+{
+	clear: both;
+	float: left;
+	font-weight: bold;
+}
+
+div.user-info-field-value
+{
+	float: left;
+	margin-left: 3px  20px;
+}
+
+div.user-info-field-value td
+{
+	text-align: left;
 }
 
 div.contest-list th

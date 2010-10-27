@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Tue Oct 26 16:37:18 2010 +0800
+ * $Date: Wed Oct 27 08:27:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -299,7 +299,7 @@ if ($row['status'] == RECORD_STATUS_WAITING_FOR_CONTEST)
 
 $plang_type = plang_get_type_by_id($row['lid']);
 
-if (user_check_view_src_perm($row['uid']))
+if (record_allow_view_src($row['uid'], $row['cid']))
 	$cols['src'] = '_fd_src';
 
 foreach ($cols as $col => $func)

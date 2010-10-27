@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Tue Oct 26 10:36:01 2010 +0800
+ * $Date: Wed Oct 27 10:46:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -63,9 +63,10 @@ if (isset($_POST['prob_submit']))
 		$DBOP['='], 'uid', $user->id,
 		$DBOP['='], 'pid', $_POST['prob_submit']);
 	db_where_add_and($where, record_make_where());
-	$row = $db->select_from('records', array('id', 'status', 'time', 'mem'), $where,
+	$row = $db->select_from('records', array('id', 'uid', 'pid', 'cid', 'status', 'time', 'mem'), $where,
 		array('id' => 'DESC'), NULL, 1);
-	if (count($row) != 1)
+	record_filter_rows($row);
+	if (count($row) != 1 || is_null($row[0]))
 		die('0no such record');
 	$s = $row[0]['status'];
 	if (record_status_finished($s))
@@ -92,7 +93,7 @@ if (!is_null($page_arg))
 if ($pgnum < 0)
 	$pgnum = 0;
 
-$FILETER_ALLOWED = array('uid', 'pid', 'lid', 'status');
+$FILTER_ALLOWED = array('uid', 'pid', 'lid', 'cid', 'status');
 
 $where = NULL;
 $select_cols = array(
@@ -108,12 +109,8 @@ if (isset($_POST['filter']))
 		$req['uid'] = user_get_id_by_name($req['username']);
 	if (isset($req['pcode']) && strlen($req['pcode']))
 		$req['pid'] = prob_get_id_by_code($req['pcode']);
-	if (isset($req['lid']) && !strlen($req['lid']))
-		unset($req['lid']);
-	if (isset($req['status']) && !strlen($req['status']))
-		unset($req['status']);
-	foreach ($FILETER_ALLOWED as $f)
-		if (array_key_exists($f, $req))
+	foreach ($FILTER_ALLOWED as $f)
+		if (array_key_exists($f, $req) && !empty($req[$f]))
 			db_where_add_and($where, array($DBOP['='], $f, $req[$f]));
 	if (isset($req['ranklist']))
 	{
@@ -121,6 +118,7 @@ if (isset($_POST['filter']))
 			'mem' => 'ASC', 'src_len' => 'ASC', 'stime' => 'ASC');
 		db_where_add_and($where, array($DBOP['!='], 'score', 0));
 	}
+	unset($req);
 }
 else if (isset($_POST['request']))
 {
@@ -144,8 +142,9 @@ function _cv_user()
 {
 	global $cur_row;
 	$uid = $cur_row['uid'];
-	return user_get_nickname_by_id($uid) .
-		'<br />(' . user_get_username_by_id($uid) . ')';
+	return '<a class="a-user-info" href="' . t_get_link('ajax-user-info', $uid, TRUE, TRUE) .
+		'">' . user_get_nickname_by_id($uid) .
+		'<br />(' . user_get_username_by_id($uid) . ')</a>';
 }
 
 function _cv_prob()
@@ -179,13 +178,13 @@ function _cv_status()
 	if (!record_status_finished($s) && $s != RECORD_STATUS_WAITING_FOR_CONTEST)
 		return '<img src="' . _url('images/loading.gif', TRUE) . '" alt="loading" />' . $str;
 	if ($s == RECORD_STATUS_ACCEPTED)
-		$class = 'class="status-ac"';
+		$class = 'status-ac';
 	else if ($s == RECORD_STATUS_WRONG_ANSWER)
-		$class = 'class="status-wa"';
+		$class = 'status-wa';
 	else if ($s == RECORD_STATUS_COMPILE_FAILURE)
-		$class = 'class="status-ce"';
+		$class = 'status-ce';
 	else $class = '';
-	return "<a name=\"status-detail\" $class href=\"" . t_get_link('ajax-record-detail', $cur_row['id'], TRUE, TRUE) .
+	return "<a class=\"$class a-record-detail\" href=\"" . t_get_link('ajax-record-detail', $cur_row['id'], TRUE, TRUE) .
 		"\">$str</a>";
 }
 
@@ -401,7 +400,8 @@ if (!isset($_POST['prob_best_solutions']))
 				$("#goto-page-form").serializeArray()));
 	}
 
-	$("a[name='status-detail']").colorbox({
+	$(".a-user-info").colorbox();
+	$(".a-record-detail").colorbox({
 		"title": "<?php echo __('Record detail');?>"
 	});
 	table_set_double_bgcolor();

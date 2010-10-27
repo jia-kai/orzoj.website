@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Tue Oct 26 21:47:11 2010 +0800
+ * $Date: Wed Oct 27 08:43:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,6 +28,7 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once $includes_path . 'problem.php';
+require_once $includes_path . 'contest/ctal.php';
 
 $cnt = 0;
 
@@ -101,13 +102,15 @@ function record_filter_rows(&$rows)
 	foreach ($rows as $key => $row)
 	{
 		$cid = intval($row['cid']);
-		if ($cid)
+		$fid = prob_future_contest($row['pid']);
+		if ($fid)
 		{
-			if (!user_check_login() || $user->id != $row['uid'])
+			if ($fid == $cid)
 				ctal_filter_record($cid, $rows[$key]);
-		}
-		else if (prob_future_contest($row['pid']))
-			$rows[$key] = NULL;
+			else $rows[$key] = NULL;
+
+		} else if ($cid)
+			ctal_filter_record($cid, $rows[$key]);
 	}
 }
 
@@ -151,5 +154,24 @@ function record_status_get_str($status)
 {
 	$tmp = &record_status_get_all();
 	return $tmp[intval($status)];
+}
+
+/**
+ * whether viewing the source of a record is allowed
+ * @param int $uid uid of the record
+ * @param int $cid cid of the record
+ * @return bool
+ */
+function record_allow_view_src($uid, $cid)
+{
+	global $user;
+	if (user_check_login() && ($user->id == $uid || $user->is_grp_member(GID_SUPER_RECORD_VIEWER)))
+		return TRUE;
+	if ($cid)
+	{
+		$ct = ctal_get_class_by_cid($cid);
+		return $ct->allow_view_src($uid);
+	}
+	return user_check_view_src_perm($uid);
 }
 

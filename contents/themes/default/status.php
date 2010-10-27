@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Thu Oct 21 15:09:58 2010 +0800
+ * $Date: Wed Oct 27 08:32:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -161,6 +161,7 @@ echo '<div style="float:left">';
 
 _make_input(__('username'), 'username');
 _make_input(__('problem code'), 'pcode');
+_make_input(__('contest id'), 'cid');
 
 $rows = $db->select_from('plang', array('id', 'name'));
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Tue Oct 26 14:32:04 2010 +0800
+ * $Date: Wed Oct 27 09:50:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -382,6 +382,7 @@ function update_statistics($rid, $type)
 		$update_col_user[] = 'cnt_submitted_prob';
 		$update_col_user[] = 'cnt_ac_submission_sum';
 		$update_col_prob[] = 'cnt_submit_user';
+		$update_col_prob[] = 'cnt_ac_submission_sum';
 		if ($type == 'ac')
 		{
 			$update_col_user[] = 'cnt_ac_prob';
@@ -398,6 +399,7 @@ function update_statistics($rid, $type)
 		if ($old_sts == STS_PROB_USER_UNAC)
 		{
 			$update_col_user[] = 'cnt_ac_submission_sum';
+			$update_col_prob[] = 'cnt_ac_submission_sum';
 			if ($type == 'ac')
 			{
 				$update_col_user[] = 'cnt_ac_prob';
@@ -439,7 +441,7 @@ function update_statistics($rid, $type)
 	// update 'problems' table
 	$where[2] = $row['pid'];
 	$cols = $update_col_prob;
-	$update_sts = array('cnt_ac_user', 'cnt_submit_user');
+	$update_sts = array('cnt_ac_user', 'cnt_submit_user', 'cnt_ac_submission_sum');
 	if (count(array_intersect($cols, $update_sts)))
 		$cols = array_unique(array_merge($cols, $update_sts));
 	else $update_sts = NULL;
@@ -452,8 +454,8 @@ function update_statistics($rid, $type)
 		$tmp[$c] ++;
 	if (!is_null($update_sts))
 	{
+		$s = intval($tmp['cnt_ac_submission_sum']);
 		$a = intval($tmp['cnt_ac_user']);
-		$s = intval($tmp['cnt_submit_user']);
 		$tmp['difficulty'] = floor(($s - $a) * DB_REAL_PRECISION / $s + 0.5);
 	}
 	$db->update_data('problems', $tmp, $where);
