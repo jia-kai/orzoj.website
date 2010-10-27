@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Oct 27 18:28:49 2010 +0800
+ * $Date: Wed Oct 27 18:48:16 2010 +0800
 
  This file is part of orzoj
 
@@ -508,6 +508,7 @@ table.page-table
 	padding: 0;
 	margin-top: 20px;
 	text-align: center;
+	max-width: 795px;
 }
 
 table.page-table tr, table.page-table th, table.page-table td

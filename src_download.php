@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: src_download.php
- * $Date: Mon Oct 18 15:45:49 2010 +0800
+ * $Date: Wed Oct 27 19:13:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,18 +26,19 @@
 
 require_once 'pre_include.php';
 require_once $includes_path . 'user.php';
+require_once $includes_path . 'record.php';
 
 if (!isset($_GET['rid']))
 	die('no such record');
 
 $where = array($DBOP['='], 'id', $_GET['rid']);
-$row = $db->select_from('records', array('uid', 'lid'), $where);
+$row = $db->select_from('records', array('uid', 'cid', 'lid'), $where);
 	
 if (count($row) != 1)
 	die('no such record');
 $row = $row[0];
 
-if (!user_check_view_src_perm($row['uid']))
+if (!record_allow_view_src($row['uid'], $row['cid']))
 	die('permission denied');
 
 $where[1] = 'rid';

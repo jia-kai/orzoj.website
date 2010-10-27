@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Oct 27 12:03:36 2010 +0800
+ * $Date: Wed Oct 27 18:38:19 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -593,8 +593,10 @@ function user_chpasswd($uid, $oldpwd, $newpwd)
 		throw new Exc_runtime(__('permission denied'));
 	if (!$user->is_grp_member(GID_ADMIN_USER))
 	{
-		if ($user->id != $uid || !_user_check_passwd($row['username'], $oldpwd, $row['passwd']))
+		if ($user->id != $uid)
 			throw new Exc_runtime(__('permission denied'));
+		if (!_user_check_passwd($row['username'], $oldpwd, $row['passwd']))
+			throw new Exc_runtime(__('old password is not correct'));
 	}
 
 	$db->update_data('users', array('passwd' => _user_make_passwd($row['username'], $newpwd)),

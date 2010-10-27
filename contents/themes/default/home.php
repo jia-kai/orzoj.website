@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: home.php
- * $Date: Mon Oct 18 22:48:07 2010 +0800
+ * $Date: Wed Oct 27 19:03:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,9 +26,9 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
-echo 'POST: <br />' . htmlencode(print_r($_POST, TRUE));
 ?>
-This is home!
+Welcome to Orz Online Judge!
+
 <br />
 <br />
 <br />

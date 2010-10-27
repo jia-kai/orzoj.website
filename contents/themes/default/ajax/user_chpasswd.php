@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: user_register.php
- * $Date: Wed Oct 27 18:53:15 2010 +0800
+ * $File: user_chpasswd.php
+ * $Date: Wed Oct 27 18:59:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,46 +26,58 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+if (!user_check_login())
+	die(__('Please log in first.'));
+
 if ($page_arg == 'do')
 {
+	if (!isset($_POST['pwd_old']) || !isset($_POST['pwd_new']) || !isset($_POST['pwd_new_confirm']))
+		die('1' . __('incomplete post'));
+	if ($_POST['pwd_new'] != $_POST['pwd_new_confirm'])
+		die('1' . __('Passwords do not match'));
 	try
 	{
-		$id = user_register(TRUE);
-		die('0' . __('Congratulations! You have successfully registered, and your user id is %d.', $id) .
-			'<br />' . __('Login in 2 seconds ...'));
+		user_chpasswd($user->id, $_POST['pwd_old'], $_POST['pwd_new']);
+		die('0' . __('Password succesfullly changed. Log out in 2 seconds ...'));
 	}
 	catch (Exc_orzoj $e)
 	{
-		die('1' . __('Failed to register: ') . $e->msg());
-		// htmlencode is not needed because the message will be displayed in alert
+		die('1' . __('Failed to change password: ') . $e->msg());
 	}
+}
+
+function _user_chpasswd_get_form()
+{
+	echo
+		tf_form_get_passwd(__('Old password:'), 'pwd_old') .
+		tf_form_get_passwd(__('New passowrd:'), 'pwd_new', __('Confirm new passowrd:'), 'pwd_new_confirm');
 }
 
 ?>
 
-<form action="<?php t_get_link($cur_page, 'do');?>" method="post" id="user-register-form">
-<?php _tf_form_generate_body('user_register_get_form'); ?>
+<form action="<?php t_get_link($cur_page, 'do');?>" method="post" id="user-chpasswd-form">
+<?php _tf_form_generate_body('_user_chpasswd_get_form');?>
 <div style="text-align: right">
-	<button id="register-button" type="submit" class="in-form" ><?php echo __('Register!'); ?></button>
+	<button id="register-button" type="submit" class="in-form" ><?php echo __('OK'); ?></button>
 </div>
 </form>
 
 <script type="text/javascript">
 
 $("#register-button").button();
-$("#user-register-form").bind("submit", function(){
+$("#user-chpasswd-form").bind("submit", function(){
 	$.ajax({
 		"type": "post",
 		"cache": false,
 		"url": "<?php t_get_link($cur_page, 'do', FALSE);?>",
-		"data": $("#user-register-form").serializeArray(),
+		"data": $("#user-chpasswd-form").serializeArray(),
 		"success": function(data) {
 			if (data.charAt(0) == '1')
 				alert(data.substr(1));
 			else
 			{
 				$.colorbox({"html": data.substr(1)});
-				setTimeout("window.location='<?php t_get_link('action-login');?>'", 2000);
+				setTimeout("window.location='<?php t_get_link('action-logout');?>'", 2000);
 			}
 		}
 	});

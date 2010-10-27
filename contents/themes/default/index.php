@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Tue Oct 26 20:11:58 2010 +0800
+ * $Date: Wed Oct 27 18:35:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -48,6 +48,7 @@ $PAGES_AJAX = array(
 	// <page name> => <file>
 	'ajax-user-register' => 'ajax/user_register.php',
 	'ajax-user-update-info' => 'ajax/user_update_info.php',
+	'ajax-user-chpasswd' => 'ajax/user_chpasswd.php',
 	'ajax-user-info' => 'ajax/user_info.php',
 	'ajax-form-checker' => 'ajax/form_checker.php',
 	'ajax-avatar-browser' => 'ajax/avatar_browser.php',
@@ -275,6 +276,7 @@ EOF;
 	$options = array(
 		__('User info.') => 'ajax-user-info',
 		__('Update profile') => 'ajax-user-update-info',
+		__('Change password') => 'ajax-user-chpasswd',
 		__('Logout') => 'action-logout'
 	);
 	echo '<ul>';

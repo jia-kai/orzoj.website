@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user_update_info.php
- * $Date: Sun Oct 17 20:38:13 2010 +0800
+ * $Date: Wed Oct 27 18:51:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -41,7 +41,7 @@ if ($page_arg == 'do')
 
 ?>
 
-<form action="#" id="user-update-info-form">
+<form action="<?php t_get_link($cur_page, 'do');?>" method="post" id="user-update-info-form">
 <?php _tf_form_generate_body('user_update_info_get_form'); ?>
 <div style="text-align: right">
 	<button id="user-update-info-button" type="submit" class="in-form" ><?php echo __('Update!'); ?></button>

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Wed Oct 27 08:27:35 2010 +0800
+ * $Date: Wed Oct 27 19:11:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -61,10 +61,11 @@ function _fd_prob()
 {
 	global $row;
 	$pid = $row['pid'];
-	echo __('Problem: %s', '<a href="' .
-		t_get_link('problem', prob_get_code_by_id($pid), TRUE, TRUE) .
+	$code = prob_get_code_by_id($pid);
+	echo __('Problem: %s (CODE: %s)', '<a target="_blank" href="' .
+		t_get_link('problem', $code, TRUE, TRUE) .
 		'">' . prob_get_title_by_id($pid) .
-		'</a>');
+		'</a>', $code);
 }
 
 function _fd_lang()
@@ -79,7 +80,7 @@ function _fd_contest()
 	if ($row['cid'] == 0)
 		$str = __('None');
 	else
-		$str = '<a href="' . t_get_link('contest', $row['cid'], TRUE, TRUE) . '">' .
+		$str = '<a target="_blank" href="' . t_get_link('contest', $row['cid'], TRUE, TRUE) . '">' .
 			ct_get_name_by_id($row['cid']) . '</a>';
 
 	echo __('Contest: %s', $str);
