@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Wed Oct 27 15:51:11 2010 +0800
+ * $Date: Wed Oct 27 20:38:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -576,7 +576,7 @@ function determin_record_status($details)
 		return RECORD_STATUS_MEMORY_LIMIT_EXCEED;
 
 	if ($s == EXESTS_SYSTEM_ERROR)
-		return RECORD_STATUS_ERROR;
+		return RECORD_STATUS_SYSTEM_ERROR;
 
 	return RECORD_STATUS_RUNTIME_ERROR;
 }

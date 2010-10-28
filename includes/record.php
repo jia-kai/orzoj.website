@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Wed Oct 27 08:43:24 2010 +0800
+ * $Date: Wed Oct 27 20:38:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -49,6 +49,7 @@ define('RECORD_STATUS_WRONG_ANSWER', $cnt ++);
 define('RECORD_STATUS_TIME_LIMIT_EXCEED', $cnt ++);
 define('RECORD_STATUS_MEMORY_LIMIT_EXCEED', $cnt ++);
 define('RECORD_STATUS_RUNTIME_ERROR', $cnt ++);
+define('RECORD_STATUS_SYSTEM_ERROR', $cnt ++);
 define('RECORD_STATUS_DATA_NOT_FOUND', $cnt ++);
 define('RECORD_STATUS_ERROR', $cnt ++);
 unset($cnt);
@@ -60,7 +61,7 @@ unset($cnt);
  */
 function record_status_executed($status)
 {
-	return $status >= RECORD_STATUS_ACCEPTED && $status <= RECORD_STATUS_RUNTIME_ERROR;
+	return $status >= RECORD_STATUS_ACCEPTED && $status <= RECORD_STATUS_SYSTEM_ERROR;
 }
 
 /**
@@ -137,6 +138,7 @@ function &record_status_get_all()
 			RECORD_STATUS_TIME_LIMIT_EXCEED => __('Time limit exceeded'),
 			RECORD_STATUS_MEMORY_LIMIT_EXCEED => __('Memory limit exceeded'),
 			RECORD_STATUS_RUNTIME_ERROR => __('Runtime error'),
+			RECORD_STATUS_SYSTEM_ERROR => __('System error'),
 			RECORD_STATUS_DATA_NOT_FOUND => __('Data not found'),
 			RECORD_STATUS_JUDGE_BUSY => __('Judge is busy'),
 			RECORD_STATUS_ERROR => __('Error')

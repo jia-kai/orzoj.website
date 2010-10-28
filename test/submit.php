@@ -7,8 +7,6 @@ require_once $includes_path . 'submit.php';
 
 $src = '
 #include <cstdio>
-#include <cstdlib>
-#include <sys/time.h>
 #include <cassert>
 int main()
 {
@@ -19,13 +17,6 @@ int main()
 	assert(fout);
 	int a, b;
 	fscanf(fin, "%d%d", &a, &b);
-
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	srand(tv.tv_sec * tv.tv_usec);
-	if (rand() < 0) // < RAND_MAX / 6)
-		a ++;
-
 	fprintf(fout, "%d\n", a + b);
 	fclose(fin);
 	fclose(fout);

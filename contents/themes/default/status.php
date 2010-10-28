@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Wed Oct 27 08:32:04 2010 +0800
+ * $Date: Wed Oct 27 22:55:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -68,7 +68,9 @@ function update_table()
 							records.splice(i, 1);
 							break;
 						}
-					$("#status-tb-tr-" + key + " a[name='status-detail']").colorbox();
+					$("#status-tb-tr-" + key + " a.a-record-detail").colorbox({
+						"title": "<?php echo __('Record detail');?>"
+					});
 				}
 			});
 			if (records.length)
