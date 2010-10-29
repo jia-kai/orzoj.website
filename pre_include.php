@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Tue Oct 26 19:23:01 2010 +0800
+ * $Date: Fri Oct 29 18:25:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -41,12 +41,13 @@ $includes_path = $root_path . 'includes/';
 
 require_once $root_path . 'config.php';
 require_once $includes_path . 'const.php';
+require_once $includes_path . 'exception.php';
+require_once $includes_path . 'functions.php';
+require_once $includes_path . 'l10n.php';
+
 // FIXME: this should be determined by where the config file exsists
 if (!defined('IS_INSTALLED'))
 	die(__('You must install first.<br />Please run %sinstall.', $root_path));
-require_once $includes_path . 'l10n.php';
-require_once $includes_path . 'functions.php';
-require_once $includes_path . 'exception.php';
 
 try
 {

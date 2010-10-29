@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Wed Oct 27 22:55:57 2010 +0800
+ * $Date: Fri Oct 29 18:24:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -59,7 +59,9 @@ function update_table()
 			JSON.parse(data, function(key, value){
 				if (typeof(value) != "string")
 					return;
-				$("#status-tb-tr-" + key).html(value.substr(1));
+				var tid = "#status-tb-tr-" + key;
+				$(tid).html(value.substr(1));
+				$(tid + " a.a-user-info").colorbox();
 				if (value.charAt(0) == '1')
 				{
 					for (var i = 0; i < records.length; i ++)
@@ -68,7 +70,7 @@ function update_table()
 							records.splice(i, 1);
 							break;
 						}
-					$("#status-tb-tr-" + key + " a.a-record-detail").colorbox({
+					$(tid + " a.a-record-detail").colorbox({
 						"title": "<?php echo __('Record detail');?>"
 					});
 				}

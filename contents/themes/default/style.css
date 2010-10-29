@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Fri Oct 29 19:57:22 2010 +0800
+ * $Date: Fri Oct 29 20:05:05 2010 +0800
 
  This file is part of orzoj
 
@@ -404,6 +404,12 @@ div#prob-view-by-group-title
 div#prob-view-by-group-title span
 {
 	color: #EDADAD;
+}
+
+div#prob-view-by-group-title span.prob-grp-desc
+{
+	font-size: 15px;
+	color: #89CDC1;
 }
 
 div#prob-view-by-group-navigator-bottom

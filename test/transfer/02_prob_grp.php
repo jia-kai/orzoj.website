@@ -33,7 +33,7 @@ foreach ($rows as $row)
 	$pid = $db->insert_into('prob_grps', array(
 		'pgid' => $root_id,
 		'name' => strftime('%m-%d', $row['start']),
-		'desc' => '在 ' . time2str($row['start']) . ' 举行的比赛'
+		'desc' => '在 ' . time2str($row['start']) . ' 举行的比赛 (迁移自旧版OJ)'
 	));
 
 	prob_update_grp_cache_add($pid);

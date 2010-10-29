@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 29 13:22:48 2010 +0800
+ * $Date: Fri Oct 29 14:14:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -97,7 +97,7 @@ function _tranform_pattern($tp)
 	return $s;
 }
 
-$fields = array('id', 'title', 'code', 'cnt_submit_user', 'cnt_ac_user', 'difficulty');
+$fields = array('id', 'title', 'code', 'cnt_submit_user', 'cnt_ac_user', 'difficulty', 'user_sts');
 
 if (isset($_POST['goto_page_default']))
 	$goto_page_default = $_POST['goto_page_default'];
@@ -157,13 +157,17 @@ if ((!(isset($on_sort) && $on_sort == TRUE)) || (isset($goto_page_default)))
 	{
 		/* problem list title*/
 		$gname = '';
+		$gdesc = NULL;
 		if ($gid == 0)
 			$gname = __('All');
 		else
-			$gname = prob_grp_get_name_by_id($gid);
+			list($gname, $gdesc) = prob_grp_get_name_desc_by_id($gid);
 
 		// XXX: how to translate items in problem group?
 		echo __('Problems') . ' - ' . '<span>' . $gname . '</span>';
+
+		if (!empty($gdesc))
+			echo '<br /><span class="prob-grp-desc">' . $gdesc . '</span>';
 	}
 
 	echo '</div>';
@@ -219,6 +223,7 @@ echo <<<EOF
 EOF;
 
 $show_fields= array(
+	array(NULL, 'user_sts', 'ASC'),
 	array(__('ID'), 'id', 'ASC'),
 	array(__('Title'), 'title', 'ASC'),
 	array(__('Code'), 'code', 'ASC'),
@@ -239,6 +244,11 @@ $sort_list = array(
  */
 function _make_table_header($name, $col_name, $default_order)
 {
+	if (is_null($name))
+	{
+		echo '<th></th>';
+		return;
+	}
 	global $title_pattern_show, $sort_col, $sort_way;
 	$t = ($title_pattern_show  == NULL ? '*' : $title_pattern_show);
 	echo "<th><a style=\"cursor: pointer\" onclick=\"table_sort_by('$col_name', '$default_order', '$t'); return false;\">$name";
@@ -248,14 +258,14 @@ function _make_table_header($name, $col_name, $default_order)
 	echo '</a></th>';
 }
 
-$cnt_show_fields = count($show_fields);
-
 // user problem status
-if (user_check_login())
+if (!user_check_login())
 {
-	echo '<th></th>';
-	$cnt_show_fields ++;
+	unset($show_fields[0]);
+	unset($fields[array_search('user_sts', $fields)]);
 }
+
+$cnt_show_fields = count($show_fields);
 
 foreach ($show_fields as $field)
 	_make_table_header($field[0], $field[1], $field[2]);
@@ -334,7 +344,7 @@ foreach ($probs as $prob)
 	{
 		if (user_check_login())
 		{
-			$sts = prob_get_prob_user_status($prob['id']);
+			$sts = $prob['user_sts'];
 			$url = $prob_user_sts_icon_info[$sts][0];
 			$info = $prob_user_sts_icon_info[$sts][1];
 			echo "<td><img src=\"$url\" alt=\"$info\" title=\"$info\" /></td>";

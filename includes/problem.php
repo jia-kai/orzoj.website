@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Wed Oct 27 09:57:23 2010 +0800
+ * $Date: Fri Oct 29 14:12:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -161,7 +161,8 @@ $_cache_prob_code = array();
 
 /**
  * get problem list
- * @param array $fields the fields needed, which should be a subset of $PROB_VIEW_PINFO, and CAN NOT contain 'grp'
+ * @param array $fields the fields needed, which should be basically a subset of $PROB_VIEW_PINFO, and CAN NOT contain 'grp',
+ *		but may contain 'user_sts'
  * @param int|NULL $gid problem group id
  * @param NULL|array $order_by @see includes/db/dbal.php : function select_from
  * @param int|NULL $offset
@@ -184,10 +185,10 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 		$fields[] = 'id';
 		$fields_added[] = 'id';
 	}
-	if (isset($fields['cnt_submit']))
+	if (in_array('cnt_submit', $fields))
 	{
 		$cnt_submit = TRUE;
-		unset($fields['cnt_submit']);
+		unset($fields[array_search('cnt_submit', $fields)]);
 		foreach (array('cnt_ac', 'cnt_unac', 'cnt_ce') as $f)
 			if (!in_array($f, $fields))
 			{
@@ -195,12 +196,34 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 				$fields_added[] = $f;
 			}
 	}
+	$where = _prob_get_list_make_where($gid, $title_pattern);
+	if (in_array('user_sts', $fields))
+	{
+		unset($fields[array_search('user_sts', $fields)]);
+		if (user_check_login())
+		{
+			/*
+			$rows = $db->select_from('sts_prob_user', array('status', 'pid'),
+				array(
+					$DBOP['&&'],
+					$DBOP['='], 'uid', $user->id,
+					$DBOP['in'], 'pid', $db->select_from(
+						'problems', 'id', $where,
+						$order_by, $offset, $cnt,
+						array('id' => 'pid'), TRUE
+					)));
+			 */
+			// LIMIT in subquey is not supported ......
+			$rows = $db->select_from('sts_prob_user', array('pid', 'status'),
+				array($DBOP['='], 'uid', $user->id));
+			$user_sts = array();
+			foreach ($rows as $row)
+				$user_sts[intval($row['pid'])] = intval($row['status']);
+		}
+	}
 	$rows = $db->select_from('problems',
-		$fields, 
-		_prob_get_list_make_where($gid, $title_pattern),
-		$order_by,
-		$offset, $cnt
-	);
+		$fields, $where, $order_by,
+		$offset, $cnt);
 
 	$is_super_submiter = FALSE;
 	if (user_check_login())
@@ -215,18 +238,19 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 	$title_set = in_array('title', $fields);
 	$code_set = in_array('code', $fields);
 
-	foreach ($rows as $key => $row)
+	foreach ($rows as &$row)
 	{
+		$pid = intval($row['id']);
 		if (!$is_super_submiter)
 		{
-			if (prob_future_contest($row['id']))
-				$rows[$key] = NULL;
+			if (prob_future_contest($pid))
+				$row = NULL;
 			else
 				if (!prob_check_perm($grp, $row['perm']))
-					$rows[$key] = NULL;
+					$row = NULL;
 		}
 
-		if ($rows[$key] != NULL)
+		if ($row != NULL)
 		{
 			if ($io_set)
 			{
@@ -235,15 +259,17 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 				else $row['io'] = NULL;
 			}
 			if (isset($cnt_submit))
-				$fields['cnt_submit'] = $fields['cnt_ac'] + $fields['cnt_unac'] + $fields['cnt_ce'];
+				$row['cnt_submit'] = $row['cnt_ac'] + $row['cnt_unac'] + $row['cnt_ce'];
 
 			if ($title_set)
-				$_cache_prob_title[$row['id']] = $row['title'];
+				$_cache_prob_title[$pid] = $row['title'];
 			if ($code_set)
-				$_cache_prob_code[$row['id']] = $row['code'];
+				$_cache_prob_code[$pid] = $row['code'];
 
+			if (isset($user_sts))
+				$row['user_sts'] = isset($user_sts[$pid]) ? $user_sts[$pid] : STS_PROB_USER_UNTRIED;
 			foreach ($fields_added as $f)
-				unset($rows[$key][$f]);
+				unset($row[$f]);
 		}
 	}
 	return $rows;
@@ -411,5 +437,21 @@ function prob_grp_get_name_by_id($gid)
 	if (count($row) != 1)
 		return NULL;
 	return $row[0]['name'];
+}
+
+/**
+ * get problem group name and description by group id
+ * @param int $gid group id
+ * @return array|NULL array(<name>, <description>), or NULL if no such group
+ */
+function prob_grp_get_name_desc_by_id($gid)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('prob_grps', array('name', 'desc'), array(
+		$DBOP['='], 'id', $gid));
+	if (count($row) != 1)
+		return NULL;
+	$row = $row[0];
+	return array($row['name'], $row['desc']);
 }
 
