@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Thu Oct 28 20:01:42 2010 +0800
+ * $Date: Fri Oct 29 19:57:22 2010 +0800
 
  This file is part of orzoj
 
@@ -840,5 +840,26 @@ span.contest-countdown
 div.contest-view-content
 {
 	text-align: left;
+}
+
+span.post-reply-amount
+{
+	color: #8090f1;
+}
+
+span.post-viewed-amount
+{
+	color: #3040e9;
+}
+
+div.post-last-reply-user a
+{
+	/* XXX */
+}
+
+a.post-subject
+{
+	/* XXX: it doen't work */
+	/* color: #3040e9; */
 }
 

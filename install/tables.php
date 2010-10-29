@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Fri Oct 29 10:32:22 2010 +0800
+ * $Date: Fri Oct 29 19:58:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -518,21 +518,24 @@ $tables = array(
 	/* posts */
 	'posts' => array(
 		'cols' => array(
+			// two ways to affirm valid a root post: pid == 0 or rid == id
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
-			'time' => array('type' => 'INT64'),
+			'time' => array('type' => 'INT64'), // publishing time
 			'uid' => array('type' => 'INT32'), // user id
 			'prob_id' => array('type' => 'INT32'), // related problem id
 			'pid' => array('type' => 'INT32', 'default' => 0), // parent id, 0 means root post
-			'rid' => array('type' => 'INT32'), // root post id
-			'score' => array('type' => 'INT32'), // user can grade this post from 0 to 100
+			'rid' => array('type' => 'INT32'), // root post id, if in root post, it's itself
+			'reply_amount' => array('type' => 'INT32'), // number of reply
+			'viewed_amount' => array('type' => 'INT32'), // number of viewed users
+			'priority' => array('type' => 'INT32', 'default' => 0), // every root post have a priority, the bigger, the prior
 			'is_top' => array('type' => 'INT32', 'default' => 0), //whether the post should be one the top, ordering by time if more than one. root post only
-			// TODO: two features below are not supported yet
 			//'view_gid' => array('type' => 'TEXT'),
-			'type' => array('type' => 'TEXT'),
-			/* a serialize array(or json encoded array?) of following attributes, should be only setted on root post
-			 * 'type' => string : one of {'question', 'normal', 'solution'}
+			'type' => array('type' => 'INT32', 'default' => 0),
+			/* one of the attribs below should be only setted on root post
+			 * 'type' => string : one of {0 : 'normal', 1 = 'question', 2 = 'solution', 3 = 'vote'}
+			 * @see includes/post.php
 			 */
-			'last_reply_time' => array('type' => 'INT64'),
+			'last_reply_time' => array('type' => 'INT64', 'default' => 0),
 			'last_reply_user' => array('type' => 'INT32'), // user id
 			'subject' => array('type' => 'TEXT'),
 			'content' => array('type' => 'TEXT'),

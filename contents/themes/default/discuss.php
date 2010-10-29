@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: discuss.php
- * $Date: Mon Oct 25 13:09:42 2010 +0800
+ * $Date: Fri Oct 29 12:37:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,50 +26,20 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
-
 /*
- * page argumnet:
- *		id: int
- *			the id of post
+ * page argument: see ajax/post_view_single.php
  */
 ?>
-
-<div id="post-navigator">
-<button href="<?php t_get_link('ajax-post-new-topic'); ?>"><?php echo __('New Topic'); ?></button>
-<button href="<?php t_get_link('ajax-post-list'); ?>"><?php echo __('Back to list'); ?></button>
+<div id="post-page">
+	<div id="post-tabs">
+	<ul>
+	<li><a href="<?php t_get_link('show-ajax-posts', $page_arg); ?>" id="posts"><?php echo __('Posts'); ?></a></li>
+	<li><a href="<?php t_get_link('show-ajax-post-new-topic'); ?>" id="post-new-topic"><?php echo __('New Topic'); ?></a></li>
+	</ul>
+	</div>
 </div>
-
-<div id="post-view" style="clear: both;">
-<?php
-$POSTS_PER_PAGE = 20;
-
-// parse arg
-if (isset($page_arg))
-{
-	$page_arg = $page_arg . '|1';
-	require_once $theme_path . 'ajax/post_view_single.php';
-}
-else
-{
-	$page_arg = '1';
-	require_once $theme_path . 'ajax/post_list.php';
-}
-?>
-</div><!-- id: post-view -->
 <script type="text/javascript">
-function post_view_set_content(addr)
-{
-	var t = $("#post-view");
-	t.animate({"opacity" : 0.5}, 1);
-	$.ajax({
-		"url" : addr,
-		"success" : function(data) {
-			t.animate({"opacity" : 1}, 1);
-			t.html(data);
-		}
-	});
-}
-$("button").button();
-$("button").colorbox();
+$("#posts").attr("href", "<?php t_get_link('ajax-posts', NULL, FALSE);?>");
+$("#post-new-topic").attr("href", "<?php t_get_link('ajax-post-new-topic', NULL, FALSE);?>");
+$("#post-tabs").tabs();
 </script>
-

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Thu Oct 28 20:06:35 2010 +0800
+ * $Date: Fri Oct 29 19:53:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -418,15 +418,6 @@ function tf_get_prob_html($pinfo)
 	$content .= '</div> <!-- id: prob-view-single -->';
 	return $content;
 }
-
-/**
- * @ignore
- */
-function _tf_get_prob_html_io($val)
-{
-	return '<textarea readonly="readonly" class="prob-view-single-io">' . $val . '</textarea>';
-}
-
 /**
  * @ignore
  */

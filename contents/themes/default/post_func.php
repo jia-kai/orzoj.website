@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_func.php
- * $Date: Mon Oct 25 12:06:17 2010 +0800
+ * $Date: Fri Oct 29 13:18:53 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,61 +23,55 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 if (!defined('IN_ORZOJ'))
 	exit;
 
-function post_view_list_pack_arg($start_page)
+require_once $includes_path . 'post.php';
+/**
+ * @ignore
+ */
+function post_list_pack_arg($start_page, $post_type, $post_uid, $subject, $author)
 {
-	return $start_page;
+	global $POST_TYPE_SET;
+	$s = "start_page=$start_page";
+
+	if (is_int($post_uid))
+		$s .= "|uid=$post_uid";
+
+	if (is_string($post_type))
+		$post_type = array($post_type);
+	if (is_array($post_type))
+		$post_type = array_intersect($post_type, $POST_TYPE_SET);
+	else $post_type = NULL;
+	if (is_array($post_type))
+		foreach ($post_type as $type)
+			$s .= "|type=$post_type";
+
+	if (is_string($subject))
+		$s .= "|subject=$subject";
+
+	if (is_string($author))
+		$s .= "|author=$author";
+
+	return $s;
 }
 
-function post_view_list_parse_arg()
+/**
+ * @ignore
+ */
+function post_list_get_a_href($start_page, $post_type, $post_uid, $subject, $author)
 {
-	global $start_page, $page_arg;
-	if (sscanf($page_arg, '%d', $start_page) != 1)
-		die('Can not parse argument.');
+	$arg = post_list_pack_arg($start_page, $post_type, $post_uid, $subject, $author);
+	return t_get_link('show-ajax-post-list', $arg, TRUE, TRUE);
 }
 
-function post_view_list_get_a_href($start_page)
+/**
+ * @ignore
+ */
+function post_list_get_a_onclick($start_page, $post_type, $pos_uid, $subject, $author)
 {
-	return t_get_link('show-ajax-post-list', "$start_page", TRUE, TRUE);
-}
-
-
-function post_view_list_get_a_onclick($start_page)
-{
-	$arg = post_view_list_pack_arg($start_page);
-	return 'post_view_set_content(\'' . 
-		t_get_link('ajax-post-list', post_view_list_pack_arg($start_page), FALSE, TRUE)
-		. '\'); return false;';
-}
-
-
-
-function post_view_single_pack_arg($id, $start_page)
-{
-	if ($start_page == NULL)
-		$start_page = 1;
-	return "$id|$start_page";
-}
-
-function post_view_single_parse_arg()
-{
-	global $id, $start_page, $page_arg;
-	if (sscanf($page_arg, '%d|%d', $id, $start_page) != 2)
-		die('Can not parse argument.');
-}
-
-function post_view_single_get_a_href($id)
-{
-	return t_get_link('posts', $id, TRUE, TRUE);
-}
-
-function post_view_single_get_a_onclick($id, $start_page = NULL)
-{
-	$arg = post_view_single_pack_arg($id, $start_page);
-	return 'post_view_set_content(\'' . 
-		t_get_link('ajax-post-view-single', $arg, FALSE, TRUE)
-		. '\'); return false;';
+	$arg = post_list_pack_arg($start_page, $post_type, $post_uid, $subject, $author);
+	return 'posts_set_content(\'' . t_get_link('ajax-post-list', $arg, FALSE, TRUE); . '\'); return false;';
 }
 

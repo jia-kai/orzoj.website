@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Thu Oct 21 22:51:39 2010 +0800
+ * $Date: Fri Oct 29 13:14:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -42,11 +42,11 @@ require_once $includes_path . 'problem.php';
 <script type="text/javascript">
 function prob_view_set_content(addr)
 {
-	$("#prob-view").animate({"opacity" : 0.5}, 1);
+	var t = $("#prob-view");
+	t.animate({"opacity" : 0.5}, 1);
 	$.ajax({
 		"url" : addr,
 		"success" : function(content) {
-			var t = $("#prob-view");
 			t.animate({"opacity" : 1}, 1);
 			t.html(content);
 		}

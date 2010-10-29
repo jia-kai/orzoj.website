@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_func.php
- * $Date: Sat Oct 23 14:22:45 2010 +0800
+ * $Date: Fri Oct 29 12:57:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,7 +31,7 @@ function prob_view_by_group_get_a_href($gid, $start_page, $sort_col = 'id', $sor
 {
 	if (is_null($title_pattern_show))
 		$title_pattern_show = '*';
-	$arg = sprintf('%d|%d|%s|%s', $gid, $start_page, $sort_col, $sort_way, $title_pattern_show);
+	$arg = sprintf('%d|%d|%s|%s|%s', $gid, $start_page, $sort_col, $sort_way, $title_pattern_show);
 	return t_get_link('show-ajax-prob-view-by-group', $arg, TRUE, TRUE);
 }
 

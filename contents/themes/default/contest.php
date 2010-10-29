@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest.php
- * $Date: Sun Oct 24 11:34:44 2010 +0800
+ * $Date: Thu Oct 28 11:06:02 2010 +0800
  */
 /**
  * @package orzoj-website

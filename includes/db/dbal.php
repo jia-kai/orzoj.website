@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: dbal.php
- * $Date: Thu Oct 21 17:13:57 2010 +0800
+ * $Date: Thu Oct 28 14:12:49 2010 +0800
 */
 /**
  * @package orzoj-website
@@ -181,7 +181,7 @@ abstract class Dbal
 	 *			'in'
 	 *						--	subquery
 	 *							operands:
-	 *								&lt;col name:string|col names:array&gt;, &lt;subqeury:string&gt;
+	 *								&lt;col name:string|col names:array&gt;, &lt;subquery:string&gt;
 	 *								subquery is the query returned by select_from with $return_query_str = TRUE
 	 *		use $DBOP[str] to get operator object named str
 	 *		example: array($DBOP["="], "id", "1") means "id = 1" </pre>

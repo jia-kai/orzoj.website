@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: post_view_single.php
- * $Date: Fri Oct 29 12:59:05 2010 +0800
+ * $File: posts.php
+ * $Date: Fri Oct 29 13:29:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,33 +26,22 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-/*
- * page argument:<id=int>|<start_page=int>
- *		id: int
- *			the id of post
- *		start_page: int
- *			the start page of a single post
- */
-
-$start_page = 1;
-$id = NULL;
+?><div id="posts"><?php
 if (isset($page_arg))
+	require_once $theme_path . 'ajax/post_view_single.php';
+else require_once $theme_path . 'ajax/post_list.php';
+?></div>
+<script type="text/javascript">
+function posts_set_content(addr)
 {
-	$options = explode('|', $page_arg);
-	for ($options as $option)
-	{
-		$expr = explode('=', $option);
-		if (count($expr) != 2)
-			die(__('Invalid page argument.'));
-		switch ($expr[0])
-		{
-		case 'id':
-			$id = intval($expr[1]);
-			break;
-		case 'start_page':
-			$start_page = intval($expr[1]);
-			break;
+	var t = $("#posts");
+	t.animate({"opacity" : 0.5}, 1);
+	$.ajax({
+		"url" : addr,
+		"success" : function(data) {
+			t.animate({"opacity" : 1}, 1);
+			t.html(data);
 		}
-	}
+	});
 }
-
+</script>

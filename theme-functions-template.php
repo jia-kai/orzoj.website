@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Tue Oct 19 13:58:48 2010 +0800
+ * $Date: Thu Oct 28 10:32:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -184,6 +184,13 @@ function tf_form_get_hidden($post_name, $post_value)
  * @return string
  */
 function tf_get_prob_html($pinfo)
+{
+}
+
+/**
+ * get a post type selection list
+ */
+function tf_form_get_post_type_selector()
 {
 }
 

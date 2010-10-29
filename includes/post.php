@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Sat Oct 23 14:58:08 2010 +0800
+ * $Date: Fri Oct 29 10:56:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,14 +28,28 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 
-$POST_VAL_SET = array('id', 'time', 'uid', 'pid', 'prob_id', 'rid', 'subject', 'content'); 
+$POST_VAL_SET = array('id', 'time', 'uid', 'pid', 'prob_id', 'rid', 'reply_amount', 'viewed_amount', 'priority', 'is_tio', 'type', 'last_reply_time', 'last_reply_user', 'subject', 'content', 'last_modify_time', 'last_modify_user', 'nickname_uid', 'nickname_last_reply_user', 'nickname_last_modify_user'); 
+$POST_TYPE_SET = array('normal', 'question', 'solution', 'vote');
+$POST_TYPE_TO_NUM = array();
+$tmp = 0;
+foreach ($POST_TYPE_SET as $val)
+	$POST_TYPE_TO_NUM[$val] = $tmp ++;
+unset($tmp);
+
+$POST_ATTRIB_SET = array('is_top');
+$POST_PRIORITY = array('is_top' => 5, 'normal' => 0);
+
 /**
- * @ignore
+ * @param int $id the post id
+ * return int root post id of a post
  */
-function _post_get_root_id($pid)
+function post_get_root_id($id)
 {
 	global $db, $DBOP;
-	$ret = $db->select_from('posts', array('rid'), array($DBOP['='], 'id', $pid));
+	if ($id == 0) return 0;
+	$ret = $db->select_from('posts', array('rid'), array($DBOP['='], 'id', $id));
+	if (count($ret) == 0)
+		return 0;
 	return $ret[0]['rid'];
 }
 
@@ -68,26 +82,33 @@ function post_add($prob_id, $pid = 0)
 		throw new Exc_runtime(__('Subject is too long'));
 	$content = tf_form_get_rich_text_editor_data('content');
 
+	$time = time();
 	$val = array('subject' => htmlencode($_POST['subject']),
-		'content' => $content, 'time' => time(), 'uid' => $user->id,
-		'pid' => $pid, 'prob_id' => $prob_id, 'rid' => 0);
-
+		'content' => $content, 'time' => $time, 'uid' => $user->id,
+		'pid' => $pid, 'prob_id' => $prob_id, 
+		'last_reply_time' => $time, 'last_reply_user' => $user->id
+	);
 	if ($pid > 0)
 	{
 		$val['rid'] = _post_get_root_id($pid);
 		_post_update_root_post($val['rid'], $user->id);
 	}
 	$val = filter_apply('before_post_add', $val);
-	return $db->insert_into('posts', $val);
+	$ret = $db->insert_into('posts', $val);
+	$rid = ($pid ? post_get_root_id($pid) : $ret);
+	$db->update_data('posts', array('rid' => ($pid ? $rid : $ret)));
+	$db->update_data('posts', array('last_reply_time' => time()), array($DBOP['='], 'rid', $rid));
+	return $ret;
 }
 
 /**
- * echo form fileds for adding a new post
+ * echo form fields for adding a new post
  * @return void
  */
 function post_add_get_form($id)
 {
 	$str =
+	//	tf_form_getf_post_type_selector() .
 		tf_form_get_text_input(__('Subject:'), 'subject') .
 		tf_form_get_rich_text_editor(__('Content:'), 'content') .
 		tf_form_get_text_input(__('Problem id'), 'prob_id', NULL, "$id");
@@ -95,103 +116,130 @@ function post_add_get_form($id)
 }
 
 /**
- * get post list in a specific limitation
- * @param bool $concrete TRUE means need content of the post
- * @param bool|NULL $is_top specific whether the post is toped. NULL means no limit.
- * @param int|NULL $offset 
+ * @ignore
+ */
+function _build_post_tree(&$ret, $id)
+{
+	global $_map_post, $_posts;
+	$ret[] = $_posts[$id];
+	if (isset($_map_post[$id]))
+		foreach ($_map_post[$id] as $ch)
+		{
+			$ret[] = array();
+			_build_post_tree($ret[count($ret) - 1], $ch);
+		}
+}
+
+
+/**
+ * get post list in a specific limitation, if deepened, the reply will sort by time in ascending order 
+ * @param array $fields the fields you want to get, see @install/tables.php
+ * @param bool $deepened FALSE the root post or FALSE the whole post tree
+ * @param array|string|NULL $type NULL all the post, or string or array of string, @see $POST_TYPE_SET
+ * @param int|NULL $offset offset will be converted to include a whole root post
  * @param int|NULL $count how many post do you want, this does not include post replies
- * @param int|NULL $depth depth of the post you want
  * @param int|NULL $uid if this is specified, post published by a certain user will be returned.
  * @param string $post_sort_way 'ASC' or 'DESC', sort by last_reply_time
- * @param string $post_reply_sort_way 'ASC' or 'DESC', sort by time
  * @return array an recursive array of post, in each array, index 0 stores the post in a array, keys see install/tables.php
  *		and from index 1 to end is array, except the first layer. the first layer will be a 
  *		array of array.
  */
-function post_get_post_list($concrete = FALSE, $is_top = NULL, $offset = NULL, $count = NULL, $depth = NULL, $uid = NULL, $post_sort_way = 'DESC', $post_reply_sort_way = 'ASC')
+function post_get_post_list($fields = NULL, $deepened = FALSE, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $post_sort_way = 'DESC')
 {
-	global $db, $DBOP, $POST_VAL_SET;
-	$where = array($DBOP['='], 'pid', 0);
-	if ($is_top !== NULL)
-		db_where_add_and($where, array($DBOP['='], 'is_top', ($is_top ? 1 : 0)));
-	if ($uid != NULL)
+	global $db, $DBOP, $POST_VAL_SET, $POST_TYPE_SET, $POST_TYPE_TO_NUM;
+	$fields = array_intersect($fields, $POST_VAL_SET);
+	$appended_fields = array();
+	if (!array_search('rid', $fields))
+	{
+		$appended_fields[] = 'rid';
+		$fields[] = 'rid';
+	}
+	if (!array_search('id', $fields))
+	{
+		$appended_fields[] = 'id';
+		$fields[] = 'id';
+	}
+	if (!array_search('pid', $fields))
+	{
+		$appended_fields[] = 'pid';
+		$fields[] = 'pid';
+	}
+	$nickname_items = array();
+	foreach (array('uid', 'last_reply_user', 'last_modify_user') as $item)
+	{
+		$name = 'nickname_' . $item;
+		if ($key = array_search($name, $fields))
+		{
+			unset($fields[$key]);
+			$nickname_items[] = $item;
+			if (!array_search($item, $fields))
+			{
+				$appended_fields[] = $item;
+				$fields[] = $item;
+			}
+		}
+	}
+	if (is_string($type))
+		$type = array($type);
+	if (is_array($type))
+		$type = array_intersect($type, $POST_TYPE_SET);
+	else $type = NULL;
+
+	$where = NULL;
+	if (!is_null($uid))
 		db_where_add_and($where, array($DBOP['='], 'uid', $uid));
-	$ret = array();
-	$posts = $db->select_from(
-		'posts', 
-		array('id'),
-		$where,
-		array('last_reply_time' => $post_sort_way),
-		$offset,
-		$count
-	);
-	foreach ($posts as $post)
-		$ret[] = _build_post_list($post['id'], $concrete, $post_reply_sort_way, $depth);
-	return filter_apply('after_post_list', $ret);
-}
-
-/**
- * @ignore
- */
-function _post_top_amount()
-{
-	global $db, $DBOP;
-	return $db->get_number_of_rows('posts', array($DBOP['='], 'is_top', 1));
-}
-/**
- * get list of post in a specific limitaion, top post included
- * @see post_get_post_list()
- */
-function post_get_list($concrete = FALSE, $offset = NULL, $count = NULL, $depth = NULL, $uid = NULL, $post_sort_way = 'DESC', $post_reply_sort_way = 'ASC')
-{
-	if (user_check_login())
+	if (is_array($type))
 	{
-		// XXX
-		// view permission check
+		$tmp = NULL;
+		foreach ($type as $t)
+			db_where_add_or($tmp, array($DBOP['='], 'type', $POST_TYPE_TO_NUM[$t]));
+		db_where_add_and($where, $tmp);
 	}
-	else
+	if ($deepened == FALSE)
+		db_where_add_and($where, array($DBOP['='], 'pid', 0));
+	$order_by = array('priority' => 'DESC', 'last_reply_time' => $post_sort_way, 'time' => 'ASC');
+	$posts = $db->select_from('posts', $fields, $where, $order_by, $offset, $count);
+	if (count($posts) == 0) 
+		return filter_apply('after_post_list', array());
+	if ($deepened)
 	{
-		// XXX
-	}
-	$top_post_amount = _post_top_amount();
-	if ($offset + 1 <= $top_post_amount) // some top posts are included
-	{
-		if ($offset + $count <= $top_post_amount) // all top posts
-		{
-			return post_get_post_list($concrete, TRUE, $offset, $count, $depth, $uid, $post_sort_way, $post_reply_sort_way);
-		}
-		else // some are top posts
-		{
-			$top_post_amount = $top_post_amount - $offset;
-			$ret = post_get_post_list($concrete, TRUE, $offset, $top_post_amount, $depth, $uid, $post_sort_way, $post_reply_sort_way);
-			$remain_amount = $count - $top_post_amount;
-			$ret[] = post_get_post_list($concrete, FALSE, 0, $remain_amount, $depth, $uid, $post_sort_way, $post_reply_sort_way);
-			return $ret;
-		}
-	}
-	else // no top posts are included
-	{
-		return post_get_post_list($concrete, FALSE, $offset, $count, $depth, $uid, $post_sort_way, $post_reply_sort_way);
-	}
-}
-/**
- * @ignore
- */
-function _build_post_list($id, $concrete = FALSE, $sort_way = 'ASC', $depth = NULL)
-{
-	global $db, $DBOP, $POST_VAL_SET;
-	$ret = array();
-	$value = $POST_VAL_SET;
-	if (!$concrete)
-		unset($value['content']);
-	$posts = $db->select_from('posts', $value, array($DBOP['='], 'id', $id));
-	$ret[] = $posts[0];
-
-	$posts = $db->select_from('posts', array('id'), array($DBOP['='], 'pid', $id), array('time' => $sort_way));
-	if (is_null($depth) || ((!is_null($depth) && $depth > 1)))
+		$cnt_post = count($posts);
+		$last_post_rid = $posts[$cnt_post - 1]['rid'];
+		$new_posts = array();
 		foreach ($posts as $post)
-			$ret[] = _build_post_list($post['id'], $concrete, $sort_way, is_null($depth) ? NULL : $depth - 1);
-	return $ret;
+			if ($post['rid'] != $last_post_rid)
+				$new_posts[] = $post;
+		$posts = $db->select_from('posts', $fields, array($DBOP['='], 'rid', $last_post_rid));
+		foreach ($new_posts as $t)
+			$posts[] = $t;
+	}
+	global $_map_post, $_posts;
+	$_map_post = array();
+	$_posts = array();
+	foreach ($posts as $post)
+	{
+		if (!isset($_map_post[$post['pid']]))
+			$_map_post[$post['pid']] = array();
+		$_map_post[$post['pid']][] = $post['id'];
+		foreach ($appended_fields as $f)
+			unset($post[array_search($f, $post)]);
+		$id = $post['id'];
+		$_posts[$id] = $post;
+		$tmp = $db->select_from('posts', $nickname_items, array($DBOP['='], 'id', $id));
+		foreach ($tmp[0] as $key => $val)
+			$_posts[$id]['nickname_' . $key] = user_get_nickname_by_id($val);
+	}
+
+	$ret = array();
+	//	foreach ($appended_fields as $f)
+	//		unset($fields[array_search($f, $fields)]);
+
+	foreach ($_map_post[0] as $id)
+	{
+		$ret[] = array();
+		_build_post_tree($ret[count($ret) - 1], $id);
+	}
+	return filter_apply('after_post_list', $ret);
 }
 
 /**
@@ -218,6 +266,7 @@ function post_del_posts($id)
  */
 function _post_del_posts($id)
 {
+	// FIXME: this is wrong
 	global $db, $DBOP;
 	$posts = $db->select_from('posts', array('id'), array($DBOP['='], 'pid', $id));
 	foreach ($posts as $post)
@@ -270,15 +319,53 @@ function post_modify_post_get_form($id)
 }
 
 /**
- * set a post top status
+ * set a post to a toped post, root post needed.
  * @param int $id post id
  * @param BOOL $status TRUE top, and FALSE the opposite
+ * @exception Exc_runtime error message is the post is not a root post
+ * @return void
  */
 function post_set_top_status($id, $status = TRUE)
 {
 	global $db, $DBOP;
+	$status = ($status == TRUE ? 1 : 0);
+	$post = $db->select_from('posts', array('rid'), array($DBOP['='], 'id', $id));
+	if ($post[0]['rid'] != $id)
+		throw new Exc_runtime(__('This post is not a root post.'));
 	$db->update_data('posts', array('is_top' => $state),
-		array($DBOP['='], 'id', $status === TRUE ? 1 : 0));
+		array($DBOP['='], 'id', $id));
+	$db->update_data('posts', array('priority' => ($status == 1 ? $POST_PRIORITY['is_top'] : $POST_PRIORITY['normal'])),
+		array($DBOP['='], 'rid', $id));
 }
 
+/**
+ * @param bool $deepened FALSE the root post or FALSE the whole post tree
+ * @param array|string|NULL $type NULL all the post, or string or array of string, @see $POST_TYPE_SET
+ * @param int|NULL $uid if this is specified, post published by a certain user will be returned.
+ * @return int number of posts in a specific condition
+ */
+function post_get_post_amount($deepened = FALSE, $type = NULL, $uid = NULL)
+{
+	global $db, $DBOP, $POST_TYPE_SET;
+	$where = NULL;
+	if ($deepened == FALSE)
+		db_where_add_and($where, array($DBOP['='], 'pid', 0));
+	if (is_string($type))
+		$type = array($type);
+	if (is_array($type))
+		$type = array_intersect($type, $POST_TYPE_SET);
+	else $type = NULL;
+
+	if (!is_null($uid))
+		db_where_add_and($where, array($DBOP['='], 'uid', $uid));
+
+	if (is_array($type))
+	{
+		$tmp = NULL;
+		foreach ($type as $t)
+			db_where_add_or($tmp, array($DBOP['='], 'type', $POST_TYPE_TO_NUM[$t]));
+		db_where_add_and($where, $tmp);
+	}
+	return $db->get_number_of_rows('posts', $where);
+}
 

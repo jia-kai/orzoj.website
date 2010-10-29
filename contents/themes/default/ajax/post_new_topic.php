@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_new_topic.php
- * $Date: Mon Oct 25 13:07:19 2010 +0800
+ * $Date: Fri Oct 29 09:38:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,5 +25,5 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
-?>
-post new topic
+
+
