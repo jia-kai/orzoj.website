@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Oct 27 18:30:52 2010 +0800
+ * $Date: Thu Oct 28 20:06:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -159,7 +159,7 @@ function tf_form_get_gid_selector($prompt, $selector_name, $default = NULL)
 <tr>
 <td><label for="$id">$prompt</label></td>
 <td><input id="$id" type="text" value="$default" name="gid_selector_$selector_name"
-	onkeydown="return false;" onclick="gid_selector('$id');" /></td>
+	readonly="readonly" onclick="gid_selector('$id');" /></td>
 </tr>
 EOF;
 	return $str;
@@ -309,7 +309,7 @@ function tf_form_get_hidden($post_name, $post_value)
  */
 function _make_view_by_group_link($id, $name)
 {
-	return '<a style="color: #101074;" href="' . prob_view_by_group_get_a_href($id, 1) . 
+	return '<a style="color: black;" href="' . prob_view_by_group_get_a_href($id, 1) . 
 		'" onclick="' . prob_view_by_group_get_a_onclick($id, 1) . '">'
 		. $name . '</a>&nbsp;';
 }
@@ -349,8 +349,9 @@ function tf_get_prob_html($pinfo)
 	$content  = '
 		<div id="prob-view-single">
 		<div id="prob-view-single-title">'
-		. $pinfo['title'] . '(' . $pinfo['code']. ')</div>' 
-		.'<div id="prob-view-single-subtitle">'
+		. $pinfo['title'] . '</div>' 
+		. '<div id="prob-view-single-subtitle">'
+		. __('Problem code: ') . $pinfo['code'] . '<br />'
 		. __('Time Limit: ') . $desc['time'] . '&nbsp;&nbsp;'
 		. __('Memory Limit: ') . $desc['memory'] . '<br />';
 
@@ -369,10 +370,10 @@ function tf_get_prob_html($pinfo)
 		. '<div id="prob-view-single-desc">';
 	$translate = array(
 		'desc' => __('Description'), 
-		'input_fmt' => __('Input Format'), 
-		'output_fmt' => __('Output Format'), 
-		'input_samp' => __('Input Sample'), 
-		'output_samp' => __('Output Sample'),
+		'input_fmt' => __('Input Format'),
+		'output_fmt' => __('Output Format'),
+		'input_samp' => array(__('Sample Input'), '_tf_get_prob_html_io'), 
+		'output_samp' => array(__('Sample Output'), '_tf_get_prob_html_io'),
 		'range' => __('Range'),
 		'hint' => __('Hint'),
 		'source' => __('Source')
@@ -386,13 +387,20 @@ function tf_get_prob_html($pinfo)
 				$field = __('Extra info %s', $key);
 			else
 				$field = $translate[$key];
+			if (is_array($field))
+			{
+				$func = $field[1];
+				$item = $func($item);
+				$field = $field[0];
+			}
 			$content .= '<div class="prob-view-single-desc-title">' . $field . '</div>';
-			$content .= '<div class="prob-view-single-content">'
+			$content .= '<div class="prob-view-single-desc-content">'
 				. $item . '<br /></div>';
 		}
 	if (isset($pinfo['cnt_submit']))
 	{
-		$content .= '<div class="prob-view-single-desc-title">' . __('Statistics') . '</div><div class="prob-view-single-content">';
+		$content .= '<div class="prob-view-single-desc-title">' . __('Statistics') . '</div>
+			<div class="prob-view-single-desc-content">';
 		$FIELDS = array(
 			'cnt_ac' => __('Accepted submissions:'),
 			'cnt_unac' => __('Unaccepted submissions:'),
@@ -406,9 +414,17 @@ function tf_get_prob_html($pinfo)
 			$content .= $disp . ' ' . $pinfo[$f] . '<br />';
 		$content .= '</div>';
 	}
-	$content .= '</div> <!-- id: prob-view-single-desc-->'
-		. '</div> <!-- id: prob-view-single -->';
+	$content .= '</div> <!-- id: prob-view-single-desc-->';
+	$content .= '</div> <!-- id: prob-view-single -->';
 	return $content;
+}
+
+/**
+ * @ignore
+ */
+function _tf_get_prob_html_io($val)
+{
+	return '<textarea readonly="readonly" class="prob-view-single-io">' . $val . '</textarea>';
 }
 
 /**

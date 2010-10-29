@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Wed Oct 27 11:03:55 2010 +0800
+ * $Date: Thu Oct 28 10:55:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -268,8 +268,11 @@ class Ctal_oi extends Ctal
 			$rank = 0;
 		foreach ($rows as $row)
 		{
-			$cols = array(++ $rank, user_get_username_by_id($row['uid']),
-				user_get_realname_by_id($row['uid']), $row['total_score'],
+			$cols = array(
+				++ $rank,
+				array(user_get_username_by_id($row['uid']), 'uid', $row['uid']),
+				user_get_realname_by_id($row['uid']),
+				$row['total_score'],
 				sprintf('%.3f', $row['total_time'] / 1000000));
 			$res = json_decode($row['prob_result'], TRUE);
 			foreach ($probs as $p)
@@ -282,13 +285,13 @@ class Ctal_oi extends Ctal
 				if (isset($res[$p]))
 				{
 					$r = &$res[$p];
-					$col = array(__('Status: %s<br />Score: %d<br />Time: %.3f[sec]',
+					$col = array(sprintf('%s<br />%d<br />%.3f[sec]',
 						record_status_get_str($r[0]),
-						$r[1], $r[2] * 1e-6), $r[3]);
+						$r[1], $r[2] * 1e-6), 'rid', $r[3]);
 					unset($r);
 				}
 				else
-					$col = array(__('Not submitted'), NULL);
+					$col = __('Not submitted');
 				array_push($cols, $col);
 			}
 			array_push($ret, $cols);

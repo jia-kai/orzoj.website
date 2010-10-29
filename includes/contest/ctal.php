@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Wed Oct 27 08:44:17 2010 +0800
+ * $Date: Thu Oct 28 10:41:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -131,11 +131,13 @@ abstract class Ctal
 	 * get final rank list of the problem
 	 * @param array|NULL $where additional where caluse for column 'uid' (see /includes/db/dbal.php for where clause syntax)
 	 * @return array a 2-dimension array representing the result
-	 *		[0][i]: table header for column i
-	 *		[i][j]: (i > 0)
-	 *			string text to be displayed
-	 *				-- or --
-	 *			array(&lt;text to be displayed&gt;, &lt;related record id, or NULL if unavailable&gt;)
+	 *		[0][i]: (0 <= i < m)
+	 *			table header for column i
+	 *		[i][j]: (1 <= i < n, 0 <= j < m):
+	 *			data in the ith row, jth column:
+	 *			<text:string>|array(<text:string>, <link type:string>, <link value:int>)
+	 *			where link type is one of "uid", "rid" (user id, record id)
+	 *			link value is the corresponding id
 	 * @exception Exc_runtime if the result is unavailable
 	 */
 	abstract protected function get_rank_list($where = NULL, $offset = NULL, $cnt = NULL);

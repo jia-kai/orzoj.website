@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Wed Oct 27 10:46:01 2010 +0800
+ * $Date: Thu Oct 28 11:15:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -152,7 +152,7 @@ function _cv_prob()
 	global $cur_row;
 	$pid = $cur_row['pid'];
 	$code = prob_get_code_by_id($pid);
-	return sprintf('<a href="%s" title="%s">%s</a>',
+	return sprintf('<a target="_blank" href="%s" title="%s">%s</a>',
 		t_get_link('problem', $code, TRUE, TRUE),
 		__('Problem code: %s', $code),
 		prob_get_title_by_id($pid));
@@ -169,8 +169,6 @@ function _cv_status()
 	global $cur_row;
 	$s = intval($cur_row['status']);
 	$str = record_status_get_str($s);
-	if (isset($_POST['prob_best_solutions']))
-		return $str;
 	if ($s == RECORD_STATUS_RUNNING)
 		$str = sprintf('%s (%d / %d)', $str, $cur_row['time'] + 1, $cur_row['mem']);
 		// see /install/tables.php
@@ -383,6 +381,11 @@ function status_navigate_do(addr, data)
 	});
 }
 
+$(".a-user-info").colorbox();
+$(".a-record-detail").colorbox({
+	"title": "<?php echo __('Record detail');?>"
+});
+
 <?php
 if (!isset($_POST['prob_best_solutions']))
 {
@@ -400,10 +403,6 @@ if (!isset($_POST['prob_best_solutions']))
 				$("#goto-page-form").serializeArray()));
 	}
 
-	$(".a-user-info").colorbox();
-	$(".a-record-detail").colorbox({
-		"title": "<?php echo __('Record detail');?>"
-	});
 	table_set_double_bgcolor();
 	start_update_table(new Array(<?php echo implode(',', $records_unfinished); ?>));
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Oct 27 19:36:04 2010 +0800
+ * $Date: Thu Oct 28 19:19:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -317,14 +317,33 @@ function user_check_login_get_form()
 }
 
 /**
+ * get logout verification code
+ * @return string|NULL NULL if not logged in
+ */
+function user_logout_get_code()
+{
+	if (!user_check_login())
+		return NULL;
+	global $db, $DBOP, $user;
+	$row = $db->select_from('users', 'salt', array(
+		$DBOP['='], 'id', $user->id));
+	$row = $row[0];
+	return md5(_user_make_passwd($user->id, sha1($row['salt'])));
+}
+
+/**
  * clean cookies about user login
+ * if verification failes, nothing happens
+ * @param string $code logout verification code returned by user_logout_get_code()
  * @return void
  */
-function user_logout()
+function user_logout($code)
 {
 	global $user, $db, $DBOP, $_user_check_login_result;
 	if (user_check_login())
 	{
+		if ($code != user_logout_get_code())
+			return;
 		$db->update_data('users', array('salt' => _user_make_salt()),
 			array($DBOP['='], 'id', $user->id));
 		$user = NULL;

@@ -1,6 +1,6 @@
 <!--
 	$File: orzoj-xhtml.dtd
-	$Date: Fri Oct 08 19:31:32 2010 +0800
+	$Date: Thu Oct 28 17:21:16 2010 +0800
 
 	definitions for allowed XHTML tags in user posted data on orzoj
 
@@ -130,7 +130,7 @@
 <!--=================== Text Elements ====================================-->
 
 <!ENTITY % special.extra
-   "object | applet | img | map | iframe">
+   "img | map">
 	
 <!ENTITY % special.basic
 	"br | span | bdo">
@@ -154,7 +154,7 @@
 <!ENTITY % inline.forms "input | select | textarea | label | button">
 
 <!-- these can occur at block or inline level -->
-<!ENTITY % misc.inline "ins | del | script">
+<!ENTITY % misc.inline "ins | del">
 
 <!-- these can only occur at block level -->
 <!ENTITY % misc "noscript | %misc.inline;">
@@ -194,7 +194,7 @@
 
 <!ENTITY % button.content
    "(#PCDATA | p | %heading; | div | %lists; | %blocktext; |
-      table | br | span | bdo | object | applet | img | map |
+      table | br | span | bdo | img | map |
       %fontstyle; | %phrase; | %misc;)*">
 
 

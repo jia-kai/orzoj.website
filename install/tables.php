@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Wed Oct 27 09:49:48 2010 +0800
+ * $Date: Fri Oct 29 10:32:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -481,6 +481,15 @@ $tables = array(
 	),
 	XXX: orz_req is not used currently, because data transfer from server to website has not been implemented
 	 */
+
+	/* orz_thread_reqid */
+	'orz_thread_reqid' => array( // used for storing thread request id in orz.php
+		'cols' => array(
+			'tid' => array('type' => 'INT32'), // thread id
+			'reqid' => array('type' => 'INT32') // request id
+		),
+		'primary_key' => 'tid'
+	),
 
 	/* messages */
 	'messages' => array( // user-to-user messages

@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Oct 27 18:48:16 2010 +0800
+ * $Date: Thu Oct 28 20:01:42 2010 +0800
 
  This file is part of orzoj
 
@@ -338,7 +338,7 @@ h1.prob-navigator-title
 {
 	font-size: 20px;
 	text-align: center;
-	color: green;
+	color: #1177E0;
 }
 
 div#prob-container
@@ -396,14 +396,14 @@ div#prob-view a:active
 
 div#prob-view-by-group-title
 {
-	color: green;
+	color: #9D8989;
 	font-size: 30px;
 	font-weight: bold;
 }
 
 div#prob-view-by-group-title span
 {
-	color: blue;
+	color: #EDADAD;
 }
 
 div#prob-view-by-group-navigator-bottom
@@ -427,26 +427,61 @@ div#prob-view-single
 
 div#prob-view-single-title
 {
-	color: blue;
+	color: #A1D8E6;
+	padding: 10px;
 	font-size: 30px;
+	font-weight: bold;
 }
 
 div#prob-view-single-subtitle
 {
-	color: red;
+	color: #8B7AC8;
+	margin-bottom: 20px;
 }
 
 div#prob-view-single-subtitle span
 {
-	color: #02f010;
+	color: white;
 }
 
 div.prob-view-single-desc-title
 {
+	clear: both;
+	float: left;
 	font-size: 20px;
 	margin-bottom: 10px;
-	color: green;
+	font-weight: bold;
 	text-align: left;
+	color: #1177E0;
+}
+
+div.prob-view-single-desc-content
+{
+	clear: both;
+	float: left;
+	text-align: left;
+	margin-left: 20px;
+	margin-bottom: 20px;
+}
+
+div.prob-view-single-desc-content pre
+{
+	white-space: normal;
+}
+
+
+textarea.prob-view-single-io
+{
+	width: 600px;
+	height: 300px;
+	background: transparent;
+	color: white;
+	border: 1px solid green;
+}
+
+textarea.prob-view-single-io:hover
+{
+	border: 1px dotted white;
 }
 
 div#prob-view-single-navigator-top
@@ -455,17 +490,35 @@ div#prob-view-single-navigator-top
 	float: left;
 }
 
-div.prob-view-single-content
+div#prob-view-single-page-addr
 {
 	clear: both;
-	text-align: left;
-	margin-left: 20px;
-	margin-bottom: 20px;
+	float: left;
+	width: 100%;
 }
 
-div.prob-view-single-content pre
+div#prob-view-single-page-addr div
 {
-	white-space: normal;
+	float: left;
+	margin-right: 5px;
+}
+
+div#prob-view-single-page-addr span
+{
+	display: block;
+	overflow: hidden;
+}
+
+div#prob-view-single-page-addr input
+{
+	width: 100%;
+}
+
+div#prob-view-single-page-addr button
+{
+	margin-left: 5px;
+	float: right;
+	font-size: 12px;
 }
 
 div.prob-view-box-container
@@ -508,7 +561,6 @@ table.page-table
 	padding: 0;
 	margin-top: 20px;
 	text-align: center;
-	max-width: 795px;
 }
 
 table.page-table tr, table.page-table th, table.page-table td

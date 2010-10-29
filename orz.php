@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Wed Oct 27 20:38:36 2010 +0800
+ * $Date: Fri Oct 29 10:53:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -109,7 +109,7 @@ if (isset($_GET['action'])) // login
 		if ($_GET['checksum'] == $stdchecksum)
 		{
 			option_set('dynamic_password', $dp['password']);
-			option_set('thread_req_id', serialize(array()));
+			$db->delete_item('orz_thread_reqid');
 			if (isset($_GET['refetch']))
 				$db->update_data('records', array('status' => RECORD_STATUS_WAITING_TO_BE_FETCHED),
 					array($DBOP['='], 'status', RECORD_STATUS_WAITING_ON_SERVER));
@@ -133,21 +133,25 @@ if (isset($_POST['data']))
 		$thread_id = $data->thread_id;
 		$dynamic_password = option_get('dynamic_password');
 
-		$db_rid = unserialize(option_get('thread_req_id'));
-		if (!is_array($db_rid))
-			exit('1');
+		$where = array($DBOP['='], 'tid', $thread_id);
+		$thread_reqid = $db->select_from('orz_thread_reqid', 'reqid', $where);
+			
+		if (empty($thread_reqid))
+			$thread_reqid = 0;
+		else $thread_reqid = intval($thread_reqid[0]['reqid']);
 
-
-		if (!isset($db_rid[$thread_id]))
-			$db_rid[$thread_id] = 0;
-		$req_id = $db_rid[$thread_id];
-
-		$stdchecksum = sha1($thread_id . $req_id . sha1($dynamic_password . $static_password) . $data->data);
+		$stdchecksum = sha1($thread_id . '$' . $thread_reqid . '$' . sha1($dynamic_password . $static_password) . $data->data);
 		if ($stdchecksum != $data->checksum)
 			exit('relogin');
 
-		$db_rid[$thread_id] ++;
-		option_set('thread_req_id', serialize($db_rid));
+		$val = array('reqid' => $thread_reqid + 1);
+		if ($thread_reqid == 0)
+		{
+			$val['tid'] = $thread_id;
+			$db->insert_into('orz_thread_reqid', $val);
+		}
+		else
+			$db->update_data('orz_thread_reqid', $val, $where);
 	}
 	else
 		exit('4');
@@ -169,14 +173,14 @@ else
  */
 function msg_write($status, $data)
 {
-	global $thread_id, $req_id, $static_password, $dynamic_password;
+	global $thread_id, $thread_reqid, $static_password, $dynamic_password;
 	if ($status == MSG_STATUS_OK)
 		$data = json_encode($data);
-	echo json_encode(array(
+	die(json_encode(array(
 		'status' => $status,
 		'data' => $data,
-		'checksum' => sha1($thread_id . $req_id . sha1($dynamic_password . $static_password) . $status . $data)
-	));
+		'checksum' => sha1($thread_id . '$' . $thread_reqid . '$' . sha1($dynamic_password . $static_password) . $status . $data)
+	)));
 }
 
 
@@ -472,6 +476,20 @@ function update_statistics($rid, $type)
 	}
 }
 
+function report_sync_data()
+{
+	global $db, $DBOP, $func_param;
+	$jid = $func_param->judge;
+	$rid = $func_param->task;
+	$value = array(
+		'status' => RECORD_STATUS_SYNC_DATA,
+		'jid' => $jid,
+		'jtime' => time());
+	$where_clause = array($DBOP['='], 'id', $rid);
+	$db->update_data('records', $value, $where_clause);
+	msg_write(MSG_STATUS_OK, NULL);
+}
+
 /**
  *  report to orzoj-website that the judge is compiling source
  *  @return void
@@ -480,11 +498,7 @@ function report_compiling()
 {
 	global $db, $func_param, $DBOP;
 	$rid = $func_param->task;
-	$jid = $func_param->judge;
-	$value = array(
-		'status' => RECORD_STATUS_COMPILING,
-		'jid' => $jid,
-		'jtime' => time());
+	$value = array('status' => RECORD_STATUS_COMPILING);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
 	msg_write(MSG_STATUS_OK, NULL);

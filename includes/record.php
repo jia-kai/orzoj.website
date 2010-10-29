@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Wed Oct 27 20:38:27 2010 +0800
+ * $Date: Fri Oct 29 10:54:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,6 +38,7 @@ define('RECORD_STATUS_WAITING_ON_SERVER', $cnt ++);
 
 define('RECORD_STATUS_JUDGE_BUSY', $cnt ++);
 
+define('RECORD_STATUS_SYNC_DATA', $cnt ++);
 define('RECORD_STATUS_COMPILING', $cnt ++);
 define('RECORD_STATUS_COMPILE_SUCCESS', $cnt ++);
 define('RECORD_STATUS_RUNNING', $cnt ++);
@@ -129,6 +130,7 @@ function &record_status_get_all()
 			RECORD_STATUS_WAITING_FOR_CONTEST => __('Waiting for contest'),
 			RECORD_STATUS_WAITING_ON_SERVER => __('Waiting on orzoj-server'),
 
+			RECORD_STATUS_SYNC_DATA => __('Synchronizing data'),
 			RECORD_STATUS_COMPILING => __('Compiling'),
 			RECORD_STATUS_COMPILE_SUCCESS => __('Succesfully compiled'),
 			RECORD_STATUS_COMPILE_FAILURE => __('Compilation error'),

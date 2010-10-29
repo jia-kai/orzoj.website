@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Sun Oct 24 11:48:57 2010 +0800
+ * $Date: Thu Oct 28 16:38:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -79,16 +79,15 @@ try
 		prob_view_single_parse_arg();
 
 	/* ----- navigation button ----*/
-	$content = '';
-
-	$content = '<div id="prob-view-single-navigator-top">';
+	echo '<div id="prob-view-single-navigator-top">';
 
 	// Submit
-	$content .= '<a id="prob-submit-link" href="' . t_get_link('ajax-prob-submit', "$pid", TRUE, TRUE) . '"><button type="button">'
+	echo '<a class="need-colorbox" href="' . t_get_link('ajax-prob-submit', "$pid", TRUE, TRUE) . '"><button type="button">'
 		. __('Submit') . '</button></a>';
 
 	// Best solutions 
-	$content .= '<a id="prob-best-solutions" href="' . t_get_link('ajax-prob-best-solutions', "$pid", TRUE, TRUE) . '"><button type="button">'
+	echo '<a class="need-colorbox" href="'
+		.  t_get_link('ajax-prob-best-solutions', "$pid", TRUE, TRUE) . '"><button type="button">'
 		. __('Best solutions') . '</button></a>';
 
 	// Discuss TODO
@@ -103,37 +102,63 @@ try
 		$title_pattern_show = NULL;
 	}
 
-	$content .= '<a href="' . prob_view_by_group_get_a_href($gid, $start_page, $sort_col, $sort_way, $title_pattern_show, TRUE)
-		. '" id="prob-view-single-back"'
-		. ' onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page, $sort_col, $sort_way, $title_pattern_show, FALSE) . '"><button type="button">';
-	$content .= __('Back to list');
-	$content .= '</button></a>';
+	echo '<a href="' . prob_view_by_group_get_a_href($gid, $start_page, $sort_col, $sort_way, $title_pattern_show, TRUE)
+		. '" onclick="' . prob_view_by_group_get_a_onclick($gid, $start_page, $sort_col, $sort_way, $title_pattern_show, FALSE) . '"><button type="button">'. __('Back to list') . '</button></a>';
 
-	$content .= '</div>';  // id: prob-view-single-navigator-top
+	echo '</div> <!-- id: prob-view-single-navigator-top -->';
 
 	/* problem description */
 
 	if (prob_future_contest($pid))
-		$content .= '<div style="clear: both;">' .
+		echo '<div style="clear: both;">' .
 			__('This problem belongs to an upcoming contest and you should not try to view it here.') .
 			'</div>';
 	else
-		$content .= prob_view($pid);
+		echo prob_view($pid);
 
-	// javascript
-	$content .= '
-		<script type="text/javascript">$("button").button();
-$("#prob-submit-link").colorbox();
-$("#prob-all-submissions").colorbox();
-$("#prob-best-solutions").colorbox();
+	$pcode = prob_get_code_by_id($pid);
+	echo '<div id="prob-view-single-page-addr">';
+	echo '<div>' . __('URL of this problem:') . '</div>';
+	echo '<button type="button" onclick="bookmark_page()">' . __('Bookmark this problem') . '</button>';
+	echo '<span><input id="page-addr" readonly="readonly" type="text" value="http://' . $_SERVER['HTTP_HOST'];
+	t_get_link('problem', $pcode);
+	echo '"/></span>';
+	echo '</div>';
+
+?>
+
+<script type="text/javascript">
 $("button").button();
-	</script>
-	';
-	echo $content;
+$(".need-colorbox").colorbox();
+$("button").button();
+
+function bookmark_page()
+{
+	title = "<?echo __('Problem') . ' - ' . prob_get_title_by_id($pid) . ' - ' . $pcode;?>";
+	url = $("#page-addr").val();
+	if (window.sidebar) 
+		window.sidebar.addPanel(title, url, "");
+	else if(window.opera && window.print)
+	{
+		var elem = document.createElement('a');
+		elem.setAttribute('href', url);
+		elem.setAttribute('title', title);
+		elem.setAttribute('rel', 'sidebar');
+		elem.click();
+	}
+	else if(window.external)
+		window.external.AddFavorite(url,title);
+	else
+		alert("<?php echo __('Sorry, bookmarking this page is not supported on your browser.');?>");
+}
+
+</script>
+
+<?php
 }
 catch (Exc_runtime $e)
 {
-	die(__('Hello buddy: %s', $e->msg()));
+	die(__('Error while showing the problem: %s', htmlencode($e->msg())));
 }
 ?>
 

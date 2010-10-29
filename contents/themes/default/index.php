@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Wed Oct 27 18:35:35 2010 +0800
+ * $Date: Thu Oct 28 19:19:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -169,9 +169,10 @@ function _action_login()
  */
 function _action_logout()
 {
+	global $page_arg;
 	try
 	{
-		user_logout();
+		user_logout($page_arg);
 	}
 	catch (Exc_orzoj $e)
 	{
@@ -274,19 +275,20 @@ $p <br />
 <div id="user-options">
 EOF;
 	$options = array(
-		__('User info.') => 'ajax-user-info',
-		__('Update profile') => 'ajax-user-update-info',
-		__('Change password') => 'ajax-user-chpasswd',
-		__('Logout') => 'action-logout'
+		// <text> => array(<page name>, <page arg>, <whether to use colorbox>)
+		__('User info.') => array('ajax-user-info', NULL, TRUE),
+		__('Update profile') => array('ajax-user-update-info', NULL, TRUE),
+		__('Change password') => array('ajax-user-chpasswd', NULL, TRUE),
+		__('Logout') => array('action-logout', user_logout_get_code(), FALSE)
 	);
 	echo '<ul>';
-	foreach ($options as $opt => $page)
+	foreach ($options as $opt => $val)
 	{
 		echo '<li>';
 		echo '<a href="';
-		t_get_link($page);
-		if (substr($page, 0, 5) == 'ajax-')
-			echo '" name="ajax';
+		t_get_link($val[0], $val[1]);
+		if ($val[2])
+			echo '" class="index-need-colorbox';
 		echo "\">&lt;$opt&gt;</a><br />\n";
 		echo '</li>';
 	}
@@ -335,7 +337,7 @@ if (isset($startup_msg))
 
 	<script type="text/javascript">
 		
-		$("a[name='ajax']").colorbox();
+		$(".index-need-colorbox").colorbox();
 
 		function form_checker(checker_id, input_id, result_div_id)
 		{

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Oct 27 16:20:34 2010 +0800
+ * $Date: Thu Oct 28 18:45:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -224,15 +224,9 @@ function get_page_url($file)
 /**
  * @ignore
  */
-$_xhtml_error = NULL;
-
-/**
- * @ignore
- */
 function _xhtml_error_handler($errno, $msg)
 {
-	global $_xhtml_error;
-	$_xhtml_error = $msg;
+	throw new Exc_xhtml($msg);
 }
 
 define('_XHTML_ROOT', 'orzoj-xhtml');
@@ -245,36 +239,68 @@ define('_XHTML_ROOT', 'orzoj-xhtml');
  */
 function xhtml_validate($text)
 {
-	$text = '<' . _XHTML_ROOT . '>' . $text . '</' . _XHTML_ROOT . '>';
-	global $_xhtml_error, $root_path;
-	$_xhtml_error = NULL;
-	set_error_handler('_xhtml_error_handler');
-
-	$old = new DOMDocument;
-	$old->loadXML($text);
-
-	if (is_null($_xhtml_error))
+	try
 	{
+		$text = '<' . _XHTML_ROOT . '>' . $text . '</' . _XHTML_ROOT . '>';
+		global $_xhtml_error, $root_path;
+		$_xhtml_error = NULL;
+		set_error_handler('_xhtml_error_handler');
+
+		$old = new DOMDocument;
+		$old->loadXML($text);
+
+		$list = $old->getElementsByTagName(_XHTML_ROOT);
+		if ($list->length > 1)
+			throw new Exc_xhtml(__('disallowed tag: %s', _XHTML_ROOT));
+
 		$creator = new DOMImplementation;
 		$doctype = $creator->createDocumentType(_XHTML_ROOT, NULL,
-		   $root_path . 'contents/' . _XHTML_ROOT . '.dtd');
+			$root_path . 'contents/' . _XHTML_ROOT . '.dtd');
 		$new = $creator->createDocument(NULL, NULL, $doctype);
 		$new->encoding = "utf-8";
 
 		$new->strictErrorChecking = FALSE;
 		// setting $new->strictErrorChecking to TRUE seems not to work on my system
 
-		$new->appendChild(
-			$new->importNode(
-				$old->getElementsByTagName(_XHTML_ROOT)->item(0), TRUE));
+		$new->appendChild($new->importNode($list->item(0), TRUE));
 
 		$new->validate();
+
+		$list = $old->getElementsByTagName('a');
+		$str_js = 'javascript:';
+		for ($i = 0; $i < $list->length; $i ++)
+		{
+			$attr = $list->item($i)->attributes;
+			if (!is_null($attr))
+			{
+				$val = $attr->getNamedItem('href');
+				if (!is_null($val))
+				{
+					$val = html_entity_decode($val->nodeValue);
+					$val = strtolower($val);
+					$tp = 0;
+					for ($j = 0; $j < strlen($val) && $tp < strlen($str_js); $j ++)
+					{
+						$ch = $val[$j];
+						if (ctype_alpha($ch) || $ch == ':')
+						{
+							if ($ch != $str_js[$tp])
+								break;
+							$tp ++;
+						}
+					}
+					if ($tp == strlen($str_js))
+						throw new Exc_xhtml(__('javascript is not allowed'));
+				}
+			}
+		}
 	}
-
+	catch (Exc_xhtml $e)
+	{
+		restore_error_handler();
+		throw $e;
+	}
 	restore_error_handler();
-
-	if (!is_null($_xhtml_error))
-		throw new Exc_xhtml($_xhtml_error);
 }
 
 /**
