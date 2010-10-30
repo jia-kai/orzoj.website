@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_filter.php
- * $Date: Sat Oct 23 10:17:18 2010 +0800
+ * $Date: Fri Oct 29 21:54:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,6 +25,9 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
+/**
+ * @ignore
+ */
 function _make_input($prompt, $post_name, $func_sufix, $page, $button_prompt = NULL)
 {
 	if (is_null($button_prompt))

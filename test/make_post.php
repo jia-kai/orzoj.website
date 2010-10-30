@@ -2,10 +2,11 @@
 
 require_once '../pre_include.php';
 $db->delete_item('posts');
-$POST_AMOUNT = 50;
+$POST_AMOUNT = 150;
 
-for ($i = 0; $i < $POST_AMOUNT; $i ++)
-	$db->insert_into('posts', 
+for ($type = 1; $type <= 4; $type ++)
+	for ($i = 0; $i < $POST_AMOUNT; $i ++)
+		$db->insert_into('posts', 
 		array(
 			'time' => time(),
 			'uid' => rand(1, 10),
@@ -16,7 +17,7 @@ for ($i = 0; $i < $POST_AMOUNT; $i ++)
 			'viewed_amount' => rand(1, 1000),
 			'priority' => 0,
 			'is_top' => 0,
-			'type' => 0,
+			'type' => $type,
 			'last_reply_time' => time(),
 			'last_reply_user' => rand(1, 10),
 			'subject' => 'subject ' . ($i + 1),

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_func.php
- * $Date: Fri Oct 29 13:18:53 2010 +0800
+ * $Date: Sat Oct 30 12:01:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,10 +34,12 @@ require_once $includes_path . 'post.php';
 function post_list_pack_arg($start_page, $post_type, $post_uid, $subject, $author)
 {
 	global $POST_TYPE_SET;
-	$s = "start_page=$start_page";
-
-	if (is_int($post_uid))
-		$s .= "|uid=$post_uid";
+	$s = '';
+	if (is_string($start_page))
+		$start_page = intval($start_page);
+	if (is_int($start_page))
+		$s .= "start_page=$start_page";
+	else $s .= "start_page=1";
 
 	if (is_string($post_type))
 		$post_type = array($post_type);
@@ -46,12 +48,15 @@ function post_list_pack_arg($start_page, $post_type, $post_uid, $subject, $autho
 	else $post_type = NULL;
 	if (is_array($post_type))
 		foreach ($post_type as $type)
-			$s .= "|type=$post_type";
+			$s .= "|type=$type";
 
-	if (is_string($subject))
+	if (is_int($post_uid))
+		$s .= "|uid=$post_uid";
+
+	if (is_string($subject) && strlen($subject))
 		$s .= "|subject=$subject";
 
-	if (is_string($author))
+	if (is_string($author) && strlen($author))
 		$s .= "|author=$author";
 
 	return $s;
@@ -69,9 +74,64 @@ function post_list_get_a_href($start_page, $post_type, $post_uid, $subject, $aut
 /**
  * @ignore
  */
-function post_list_get_a_onclick($start_page, $post_type, $pos_uid, $subject, $author)
+function post_list_get_a_onclick($start_page, $post_type, $post_uid, $subject, $author)
 {
 	$arg = post_list_pack_arg($start_page, $post_type, $post_uid, $subject, $author);
-	return 'posts_set_content(\'' . t_get_link('ajax-post-list', $arg, FALSE, TRUE); . '\'); return false;';
+	return 'posts_view_set_content(\'' . t_get_link('ajax-post-list', $arg, FALSE, TRUE) . '\'); return false;';
+}
+/**
+ * @ignore
+ */
+function post_view_single_from_list_pack_arg($id, $post_list_start_page, $post_type, $post_uid, $subject, $author)
+{
+	global $POST_TYPE_SET;
+	$s = '';
+	if (is_string($id))
+		$id = intval($id);
+	if (is_int($id))
+		$s .= "id=$id";
+	else throw new Exc_runtime(__('Invalid id...'));
+
+	if (is_int($post_list_start_page))
+		$s .= "|post_list_start_page=$post_list_start_page";
+	else $s .= "|post_list_start_page=1";
+
+	if (is_string($post_type))
+		$post_type = array($post_type);
+	if (is_array($post_type))
+		$post_type = array_intersect($post_type, $POST_TYPE_SET);
+	else $post_type = NULL;
+	if (is_array($post_type))
+		foreach ($post_type as $type)
+			$s .= "|type=$type";
+
+	if (is_int($post_uid))
+		$s .= "|uid=$post_uid";
+
+	if (is_string($subject) && strlen($subject))
+		$s .= "|subject=$subject";
+
+	if (is_string($author) && strlen($author))
+		$s .= "|author=$author";
+
+	return $s;
+}
+
+/**
+ * @ignore
+ */
+function post_view_single_from_list_get_a_href($id, $post_list_start_page, $post_type, $post_uid, $subject, $author)
+{
+	$arg = post_view_single_from_list_pack_arg($id, $post_list_start_page, $post_type, $post_uid, $subject, $author);
+	return t_get_link('show-ajax-post-view-single', $arg, TRUE, TRUE);
+}
+
+/**
+ * @ignore
+ */
+function post_view_single_from_list_get_a_onclick($id, $post_list_start_page, $post_type, $post_uid, $subject, $author)
+{
+	$arg = post_view_single_from_list_pack_arg($id, $post_list_start_page, $post_type, $post_uid, $subject, $author);
+	return 'posts_view_set_content(\'' . t_get_link('ajax-post-view-single', $arg, FALSE, TRUE) . '\'); return false;';
 }
 

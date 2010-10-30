@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Fri Oct 29 18:24:20 2010 +0800
+ * $Date: Sat Oct 30 00:10:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -207,7 +207,8 @@ require_once $theme_path . 'ajax/status_list.php';
 
 <script type="text/javascript">
 $("#filter-apply-button").button();
-
+<?php // XXX: is t_get_link below buged? 
+?>
 $("#filter-form").bind("submit", function(){
 	status_navigate_do("<?php t_get_link('ajax-status-list');?>", 
 		$("#filter-form").serializeArray());

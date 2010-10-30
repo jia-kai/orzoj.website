@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Thu Oct 28 18:45:56 2010 +0800
+ * $Date: Sat Oct 30 12:03:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -479,3 +479,56 @@ function time_interval_to_str_gen_js($func)
 	return $ret;
 }
 
+/**
+ * transform a normal pattern to a database-recognizable pattern
+ * patterns will follow rules below
+ *		1. spaces at head or tail will be ignored
+ *		2. a slash '\' in the end of pattern will be treated as a character '\'
+ *		3. a slash '\' with '*', '?' or '\' after will be treated as a character '*', '?' or '\'
+ *		4. other slash '\' is treated as a charater '\'
+ *		5. '*' with no '\' in front is treated as a arbitrary string
+ *		6. '?' with no '\' in front is treated as a arbitrary character
+ * transforming rules @see includes/db/dbal.php : function select_from
+ * @param string $tp the pattern to be transformed
+ * @return string the pattern transformed
+ */
+function transform_pattern($tp)
+{
+	if (!is_string($tp))
+		return NULL;
+	$tp = trim($tp);
+	$len = strlen($tp);
+	$s = '';
+	for ($i = 0; $i < $len; $i ++)
+		if ($tp[$i] == '\\')
+		{
+			$i ++;
+			if ($i < $len)
+			{
+				$ch = $tp[$i];
+				if ($ch == '*' || $ch == '?' || $ch == '\\')
+					$s .= ($ch == '\\' ? '\\\\' : $ch);
+				else if ($ch == '_' || $ch == '%')
+					$s .= '\\\\\\' . $ch;
+				else
+					$s .= '\\\\' . $ch;
+			}
+			else
+				$s .= '\\\\';
+		}
+		else
+		{
+			$ch = $tp[$i];
+			if ($ch == '%' || $ch == '_')
+				$s .= '\\' . $ch;
+			else if ($ch == '*')
+				$s .= '%';
+			else if ($ch == '?')
+				$s .= '_';
+			else
+				$s .= $ch;
+				
+		}
+	$s = '%' . $s . '%';
+	return $s;
+}

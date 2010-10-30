@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Fri Oct 29 13:30:51 2010 +0800
+ * $Date: Sat Oct 30 12:00:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,7 +32,7 @@ if (!defined('IN_ORZOJ'))
  *		type option can appear more than once
  *		uid: user id
  *		subject: string
- *		author: string
+ *		author: string, both username and nickname are supported
  */
 require_once $includes_path . 'post.php';
 require_once $theme_path . 'post_func.php';
@@ -59,7 +59,7 @@ if (isset($page_arg))
 			$start_page = intval($expr[1]);
 			break;
 		case 'type':
-			if (!array_search($expr[1], $POST_TYPE_SET))
+			if (array_search($expr[1], $POST_TYPE_SET) === FALSE)
 				die(__('Unknown page argument.'));
 			if ($post_type == NULL)
 				$post_type = array($expr[1]);
@@ -67,20 +67,112 @@ if (isset($page_arg))
 				$post_type[] = $expr[1];
 			break;
 		case 'uid':
-			$post_uid = intval($uid);
+			$post_uid = intval($expr[1]);
+			break;
+		case 'subject':
+			$subject = $expr[1];
+			break;
+		case 'author':
+			$author = $expr[1];
 			break;
 		}
 	}
 }
 
-if (isset($_POST['start_page']))
-	$start_page = $_POST['start_page'];
-if (isset($_POST['subject']))
-	$subject = $_POST['subject'];
-if (isset($_POST['author']))
-	$author = $_POST['author'];
+foreach (array('start_page', 'post_uid', 'subject', 'author') as $item)
+	if (isset($_POST[$item]))
+		$$item = $_POST[$item];
+if (is_string($start_page))
+	$start_page = intval($start_page);
+if (is_string($post_uid))
+	$post_uid = intval($post_uid);
+
+if (is_string($subject))
+	$subject_pattern = transform_pattern($subject);
+else $subject_pattern = NULL;
+
+if (isset($_POST['type']))
+{
+	$post_type = NULL;
+	if (is_string($_POST['type']))
+		$post_type = array($_POST['type']);
+	else if (is_array($_POST['type']))
+		$post_type = $_POST['type'];
+}
+
+if (is_array($post_type))
+{
+	if (array_search('all', $post_type) !== FALSE)
+		$post_type = NULL;
+	else $post_type = array_intersect($post_type, $POST_TYPE_SET);
+}
 ?>
-<table class="page-table">
+
+<div id="post-filter">
+
+<div class="post-filter" style="margin-right: 10px; float: left;">
+<?php echo __('Filter:'); ?>
+</div>
+
+<form action="<?php t_get_link('ajax-post-list'); ?>" method="post" id="post-filter-form">
+
+<?php
+/**
+ * @ignore
+ */
+function _make_input($prompt, $post_name)
+{
+	if (isset($_POST[$post_name]))
+		$default = $_POST[$post_name];
+	else $default = '';
+	$id = _tf_get_random_id();
+	echo <<<EOF
+<div class="post-filter"><label for="$id">$prompt</label></div>
+<div class="post-filter"><input type="text" name="$post_name" id="$id" value="$default" /></div>
+EOF;
+}
+/**
+ * @ignore
+ */
+function _make_select($prompt, $post_name, $options)
+{
+	global $post_type;
+	if (is_string($post_type))
+		$default = $post_type;
+	else if (is_array($post_type))
+		$default = $post_type[0];
+	else $default = '';
+	$id = _tf_get_random_id();
+	echo <<<EOF
+<div class="post-filter"><label for="$id">$prompt</label></div>
+<div class="post-filter"><select id="$id" name="$post_name">
+EOF;
+	asort($options);
+
+	foreach ($options as $disp => $val)
+	{
+		if ((string)$val == $default) 
+			$selected = 'selected="selected"';
+		else $selected = '';
+		echo <<<EOF
+<option value="$val" $selected>$disp</option>
+EOF;
+	}
+	echo '</select></div>';
+}
+_make_input(__('Subject'), 'subject');
+_make_input(__('Author'), 'author');
+$types = array();
+foreach ($POST_TYPE_SET as $type)
+	$types[$POST_TYPE_DISP[$type]] = $type;
+_make_select(__('Type'), 'type', $types);
+$Apply = __('Apply');
+echo <<<EOF
+<div class="post-filter"><input type="submit" id="filter-apply-button" value="$Apply" /></div>
+EOF;
+?>
+</form></div><!-- id: post-filter -->
+
 <?php
 // cv : column value
 
@@ -98,8 +190,11 @@ function _cv_type()
  */
 function _cv_subject()
 {
-	global $post;
-	echo '<a class="post-subject" href="' . t_get_link('show-ajax-post-view-single', $post['id'], TRUE, TRUE) . '">' . $post['subject'] . '</a>';
+	global $post, $start_page, $post_type, $post_uid, $subject, $author;
+	echo '<a class="post-subject" href="' 
+		. post_view_single_from_list_get_a_href($post['id'], $start_page, $post_type, $post_uid, $subject, $author) . '"'
+		. 'onclick="' . post_view_single_from_list_get_a_onclick($post['id'], $start_page, $post_type, $post_uid, $subject, $author) . '"'
+		. '>' . $post['subject'] . '</a>';
 }
 
 /**
@@ -142,83 +237,114 @@ $cols = array(
 	array(__('Rep./Viewed'), '_cv_rep_viewed'),
 	array(__('Last reply'), '_cv_last_replay')
 );
-echo '<tr>';
-foreach ($cols as $val)
-	echo "<th>$val[0]</th>";
-echo '</tr>';
 
-$total_page = post_get_post_amount(FALSE, $post_type, $post_uid);
-if ($start_page < 1) $start_page = 1;
-if ($start_page > $total_page) $start_page = $total_page;
-
-$posts = post_get_post_list(
-	array('id', 'time', 'uid', 'prob_id', 'score', 'type', 'last_reply_time', 'last_reply_user', 'subject', 'nickname_last_reply_user', 'nickname_uid', 'reply_amount', 'viewed_amount'), 
-	FALSE, 
-	$post_type,
-	($start_page - 1) * $POSTS_PER_PAGE, 
-	$POSTS_PER_PAGE,
-	$post_uid
-);
-
-foreach ($posts as $post)
+$error = false;
+try
 {
-	$post = $post[0];
-	echo '<tr>';
-	foreach ($cols as $col)
-	{
-		echo '<td>';
-		$func = $col[1];
-		$func();
-		echo '</td>';
-	}
-	echo '</tr>';
+	$total_page = ceil(post_get_post_amount(FALSE, $post_type, $post_uid, $subject_pattern, $author) / $POSTS_PER_PAGE);
+	if ($start_page < 1) $start_page = 1;
+	if ($start_page > $total_page) $start_page = $total_page;
+
+	$posts = post_get_post_list(
+		array('id', 'uid', 'prob_id', 'score', 'type', 'last_reply_time', 'last_reply_user', 'subject', 'nickname_last_reply_user', 'nickname_uid', 'reply_amount', 'viewed_amount'), 
+		FALSE, 
+		$post_type,
+		($start_page - 1) * $POSTS_PER_PAGE, 
+		$POSTS_PER_PAGE,
+		$post_uid,
+		$subject_pattern,
+		$author
+	);
+} catch (Exc_runtime $e)
+{
+	echo '<div style="clear: both;">' . $e->msg() . '</div>';
+	$error = true;
 }
+
+if (!$error)
+{
+	echo '<table class="page-table">';
+
+	echo '<tr>';
+	foreach ($cols as $val)
+		echo "<th>$val[0]</th>";
+	echo '</tr>';
+
+
+	foreach ($posts as $post)
+	{
+		$post = $post[0];
+		echo '<tr>';
+		foreach ($cols as $col)
+		{
+			echo '<td>';
+			$func = $col[1];
+			$func();
+			echo '</td>';
+		}
+		echo '</tr>';
+	}
 ?>
 </table>
 <div id="post-list-navigator-bottom">
 <?
-/**
- * @ignore
- */
-function _make_page_link($text, $page)
-{
-	global $post_type, $post_uid, $subject, $author;
-	return sprintf('<a href="%s" onclick="%s">%s</a>',
-		post_list_get_a_href($page, $post_type, $post_uid, $subject, $author),
-		post_list_get_a_onclick($page, $post_type, $post_uid, $subject, $author),
-		$text
+	/**
+	 * @ignore
+	 */
+	function _make_page_link($text, $page)
+	{
+		global $post_type, $post_uid, $subject, $author;
+		return sprintf('<a href="%s" onclick="%s">%s</a>',
+			post_list_get_a_href($page, $post_type, $post_uid, $subject, $author),
+			post_list_get_a_onclick($page, $post_type, $post_uid, $subject, $author),
+			$text
 		);
-}
+	}
 
-/**
- * @ignore
- */
-function _make_page_nav()
-{
-	global $start_page, $total_page;
-	$ret = '';
+	/**
+	 * @ignore
+	 */
+	function _make_page_nav()
+	{
+		global $start_page, $total_page;
+		$ret = '';
 
-	if ($start_page > 1)
-		$ret .= '&lt;' . _make_page_link(__('Prev'), $start_page - 1);
+		if ($start_page > 1)
+			$ret .= '&lt;' . _make_page_link(__('Prev'), $start_page - 1);
 
-	if ($start_page < $total_page)
-		$ret . = ($start_page > 1 ? ' | ' : '') . _make_page_link(__('Next'), $start_page + 1) . '&gt;';
-	return $ret;
-}
-echo _make_page_nav();
-$id = _tf_get_random_id();
-$GoToPage = __('Go to page');
-echo <<<EOF
-<form action="#" id="post-list-goto-form" method="get" onsubmit="post_list_goto(); return false;">
+		if ($start_page < $total_page)
+			$ret .= ($start_page > 1 ? ' | ' : '') . _make_page_link(__('Next'), $start_page + 1) . '&gt;';
+		return $ret;
+	}
+	echo _make_page_nav();
+	$id = _tf_get_random_id();
+	$GoToPage = __('Go to page');
+	echo <<<EOF
+<form action="#" id="post-list-goto-form" method="post" onsubmit="post_list_goto(); return false;">
 <label for="$id" style="float: left">$GoToPage</label>
-<input value="$start_page" name="goto_page" id="$id" style="float: left; widdth: 30px" type="text" />
+<input value="$start_page" name="goto_page" id="$id" style="float: left; width: 30px" type="text" />
 /$total_page
 </form>
 EOF;
 ?>
 </div><!-- id: post-list-navigator-bottom -->
 <?php
-echo $db->get_query_amount() . ' database queries. ' . count($posts) . ' posts.';
+	echo $db->get_query_amount() . ' database queries. ' . count($posts) . ' posts.';
+}
+
+$post_type_str = '';
+if (is_array($post_type))
+{
+	$post_type_str .= ', "type" : new Array(';
+	$first = TRUE;
+	foreach ($post_type as $type)
+	{
+		if (!$first)
+			$post_type_str .= ', ';
+		$post_type_str .= '"' . $type . '"';
+	}
+	$post_type_str .= ')';
+}
 ?>
 
 <script type="text/javascript">
@@ -227,10 +353,48 @@ $(".post-last-reply-user a").colorbox();
 $("a.post-author").colorbox();
 function post_list_goto()
 {
-	var t = $("#posts");
+	var t = $("#posts-view");
 	t.animate({"opacity" : 0.5}, 1);
-	page = $("")
+	page = $("#post-list-goto-form input").val();
+	$.ajax({
+		"url" : "<?php t_get_link('ajax-post-list', NULL, FALSE, FALSE); ?>",
+		"type" : "post",
+		"cache" : false,
+		"data" : ({
+			"start_page" : page
+<?php
+if (strlen($post_type_str))
+	echo $post_type_str;
+foreach (array('post_uid', 'subject', 'author') as $item)
+{
+	if (is_int($$item) || (is_string($$item) && strlen($$item)))
+	{
+		echo ', "' . $item . '" : "' . $$item . '"';
+	}
 }
-
+?>
+		}),
+		"success" : function(data) {
+			t.animate({"opacity" : 1}, 1);
+			t.html(data);
+		}
+	});
+	return false;
+}
+$("#post-filter-form").bind("submit", function(){
+	var t = $("#posts-view");
+	t.animate({"opacity" : 0.5}, 1);
+	$.ajax({
+		"type" : "post",
+		"cache" : false,
+		"url" : "<?php t_get_link('ajax-post-list', NULL, FALSE); ?>",
+		"data" : $("#post-filter-form").serializeArray(),
+		"success" : function(data) {
+			t.animate({"opacity": 1}, 1);
+			t.html(data);
+		}
+	});
+	return false;
+});
+$("#filter-apply-button").button();
 </script>
-

@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Fri Oct 29 20:05:05 2010 +0800
+ * $Date: Fri Oct 29 22:58:58 2010 +0800
 
  This file is part of orzoj
 
@@ -867,5 +867,37 @@ a.post-subject
 {
 	/* XXX: it doen't work */
 	/* color: #3040e9; */
+}
+
+div#post-list-navigator-bottom
+{
+	float: right;
+	margin-right: 20px;
+	margin-top: 6px;
+}
+
+form#post-list-goto-form
+{
+	clear: both;
+	float: right;
+	margin-left: 20px;
+}
+
+div.post-filter
+{
+	float: left;
+}
+
+div.post-filter input, div.post-filter select
+{
+	width: 80px;
+	margin-right: 20px;
+}
+
+div.post-filter #filter-apply-button
+{
+	height: 22px;
+	font-size: 12px;
+	padding: 2px 8px;
 }
 

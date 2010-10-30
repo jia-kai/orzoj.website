@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 29 14:14:48 2010 +0800
+ * $Date: Fri Oct 29 23:27:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -42,8 +42,6 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'problem.php';
 require_once $theme_path . 'prob_func.php';
 
-
-
 // XXX: this should be a setting of theme
 $PROB_VIEW_ROWS_PER_PAGE = 20;
 
@@ -53,49 +51,7 @@ $sort_col = 'id';
 $sort_way = 'ASC';
 $start_page = 1;
 
-/**
- * @ignore
- */
-function _tranform_pattern($tp)
-{
-	if ($tp == NULL)
-		return NULL;
-	$tp = trim($tp);
-	$len = strlen($tp);
-	$s = '';
-	for ($i = 0; $i < $len; $i ++)
-		if ($tp[$i] == '\\')
-		{
-			$i ++;
-			if ($i < $len)
-			{
-				$ch = $tp[$i];
-				if ($ch == '*' || $ch == '?' || $ch == '\\')
-					$s .= ($ch == '\\' ? '\\\\' : $ch);
-				else if ($ch == '_' || $ch == '%')
-					$s .= '\\\\\\' . $ch;
-				else
-					$s .= '\\\\' . $ch;
-			}
-			else
-				$s .= '\\\\';
-		}
-		else
-		{
-			$ch = $tp[$i];
-			if ($ch == '%' || $ch == '_')
-				$s .= '\\' . $ch;
-			else if ($ch == '*')
-				$s .= '%';
-			else if ($ch == '?')
-				$s .= '_';
-			else
-				$s .= $ch;
-				
-		}
-	$s = '%' . $s . '%';
-	return $s;
-}
+
 
 $fields = array('id', 'title', 'code', 'cnt_submit_user', 'cnt_ac_user', 'difficulty', 'user_sts');
 
@@ -134,7 +90,7 @@ else
 	}
 }
 
-$title_pattern = _tranform_pattern($title_pattern_show);
+$title_pattern = transform_pattern($title_pattern_show);
 if ($title_pattern_show == '*')
 	$title_pattern = NULL;
 if ($title_pattern_show == '')

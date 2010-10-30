@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Fri Oct 29 10:56:18 2010 +0800
+ * $Date: Sat Oct 30 12:03:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,7 +29,14 @@ if (!defined('IN_ORZOJ'))
 
 
 $POST_VAL_SET = array('id', 'time', 'uid', 'pid', 'prob_id', 'rid', 'reply_amount', 'viewed_amount', 'priority', 'is_tio', 'type', 'last_reply_time', 'last_reply_user', 'subject', 'content', 'last_modify_time', 'last_modify_user', 'nickname_uid', 'nickname_last_reply_user', 'nickname_last_modify_user'); 
-$POST_TYPE_SET = array('normal', 'question', 'solution', 'vote');
+$POST_TYPE_SET = array('all', 'normal', 'question', 'solution', 'vote');
+$POST_TYPE_DISP = array(
+	'all' => __('All'),
+	'normal' => __('Normal'),
+	'question' => __('Question'),
+	'solution' => __('Solution'),
+	'vote' => __('Vote')
+);
 $POST_TYPE_TO_NUM = array();
 $tmp = 0;
 foreach ($POST_TYPE_SET as $val)
@@ -139,12 +146,16 @@ function _build_post_tree(&$ret, $id)
  * @param int|NULL $offset offset will be converted to include a whole root post
  * @param int|NULL $count how many post do you want, this does not include post replies
  * @param int|NULL $uid if this is specified, post published by a certain user will be returned.
+ * @param string|NULL $subject specified subject pattern, a pattern tranformed by includes/functions.php : transform_pattern
+ * @param string|NULL $author specified the author, nickname and username included
+ *						if both $author and $uid is set, it will both work
  * @param string $post_sort_way 'ASC' or 'DESC', sort by last_reply_time
  * @return array an recursive array of post, in each array, index 0 stores the post in a array, keys see install/tables.php
  *		and from index 1 to end is array, except the first layer. the first layer will be a 
  *		array of array.
+ * @exception Exc_runtime if user does not exists
  */
-function post_get_post_list($fields = NULL, $deepened = FALSE, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $post_sort_way = 'DESC')
+function post_get_post_list($fields = NULL, $deepened = FALSE, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $subject = NULL, $author = NULL, $post_sort_way = 'DESC')
 {
 	global $db, $DBOP, $POST_VAL_SET, $POST_TYPE_SET, $POST_TYPE_TO_NUM;
 	$fields = array_intersect($fields, $POST_VAL_SET);
@@ -186,8 +197,37 @@ function post_get_post_list($fields = NULL, $deepened = FALSE, $type = NULL, $of
 	else $type = NULL;
 
 	$where = NULL;
-	if (!is_null($uid))
-		db_where_add_and($where, array($DBOP['='], 'uid', $uid));
+
+	// deal user filter
+	$user_where = NULL;
+	if (is_int($uid))
+	{
+		if (!user_exists($uid))
+			throw new Exc_runtime(__('No such user whose id is %d!', $uid));
+		db_where_add_or($user_where, array($DBOP['='], 'uid', $uid));
+	}
+	if (is_string($author) && strlen($author))
+	{
+		$flag = false;
+		if ($id = user_get_id_by_username($author))
+		{
+			db_where_add_or($user_where, array($DBOP['='], 'uid', $id));
+			$flag = true;
+		}
+		if ($id = user_get_id_by_nickname($author))
+		{
+			db_where_add_or($user_where, array($DBOP['='], 'uid', $id));
+			$flag = true;
+		}
+		if (!$flag)
+			throw new Exc_runtime(__('No such user whose nickname or username is %s!', $author));
+	}
+	if (is_array($user_where))
+		db_where_add_and($where, $user_where);
+
+	if (is_string($subject))
+		db_where_add_and($where, array($DBOP['like'], 'subject', $subject));
+
 	if (is_array($type))
 	{
 		$tmp = NULL;
@@ -344,9 +384,9 @@ function post_set_top_status($id, $status = TRUE)
  * @param int|NULL $uid if this is specified, post published by a certain user will be returned.
  * @return int number of posts in a specific condition
  */
-function post_get_post_amount($deepened = FALSE, $type = NULL, $uid = NULL)
+function post_get_post_amount($deepened = FALSE, $type = NULL, $uid = NULL, $subject = NULL, $author = NULL)
 {
-	global $db, $DBOP, $POST_TYPE_SET;
+	global $db, $DBOP, $POST_TYPE_SET, $POST_TYPE_TO_NUM;
 	$where = NULL;
 	if ($deepened == FALSE)
 		db_where_add_and($where, array($DBOP['='], 'pid', 0));
@@ -356,8 +396,21 @@ function post_get_post_amount($deepened = FALSE, $type = NULL, $uid = NULL)
 		$type = array_intersect($type, $POST_TYPE_SET);
 	else $type = NULL;
 
-	if (!is_null($uid))
-		db_where_add_and($where, array($DBOP['='], 'uid', $uid));
+	$user_where = NULL;
+	if (is_int($uid))
+		db_where_add_or($user_where, array($DBOP['='], 'uid', $uid));
+	if (is_string($author))
+	{
+		if ($id = user_get_id_by_username($author))
+			db_where_add_or($user_where, array($DBOP['='], 'uid', $id));
+		if ($id = user_get_id_by_username($author))
+			db_where_add_or($user_where, array($DBOP['='], 'uid', $id));
+	}
+	if (is_array($user_where))
+		db_where_add_and($where, $user_where);
+
+	if (is_string($subject))
+		db_where_add_and($where, array($DBOP['like'], 'subject', $subject));
 
 	if (is_array($type))
 	{
@@ -367,5 +420,15 @@ function post_get_post_amount($deepened = FALSE, $type = NULL, $uid = NULL)
 		db_where_add_and($where, $tmp);
 	}
 	return $db->get_number_of_rows('posts', $where);
+}
+
+/**
+ * to judge if a post exists
+ * @return BOOL the result
+ */
+function post_exists($id)
+{
+	global $db, $DBOP;
+	return ($db->get_number_of_rows('posts', array($DBOP['='], 'id', $id)) == 1) ? TRUE : FALSE;
 }
 

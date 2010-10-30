@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: posts.php
- * $Date: Fri Oct 29 13:29:14 2010 +0800
+ * $Date: Fri Oct 29 21:42:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,15 +26,15 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-?><div id="posts"><?php
+?><div id="posts-view"><?php
 if (isset($page_arg))
 	require_once $theme_path . 'ajax/post_view_single.php';
 else require_once $theme_path . 'ajax/post_list.php';
 ?></div>
 <script type="text/javascript">
-function posts_set_content(addr)
+function posts_view_set_content(addr)
 {
-	var t = $("#posts");
+	var t = $("#posts-view");
 	t.animate({"opacity" : 0.5}, 1);
 	$.ajax({
 		"url" : addr,

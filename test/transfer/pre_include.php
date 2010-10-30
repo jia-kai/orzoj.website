@@ -46,6 +46,6 @@ function odb_simulate_user_login($username)
 	if (is_null($username))
 		die('no such user');
 	$_user_check_login_result = TRUE;
-	$user = new User(user_get_id_by_name($username));
+	$user = new User(user_get_id_by_username($username));
 }
 

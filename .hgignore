@@ -3,3 +3,4 @@ install/config.php
 contents/editors/ckeditor
 contents/themes/default/scripts/jquery/orig
 convert.sh
+trans.sh

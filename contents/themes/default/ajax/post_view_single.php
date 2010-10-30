@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Fri Oct 29 12:59:05 2010 +0800
+ * $Date: Sat Oct 30 11:34:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -39,7 +39,7 @@ $id = NULL;
 if (isset($page_arg))
 {
 	$options = explode('|', $page_arg);
-	for ($options as $option)
+	foreach ($options as $option)
 	{
 		$expr = explode('=', $option);
 		if (count($expr) != 2)

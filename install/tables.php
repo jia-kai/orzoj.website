@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Fri Oct 29 19:58:35 2010 +0800
+ * $Date: Sat Oct 30 12:03:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -530,9 +530,9 @@ $tables = array(
 			'priority' => array('type' => 'INT32', 'default' => 0), // every root post have a priority, the bigger, the prior
 			'is_top' => array('type' => 'INT32', 'default' => 0), //whether the post should be one the top, ordering by time if more than one. root post only
 			//'view_gid' => array('type' => 'TEXT'),
-			'type' => array('type' => 'INT32', 'default' => 0),
+			'type' => array('type' => 'INT32', 'default' => 1),
 			/* one of the attribs below should be only setted on root post
-			 * 'type' => string : one of {0 : 'normal', 1 = 'question', 2 = 'solution', 3 = 'vote'}
+			 * 'type' => int: one of {1 : 'normal', 2 = 'question', 3 = 'solution', 4 = 'vote'} and 0 is reserved for 'all'
 			 * @see includes/post.php
 			 */
 			'last_reply_time' => array('type' => 'INT64', 'default' => 0),

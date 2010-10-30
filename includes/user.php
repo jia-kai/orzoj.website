@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Oct 28 19:19:54 2010 +0800
+ * $Date: Sat Oct 30 12:03:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -413,14 +413,29 @@ function _user_make_salt()
 /**
  * get user id by username
  * @param string $name username
- * @return int|NULL user id or NULL of no such user
+ * @return int|NULL user id or NULL if no such user
  */
-function user_get_id_by_name($name)
+function user_get_id_by_username($name)
 {
 	$name = strtolower($name);
 	global $db, $DBOP;
 	$row = $db->select_from('users', 'id',
 		array($DBOP['=s'], 'username', $name));
+	if (count($row) == 1)
+		return $row[0]['id'];
+	return NULL;
+}
+
+/**
+ * get user id by nickname
+ * @param string $name nickname
+ * @return int|NULL user id or NULL if no such user
+ */
+function user_get_id_by_nickname($name)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('users', 'id',
+		array($DBOP['=s'], 'nickname', $name));
 	if (count($row) == 1)
 		return $row[0]['id'];
 	return NULL;
@@ -449,7 +464,7 @@ function _user_check_name_form($name)
 	{
 		return $e->msg();
 	}
-	if (user_get_id_by_name($name))
+	if (user_get_id_by_username($name))
 		return __('username %s already exists', $name);
 	return __('Username avaliable');
 }
@@ -580,7 +595,7 @@ function user_register($login_after_register = FALSE)
 	unset($val['passwd_confirm']);
 
 	user_validate_username($_POST['username']);
-	if (user_get_id_by_name($_POST['username']))
+	if (user_get_id_by_username($_POST['username']))
 		throw new Exc_runtime(__('username already exists'));
 
 	try
@@ -842,5 +857,16 @@ function user_get_user_amount()
 {
 	global $db;
 	return $db->get_number_of_rows('users');
+}
+
+/**
+ * to judge if a user exists
+ * @param int $uid user id
+ * @return BOOL the result
+ */
+function user_exists($uid)
+{
+	global $db, $DBOP;
+	return ($db->get_number_of_rows('users', array($DBOP['='], 'uid', $uid)) == 1) ? TRUE : FALSE;
 }
 
