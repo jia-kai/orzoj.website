@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 30 12:03:17 2010 +0800
+ * $Date: Sat Oct 30 12:08:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -135,65 +135,60 @@ function db_init()
 	$db->set_prefix($table_prefix);
 }
 
+static $_option_cache = array();
 /**
  * get option value
  * @param string $key option key
- * @return string|bool option value on success, FALSE on failure 
+ * @return string|NULL option value on success, NULL if no such option
  */
 function option_get($key)
 {
-	global $db, $DBOP;
+	global $db, $DBOP, $_option_cache;
+	if (array_key_exists($key, $_option_cache))
+		return $_option_cache[$key];
 	$data = $db->select_from('options', 'value',
 		array($DBOP['=s'], 'key', $key));
-	if ($data && count($data))
-		return $data[0]['value'];
+	if (count($data))
+		$data = $data[0]['value'];
 	else
-		return FALSE;
+		$data = NULL;
+	return $_option_cache[$key] = $data;
 }
 
 /**
  * delete option
  * @param string $key option key
- * @return bool whether succeed
+ * @return void
  */
 function option_delete($key)
 {
-	global $db, $DBOP;
-	if ($db->delete_item('options', array($DBOP['=s'], 'key', $key)) !== FALSE)
-		return TRUE;
-	else
-		return FALSE;
+	global $db, $DBOP, $_option_cache;
+	$db->delete_item('options', array($DBOP['=s'], 'key', $key));
+	$_option_cache[$key] = NULL;
 }
 
 /**
  * set option value
  * @param string $key option key
  * @param string $value option value
- * @return bool whether succeed
+ * @return void
  * @exception Exc_inner if $key too long
  */
 function option_set($key, $value)
 {
 	if (strlen($key) > OPTION_KEY_LEN_MAX)
 		throw new Exc_inner('option key too long');
-	global $db, $DBOP;
-	$ndt  = array('key' => $key,
-		'value' => $value
-		);
-	if (option_get($key) !== FALSE)
-	{
-		if ($db->update_data('options', $ndt, array($DBOP['=s'], 'key', $key)) !== FALSE)
-			return TRUE;
-		else
-			return FALSE;
-	}
+	global $db, $DBOP, $_option_cache;
+	$val  = array('value' => $value);
+	$where = array($DBOP['=s'], 'key', $key);
+	if ($db->get_number_of_rows('options', $where))
+		$db->update_data('options', $val, $where);
 	else
 	{
-		if ($db->insert_into('options', $ndt) !== FALSE)
-			return TRUE;
-		else
-			return FALSE;
+		$val['key'] = $key;
+		$db->insert_into('options', $val);
 	}
+	$_option_cache[$key] = $value;
 }
 
 /**

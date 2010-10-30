@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status.php
- * $Date: Sat Oct 30 00:10:50 2010 +0800
+ * $Date: Fri Oct 29 21:44:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -62,6 +62,7 @@ function update_table()
 				var tid = "#status-tb-tr-" + key;
 				$(tid).html(value.substr(1));
 				$(tid + " a.a-user-info").colorbox();
+				$(tid + " a.a-record-judge").colorbox();
 				if (value.charAt(0) == '1')
 				{
 					for (var i = 0; i < records.length; i ++)
@@ -207,8 +208,7 @@ require_once $theme_path . 'ajax/status_list.php';
 
 <script type="text/javascript">
 $("#filter-apply-button").button();
-<?php // XXX: is t_get_link below buged? 
-?>
+
 $("#filter-form").bind("submit", function(){
 	status_navigate_do("<?php t_get_link('ajax-status-list');?>", 
 		$("#filter-form").serializeArray());

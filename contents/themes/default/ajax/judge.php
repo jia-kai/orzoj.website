@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: judge.php
- * $Date: Fri Oct 29 21:34:17 2010 +0800
+ * $Date: Fri Oct 29 21:50:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -43,9 +43,9 @@ function _judge_supported_languages($judge)
 
 function _judge_detail($judge)
 {
-	$st = '<table class="page-table">';
+	$st = '<table class="colorbox-table">';
 	foreach ($judge->detail as $key => $v)
-		$st .= "<tr><td>$key</td><td>".htmlencode($v).'</td></tr>';
+		$st .= "<tr><td>$key</td><td style='text-align: left'>".htmlencode($v).'</td></tr>';
 	$st .= '</table>';
 	return $st;
 }
@@ -60,7 +60,7 @@ foreach ($aJudgeList as $judge)
 {
 ?>
 <div style="width:800px;">
-<table border="1">
+<table class="colorbox-table">
 <?php
 echo '<tr><td>', __('Judge ID'), '</td><td>', $judge->id, '</td></tr>';
 echo '<tr><td>', __('Judge Name'), '</td><td>', htmlencode($judge->name), '</td></tr>';
