@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Sat Oct 30 00:10:52 2010 +0800
+ * $Date: Sat Oct 30 12:06:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -216,8 +216,8 @@ function _cv_judge()
 	global $cur_row;
 	$name = judge_get_name_by_id($cur_row['jid']);
 	if ($name === NULL)
-		return '---';
-	return $name;
+		$name = '---';
+	return '<a href="' . t_get_link('ajax-judge',$cur_row['jid'],TRUE,TRUE) . '" class="a-record-judge">' . $name.'</a>';
 }
 
 function _cv_srclen()
@@ -382,6 +382,7 @@ function status_navigate_do(addr, data)
 }
 
 $(".a-user-info").colorbox();
+$(".a-record-judge").colorbox();
 $(".a-record-detail").colorbox({
 	"title": "<?php echo __('Record detail');?>"
 });

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Sat Oct 23 13:44:08 2010 +0800
+ * $Date: Fri Oct 29 21:29:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,12 +52,7 @@ function judge_get_list($id = NULL, $online = NULL)
 	if (is_bool($online))
 		$where = array($DBOP['='], 'status', $online ? JUDGE_STATUS_ONLINE : JUDGE_STATUS_OFFLINE);
 	if (is_int($id))
-	{
-		$tmp = array($DBOP['&&'], $DBOP['='], 'id', $id);
-		if (is_array($where))
-			$where = array_merge($tmp, $where);
-		else $where = $tmp;
-	}
+		db_where_add_and($where,array($DBOP['='],'id',$id));
 	$judge_list = $db->select_from('judges', NULL, $where);
 
 	$ret = array();
