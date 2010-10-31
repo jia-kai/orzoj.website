@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sun Oct 31 16:50:02 2010 +0800
+ * $Date: Sun Oct 31 18:39:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -136,12 +136,8 @@ $tables = array(
 			'admin' => array('type' => 'INT32'), // whether the user is an administrator of the group
 		),
 		'index' => array(
-			array(
-				'type' => 'UNIQUE',
-				'cols' => array('uid')),
-			array(
-				'type' => 'UNIQUE',
-				'cols' => array('gid'))
+			array('cols' => array('uid', 'gid')),
+			array('cols' => array('gid'))
 		)
 	),
 
@@ -200,7 +196,7 @@ $tables = array(
 			// |--------------------------------------------------------------------|
 			'io' => array('type' => 'TEXT'), // serialized array of input/output file name, or empty string if using stdio
 
-			'time' => array('type' => 'INT64'), // when this problem is added
+			'time' => array('type' => 'INT64'), // last modification time
 
 			'cnt_ac' => array('type' => 'INT32', 'default' => 0),
 			// number of accepted submissions
@@ -583,6 +579,14 @@ $tables = array(
 				'cols' => array('uid', 'status')
 			)
 		)
+	),
+
+	'user_admin_login' => array(
+		'cols' => array(
+			'uid' => array('type' => 'INT32'), // user id
+			'time' => array('type' => 'INT64')
+		),
+		'primary_key' => 'uid'
 	)
 
 );

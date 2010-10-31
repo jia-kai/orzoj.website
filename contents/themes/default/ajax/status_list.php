@@ -350,7 +350,7 @@ if (count($rows) == PAGE_SIZE)
 	echo '&gt;';
 }
 
-$id = _tf_get_random_id();
+$id = get_random_id();
 echo '<form action="#" id="goto-page-form" method="post"
 	onsubmit="status_goto_page(); return false;" ><label for="' . $id . '" style="float:left">';
 echo __('Go to page:');

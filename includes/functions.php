@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 30 12:08:58 2010 +0800
+ * $Date: Sat Oct 30 21:20:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -66,6 +66,19 @@ function cookie_get($name)
 }
 
 /**
+ * @ignore
+ */
+function _session_start()
+{
+	static $done = FALSE;
+	if (!$done)
+	{
+		$done = TRUE;
+		session_start();
+	}
+}
+
+/**
  * set session with $table_prefix at the beginning of session name
  * @param string $name name of sesssion
  * @param string $value value of sesssion
@@ -73,29 +86,23 @@ function cookie_get($name)
 function session_set($name, $value)
 {
 	global $table_prefix;
-	static $session_started = FALSE;
-	if (!$session_started)
-	{
-		session_start();
-		$session_started = TRUE;
-	}
-	$_SESSION[$table_prefix.$name] = $value;
+	_session_start();
+	$_SESSION[$table_prefix . $name] = $value;
 }
 
 /**
  * get session value
- * @param string $name name of session,$table_prefix will be added at the beginning automatically
- * @return bool|string If cookie exists,content is returned.Otherwise,False is returned.
+ * @param string $name name of session, $table_prefix will be added at the beginning automatically
+ * @return string|NULL the session value or NULL if no such session
  */
 function session_get($name)
 {
 	global $table_prefix;
+	_session_start();
+	$name = $table_prefix . $name;
 	if (isset($_SESSION[$name]))
-	{
 		return $_SESSION[$name];
-	}
-	else
-		return FALSE;
+	return NULL;
 }
 
 
@@ -527,3 +534,13 @@ function transform_pattern($tp)
 	$s = '%' . $s . '%';
 	return $s;
 }
+
+/**
+ * get a random id containing only letters and digits, and begins with a letter
+ * @return string
+ */
+function get_random_id()
+{
+	return 'i' . md5(uniqid(mt_rand(), TRUE));
+}
+

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Sun Oct 31 17:01:43 2010 +0800
+ * $Date: Sun Oct 31 18:45:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -57,7 +57,7 @@ unset($tmp);
 $POST_TOPIC_ATTRIB_SET = array('is_top', 'is_locked', 'is_boutique');
 $POST_PRIORITY = array('is_top' => 5, 'normal' => 0);
 
-$AUTHOR_TYPE_SET = array('nickname', 'username', 'realname');
+$AUTHOR_TYPE_SET = array('username');
 
 
 /* posts constants */

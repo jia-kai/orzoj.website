@@ -1,0 +1,54 @@
+/*
+ * $File: login_style.css
+ * $Date: Sat Oct 30 19:33:12 2010 +0800
+
+ This file is part of orzoj
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+.login-form
+{
+	text-size: 16px;
+	text-align: center;
+	position:absolute;
+	top: 50%;
+	left: 50%;
+	height: 76px;
+	width: 310px;
+	margin-top: -38px; /* negative half of the height */
+	margin-left: -155px;
+}
+
+.prompt
+{
+	width: 100px;
+	font-weight: bold;
+}
+
+.field
+{
+	width: 200px;
+}
+
+.field input
+{
+	width: 100%;
+	border: 1px solid black;
+}
+
+.field input:hover
+{
+	border: 1px dotted green;
+}
+

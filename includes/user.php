@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sun Oct 31 00:29:24 2010 +0800
+ * $Date: Sun Oct 31 18:41:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -102,10 +102,10 @@ class User
 	 */
 	public function get_groups()
 	{
-		global $db, $DBOP;
-		$uid = $this->id;
 		if ($this->groups)
 			return $this->groups;
+		global $db, $DBOP;
+		$uid = $this->id;
 		$rows = $db->select_from('map_user_grp', array('gid', 'admin'),
 			array($DBOP['&&'], $DBOP['='], 'uid', $uid, $DBOP['='], 'pending', 0));
 
@@ -116,20 +116,21 @@ class User
 
 		foreach ($rows as $row)
 		{
-			$groups[] = $row['gid'];
+			$gid = intval($row['gid']);
+			$groups[] = $gid;
 			if ($row['admin'] == 1)
-				$this->admin_groups[] = $val['gid'];
+				$this->admin_groups[] = $gid;
 
-			$grp_set[$val['gid']] = 1;
+			$grp_set[$gid] = 1;
 		}
 
 		for ($i = 0; $i < count($groups); $i ++)
 		{
 			$rows = $db->select_from('user_grps', 'pgid',
 				array($DBOP['='], 'id', $groups[$i]));
-			if (count($rows) != 1)
+			if (empty($rows))
 				continue;
-			$tmp = $rows[0]['pgid'];
+			$tmp = intval($rows[0]['pgid']);
 			if (!isset($grp_set[$tmp]))
 			{
 				array_push($groups, $tmp);
@@ -421,36 +422,6 @@ function user_get_id_by_username($name)
 	global $db, $DBOP;
 	$row = $db->select_from('users', 'id',
 		array($DBOP['=s'], 'username', $name));
-	if (count($row) == 1)
-		return $row[0]['id'];
-	return NULL;
-}
-
-/**
- * get user id by nickname
- * @param string $name nickname
- * @return int|NULL user id or NULL if no such user
- */
-function user_get_id_by_nickname($name)
-{
-	global $db, $DBOP;
-	$row = $db->select_from('users', 'id',
-		array($DBOP['=s'], 'nickname', $name));
-	if (count($row) == 1)
-		return $row[0]['id'];
-	return NULL;
-}
-
-/**
- * get user id by realname
- * @param string $name realname
- * @return int|NULL user id or NULL if no such user
- */
-function user_get_id_by_realname($name)
-{
-	global $db, $DBOP;
-	$row = $db->select_from('users', 'id',
-		array($DBOP['=s'], 'realname', $name));
 	if (count($row) == 1)
 		return $row[0]['id'];
 	return NULL;

@@ -54,7 +54,7 @@ else
 if (isset($_POST['page_num']))
 	$pg_num = intval($_POST['page_num']) - 1;
 
-$html_id_page = _tf_get_random_id();
+$html_id_page = get_random_id();
 
 echo "<div id='$html_id_page'>";
 
@@ -234,8 +234,8 @@ if ($pg_num)
 	echo ' | </div>';
 }
 
-$html_id_nav_form = _tf_get_random_id();
-$html_id_nav_input = _tf_get_random_id();
+$html_id_nav_form = get_random_id();
+$html_id_nav_input = get_random_id();
 
 echo '<form id="' . $html_id_nav_form . '" method="post" action="';
 t_get_link('show-ajax-contest-view-result', $cid);

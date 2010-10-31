@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 30 23:41:18 2010 +0800
+ * $Date: Sun Oct 31 18:40:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -60,7 +60,7 @@ function tf_form_register_checker($func)
 function tf_form_get_text_input($prompt, $post_name, $checker = NULL, $default = NULL)
 {
 	global $_tf_checker, $_tf_cur_checker_div;
-	$id = _tf_get_random_id();
+	$id = get_random_id();
 	if (!is_null($checker))
 	{
 		$checker = <<<EOF
@@ -83,7 +83,7 @@ function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
 	if (is_null($default))
 		$default = '';
 	else $default = htmlencode($default);
-	$id = _tf_get_random_id();
+	$id = get_random_id();
 	return "<tr><td><label for=\"$id\">$prompt</label></td><td>
 		<textarea name=\"$post_name\" id=\"$id\">$default</textarea>
 		<br /></td></tr>\n";
@@ -154,7 +154,7 @@ function tf_form_get_gid_selector($prompt, $selector_name, $default = NULL)
 			$tmp .= user_grp_get_name_by_id($gid) . ',';
 		$default = substr($tmp, 0, strlen($tmp) - 1);
 	}
-	$id = _tf_get_random_id();
+	$id = get_random_id();
 	$str = <<<EOF
 <tr>
 <td><label for="$id">$prompt</label></td>
@@ -199,7 +199,7 @@ function tf_form_get_gid_selector_value($selector_name)
  */
 function tf_form_get_source_editor($prompt, $name, $default = NULL)
 {
-	$id = _tf_get_random_id();
+	$id = get_random_id();
 	return sprintf('<tr><td colspan="2"><label for="%s">%s</label><br />
 		<textarea type="text" id="%s" name="%s" style="width: 600px; height: 400px;">%s</textarea></td></tr>',
 		$id, $prompt, $id, $name, is_null($default) ? '' : $default);
@@ -226,8 +226,8 @@ function tf_form_get_source_editor_data($name)
 function tf_form_get_avatar_browser($prompt, $post_name, $default = NULL)
 {
 	global $theme_path;
-	$id = _tf_get_random_id();
-	$idi = _tf_get_random_id();
+	$id = get_random_id();
+	$idi = get_random_id();
 	if (is_null($default))
 		$default = 0;
 	$default_file = avatar_get_url($default);
@@ -253,13 +253,13 @@ EOF;
  */
 function tf_form_get_passwd($prompt, $post_name, $confirm_input = NULL, $confirm_post_name = NULL)
 {
-	$id = _tf_get_random_id();
+	$id = get_random_id();
 	$str = "<tr><td><label for=\"$id\">$prompt</label></td>
 		<td><input type=\"password\" name=\"$post_name\" id=\"$id\" /></td></tr>\n";
 	if (is_string($confirm_input))
 	{
 		global $_tf_cur_checker_div;
-		$id1 = _tf_get_random_id();
+		$id1 = get_random_id();
 		$str .= <<<EOF
 <tr><td><label for="$id1">$confirm_input</label></td><td>
 <input id="$id1" type="password" name="$confirm_post_name" onblur='form_verify_passwd("$id", "$id1", "$_tf_cur_checker_div")' />
@@ -279,7 +279,7 @@ EOF;
  */
 function tf_form_get_select($prompt, $post_name, $options, $default = NULL)
 {
-	$id = _tf_get_random_id();
+	$id = get_random_id();
 	$str = "<tr><td><label for=\"$id\">$prompt</label></td>
 		<td><select name=\"$post_name\" id=\"$id\">";
 	foreach ($options as $name => $value)
@@ -433,7 +433,7 @@ function _tf_get_prob_html_io($val)
 function _tf_form_generate_body($gen_func)
 {
 	global $_tf_cur_checker_div;
-	$ckid = _tf_get_random_id();
+	$ckid = get_random_id();
 	$_tf_cur_checker_div = $ckid;
 	echo "<div class=\"form-checker-result\" id=\"$ckid\">place holder</div>\n";
 	echo '<table border="0" style="clear:both">';
@@ -441,15 +441,6 @@ function _tf_form_generate_body($gen_func)
 	call_user_func_array($gen_func, array_slice($args, 1));
 	echo '</table>';
 }
-
-/**
- * @ignore
- */
-function _tf_get_random_id()
-{
-	return 'i' . md5(uniqid(mt_rand(), TRUE));
-}
-
 
 /**
  * get a post type selection list

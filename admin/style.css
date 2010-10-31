@@ -1,0 +1,137 @@
+/*
+ * $File: style.css
+ * $Date: Sun Oct 31 11:27:17 2010 +0800
+
+ This file is part of orzoj
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+input[type="text"]:hover, input[type="password"]:hover, textarea:hover
+{
+	border-color: green;
+	border-style: dotted;
+}
+
+input[type="text"], input[type="password"], textarea
+{
+	border: 1px solid black;
+	margin: 2px;
+	height: 16px;
+	width: 150px;
+}
+
+body.frame-navigation
+{
+	background-color: #D0DCE0;
+	font-size: 14px;
+}
+
+body.frame-navigation ul
+{
+	padding-left: 15px;
+}
+
+body.frame-navigation li
+{
+	margin-bottom: 3px;
+}
+
+div.important
+{
+	font-size: 20px;
+	font-weight: bold;
+	color: red;
+	margin: 5px;
+}
+
+table.page-table
+{
+	border-collapse: collapse;
+	margin: auto;
+	border: 0;
+	padding: 0;
+	text-align: center;
+}
+
+table.page-table caption
+{
+	font-size: 18px;
+	font-weight: bold;
+}
+
+table.page-table tr, table.page-table th, table.page-table td
+{
+	border: 1px solid #C3C3C3;
+	padding: 3px;
+	text-align: center;
+}
+
+table.page-table th
+{
+	background-color: #E5EECC;
+}
+
+table.page-table tr:hover
+{
+	background-color: #E5EEFF;
+}
+
+form.filter-form
+{
+	clear: both;
+}
+
+form.filter-form span
+{
+	margin-right: 10px;
+}
+
+form.filter-form span input[type="text"]
+{
+	margin: 0px;
+	width: 80px;
+}
+
+div.pgnum-nav
+{
+	clear: both;
+	float: right;
+	font-size: 14px;
+}
+
+div.pgnum-nav span
+{
+	float: left;
+}
+
+div.pgnum-nav input
+{
+	width: 20px;
+	height: 14px;
+}
+
+a[href], a[href]:visited
+{
+	color: blue;
+	text-decoration: none;
+}
+
+a[href]:hover
+{
+	color: blue;
+	text-decoration: underline;
+}
+
+

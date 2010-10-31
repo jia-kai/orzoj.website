@@ -354,7 +354,7 @@ function _make_page_nav()
 
 $page_nav = _make_page_nav();
 
-$id = _tf_get_random_id();
+$id = get_random_id();
 $GoToPage = __('Go to page');
 if (!isset($goto_page_default))
 	$goto_page_default = '';
