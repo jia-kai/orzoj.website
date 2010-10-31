@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sun Oct 31 18:31:20 2010 +0800
+ * $Date: Sun Oct 31 18:34:06 2010 +0800
 
  This file is part of orzoj
 
@@ -946,3 +946,16 @@ div.posts-content
 }
 
 div.posts-reply-a
+{
+}
+
+#oldbrowser {   
+border-bottom:1px solid #eb7429;   
+background:#fc9453;   
+padding:10px 20px;   
+position:fixed;   
+top:0;   
+left:0;   
+z-index:2000;   
+width:100%;  
+}

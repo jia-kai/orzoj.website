@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Fri Oct 29 21:26:02 2010 +0800
+ * $Date: Sun Oct 31 16:59:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -72,7 +72,6 @@ $PAGES_AJAX = array(
 	'ajax-post-new-topic' => 'ajax/post_new_topic.php',
 	'ajax-judge' => 'ajax/judge.php'
 );
-
 /**
  * pages for an action
  */
@@ -541,6 +540,31 @@ if (isset($startup_msg))
 		}
 
 	</script>
+<?php
+$is_old_browser = (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6') !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5') !== false);
+if ($is_old_browser)
+{
+?>
+<div id="oldbrowser">
+<?php
+	echo __('Your browser is out of date.Please upgrade your browser.If you insist on using your out-of-date browser,you can\'t get the best browsing experience.<br/>');
+	function _new_browser_a($brow,$downurl)
+	{
+		echo '<a href="'.$downurl.'" alt="" target="_blank" title="'.$brow.'"><img src="'._url('images/newbrowsers/'.$brow.'.png',TRUE),'"></a>';
+	}
+	echo __('As follows are some up-to-date browsers(In alphabet order).').'<Br/>';
+	_new_browser_a('chrome','http://www.google.com/chrome/');
+	_new_browser_a('firefox','http://www.mozilla.com/firefox/');
+	_new_browser_a('ie8','http://go.microsoft.com/fwlink/?LinkId=161354');
+	_new_browser_a('opera','http://www.opera.com/browser/download/');
+	_new_browser_a('safari','http://www.apple.com/safari/');
+?>
+</div>
+<?php
+}
+?>
+
+
 
 </body>
 
