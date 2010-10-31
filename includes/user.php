@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sat Oct 30 12:03:28 2010 +0800
+ * $Date: Sun Oct 31 00:29:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -436,6 +436,21 @@ function user_get_id_by_nickname($name)
 	global $db, $DBOP;
 	$row = $db->select_from('users', 'id',
 		array($DBOP['=s'], 'nickname', $name));
+	if (count($row) == 1)
+		return $row[0]['id'];
+	return NULL;
+}
+
+/**
+ * get user id by realname
+ * @param string $name realname
+ * @return int|NULL user id or NULL if no such user
+ */
+function user_get_id_by_realname($name)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('users', 'id',
+		array($DBOP['=s'], 'realname', $name));
 	if (count($row) == 1)
 		return $row[0]['id'];
 	return NULL;

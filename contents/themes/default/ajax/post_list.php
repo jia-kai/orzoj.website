@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Sat Oct 30 12:00:38 2010 +0800
+ * $Date: Sun Oct 31 14:27:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,11 +37,11 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'post.php';
 require_once $theme_path . 'post_func.php';
 
-$POSTS_PER_PAGE = 20;
+$POST_TOPIC_PER_PAGE = 20;
 
 $start_page = 1;
-$post_type = NULL;
-$post_uid = NULL;
+$type = NULL;
+$uid = NULL;
 $subject = NULL;
 $author = NULL;
 
@@ -61,13 +61,10 @@ if (isset($page_arg))
 		case 'type':
 			if (array_search($expr[1], $POST_TYPE_SET) === FALSE)
 				die(__('Unknown page argument.'));
-			if ($post_type == NULL)
-				$post_type = array($expr[1]);
-			else
-				$post_type[] = $expr[1];
+			$type = $expr[1];
 			break;
 		case 'uid':
-			$post_uid = intval($expr[1]);
+			$uid = intval($expr[1]);
 			break;
 		case 'subject':
 			$subject = $expr[1];
@@ -79,33 +76,28 @@ if (isset($page_arg))
 	}
 }
 
-foreach (array('start_page', 'post_uid', 'subject', 'author') as $item)
+foreach (array('start_page', 'uid', 'subject', 'author', 'type') as $item)
 	if (isset($_POST[$item]))
+	{
 		$$item = $_POST[$item];
+		if (empty($$item))
+			$$item = NULL;
+	}
 if (is_string($start_page))
 	$start_page = intval($start_page);
-if (is_string($post_uid))
-	$post_uid = intval($post_uid);
+if (is_string($uid))
+	$uid = intval($uid);
+
+if (array_search($type, $POST_TYPE_SET) === FALSE)
+	$type = NULL;
+if ($type == 'all')
+	$type = NULL;
 
 if (is_string($subject))
 	$subject_pattern = transform_pattern($subject);
 else $subject_pattern = NULL;
 
-if (isset($_POST['type']))
-{
-	$post_type = NULL;
-	if (is_string($_POST['type']))
-		$post_type = array($_POST['type']);
-	else if (is_array($_POST['type']))
-		$post_type = $_POST['type'];
-}
 
-if (is_array($post_type))
-{
-	if (array_search('all', $post_type) !== FALSE)
-		$post_type = NULL;
-	else $post_type = array_intersect($post_type, $POST_TYPE_SET);
-}
 ?>
 
 <div id="post-filter">
@@ -122,8 +114,9 @@ if (is_array($post_type))
  */
 function _make_input($prompt, $post_name)
 {
-	if (isset($_POST[$post_name]))
-		$default = $_POST[$post_name];
+	global $$post_name;
+	if (isset($$post_name))
+		$default = $$post_name;
 	else $default = '';
 	$id = _tf_get_random_id();
 	echo <<<EOF
@@ -136,11 +129,9 @@ EOF;
  */
 function _make_select($prompt, $post_name, $options)
 {
-	global $post_type;
-	if (is_string($post_type))
-		$default = $post_type;
-	else if (is_array($post_type))
-		$default = $post_type[0];
+	global $type;
+	if (is_string($type))
+		$default = $type;
 	else $default = '';
 	$id = _tf_get_random_id();
 	echo <<<EOF
@@ -163,8 +154,8 @@ EOF;
 _make_input(__('Subject'), 'subject');
 _make_input(__('Author'), 'author');
 $types = array();
-foreach ($POST_TYPE_SET as $type)
-	$types[$POST_TYPE_DISP[$type]] = $type;
+foreach ($POST_TYPE_SET as $ty)
+	$types[$POST_TYPE_DISP[$ty]] = $ty;
 _make_select(__('Type'), 'type', $types);
 $Apply = __('Apply');
 echo <<<EOF
@@ -190,10 +181,10 @@ function _cv_type()
  */
 function _cv_subject()
 {
-	global $post, $start_page, $post_type, $post_uid, $subject, $author;
+	global $post, $start_page, $type, $uid, $subject, $author;
 	echo '<a class="post-subject" href="' 
-		. post_view_single_from_list_get_a_href($post['id'], $start_page, $post_type, $post_uid, $subject, $author) . '"'
-		. 'onclick="' . post_view_single_from_list_get_a_onclick($post['id'], $start_page, $post_type, $post_uid, $subject, $author) . '"'
+		. post_view_single_get_a_href($post['id'], 1, $start_page, $type, $uid, $subject, $author) . '"'
+		. 'onclick="' . post_view_single_get_a_onclick($post['id'], 1, $start_page, $type, $uid, $subject, $author) . '"'
 		. '>' . $post['subject'] . '</a>';
 }
 
@@ -241,25 +232,26 @@ $cols = array(
 $error = false;
 try
 {
-	$total_page = ceil(post_get_post_amount(FALSE, $post_type, $post_uid, $subject_pattern, $author) / $POSTS_PER_PAGE);
+	$author_type = array('nickname', 'username');
+	$total_page = ceil(post_get_topic_amount($type, $uid, $subject_pattern, $author, $author_type) / $POST_TOPIC_PER_PAGE);
 	if ($start_page < 1) $start_page = 1;
 	if ($start_page > $total_page) $start_page = $total_page;
 
-	$posts = post_get_post_list(
+	$posts = post_get_topic_list(
 		array('id', 'uid', 'prob_id', 'score', 'type', 'last_reply_time', 'last_reply_user', 'subject', 'nickname_last_reply_user', 'nickname_uid', 'reply_amount', 'viewed_amount'), 
-		FALSE, 
-		$post_type,
-		($start_page - 1) * $POSTS_PER_PAGE, 
-		$POSTS_PER_PAGE,
-		$post_uid,
+		$type,
+		($start_page - 1) * $POST_TOPIC_PER_PAGE, 
+		$POST_TOPIC_PER_PAGE,
+		$uid,
 		$subject_pattern,
-		$author
+		$author,
+		$author_type
 	);
 } catch (Exc_runtime $e)
-{
-	echo '<div style="clear: both;">' . $e->msg() . '</div>';
-	$error = true;
-}
+	{
+		echo '<div style="clear: both;">' . $e->msg() . '</div>';
+		$error = true;
+	}
 
 if (!$error)
 {
@@ -273,7 +265,6 @@ if (!$error)
 
 	foreach ($posts as $post)
 	{
-		$post = $post[0];
 		echo '<tr>';
 		foreach ($cols as $col)
 		{
@@ -293,10 +284,10 @@ if (!$error)
 	 */
 	function _make_page_link($text, $page)
 	{
-		global $post_type, $post_uid, $subject, $author;
+		global $type, $uid, $subject, $author;
 		return sprintf('<a href="%s" onclick="%s">%s</a>',
-			post_list_get_a_href($page, $post_type, $post_uid, $subject, $author),
-			post_list_get_a_onclick($page, $post_type, $post_uid, $subject, $author),
+			post_list_get_a_href($page, $type, $uid, $subject, $author),
+			post_list_get_a_onclick($page, $type, $uid, $subject, $author),
 			$text
 		);
 	}
@@ -332,19 +323,6 @@ EOF;
 	echo $db->get_query_amount() . ' database queries. ' . count($posts) . ' posts.';
 }
 
-$post_type_str = '';
-if (is_array($post_type))
-{
-	$post_type_str .= ', "type" : new Array(';
-	$first = TRUE;
-	foreach ($post_type as $type)
-	{
-		if (!$first)
-			$post_type_str .= ', ';
-		$post_type_str .= '"' . $type . '"';
-	}
-	$post_type_str .= ')';
-}
 ?>
 
 <script type="text/javascript">
@@ -358,22 +336,16 @@ function post_list_goto()
 	page = $("#post-list-goto-form input").val();
 	$.ajax({
 		"url" : "<?php t_get_link('ajax-post-list', NULL, FALSE, FALSE); ?>",
-		"type" : "post",
-		"cache" : false,
-		"data" : ({
-			"start_page" : page
+			"type" : "post",
+			"cache" : false,
+			"data" : ({
+				"start_page" : page
 <?php
-if (strlen($post_type_str))
-	echo $post_type_str;
-foreach (array('post_uid', 'subject', 'author') as $item)
-{
+foreach (array('uid', 'subject', 'author', 'type') as $item)
 	if (is_int($$item) || (is_string($$item) && strlen($$item)))
-	{
 		echo ', "' . $item . '" : "' . $$item . '"';
-	}
-}
 ?>
-		}),
+			}),
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
 			t.html(data);

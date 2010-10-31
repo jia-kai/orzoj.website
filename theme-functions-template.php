@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Thu Oct 28 10:32:12 2010 +0800
+ * $Date: Sat Oct 30 23:29:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -189,6 +189,7 @@ function tf_get_prob_html($pinfo)
 
 /**
  * get a post type selection list
+ * @return string
  */
 function tf_form_get_post_type_selector()
 {

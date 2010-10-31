@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: avatar.php
- * $Date: Mon Oct 11 12:01:47 2010 +0800
+ * $Date: Sun Oct 31 18:31:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,12 +34,15 @@ if (!defined('IN_ORZOJ'))
 function avatar_get_url($id)
 {
 	global $db, $DBOP;
+	static $avatar_cache = array();
+	if (isset($avatar_cache[$id]))
+		return $avatar_cache[$id];
 	$row = $db->select_from('user_avatars', 'file',
 		array($DBOP['='], 'id', $id));
 	if (count($row) != 1)
 		$row = 'default.gif';
 	else $row = $row[0]['file'];
-	return avatar_get_url_by_file($row);
+	return $avatar_cache[$id] = avatar_get_url_by_file($row);
 }
 
 /**
@@ -74,5 +77,23 @@ function avatar_list($offset = NULL, $cnt = NULL)
 	global $db;
 	return $db->select_from('user_avatars', NULL, NULL, array('id' => 'ASC'),
 		$offset, $cnt);
+}
+
+/**
+ * get avatar url by user id
+ * @param int $uid user id
+ * @return string the url
+ */
+function avatar_get_url_by_user_id($uid)
+{
+	global $db, $DBOP;
+	static $cache;
+	if (isset($cache[$uid]))
+		return $cache[$uid];
+	$aid = $db->select_from('users', 'aid', array($DBOP['='], 'id', $uid));
+	if (count($aid) != 1)
+		return avatar_get_url_by_file('default.gif');
+	$aid = $aid[0]['aid'];
+	return $cache[$uid] = avatar_get_url($aid);
 }
 

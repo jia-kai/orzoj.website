@@ -36,3 +36,7 @@ Statistics => 统计信息
 
 每题第一次通过前的提交次数： 同理
 
+limit the max length of nickname?
+
+the time2str function returns a too-long string..
+

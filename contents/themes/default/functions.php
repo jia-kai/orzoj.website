@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Thu Oct 28 20:06:35 2010 +0800
+ * $Date: Sat Oct 30 23:41:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -448,5 +448,14 @@ function _tf_form_generate_body($gen_func)
 function _tf_get_random_id()
 {
 	return 'i' . md5(uniqid(mt_rand(), TRUE));
+}
+
+
+/**
+ * get a post type selection list
+ * @return string
+ */
+function tf_form_get_post_type_selector()
+{
 }
 

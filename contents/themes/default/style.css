@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Fri Oct 29 22:58:58 2010 +0800
+ * $Date: Sun Oct 31 18:31:20 2010 +0800
 
  This file is part of orzoj
 
@@ -901,3 +901,48 @@ div.post-filter #filter-apply-button
 	padding: 2px 8px;
 }
 
+div#post-view-single-navigator-top
+{
+	font-size: 12px;
+	float: left;
+}
+
+div#post-view-single-stastic
+{
+	clear: both;
+	float: left;
+	margin-top: 10px;
+}
+
+
+div#post-view-single-stastic span
+{
+	color: blue;
+}
+
+div.posts-author
+{
+	width: 200px;
+}
+
+div.posts-avatar
+{
+	vertical-align: middle;
+}
+
+div.posts-avatar img
+{
+	max-width: 80px;
+	max-height: 80px;
+}
+
+div.posts-nickname
+{
+	clear: both;
+}
+
+div.posts-content
+{
+}
+
+div.posts-reply-a
