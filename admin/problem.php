@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Sun Oct 31 11:24:06 2010 +0800
+ * $Date: Mon Nov 01 11:07:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,15 +38,21 @@ require_once $includes_path . 'problem.php';
  *		[sort_col, sort_way]: string, int
  *			sort_way: 0: ASC; otherwise DESC
  *		[filter]: indicate a submission of the filter form
+ *
+ * SESSION prefix:
+ *		prob
+ *
  * SESSION variables:
  *		[code]:string, problem code
  *		[title]:string, problem title
  *		[gid]:int, problem group id
  *		[sort_col, sort_way]:string, int
+ *
  * POST arguments:
  *		[code, title, gid] used to set SESSION variables
  *		[pgnum]: int, page number (starting at 1)
  */
+$session_prefix = 'prob';
 
 if (isset($_GET['edit']))
 {
@@ -151,7 +157,9 @@ echo '</form>';
 if (session_get('gid') == 0)
 	session_set('gid', NULL);
 $where = _prob_get_list_make_where(session_get('gid'), transform_pattern(session_get('title')));
-db_where_add_and($where, array($DBOP['like'], 'code', transform_pattern(session_get('code'))));
+$code_pat = transform_pattern(session_get('code'));
+if (!empty($code_pat))
+	db_where_add_and($where, array($DBOP['like'], 'code', $code_pat));
 
 $rows = $db->select_from('problems', array_keys($fields), $where,
 	array($sort_col => $sort_way_str), $pgnum * PAGE_SIZE, PAGE_SIZE);

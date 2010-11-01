@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sun Oct 31 16:59:39 2010 +0800
+ * $Date: Sun Oct 31 21:55:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -550,7 +550,7 @@ if ($is_old_browser)
 	echo __('Your browser is out of date.Please upgrade your browser.If you insist on using your out-of-date browser,you can\'t get the best browsing experience.<br/>');
 	function _new_browser_a($brow,$downurl)
 	{
-		echo '<a href="'.$downurl.'" alt="" target="_blank" title="'.$brow.'"><img src="'._url('images/newbrowsers/'.$brow.'.png',TRUE),'"></a>';
+		echo '<a href="'.$downurl.'" alt="" target="_blank" title="'.$brow.'"><img src="'._url('images/newbrowsers/'.$brow.'.gif',TRUE),'"></a>';
 	}
 	echo __('As follows are some up-to-date browsers(In alphabet order).').'<Br/>';
 	_new_browser_a('chrome','http://www.google.com/chrome/');

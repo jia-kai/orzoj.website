@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sun Oct 31 11:27:17 2010 +0800
+ * $Date: Sun Oct 31 21:48:51 2010 +0800
 
  This file is part of orzoj
 
@@ -134,4 +134,26 @@ a[href]:hover
 	text-decoration: underline;
 }
 
+div.notice
+{
+	/*
+	 * TODO
+	 */
+}
+
+div.error
+{
+	/*
+	 * TODO
+	 */
+}
+
+div.warning
+{
+}
+
+div.form-field
+{
+	display: block;
+}
 

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sun Oct 31 18:39:57 2010 +0800
+ * $Date: Sun Oct 31 20:11:21 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -177,6 +177,7 @@ $tables = array(
 				// serialized array of (<field name> => <value>)
 				// e.g. array('time'=>'1s', 'memory'=>'256MB', 'desc'=>'...')
 				// see simple-doc.txt
+				// if the problem is deleted, this field is empty string
 			'perm' => array('type' => 'TEXT'), // permission
 			// serialized array (order, no_match, grp_allow, grp_deny),
 			// order = 0: allow, deny

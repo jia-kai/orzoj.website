@@ -9,3 +9,5 @@ how to user problem navigator?
 
 what do problem groups showing while you are viewing single problem mean:
 	only the basic groups a problem in is showed.
+
+explan time and memory limit

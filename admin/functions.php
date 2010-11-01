@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Sun Oct 31 11:05:18 2010 +0800
+ * $Date: Sun Oct 31 21:40:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -71,7 +71,7 @@ function admin_check_user_login()
 		return FALSE;
 	if (time() - $row[0]['time'] >= ADMIN_LOGIN_TIMEOUT)
 	{
-		$db->delete_item('user_admin_login', $where);
+		admin_user_logout();
 		return FALSE;
 	}
 	$db->update_data('user_admin_login', array('time' => time()), $where);
@@ -88,7 +88,7 @@ function admin_user_logout()
 	if (user_check_login())
 		$db->delete_item('user_admin_login', array(
 			$DBOP['='], 'uid', $user->id));
-	session_destroy();
+	session_clear();
 }
 
 /**
