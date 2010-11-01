@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Oct 30 21:20:11 2010 +0800
+ * $Date: Mon Nov 01 10:48:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -79,15 +79,21 @@ function _session_start()
 }
 
 /**
+ * prefix to be put before the session variable name
+ * an underscore(_) will be automatically appended
+ */
+$session_prefix = '';
+
+/**
  * set session with $table_prefix at the beginning of session name
  * @param string $name name of sesssion
  * @param string $value value of sesssion
  */
 function session_set($name, $value)
 {
-	global $table_prefix;
+	global $table_prefix, $session_prefix;
 	_session_start();
-	$_SESSION[$table_prefix . $name] = $value;
+	$_SESSION[$table_prefix . $session_prefix . '_' . $name] = $value;
 }
 
 /**
@@ -97,14 +103,23 @@ function session_set($name, $value)
  */
 function session_get($name)
 {
-	global $table_prefix;
+	global $table_prefix, $session_prefix;
 	_session_start();
-	$name = $table_prefix . $name;
+	$name = $table_prefix . $session_prefix . '_' . $name;
 	if (isset($_SESSION[$name]))
 		return $_SESSION[$name];
 	return NULL;
 }
 
+/**
+ * delete all sessions
+ * @return void
+ */
+function session_clear()
+{
+	_session_start();
+	session_destroy();
+}
 
 /**
  * translate HTML special chars and then change \n to &lt;br /&gt;
@@ -243,32 +258,30 @@ function xhtml_validate($text)
 {
 	try
 	{
-		$text = '<' . _XHTML_ROOT . '>' . $text . '</' . _XHTML_ROOT . '>';
 		global $_xhtml_error, $root_path;
+
+		$text = '<' . _XHTML_ROOT . '>' . $text . '</' . _XHTML_ROOT . '>';
+		$text = sprintf('<?xml version="1.0" standalone="no" ?>
+			<!DOCTYPE %s SYSTEM "%s">
+			', _XHTML_ROOT, 
+			$root_path . 'contents/' . _XHTML_ROOT . '.dtd') . $text;
 		$_xhtml_error = NULL;
 		set_error_handler('_xhtml_error_handler');
 
-		$old = new DOMDocument;
-		$old->loadXML($text);
+		$doc = new DOMDocument;
+		$doc->strictErrorChecking = FALSE;
+		// setting $new->strictErrorChecking to TRUE seems not to work on my system
 
-		$list = $old->getElementsByTagName(_XHTML_ROOT);
+		$doc->encoding = "utf-8";
+		$doc->validateOnParse = TRUE;
+		if (!$doc->loadXML($text, LIBXML_DTDVALID))
+			throw new Exc_xhtml(__('invalid document'));
+
+		$list = $doc->getElementsByTagName(_XHTML_ROOT);
 		if ($list->length > 1)
 			throw new Exc_xhtml(__('disallowed tag: %s', _XHTML_ROOT));
 
-		$creator = new DOMImplementation;
-		$doctype = $creator->createDocumentType(_XHTML_ROOT, NULL,
-			$root_path . 'contents/' . _XHTML_ROOT . '.dtd');
-		$new = $creator->createDocument(NULL, NULL, $doctype);
-		$new->encoding = "utf-8";
-
-		$new->strictErrorChecking = FALSE;
-		// setting $new->strictErrorChecking to TRUE seems not to work on my system
-
-		$new->appendChild($new->importNode($list->item(0), TRUE));
-
-		$new->validate();
-
-		$list = $old->getElementsByTagName('a');
+		$list = $doc->getElementsByTagName('a');
 		$str_js = 'javascript:';
 		for ($i = 0; $i < $list->length; $i ++)
 		{

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Nov 01 10:03:13 2010 +0800
+ * $Date: Mon Nov 01 11:18:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -133,13 +133,12 @@ function tf_form_get_rich_text_editor_data($editor_name)
 		throw new Exc_runtime(__('Hi buddy, something to say?'));
 	try
 	{
-		//xhtml_validate($_POST[$editor_name]);
+		xhtml_validate($_POST[$editor_name]);
 	} catch (Exc_xthml $e)
 	{
 		throw new Exc_runtime($e->msg);
 	}
 	return $_POST[$editor_name];
-
 }
 
 /**
@@ -350,6 +349,8 @@ function _make_view_by_group_link($id, $name)
  */
 function tf_get_prob_html($pinfo)
 {
+	if (empty($pinfo['desc']))
+		return __('Sorry, this problem has been deleted');
 	global $db, $DBOP;
 	$show_grp = function_exists('prob_view_by_group_get_a_href');
 	if ($show_grp)

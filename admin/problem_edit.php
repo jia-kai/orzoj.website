@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: Sun Oct 31 11:55:15 2010 +0800
+ * $Date: Mon Nov 01 11:08:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -40,11 +40,23 @@ if (!defined('IN_ORZOJ'))
  *			and verification code must be sent via $_POST['delete_verify']
  * POST arguments:
  *		those in the form
+ *		['delete_verify']: verification code for deleting a problem
+ *		['edit_verify']: verification code for adding/editing a problem
+ *
+ * SESSION prefix:
+ *		prob_edit
+ * 
+ * SESSION variables:
+ *		delete_verify, edit_verify
  */
 
-if (isset($_GET['delete']) && isset($_POST['pid']) && $_POST['delete_verify'] == session_get('delete_verify') &&
-	!empty(session_get('delete_verify')))
+$session_prefix = 'prob_edit';
+
+if (isset($_GET['delete']) && isset($_POST['pid']) &&
+	!empty($_POST['delete_verify']) && $_POST['delete_verify'] == session_get('delete_verify'))
+{
 	prob_delete(intval($_POST['pid']));
+}
 
 $fields = array(
 	// <column name> => <show function>
@@ -57,19 +69,126 @@ $fields = array(
 	'perm' => array('edit_perm', 'get_perm')
 );
 
-$pinfo = NULL;
-if (!empty($_GET['edit']))
+if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify'] == session_get('edit_verify'))
 {
-	$pinfo = $db->select_from('problems', array_keys($fields), array(
-		$DBOP['='], 'id', $_GET['edit']));
-	if (empty($pinfo))
-		die('no such problem');
-	else
-		$pinfo = $pinfo[0];
+	try
+	{
+		$pinfo = array();
+		foreach ($fields as $f)
+			if (is_array($f))
+				$f[1]();
+		if (empty($_GET['edit']))
+		{
+			$pid = $db->insert_into('problems', $pinfo);
+			$_GET['edit'] = $pid;
+			$cur_page_link  = "index.php?page=$cur_page&amp;edit=$pid";
+		}
+		else
+			if (!$db->update_data('problems', $pinfo, array($DBOP['='], 'id', $_GET['edit'])))
+				throw new Exc_runtime(__('no such problem #%d', $_GET['edit']));
+		echo '<div class="notice">' . __('Problem successfully added/updated') . '</div>';
+	}
+	catch (Exc_orzoj $e)
+	{
+		echo '<div class="error">' . __('Failed to add/updated problem: %s', htmlencode($e->msg())) . '</div>';
+	}
+}
+else
+{
+	$pinfo = NULL;
+	if (!empty($_GET['edit']))
+	{
+		$pinfo = $db->select_from('problems', array_keys($fields), array(
+			$DBOP['='], 'id', $_GET['edit']));
+		if (empty($pinfo))
+			die('no such problem');
+		else
+			$pinfo = $pinfo[0];
+		if (empty($pinfo['desc']))
+			echo '<div class="warning">' . __('This problem has been marked as being deleted') . '</div>';
+	}
 }
 
-echo "<form action='$cur_page_link&amp;do' method='post'>";
+echo "<form action='$cur_page_link&amp;do=1' method='post'>";
 foreach ($fields as $f)
-	$f[0]();
+{
+	if (is_array($f))
+		$f = $f[0];
+	$f();
+}
 echo '</form>';
+
+function _get_val(&$array, $key, $default = NULL)
+{
+	return isset($array[$key]) ? $array[$key] : $default;
+}
+
+function _make_form_input($prompt, $post_name, $default = NULL)
+{
+	$id = get_random_id();
+	if (is_null($default))
+		$default = '';
+	echo "<div class='form-field'>
+		<label for='$id'>$prompt</label><input type='text' name='$post_name' value='$default' id='$id' />
+		</div>";
+}
+
+function show_id()
+{
+	global $pinfo;
+	if (is_array($pinfo))
+		echo __('Problem id:') . $pinfo['id'];
+}
+
+function edit_code()
+{
+	global $pinfo;
+	_make_form_input(__('Problem code:'), 'title', is_array($pinfo) ? $pinfo['code'] : NULL);
+}
+
+function get_code()
+{
+}
+
+
+function edit_title()
+{
+	global $pinfo;
+	_make_form_input(__('Problem title:'), 'title', is_array($pinfo) ? $pinfo['title'] : NULL);
+}
+
+function get_title()
+{
+}
+
+function edit_desc()
+{
+	global $pinfo;
+	if (!is_null($pinfo) && !empty($pinfo['desc']))
+		$desc = unserialize($pinfo['desc']);
+	else
+		$desc = array();
+	_make_form_input(__('Time limit:'), 'desc[time]', _get_val($desc, 'time', __('1 second')));
+	_make_form_input(__('Memory limit:'), 'desc[memory]', _get_val($desc, 'memory', __('256 MB')));
+}
+
+function get_desc()
+{
+}
+
+function edit_io()
+{
+}
+
+function get_io()
+{
+}
+
+function edit_perm()
+{
+}
+
+function get_perm()
+{
+}
 

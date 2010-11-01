@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Nov 01 10:23:18 2010 +0800
+ * $Date: Mon Nov 01 11:33:17 2010 +0800
 
  This file is part of orzoj
 
@@ -16,6 +16,11 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * main styles
+ * {
  */
 body
 {
@@ -227,6 +232,122 @@ div.form-checker-result
 	color: red;
 }
 
+div.clearer
+{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	clear: both;
+}
+
+table.page-table
+{
+	clear: both;
+	border-collapse: collapse;
+	width: 100%;
+	margin: 0;
+	border: 0;
+	padding: 0;
+	margin-top: 20px;
+	text-align: center;
+}
+
+table.page-table tr, table.page-table th, table.page-table td
+{
+	border: 1px solid white;
+	padding: 3px;
+}
+
+tr.page-table-bgcolor1
+{
+	background-color: #2C253F;
+}
+
+tr.page-table-bgcolor2
+{
+	background-color: #0F0E28;
+}
+
+table.page-table tr:hover
+{
+	background-color: #39424B;
+}
+
+table.page-table th
+{
+	background-color: #070614;
+	color: #F0CC10;
+	text-decoration: none;
+}
+
+div#page a.status-ac:link, div#page a.status-ac:visited
+{
+	color: #F85D5D;
+}
+
+div#page a.status-wa:link, div#page a.status-wa:visited
+{
+	color: #96E718;
+}
+
+div#page a.status-ce:link, div#page a.status-ce:visited
+{
+	color: #FF04F4;
+}
+
+div#page a.status-ac:hover, div#page a.status-wa:hover, div#page a.status-ce:hover
+{
+	color: #1BF11A;
+	text-decoration: underline;
+}
+
+table.colorbox-table
+{
+	border-collapse: collapse;
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+
+table.colorbox-table tr, table.colorbox-table th, table.colorbox-table td
+{
+	border: 1px solid #C3C3C3;
+	padding: 3px;
+	text-align: center;
+}
+
+table.colorbox-table th
+{
+	background-color: #E5EECC;
+}
+
+table.colorbox-table tr:hover
+{
+	background-color: #E5EEFF;
+}
+
+#oldbrowser
+{
+	border-bottom: 1px solid #eb7429;   
+	background: #fc9453;   
+	padding: 10px 20px;   
+	position: absolute;   
+	top: 0;
+	left: 0;   
+	z-index: 2000;   
+	width: 100%;  
+}
+
+/*
+ * }
+ * main styles
+ */
+
+
+/*
+ * avatar styles
+ * {
+ */
 div#avatar-browser
 {
 	display: none;
@@ -291,13 +412,15 @@ div.avatar-browser-nav
 	font-size: 12px;
 }
 
-div.clearer
-{
-	margin: 0;
-	padding: 0;
-	border: 0;
-	clear: both;
-}
+/*
+ * }
+ * avatar styles
+ */
+
+/*
+ * gid selector styles
+ * {
+ */
 
 div#prob-grp-tree, div#gid-treeview
 {
@@ -328,6 +451,16 @@ div#gid-selector-grp-desc
 	clear: both;
 	float: left;
 }
+
+/*
+ * }
+ * gid selector styles
+ */
+
+/*
+ * problem styles
+ * {
+ */
 
 div#prob-grp-tree a:hover
 {
@@ -539,6 +672,16 @@ div.prob-view-box-title
 	text-align: center;
 }
 
+/*
+ * problem styles
+ * {
+ */
+
+/*
+ * status styles
+ * {
+ */
+
 div.status-filter
 {
 	float: left;
@@ -557,91 +700,15 @@ div.status-filter #filter-apply-button
 	padding: 2px 8px;
 }
 
-table.page-table
-{
-	clear: both;
-	border-collapse: collapse;
-	width: 100%;
-	margin: 0;
-	border: 0;
-	padding: 0;
-	margin-top: 20px;
-	text-align: center;
-}
+/*
+ * }
+ * status styles
+ */
 
-table.page-table tr, table.page-table th, table.page-table td
-{
-	border: 1px solid white;
-	padding: 3px;
-}
-
-tr.page-table-bgcolor1
-{
-	background-color: #2C253F;
-}
-
-tr.page-table-bgcolor2
-{
-	background-color: #0F0E28;
-}
-
-table.page-table tr:hover
-{
-	background-color: #39424B;
-}
-
-table.page-table th
-{
-	background-color: #070614;
-	color: #F0CC10;
-	text-decoration: none;
-}
-
-div#page a.status-ac:link, div#page a.status-ac:visited
-{
-	color: #F85D5D;
-}
-
-div#page a.status-wa:link, div#page a.status-wa:visited
-{
-	color: #96E718;
-}
-
-div#page a.status-ce:link, div#page a.status-ce:visited
-{
-	color: #FF04F4;
-}
-
-div#page a.status-ac:hover, div#page a.status-wa:hover, div#page a.status-ce:hover
-{
-	color: #1BF11A;
-	text-decoration: underline;
-}
-
-table.colorbox-table
-{
-	border-collapse: collapse;
-	margin: 0;
-	border: 0;
-	padding: 0;
-}
-
-table.colorbox-table tr, table.colorbox-table th, table.colorbox-table td
-{
-	border: 1px solid #C3C3C3;
-	padding: 3px;
-	text-align: center;
-}
-
-table.colorbox-table th
-{
-	background-color: #E5EECC;
-}
-
-table.colorbox-table tr:hover
-{
-	background-color: #E5EEFF;
-}
+/*
+ * record detail styles
+ * {
+ */
 
 div#record-detail
 {
@@ -676,6 +743,16 @@ form#goto-page-form
 	margin-left: 20px;
 }
 
+/*
+ * }
+ * record detail styles
+ */
+
+/*
+ * rank list styles
+ * {
+ */
+
 div#rank-list-table
 {
 }
@@ -699,6 +776,16 @@ div#rank-list-navigator-bottom
 	margin-right: 20px;
 	margin-top: 6px;
 }
+
+/*
+ * }
+ * rank list styles
+ */
+
+/*
+ * user info styles
+ * {
+ */
 
 div.user-info-page
 {
@@ -743,6 +830,15 @@ div.user-info-field-value td
 	text-align: left;
 }
 
+/*
+ * }
+ * user info styles
+ */
+
+/*
+ * contest styles
+ * {
+ */
 div.contest-list th
 {
 	min-width: 50px;
@@ -788,29 +884,6 @@ div.contest-nav input:hover
 	border: none;
 }
 
-div#post-tree
-{
-	background-color: transparent;
-	float: left;
-	text-align: left;
-}
-
-div#post-view-single-subject
-{
-	color: blue;
-	font-size: 30px;
-	font-weight: bold;
-}
-
-div#post-navigator button
-{
-	height: 30px;
-	font-size: 16px;
-	padding: 2px 2px;
-	float: left;
-}
-
-
 div.contest-description
 {
 	clear: both;
@@ -846,6 +919,38 @@ span.contest-countdown
 div.contest-view-content
 {
 	text-align: left;
+}
+
+/*
+ * }
+ * contest styles
+ */
+
+/*
+ * post styles
+ * {
+ */
+
+div#post-tree
+{
+	background-color: transparent;
+	float: left;
+	text-align: left;
+}
+
+div#post-view-single-subject
+{
+	color: blue;
+	font-size: 30px;
+	font-weight: bold;
+}
+
+div#post-navigator button
+{
+	height: 30px;
+	font-size: 16px;
+	padding: 2px 2px;
+	float: left;
 }
 
 span.post-reply-amount
@@ -1003,14 +1108,8 @@ table.post-reply-table
 {
 }
 
-#oldbrowser 
-{
-	border-bottom: 1px solid #eb7429;
-	background: #fc9453;
-	padding: 10px 20px;
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 2000;
-	width: 100%;
-}
+/*
+ * }
+ * post styles
+ */
+

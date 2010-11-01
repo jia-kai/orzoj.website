@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Sun Oct 31 11:58:44 2010 +0800
+ * $Date: Sun Oct 31 21:48:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -456,7 +456,9 @@ function prob_grp_get_name_desc_by_id($gid)
 }
 
 /**
- * delete a problem and related data
+ * delete a problem
+ * if the problem has no associated submissions, contests and posts, it will be deleted;
+ * otherwise it will be marked as deleted (set 'desc' to empty string)
  * !!! no permission verification performed in this function !!!
  * @param int $pid problem id
  * @return void
@@ -464,7 +466,7 @@ function prob_grp_get_name_desc_by_id($gid)
 function prob_delete($pid)
 {
 	global $db, $DBOP;
-	$where = array($DBOP['='], 'id', $pid);
-	// TODO
+	$db->update_data('problems', array('desc' => ''),
+		array($DBOP['='], 'id', $pid));
 }
 

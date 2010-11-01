@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: login.php
- * $Date: Sat Oct 30 19:31:52 2010 +0800
+ * $Date: Sun Oct 31 21:43:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,7 +34,7 @@ if (!defined('IN_ORZOJ'))
 	<link href="login_style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-<form action="<?php _url('index.php');?>" method="post">
+<form action="<?php _url('index.php');?>" method="post" target="_top">
 	<table class="login-form" >
 		<tr>
 			<td class="prompt"><?php echo __('Username:');?></td>
