@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Sun Oct 31 21:40:39 2010 +0800
+ * $Date: Mon Nov 01 21:47:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,29 +52,24 @@ function admin_check_user_login()
 	global $db, $DBOP, $user;
 	if (!user_check_login())
 		return FALSE;
-	$where = array($DBOP['='], 'uid', $user->id);
 	if (isset($_POST['admin-login-passwd']))
 	{
-		$db->delete_item('user_admin_login', $where);
 		$passwd_encr = $db->select_from('users', 'passwd', array($DBOP['='], 'id', $user->id));
 		$passwd_encr = $passwd_encr[0]['passwd'];
 		if (is_null(_user_check_passwd($user->username, $_POST['admin-login-passwd'], $passwd_encr)))
 			return FALSE;
-		$db->insert_into('user_admin_login', array(
-			'uid' => $user->id,
-			'time' => time()
-		));
+		session_set('login_time', time());
+		session_set('login_uid', $user->id);
 		return TRUE;
 	}
-	$row = $db->select_from('user_admin_login', 'time', $where);
-	if (empty($row))
+	if (is_null($time = session_get('login_time')) || is_null($uid = session_get('login_uid')))
 		return FALSE;
-	if (time() - $row[0]['time'] >= ADMIN_LOGIN_TIMEOUT)
+	if ($uid != $user->id || time() - $time >= ADMIN_LOGIN_TIMEOUT)
 	{
 		admin_user_logout();
 		return FALSE;
 	}
-	$db->update_data('user_admin_login', array('time' => time()), $where);
+	session_set('login_time', time());
 	return TRUE;
 }
 
@@ -84,11 +79,7 @@ function admin_check_user_login()
  */
 function admin_user_logout()
 {
-	global $user, $db, $DBOP;
-	if (user_check_login())
-		$db->delete_item('user_admin_login', array(
-			$DBOP['='], 'uid', $user->id));
-	session_clear();
+	session_clear('admin');
 }
 
 /**
@@ -118,16 +109,17 @@ function redirect_to_index()
 /**
  * @ignore
  */
-class _Pgid_tree_node
+class _Grp_tree_node
 {
-	var $name, $child;
+	var $name, $desc, $child;
 	function add_child($ch)
 	{
 		array_push($this->child, $ch);
 	}
-	function __construct($name)
+	function __construct($name = NULL, $desc = NULL)
 	{
 		$this->name = $name;
+		$this->desc = $desc;
 		$this->child = array();
 	}
 }
@@ -140,12 +132,17 @@ function &make_pgid_select_opt()
 {
 	global $db;
 	$rows = $db->select_from('prob_grps', array('id', 'pgid', 'name'));
-	$tree = array(new _Pgid_tree_node(__('All')));
+	$tree = array(new _Grp_tree_node(__('All')));
 	foreach ($rows as $row)
 	{
 		$gid = intval($row['id']);
 		$pgid = intval($row['pgid']);
-		$tree[$gid] = new _Pgid_tree_node($row['name']);
+		if (isset($tree[$gid]))
+			$tree[$gid]->name = $row['name'];
+		else
+			$tree[$gid] = new _Grp_tree_node($row['name']);
+		if (!isset($tree[$pgid]))
+			$tree[$pgid] = new _Grp_tree_node();
 		$tree[$pgid]->add_child($gid);
 	}
 	$opt = array();
@@ -189,5 +186,162 @@ function make_pgnum_nav($pgnum, $tot_page)
 	if ($t < $tot_page)
 		echo "<span> | <a href='$cur_page_link&amp;pgnum=$t'>" . __('Next') . '&gt;</a></span>';
 	echo '</div>';
+}
+
+/**
+ * get group id selector
+ * @param string $name selector name
+ * @param int $type selector type (0: user group; otherwise problem group)
+ * @param array|NULL $default items selected by default
+ * @param bool $direct_echo
+ * @return void|string
+ */
+function form_get_gid_selector($name, $type, $default = NULL, $direct_echo = TRUE)
+{
+	global $db;
+	$code = '<div class="gid-selector">';
+	$rows = $db->select_from($type ? 'prob_grps' : 'user_grps');
+	$tree = array();
+	foreach ($rows as $row)
+	{
+		$gid = intval($row['id']);
+		$pgid = intval($row['pgid']);
+		if (isset($tree[$gid]))
+		{
+			$tree[$gid]->name = $row['name'];
+			$tree[$gid]->desc = $row['desc'];
+		}
+		else
+			$tree[$gid] = new _Grp_tree_node($row['name'], $row['desc']);
+		if (!isset($tree[$pgid]))
+			$tree[$pgid] = new _Grp_tree_node();
+		$tree[$pgid]->add_child($gid);
+	}
+	$selected = array();
+	if (is_array($default))
+		foreach ($default as $f)
+			$selected[$f] = TRUE;
+	$name = 'gid_selector_' . $name . '[]';
+	_form_get_gid_selector_dfs($name, $code, $tree, 0, $selected);
+	$code .= '</div>';
+	if ($direct_echo)
+		echo $code;
+	else
+		return $code;
+}
+
+/**
+ * get gid selector value
+ * @param string $name selector id
+ * @return string
+ * @exception Exc_runtime
+ */
+function form_get_gid_selector_val($name)
+{
+	$name = 'gid_selector_' . $name;
+	if (!is_array($_POST[$name]))
+		throw new Exc_runtime(__('incomplete post'));
+	foreach ($_POST[$name] as &$v)
+		$v = intval($v);
+	return array_unique($_POST[$name]);
+}
+
+/**
+ * @ignore
+ */
+function _form_get_gid_selector_dfs(&$post_name, &$output, &$tree, $root, &$selected)
+{
+	$output .= '<ul>';
+	foreach ($tree[$root]->child as $ch)
+	{
+		$desc = $tree[$ch]->desc;
+		$name = $tree[$ch]->name;
+		if (isset($selected[$ch]))
+			$s = 'checked="checked"';
+		else
+			$s = '';
+		$id = get_unique_id();
+		$output .= "<li><input type='checkbox' id='$id' $s /><label for='$id' title='$desc'>$name</label></li>";
+		if (!empty($tree[$ch]->child))
+		{
+			$output .= '<li class="subtree">';
+			_form_get_gid_selector_dfs($post_name, $output, $tree, $ch, $selected);
+			$output .= '</li>';
+		}
+	}
+	$output .= '</ul>';
+}
+
+/**
+ * get an editor for editing problem/contest permission
+ * @param string $name the editor name to be used in form_get_perm_editor_val
+ * @param string|NULL $default default value
+ * @param bool $direct_echo whether to echo the HTML code or return it
+ * @return void|string
+ */
+function form_get_perm_editor($name, $default = NULL, $direct_echo = TRUE)
+{
+	$name = 'perm_editor_' . $name;
+	if (is_null($default))
+		$default = array(0, 1, array(), array());
+	else
+		$default = unserialize($default);
+	$code = form_get_select(__('Order:'), $name . '_order', array(__('Allow, deny') => 0, __('Deny, allow') => 1),
+		$default[0], FALSE) . '<br />';
+	$code .= form_get_select(__('What to do if no match:'), $name . '_no_match',
+		array(__('Allow') => 1, __('Deny') => 0),
+		$default[1], FALSE) . '<br />';
+
+	$code .= '<div style="clear: both; float: left">';
+	$code .= '<label>' . __('Allowed user groups:') . '</label><br />' .
+		form_get_gid_selector($name . '_allow', 0, $default[2], FALSE);
+	$code .= '</div><div style="float: left; margin-left: 10px;">';
+	$code .= '<label>' . __('Denied user groups:') . '</label><br />' .
+		form_get_gid_selector($name . '_deny', 0, $default[3], FALSE);
+	$code .= '</div>';
+	if ($direct_echo)
+		echo $code;
+	else
+		return $code;
+}
+
+/**
+ * get problem/contest permission editor value
+ * @param string $name editor name passed to form_get_perm_editor
+ * @return string the serialized value as described in /install/tables.php
+ * @exception Exc_runtime
+ */
+function form_get_perm_editor_val($name)
+{
+	$name = 'perm_editor_' . $name;
+
+}
+
+/**
+ * get a select element
+ * @param string $prompt
+ * @param string $post_name
+ * @param array $options in the format array(&lt;display name&rt; => &lt;option value&rt;)
+ * @param string $default the value of defaultly selected option
+ * @param bool $direct_echo
+ * @return string|void
+ */
+function form_get_select($prompt, $post_name, $options, $default = NULL, $direct_echo = TRUE)
+{
+	$id = get_unique_id();
+	$str = "<label for='$id'>$prompt</label>
+		<select name='$post_name' id='$id'>";
+	foreach ($options as $name => $value)
+	{
+		$str .= "<option value='$value' ";
+		if ($value == $default)
+			$str .= 'selected="selected"';
+		$str .= ">$name</option>";
+	}
+	$str .= "</select>";
+	if ($direct_echo)
+		echo $str;
+	else
+		return $str;
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sun Oct 31 11:20:22 2010 +0800
+ * $Date: Mon Nov 01 19:10:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -36,6 +36,7 @@ try
 	$admin_path = $root_path . 'admin/';
 	require_once $admin_path . 'functions.php';
 
+	session_add_prefix('admin');
 
 	define('ADMIN_LOGIN_TIMEOUT', 1800); // in seconds
 
@@ -64,13 +65,17 @@ try
 			$cur_page = $_GET['page'];
 			$cur_page_link="index.php?page=$cur_page";
 			$page = $admin_path . $page[1];
-			echo '
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>---</title>
-<link href="style.css" rel="stylesheet" type="text/css" />
-</head>';
+	<title>---</title>
+	<link href="style.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript"
+		src="<?php echo get_page_url($root_path . 'contents/editors/ckeditor/ckeditor.js');?>">
+	</script>
+</head>
+<?php
 			if ($_GET['page'] != 'nav')
 				echo '<body>';
 			require_once $page;

@@ -35,8 +35,8 @@ function _make_input($prompt, $post_name, $func_sufix, $page, $button_prompt = N
 	$prob_view_page = t_get_link('ajax-prob-view-' . $page, 
 		NULL,
 	   	TRUE, TRUE);
-	$id = get_random_id();
-	$form_id = get_random_id();
+	$id = get_unique_id();
+	$form_id = get_unique_id();
 	echo <<<EOF
 <tr>
 	<td>

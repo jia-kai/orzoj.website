@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Mon Nov 01 21:45:58 2010 +0800
+ * $Date: Mon Nov 01 21:51:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -208,7 +208,7 @@ function _make_goto_form()
 	static $cnt = 0;
 	$cnt ++;
 	$ID = 'posts-goto-form' . $cnt;
-	$id = get_random_id();
+	$id = get_unique_id();
 	$GoToPage = __('Go to page');
 ?>
 	<form action="#" class="posts-goto-form" id="<?php echo $ID; ?>" method="post" onsubmit="posts_goto(<?php echo $cnt; ?>); return false;">
@@ -381,3 +381,4 @@ $("#post-reply-form").bind("submit", function(){
 });
 </script>
 <?php }?>
+

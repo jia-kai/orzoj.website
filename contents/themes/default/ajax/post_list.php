@@ -118,7 +118,7 @@ function _make_input($prompt, $post_name)
 	if (isset($$post_name))
 		$default = $$post_name;
 	else $default = '';
-	$id = get_random_id();
+	$id = get_unique_id();
 	echo <<<EOF
 <div class="post-filter"><label for="$id">$prompt</label></div>
 <div class="post-filter"><input type="text" name="$post_name" id="$id" value="$default" /></div>
@@ -133,7 +133,7 @@ function _make_select($prompt, $post_name, $options)
 	if (is_string($type))
 		$default = $type;
 	else $default = '';
-	$id = get_random_id();
+	$id = get_unique_id();
 	echo <<<EOF
 <div class="post-filter"><label for="$id">$prompt</label></div>
 <div class="post-filter"><select id="$id" name="$post_name">
@@ -306,7 +306,7 @@ if (!$error)
 		return $ret;
 	}
 	echo _make_page_nav();
-	$id = get_random_id();
+	$id = get_unique_id();
 	$GoToPage = __('Go to page');
 	echo <<<EOF
 <form action="#" id="post-list-goto-form" method="post" onsubmit="post_list_goto(); return false;">

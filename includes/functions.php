@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Nov 01 10:48:33 2010 +0800
+ * $Date: Mon Nov 01 20:59:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -79,46 +79,66 @@ function _session_start()
 }
 
 /**
- * prefix to be put before the session variable name
- * an underscore(_) will be automatically appended
+ * @ignore
  */
-$session_prefix = '';
+$_session_prefix = $table_prefix;
 
 /**
- * set session with $table_prefix at the beginning of session name
+ * add the string to the current session prefix
+ * @param string $str
+ * @return void
+ */
+function session_add_prefix($str)
+{
+	global $_session_prefix;
+	$_session_prefix .= $str . '$';
+}
+
+/**
+ * set session with a given name
  * @param string $name name of sesssion
  * @param string $value value of sesssion
  */
 function session_set($name, $value)
 {
-	global $table_prefix, $session_prefix;
+	global $_session_prefix;
 	_session_start();
-	$_SESSION[$table_prefix . $session_prefix . '_' . $name] = $value;
+	$_SESSION[$_session_prefix . $name] = $value;
 }
 
 /**
  * get session value
- * @param string $name name of session, $table_prefix will be added at the beginning automatically
+ * @param string $name name of session
  * @return string|NULL the session value or NULL if no such session
  */
 function session_get($name)
 {
-	global $table_prefix, $session_prefix;
+	global $_session_prefix;
 	_session_start();
-	$name = $table_prefix . $session_prefix . '_' . $name;
+	$name = $_session_prefix . $name;
 	if (isset($_SESSION[$name]))
 		return $_SESSION[$name];
 	return NULL;
 }
 
 /**
- * delete all sessions
+ * delete all sessions with given prefix
+ * @param string|NULL $prefix the session prefix, or NULL indicating all sessions
  * @return void
  */
-function session_clear()
+function session_clear($prefix = NULL)
 {
+	global $table_prefix;
 	_session_start();
-	session_destroy();
+	if (is_null($prefix))
+		session_destroy();
+	else
+	{
+		$prefix = $table_prefix . $prefix . '$';
+		foreach ($_SESSION as $name => $val)
+			if (substr($name, 0, strlen($prefix)) == $prefix)
+				unset($_SESSION[$name]);
+	}
 }
 
 /**
@@ -129,6 +149,8 @@ function session_clear()
  */
 function htmlencode($text, $replace_space = FALSE)
 {
+	if (!is_string($text))
+		return $text;
 	$text = htmlspecialchars($text);
 	if ($replace_space)
 		$text = str_replace(' ', '&nbsp;', $text);
@@ -555,5 +577,33 @@ function transform_pattern($tp)
 function get_random_id()
 {
 	return 'i' . md5(uniqid(mt_rand(), TRUE));
+}
+
+/**
+ * get a id which contains only letters and digits, and begins with a letter, and is unique
+ * during the execution of the script
+ */
+function get_unique_id()
+{
+	static $id = 0;
+	return 'ud' . ($id ++);
+}
+
+/**
+ * get a string containig chars from $low to $high
+ * @param string $low
+ * @param string $high
+ * @return string
+ */
+function str_range($low, $high)
+{
+	if (!is_string($low) || !is_string($high))
+		return NULL;
+	$low = $low[0];
+	$high = $high[0];
+	$ret = '';
+	while ($low <= $high)
+		$ret .= $low ++;
+	return $ret;
 }
 

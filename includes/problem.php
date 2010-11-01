@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Sun Oct 31 21:48:13 2010 +0800
+ * $Date: Mon Nov 01 17:36:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -468,5 +468,23 @@ function prob_delete($pid)
 	global $db, $DBOP;
 	$db->update_data('problems', array('desc' => ''),
 		array($DBOP['='], 'id', $pid));
+}
+
+/**
+ * check whether the problem code is valid
+ * @param string $code problem code
+ * @return void
+ * @exception Exc_runtime on error
+ */
+function prob_validate_code($code)
+{
+	static $charset = NULL;
+	if (is_null($charset))
+		$charset = str_range('a', 'z') . str_range('A', 'Z') . str_range('0', '9') .
+			'!@#$%&()-_+=[]{}';
+	for ($i = 0; $i < strlen($code); $i ++)
+		if (strpos($charset, $code[$i]) === FALSE)
+			throw new Exc_runtime(__('invalid character in problem code (char "%s", #%d)', $code[$i],
+				ord($code[$i])));
 }
 

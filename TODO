@@ -28,6 +28,14 @@ how about changing all recursive functions to manual stack?
 
 is pomo still being used?
 
+通过次数 => 通过提交数
+
+Statistics => 统计信息
+
+每个用户在第一次通过前提交的次数 => 每个用户第一次通过前(含)的提交次数之和：
+
+每题第一次通过前的提交次数： 同理
+
 limit the max length of nickname?
 
 the time2str function returns a too-long string..
@@ -36,3 +44,4 @@ add index.html
 
 add some default expressions to the rich text editor.
 
+输入格式：  => 冒号哪儿来的?

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Mon Nov 01 11:07:02 2010 +0800
+ * $Date: Mon Nov 01 18:47:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,13 +52,13 @@ require_once $includes_path . 'problem.php';
  *		[code, title, gid] used to set SESSION variables
  *		[pgnum]: int, page number (starting at 1)
  */
-$session_prefix = 'prob';
+session_add_prefix('prob');
 
 if (isset($_GET['edit']))
 {
 	$cur_page_link = "$cur_page_link&amp;edit=$_GET[edit]";
 	require_once $admin_path . 'problem_edit.php';
-	die;
+	return;
 }
 
 define('PAGE_SIZE', 50);
@@ -120,7 +120,7 @@ else
 
 function make_form_input($prompt, $post_name)
 {
-	$id = get_random_id();
+	$id = get_unique_id();
 	$value = session_get($post_name);
 	if (!is_null($value))
 		$value = " value='$value' ";
@@ -129,7 +129,7 @@ function make_form_input($prompt, $post_name)
 
 function make_form_select($prompt, $post_name, &$options)
 {
-	$id = get_random_id();
+	$id = get_unique_id();
 	echo "<span><label for='$id'>$prompt</label><select id='$id' name='$post_name'>";
 	$default = session_get($post_name);
 	foreach ($options as $value)
@@ -144,7 +144,7 @@ function make_form_select($prompt, $post_name, &$options)
 	echo '</select></span>';
 }
 
-echo "<div><a href='$cur_page_link&amp;edit=0'>" . __('Add New Problem') . '</a></div>';
+echo "<div><a href='$cur_page_link&amp;edit=0'><button>" . __('Add New Problem') . '</button></a></div>';
 
 echo "<form action='$cur_page_link&amp;filter=1' method='post' class='filter-form'>";
 echo '<span><a title="' . __('you can enter patterns with * and ?') . '">' . __('Search problem:') . '</a></span>';

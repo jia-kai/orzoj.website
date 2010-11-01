@@ -109,7 +109,7 @@ function _make_input($prompt, $post_name)
 	if (isset($_POST['filter'][$post_name]))
 		$default = $_POST['filter'][$post_name];
 	else $default = '';
-	$id = get_random_id();
+	$id = get_unique_id();
 	echo <<<EOF
 <div class="status-filter">
 <label for="$id">$prompt</label>
@@ -125,7 +125,7 @@ function _make_select($prompt, $post_name, $options)
 	if (isset($_POST['filter'][$post_name]))
 		$default = $_POST['filter'][$post_name];
 	else $default = '';
-	$id = get_random_id();
+	$id = get_unique_id();
 	echo <<<EOF
 <div class="status-filter">
 <label for="$id">$prompt</label>
@@ -151,7 +151,7 @@ function _make_checkbox($prompt, $post_name)
 	if (isset($_POST['filter'][$post_name]))
 		$default = ' checked="checked" ';
 	else $default = '';
-	$id = get_random_id();
+	$id = get_unique_id();
 	echo <<<EOF
 <div class="status-filter">
 <label for="$id">$prompt</label>

@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sun Oct 31 21:48:51 2010 +0800
+ * $Date: Mon Nov 01 20:42:36 2010 +0800
 
  This file is part of orzoj
 
@@ -28,6 +28,10 @@ input[type="text"], input[type="password"], textarea
 {
 	border: 1px solid black;
 	margin: 2px;
+}
+
+input[type="text"], input[type="password"]
+{
 	height: 16px;
 	width: 150px;
 }
@@ -155,5 +159,43 @@ div.warning
 div.form-field
 {
 	display: block;
+}
+
+div.form-field label
+{
+	clear: both;
+	float: left;
+	width: 250px;
+}
+
+div.form-field textarea.big
+{
+	width: 600px;
+	height: 370px;
+}
+
+div.form-field textarea.small
+{
+	width: 600px;
+	height: 5em;
+}
+
+div.gid-selector
+{
+	max-width: 300px;
+	max-height: 300px;
+	border: 1px solid green;
+	overflow: auto;
+}
+
+div.gid-selector label, div.gid-selector input
+{
+	width: auto;
+	float: none;
+}
+
+div.gid-selector li.subtree
+{
+	list-style-type: none;
 }
 
