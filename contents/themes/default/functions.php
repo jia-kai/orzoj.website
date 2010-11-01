@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sun Oct 31 18:40:10 2010 +0800
+ * $Date: Mon Nov 01 09:30:15 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -80,9 +80,8 @@ EOF;
  */
 function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
 {
-	if (is_null($default))
+	if (!is_string($default))
 		$default = '';
-	else $default = htmlencode($default);
 	$id = get_random_id();
 	return "<tr><td><label for=\"$id\">$prompt</label></td><td>
 		<textarea name=\"$post_name\" id=\"$id\">$default</textarea>
@@ -97,19 +96,50 @@ function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
  * @return string the HTML code
  * @see tf_form_get_editor_data
  */
+
+require_once $root_path . 'contents/editors/ckeditor/ckeditor.php';
+
 function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
 {
-	return "<tr><td></td><td>this is an editor</td></tr>";
+	if (!is_string($default))
+		$default = '';
+	$id = get_random_id();
+	$CKEditor = new CKEditor();
+	$CKEditor->returnOutput = TRUE;
+	$CKEditor->config['toolbar'] = array(
+		array('Source', '-', 'Undo', 'Redo'),
+		array('Image', 'Flash', 'Table', 'Link', 'Unlink'),
+		array('JustifyLeft','JustifyCenter','JustifyRight', 'Subscript','Superscript','Outdent','Indent'),
+		array('Font', 'FontSize', 'TextColor', 'Bold', 'Italic', '-', 'About')
+	);
+	$ckeditor = $CKEditor->editor($editor_name, $default);
+	return "<tr><td><label for=\"$id\">$prompt</label></td><td>
+		$ckeditor
+			</td></tr>";
 }
 
 /**
  * get the data (HTML code) from the rich text editor
  * @param string $editor_name editor name
  * @return string the HTML encoded data
+ * @exception Exc_runtime
  * @see tf_form_get_rich_text_editor
  */
 function tf_form_get_rich_text_editor_data($editor_name)
 {
+	if (!isset($_POST[$editor_name]))
+		throw new Exc_runtime(__('Imcomplete POST'));
+	if (!strlen($_POST[$editor_name]))
+		throw new Exc_runtime(__('Hi buddy, something to say?'));
+	try
+	{
+		xhtml_validate($_POST[$editor_name]);
+	} catch (Exc_xthml $e)
+	{
+		throw new Exc_runtime($e->msg);
+	}
+	return $_POST[$editor_name];
+
 }
 
 /**
@@ -213,7 +243,7 @@ function tf_form_get_source_editor($prompt, $name, $default = NULL)
 function tf_form_get_source_editor_data($name)
 {
 	if (!isset($_POST[$name]))
-		throw new Exc_runtime(__('imcomplete post'));
+		throw new Exc_runtime(__('Imcomplete post'));
 	if (!strlen($_POST[$name]))
 		throw new Exc_runtime(__('Hi buddy, source please?'));
 	return $_POST[$name];
@@ -446,7 +476,24 @@ function _tf_form_generate_body($gen_func)
  * get a post type selection list
  * @return string
  */
-function tf_form_get_post_type_selector()
+function tf_form_get_post_type_selector($prompt, $post_name, $default = NULL)
 {
+	global $POST_TYPE_DISP;
+	$options = array();
+	foreach ($POST_TYPE_DISP as $val => $disp)
+		$options[$disp] = $val;
+	$id = get_random_id();
+	$str = "<tr><td><label for=\"$id\">$prompt</label></td>
+		<td><select name=\"$post_name\" id=\"$id\">";
+	foreach ($options as $name => $value)
+	{
+		$str .= "<option value=\"$value\" ";
+		if ($value == $default)
+			$str .= 'selected="selected"';
+		$str .= ">$name</option>\n";
+	}
+	$str .= "</select></td></tr>\n";
+	return $str;
+
 }
 

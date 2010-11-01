@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Sun Oct 31 14:27:05 2010 +0800
+ * $Date: Sun Oct 31 20:05:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -229,11 +229,10 @@ $cols = array(
 	array(__('Last reply'), '_cv_last_replay')
 );
 
-$error = false;
+$error = FALSE;
 try
 {
-	$author_type = array('nickname', 'username');
-	$total_page = ceil(post_get_topic_amount($type, $uid, $subject_pattern, $author, $author_type) / $POST_TOPIC_PER_PAGE);
+	$total_page = ceil(post_get_topic_amount($type, $uid, $subject_pattern, $author) / $POST_TOPIC_PER_PAGE);
 	if ($start_page < 1) $start_page = 1;
 	if ($start_page > $total_page) $start_page = $total_page;
 
@@ -244,13 +243,12 @@ try
 		$POST_TOPIC_PER_PAGE,
 		$uid,
 		$subject_pattern,
-		$author,
-		$author_type
+		$author
 	);
 } catch (Exc_runtime $e)
 	{
 		echo '<div style="clear: both;">' . $e->msg() . '</div>';
-		$error = true;
+		$error = TRUE;
 	}
 
 if (!$error)

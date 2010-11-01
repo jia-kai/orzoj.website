@@ -15,7 +15,9 @@ for ($i = 0; $i < $N_POSTS; $i ++)
 	$time = $i + time();
 	$uid = rand(1, 10);
 	$subject = 'subject ' . $i;
-	$content = 'content ' . $i;
+	$content = '';
+	for ($j = 0; $j < rand(30, 50); $j ++)
+		$content .= 'content ' . $i;
 	$db->insert_into('posts',
 		array(
 			'time' => $time,

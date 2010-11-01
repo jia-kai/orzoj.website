@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Sun Oct 31 18:45:32 2010 +0800
+ * $Date: Mon Nov 01 09:30:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -55,6 +55,7 @@ foreach ($POST_TYPE_SET as $val)
 unset($tmp);
 
 $POST_TOPIC_ATTRIB_SET = array('is_top', 'is_locked', 'is_boutique');
+
 $POST_PRIORITY = array('is_top' => 5, 'normal' => 0);
 
 $AUTHOR_TYPE_SET = array('username');
@@ -110,7 +111,6 @@ function post_add_topic($prob_id = 0)
 	$db->insert_into('posts', array(
 		'time' => $time, 'uid' => $user->id,
 		'tid' => $topic_id,
-		'subject' => $subject,
 		'content' => $content
 		));
 	return $topic_id;
@@ -119,7 +119,7 @@ function post_add_topic($prob_id = 0)
 /**
  * @ignore
  */
-function _post_get_topic_list_build_where($type, $uid, $subject, $author, $author_type, $attrib)
+function _post_get_topic_list_build_where($type, $uid, $subject, $author, $attrib)
 {
 	global $DBOP, $POST_TYPE_SET, $POST_TYPE_TO_NUM, $AUTHOR_TYPE_SET, $POST_TOPIC_ATTRIB_SET;
 	$where = NULL;
@@ -133,37 +133,10 @@ function _post_get_topic_list_build_where($type, $uid, $subject, $author, $autho
 		db_where_add_and($where, array($DBOP['='], 'uid', $uid));
 	} else if (is_string($author) && strlen($author))
 	{
-		$flag = false;
-		if (!is_array($author_type))
-			$author_type = $AUTHOR_TYPE_SET;
-		else $author_type = array_intersect($author_type, $AUTHOR_TYPE_SET);
-		if ($count_author_type = count($author_type))
-		{
-			$user_where = NULL;
-			foreach ($author_type as $type)
-			{
-				$func = 'user_get_id_by_' . $type;
-				if ($id = $func($author))
-				{
-					$flag = true;
-					db_where_add_or($user_where, array($DBOP['='], 'uid', $id));
-				}
-			}
-			if (!$flag)
-			{
-				$tmp = array();
-				foreach ($author_type as $t)
-					$tmp[] = $t;
-				if ($count_author_type == 1)
-					$msg = __('No such user whose %s is %s!', $tmp[0], $author);
-				else if ($count_author_type == 2)
-					$msg = __('No such user whose %s or %s is %s!', $tmp[0], $tmp[1], $author);
-				else if ($count_author_type == 3)
-					$msg = __('No such user whose %s, %s or %s is %s!', $tmp[0], $tmp[1], $tmp[2], $author);
-				throw new Exc_runtime($msg);
-			}
-			db_where_add_and($where, $user_where);
-		}
+		$author_id = user_get_id_by_username($author);
+		if ($author_id === NULL)
+			throw new Exc_runtime(__('No such user whose %s is %s!', $tmp[0], $author));
+		db_where_add_add($where, array($DBOP['='], 'uid', $author_id));
 	}
 
 	if (is_string($subject) && strlen($subject))
@@ -243,11 +216,10 @@ function _deal_addtional_fields_end(&$fields, $ID_SET, &$additional_fields, &$li
  * @param int|NULL $uid NULL ALL of the users, or int a specific user
  * @param string|NULL $subject the pattern the subject of topics is to be matched. the pattern should be a database-recognizable pattern, or a human-readable pattern transformed by includes/functions.php : transform_pattern
  * @param string|NULL $author the author of topic. if $uid is set, this option will not work
- * @param array|NULL $author_type array contains 'nickname', 'username' or 'realname', specifies the type of author to be matched. NULL means ALL
  * @param array|NULL $attrib valid attributes : array('is_top' => BOOL, 'is_locked' => BOOL), if set more than one, they will all to be matched
  * @exception Exc_runtime if user does not exists
  */
-function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $subject = NULL, $author = NULL, $author_type = NULL, $attrib = NULL)
+function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $subject = NULL, $author = NULL, $attrib = NULL)
 {
 	global $db, $DBOP, $POST_TOPIC_FIELDS_SET, $POST_TOPIC_USER_ID_SET, $POST_USER_NAME_SET;
 	$fields = array_intersect($fields, $POST_TOPIC_FIELDS_SET);
@@ -257,7 +229,7 @@ function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $coun
 	// additional fields
 	$additional_fields = _deal_addtional_fields_start($fields, $POST_TOPIC_USER_ID_SET);
 
-	$where = _post_get_topic_list_build_where($type, $uid, $subject, $author, $author_type, $attrib);
+	$where = _post_get_topic_list_build_where($type, $uid, $subject, $author, $attrib);
 
 	$order_by = array('priority' => 'DESC', 'last_reply_time' => 'DESC');
 
@@ -272,10 +244,10 @@ function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $coun
  * get amount of topic in a specific limitation
  * @see post_get_topic_list
  */
-function post_get_topic_amount($type = NULL, $uid = NULL, $subject = NULL, $author = NULL, $author_type = NULL, $attrib = NULL)
+function post_get_topic_amount($type = NULL, $uid = NULL, $subject = NULL, $author = NULL, $attrib = NULL)
 {
 	global $db;
-	$where = _post_get_topic_list_build_where($type, $uid, $subject, $author, $author_type, $attrib);
+	$where = _post_get_topic_list_build_where($type, $uid, $subject, $author, $attrib);
 	return $db->get_number_of_rows('post_topics', $where);
 }
 
@@ -312,12 +284,23 @@ function post_del_topic($id)
 {
 }
 
-
 /**
- *
+ * set topic attributes, see $POST_TOPIC_ATTRIB_SET
+ * @param int $id post topic id
+ * @param string $attrib attributes, @see $POST_TOPIC_ATTRIB_SET
+ * @param bool $status TRUE or FALSE
+ * @return bool TRUE if succeed, or FALSE if failed.
  */
-function post_set_topic_top_status($id, $status = TRUE)
+function post_topic_set_attrib($id, $attrib, $status = TRUE)
 {
+	global $db, $DBOP, $POST_TOPIC_ATTRIB_SET;
+	if (array_search($attrib, $POST_TOPIC_ATTRIB_SET) === FALSE)
+		return FALSE;
+	if (!is_bool($status))
+		return FALSE;
+	$db->update_data('post_topics', array($attrib => $status),
+		array($DBOP['='], 'id', $id));
+	return TRUE;
 }
 
 /**
@@ -347,7 +330,9 @@ function post_get_post_list($tid, $fields = NULL, $offset = NULL, $count = NULL,
 
 	$where = array($DBOP['='], 'tid', $tid);
 
-	$order_by = array('time' => ($order == 'DESC' ? 'DESC' : 'ASC'));
+	$order = ($order == 'DESC' ? 'DESC' : 'ASC');
+	$order_by = array('time' => $order, 'id' => $order);
+
 
 	$list = $db->select_from('posts', $fields, $where, $order_by, $offset, $count);
 
@@ -385,5 +370,66 @@ function post_modify_post()
  */
 function _post_is_topic_post($id)
 {
+}
+
+/**
+ * get post reply form, the user must be logined
+ * @param int $tid topic id
+ * @exception Exc_runtime throw when user is not logined.
+ * @return void
+ */
+function post_reply_get_form($tid)
+{
+	global $user;
+	$s = tf_form_get_hidden('post_reply_tid', $tid);
+	if (!user_check_login())
+		throw new Exc_runtime(__('You must be logined to reply.'));
+	$s .= tf_form_get_hidden('post_reply_uid', $user->id);
+	$s .= tf_form_get_rich_text_editor(__('Content:'), 'post_reply_content');
+	
+	echo filter_apply('after_post_reply_form', $s);
+}
+
+/**
+ * parse posted data and reply the topic
+ * @exception Exc_runtime throw when something is wrong
+ * @return void
+ */
+function post_reply()
+{
+	global $db, $DBOP;
+	if (!user_check_login())
+		throw new Exc_runtime(__('You must be logined to reply.'));
+	filter_apply_no_iter('before_post_reply');
+	if (!isset($_POST['post_reply_tid']) || !isset($_POST['post_reply_uid']))
+		throw new Exc_runtime(__('Incomplete POST.'));
+
+	$tid = $_POST['post_reply_tid'];
+	$uid = $_POST['post_reply_uid'];
+
+	$content = tf_form_get_rich_text_editor_data('post_reply_content');
+
+	$time = time();
+	for($len = strlen($content); $len > 0; $len -= POST_CONTENT_LEN_MAX)
+	{
+		$db->insert_into('posts', 
+			array('time' => $time,
+			'uid' => $uid,
+			'tid' => $tid,
+			'content' => $content
+			)
+		);
+		if ($len > POST_CONTENT_LEN_MAX)
+			$content = substr($content, POST_CONTENT_LEN_MAX);
+	}
+	$where = array($DBOP['='], 'id', $tid);
+	$nrep = $db->select_from('post_topics', 'reply_amount', $where);
+	$nrep = $nrep[0]['reply_amount'];
+	$db->update_data('post_topics',
+		array('reply_amount' => $nrep + 1,
+			'last_reply_time' => $time,
+			'last_reply_user' => $uid
+		), $where
+	);
 }
 

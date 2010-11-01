@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_func.php
- * $Date: Sun Oct 31 16:04:08 2010 +0800
+ * $Date: Mon Nov 01 00:20:19 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -78,7 +78,7 @@ function post_list_get_a_onclick($start_page, $type, $uid, $subject, $author)
 /**
  * @ignore
  */
-function post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $type, $uid, $subject, $author)
+function post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $type, $uid, $subject, $author, $action = NULL)
 {
 	global $POST_TYPE_SET;
 	$s = '';
@@ -106,6 +106,9 @@ function post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $ty
 
 	if (is_string($author) && strlen($author))
 		$s .= "|post_list_author=$author";
+	
+	if (is_string($action) && strlen($action))
+		$s .= "|action=$action";
 
 	return $s;
 }

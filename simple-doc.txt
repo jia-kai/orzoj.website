@@ -43,7 +43,7 @@
 |	|	|--	team_images/	team images
 |	|	|--	...
 |	|--	lang/			.mo files for various languages
-|   |   |--<lang_name>/	language name e.g. zh_CN, en_US
+|	|	|--<lang_name>/	language name e.g. zh_CN, en_US
 |	|		|-- *.mo
 |	|--	editors/		system-wide editors (shared by themes)
 |	|--	highlighters/	system-wide syntax highlighters

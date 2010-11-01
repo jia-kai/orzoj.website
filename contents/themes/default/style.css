@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sun Oct 31 18:34:06 2010 +0800
+ * $Date: Sun Oct 31 20:10:17 2010 +0800
 
  This file is part of orzoj
 
@@ -907,31 +907,65 @@ div#post-view-single-navigator-top
 	float: left;
 }
 
-div#post-view-single-stastic
+div#post-view-single-statistic
 {
 	clear: both;
 	float: left;
 	margin-top: 10px;
 }
 
-
-div#post-view-single-stastic span
+div#post-view-single-statistic span
 {
 	color: blue;
 }
 
+div#posts-view-single-content
+{
+	clear: both;
+	margin-bottom: 100px;
+}
+
+div#post-subject
+{
+	font-size: 30px;
+	color: blue;
+	font-weight: bold;
+}
+
+table.posts-table
+{
+	clear: both;
+	width: 100%;
+	border: 1px solid #eb7429;
+	margin: 0;
+	border: 0;
+	padding: 0;
+	margin-top: 20px;
+	text-align: left;
+}
+
+table.posts-table th
+{
+	background-color: #203089;
+}
+
 div.posts-author
 {
-	width: 200px;
+}
+
+div.floor
+{
+	text-align: right;
 }
 
 div.posts-avatar
 {
-	vertical-align: middle;
 }
 
 div.posts-avatar img
 {
+	clear: both;
+	text-align: center;
 	max-width: 80px;
 	max-height: 80px;
 }
@@ -943,19 +977,39 @@ div.posts-nickname
 
 div.posts-content
 {
+	text-align: left;
+	margin: 5px;
 }
 
 div.posts-reply-a
 {
+	text-align: right;
+	text-decoration: underline;
 }
 
-#oldbrowser {   
-border-bottom:1px solid #eb7429;   
-background:#fc9453;   
-padding:10px 20px;   
-position:fixed;   
-top:0;   
-left:0;   
-z-index:2000;   
-width:100%;  
+.posts-table-color-even
+{
+	background-color: #101030;
+}
+
+.posts-table-color-odd
+{
+	background-color: #202050;
+}
+
+
+table.post-reply-table
+{
+}
+
+#oldbrowser 
+{
+	border-bottom: 1px solid #eb7429;
+	background: #fc9453;
+	padding: 10px 20px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 2000;
+	width: 100%;
 }

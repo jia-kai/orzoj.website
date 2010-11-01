@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Tue Oct 26 14:26:00 2010 +0800
+ * $Date: Mon Nov 01 00:24:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -40,6 +40,7 @@ function submit_src_get_form($pid)
 {
 	global $db, $user;
 	if (!user_check_login())
+		throw new Exc_runtime(__('You must be logined to sumbit source.'));
 	$plang = array();
 	foreach ($db->select_from('plang') as $row)
 		$plang[$row['name']] = $row['id'];
