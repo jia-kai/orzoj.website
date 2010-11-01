@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Mon Nov 01 09:24:12 2010 +0800
+ * $Date: Mon Nov 01 11:27:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -41,6 +41,7 @@ if (!defined('IN_ORZOJ'))
  * POST:
  *		content: string
  *			reply content
+ *		start_page: int
  */
 
 require_once $theme_path . 'post_func.php';
@@ -50,7 +51,7 @@ $POSTS_PER_PAGE = 20;
 
 $start_page = 1;
 $tid = NULL;
-$post_list_args = array('start_page', 'type', 'uid', 'subject', 'author', 'additional');
+$post_list_args = array('start_page', 'type', 'uid', 'subject', 'author', 'action');
 foreach ($post_list_args as $arg)
 {
 	$name = 'post_list_' . $arg;
@@ -111,6 +112,11 @@ if ($action == 'submit')
 	}
 }
 
+if (isset($_POST['start_page']))
+{
+	$start_page = intval($_POST['start_page']);
+}
+
 ?>
 
 <div id="post-view-single-navigator-top">
@@ -145,6 +151,57 @@ $topic = post_get_topic($tid);
 <div id="post-view-single-statistic">
 <?php echo __('Total posts: <span>%d</span>', $total_post); ?>
 </div>
+<?php
+/**
+ * @ignore
+ */
+function _make_page_link($text, $page)
+{
+	global $tid,  $post_list_start_page, $post_list_type;
+	global $post_list_uid, $post_list_subject, $post_list_author;
+	return sprintf('<a href="%s" onclick="%s">%s</a>',
+		post_view_single_get_a_href($tid, $page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author),
+		post_view_single_get_a_onclick($tid, $page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author),
+		$text
+		);
+}
+
+/**
+ * @ignore
+ */
+function _make_page_nav()
+{
+	global $start_page, $total_page;
+	$ret = '';
+	if ($start_page > 1)
+		$ret .= '&lt;' . _make_page_link(__('Prev'), $start_page - 1);
+	if ($start_page < $total_page)
+		$ret .= ($start_page > 1 ? ' | ' : '') . _make_page_link(__('Next') . '&gt;', $start_page + 1);
+	return $ret;
+}
+
+/**
+ * @ignore
+ */
+function _make_goto_form()
+{
+	global $start_page;
+	$id = get_random_id();
+	$GoToPage = __('Go to page');
+?>
+<form action="#" id="posts-goto-form" method="post" onsubmit="posts_goto(); return false;">
+<label for="<?php echo $id;?>" style="float: left"><?php echo $GoToPage; ?></label>
+<input value="<?php echo $start_page; ?>" name="goto_page" id="<?php echo $id; ?>" style="float: left; width: 30px" type="text" />
+</form>
+<?php
+}
+?>
+<div class="posts-nav">
+<?php 
+echo _make_page_nav(); 
+_make_goto_form();
+?>
+</div>
 <div style="clear: both;">
 <div id="post-subject"><?php echo $topic['subject']; ?></div>
 <table class="posts-table">
@@ -168,7 +225,7 @@ foreach ($posts as $post)
 		$Reply_href = '<div class="posts-reply-a"><a href="#rep" onclick="append_reply(' . $floor. '); return false;">' . __('Reply') . '</div>';
 	echo <<<EOF
 <tr>
-	<td>
+	<td valign="top">
 		<div class="posts-author">
 			<div class="posts-avatar"><img src="$avatar_url" alt="$avatar_alt" /></div>
 			<div class="posts-nickname"><a href="$nickname_url">$nickname_uid</a></div>
@@ -197,7 +254,8 @@ EOF;
 <input id="post-reply-submit-button" type="submit" value="<?php echo __('Submit')?>" />
 <?php // TODO checkcode? ?>
 </form>
-<?php }?>
+<?php }
+?>
 
 </div>
 </div><!-- id: post-view-single-content -->
@@ -224,6 +282,7 @@ $("#post-reply-form").bind("submit", function(){
 
 	var t = $("#posts-view");
 	t.animate({"opacity" : 0.5}, 1);
+	$.colorbox({"html" : "<?php echo __('Submitting...'); ?>"});
 	$.ajax({
 		"type": "post",
 		"cache": false,
@@ -235,9 +294,14 @@ $("#post-reply-form").bind("submit", function(){
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
 			if (data.charAt(0) == '0')
-				alert(data.substr(1));
+			{
+				$.colorbox({"html" : data.substr(1)});
+			}
 			else
+			{
 				t.html(data.substr(1));
+				setTimeout("$.colorbox.close();", 1000);
+			}
 		}
 	});
 	return false;
@@ -245,5 +309,22 @@ $("#post-reply-form").bind("submit", function(){
 <?php }?>
 $(".posts-table tr:odd").addClass("posts-table-color-odd");
 $(".posts-table tr:even").addClass("posts-table-color-even");
+function post_list_goto()
+{
+	var t = $("#posts-view");
+	t.animate({"opacity" : 0.5}, 1);
+	page = $("#posts-goto-form input").val();
+	$.ajax({
+		"url" : "<?php t_get_link('ajax-post-view-single', post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author), FALSE, FALSE); ?>",
+		"type" : "post",
+		"cache" : false,
+		"data" : ({"start_page" : page}),
+		"success" : function(data) {
+			t.animate({"opacity" : 1}, 1);
+			t.html(data);
+		}
+	});
+	return false;
+}
 </script>
 

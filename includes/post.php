@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Mon Nov 01 09:30:24 2010 +0800
+ * $Date: Mon Nov 01 10:11:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -414,9 +414,9 @@ function post_reply()
 	{
 		$db->insert_into('posts', 
 			array('time' => $time,
-			'uid' => $uid,
-			'tid' => $tid,
-			'content' => $content
+				'uid' => $uid,
+				'tid' => $tid,
+				'content' => substr($content, 0, POST_CONTENT_LEN_MAX)
 			)
 		);
 		if ($len > POST_CONTENT_LEN_MAX)

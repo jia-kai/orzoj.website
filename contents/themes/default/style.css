@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Sun Oct 31 20:10:17 2010 +0800
+ * $Date: Mon Nov 01 10:23:18 2010 +0800
 
  This file is part of orzoj
 
@@ -951,6 +951,7 @@ table.posts-table th
 
 div.posts-author
 {
+	margin: 10px;
 }
 
 div.floor
