@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Mon Nov 01 10:11:46 2010 +0800
+ * $Date: Mon Nov 01 11:45:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -319,7 +319,7 @@ function post_get_post_list($tid, $fields = NULL, $offset = NULL, $count = NULL,
 	if (is_string($fields))
 		$fields = array($fields);
 	if (is_array($fields))
-		array_intersect($fields, $POSTS_FIELD_SET);
+		$fields = array_intersect($fields, $POSTS_FIELD_SET);
 	else $fileds = array('id');
 	if (array_search('id', $fields) === FALSE)
 		$fields[] = 'id';
