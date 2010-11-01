@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Mon Nov 01 11:27:04 2010 +0800
+ * $Date: Mon Nov 01 21:45:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,7 +37,7 @@ if (!defined('IN_ORZOJ'))
  *		post_list_uid: int
  *		post_list_subject: string
  *		post_list_author: string
- *
+ *		action: string ['submit', 'new_viewer']
  * POST:
  *		content: string
  *			reply content
@@ -99,12 +99,15 @@ if (is_string($post_list_type))
 	if (array_search($post_list_type, $POST_TYPE_SET) === FALSE)
 		$post_list_type = NULL;
 
-if ($action == 'submit')
+if (empty($tid))
+	die(__('Which topic do you want to see?'));
+
+if ($action == 'submit' || $action == 'submit-nojs')
 {
 	try
 	{
 		post_reply();
-		echo '1';
+		echo 1;
 	}
 	catch (Exc_orzoj $e)
 	{
@@ -112,12 +115,22 @@ if ($action == 'submit')
 	}
 }
 
+if ($action == 'new_viewer')
+	post_topic_increase_statistic($tid,	'viewed_amount');
+
+
 if (isset($_POST['start_page']))
 {
 	$start_page = intval($_POST['start_page']);
 }
 
 ?>
+<?php if ($action != 'goto-page' && $action != 'submit') {?>
+<div id="posts-content-container">
+<div id="posts-all-container" style="clear: both;">
+<?php }?>
+
+<a id="top"></a>
 
 <div id="post-view-single-navigator-top">
 <?php
@@ -128,15 +141,20 @@ echo '<a href="' . post_list_get_a_href($post_list_start_page, $post_list_type, 
 	. ' onclick="' . post_list_get_a_onclick($post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author) . '">'
 	. '<button type="button">' . __('Back to list') . '</button></a>';
 
-echo '</div><!-- id: post-view-single-navigator-top -->';
-
-$fields = array('time', 'nickname_uid', 'tid', 
-	'subject', 'content',
-	'nickname_last_modify_user'
-);
 
 $total_post = post_get_post_amount($tid);
 $total_page = ceil($total_post / $POSTS_PER_PAGE);
+
+?>
+</div><!-- id: post-view-single-navigator-top -->
+<div id="post-view-single-statistic">
+<?php echo __('Total posts: <span>%d</span>', $total_post); ?>
+</div>
+<?php
+$fields = array('time', 'nickname_uid', 'tid', 
+	'content', 'floor',
+	'nickname_last_modify_user'
+);
 
 if ($start_page < 1) $start_page = 1;
 if ($start_page > $total_page) $start_page = $total_page;
@@ -146,11 +164,7 @@ $posts = post_get_post_list($tid, $fields, ($start_page - 1) * $POSTS_PER_PAGE, 
 $topic = post_get_topic($tid);
 
 ?>
-<div id="post-view-single-content" style="clear: both;">
 
-<div id="post-view-single-statistic">
-<?php echo __('Total posts: <span>%d</span>', $total_post); ?>
-</div>
 <?php
 /**
  * @ignore
@@ -160,8 +174,9 @@ function _make_page_link($text, $page)
 	global $tid,  $post_list_start_page, $post_list_type;
 	global $post_list_uid, $post_list_subject, $post_list_author;
 	return sprintf('<a href="%s" onclick="%s">%s</a>',
-		post_view_single_get_a_href($tid, $page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author),
-		post_view_single_get_a_onclick($tid, $page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author),
+		post_view_single_get_a_href($tid, $page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, 'goto-page-nojs'),
+		//		post_view_single_get_a_onclick($tid, $page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, 'goto-page'),
+		"set_page($page); return false;",
 		$text
 		);
 }
@@ -173,11 +188,15 @@ function _make_page_nav()
 {
 	global $start_page, $total_page;
 	$ret = '';
+	if ($total_page > 1)
+		$ret .= '&lt;' . _make_page_link(__('First page'), 1) . '&gt; | ';
 	if ($start_page > 1)
 		$ret .= '&lt;' . _make_page_link(__('Prev'), $start_page - 1);
 	if ($start_page < $total_page)
 		$ret .= ($start_page > 1 ? ' | ' : '') . _make_page_link(__('Next') . '&gt;', $start_page + 1);
-	return $ret;
+	if ($total_page > 1)
+		$ret .= ' | &lt;' . _make_page_link(__('Last page'), $total_page) . '&gt; ';
+	echo $ret;
 }
 
 /**
@@ -185,24 +204,31 @@ function _make_page_nav()
  */
 function _make_goto_form()
 {
-	global $start_page;
+	global $start_page, $total_page;
+	static $cnt = 0;
+	$cnt ++;
+	$ID = 'posts-goto-form' . $cnt;
 	$id = get_random_id();
 	$GoToPage = __('Go to page');
 ?>
-<form action="#" id="posts-goto-form" method="post" onsubmit="posts_goto(); return false;">
+	<form action="#" class="posts-goto-form" id="<?php echo $ID; ?>" method="post" onsubmit="posts_goto(<?php echo $cnt; ?>); return false;">
 <label for="<?php echo $id;?>" style="float: left"><?php echo $GoToPage; ?></label>
 <input value="<?php echo $start_page; ?>" name="goto_page" id="<?php echo $id; ?>" style="float: left; width: 30px" type="text" />
+/<?php echo $total_page; ?>
 </form>
 <?php
 }
+function _make_posts_nav()
+{
+	echo '<div class="posts-nav">';
+	_make_page_nav(); 
+	_make_goto_form();
+	echo '</div>';
+}
+_make_posts_nav();
 ?>
-<div class="posts-nav">
-<?php 
-echo _make_page_nav(); 
-_make_goto_form();
-?>
-</div>
-<div style="clear: both;">
+
+<div id="post-view-single-content" style="clear: both;">
 <div id="post-subject"><?php echo $topic['subject']; ?></div>
 <table class="posts-table">
 <tr>
@@ -210,30 +236,33 @@ _make_goto_form();
 	<th><?php echo __('Content'); ?></th>
 </tr>
 <?php
-$cur_floor = ($start_page - 1) * $POSTS_PER_PAGE + 1;
 foreach ($posts as $post)
 {
 	$avatar_url = avatar_get_url_by_user_id($post['uid']);
 	$avatar_alt = __('Avatar');
 	$nickname_uid = $post['nickname_uid'];
 	$nickname_url = t_get_link('ajax-user-info', $post['uid'], TRUE, TRUE);
-	$floor = $cur_floor;
-	$Floor = __('#%d', $cur_floor ++);
+	$floor = $post['floor'];
+	$Floor = __('#%d', $floor);
 	$content = $post['content'];
+	$PostTime = __('Posted: ') . time2str($post['time']);
 	$Reply_href = '';
 	if (user_check_login())
 		$Reply_href = '<div class="posts-reply-a"><a href="#rep" onclick="append_reply(' . $floor. '); return false;">' . __('Reply') . '</div>';
+	$Top = __('To top');
 	echo <<<EOF
 <tr>
 	<td valign="top">
 		<div class="posts-author">
 			<div class="posts-avatar"><img src="$avatar_url" alt="$avatar_alt" /></div>
 			<div class="posts-nickname"><a href="$nickname_url">$nickname_uid</a></div>
+			<div class="posts-to-top"><a href="#top">$Top</a></div>
 		</div>
 	</td>
-	<td>
-		<div class="posts-content">
-			<div class="floor">$Floor</div>
+	<td valign="top">
+		<div class="posts-container">
+			<div class="posts-time">$PostTime</div>
+			<div class="posts-floor">$Floor</div>
 			<div class="posts-content">$content</div>
 			$Reply_href
 		</div>
@@ -244,78 +273,19 @@ EOF;
 
 ?>
 </table>
-<?php if (user_check_login()) { ?>
-<span style="float: left;"><?php echo __('Reply'); ?></span>
-<form style="clear: both;" method="post" id="post-reply-form" action="#">
-<table id="post-reply-table">
-	<?php post_reply_get_form($tid)?>
-	<a name="rep"></a>
-</table>
-<input id="post-reply-submit-button" type="submit" value="<?php echo __('Submit')?>" />
-<?php // TODO checkcode? ?>
-</form>
-<?php }
-?>
-
-</div>
-</div><!-- id: post-view-single-content -->
+<?php _make_posts_nav(); ?>
 <script type="text/javascript">
+/* common */
 $("button").button();
 $("div.posts-nickname a").colorbox();
-<?php if (user_check_login()) {?> 
-$("#post-reply-submit-button").button();
-<?php $ReplyTo = __('Reply to'); ?>
-function append_reply(floor)
-{
-	CKEDITOR.instances.post_reply_content.insertHtml(
-		"<?php echo $ReplyTo; ?> #" + floor + ": "
-	);
-}
-<?php
-$url = t_get_link('ajax-post-view-single', 
-	post_view_single_pack_arg($tid, 1000000, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, 'submit'),
-   	FALSE, TRUE);
-?>
-$("#post-reply-form").bind("submit", function(){
-	var content = CKEDITOR.instances.post_reply_content.getData();
-	//$("#post-reply-form").serializeArray(),
-
-	var t = $("#posts-view");
-	t.animate({"opacity" : 0.5}, 1);
-	$.colorbox({"html" : "<?php echo __('Submitting...'); ?>"});
-	$.ajax({
-		"type": "post",
-		"cache": false,
-		"url": "<?php echo $url; ?>",
-		"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
-			"post_reply_uid" : "<?php echo $user->id; ?>",
-			"post_reply_content" : content
-		}),
-		"success" : function(data) {
-			t.animate({"opacity" : 1}, 1);
-			if (data.charAt(0) == '0')
-			{
-				$.colorbox({"html" : data.substr(1)});
-			}
-			else
-			{
-				t.html(data.substr(1));
-				setTimeout("$.colorbox.close();", 1000);
-			}
-		}
-	});
-	return false;
-});
-<?php }?>
 $(".posts-table tr:odd").addClass("posts-table-color-odd");
 $(".posts-table tr:even").addClass("posts-table-color-even");
-function post_list_goto()
+function set_page(page)
 {
-	var t = $("#posts-view");
+	var t = $("#posts-all-container");
 	t.animate({"opacity" : 0.5}, 1);
-	page = $("#posts-goto-form input").val();
 	$.ajax({
-		"url" : "<?php t_get_link('ajax-post-view-single', post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author), FALSE, FALSE); ?>",
+		"url" : "<?php t_get_link('ajax-post-view-single', post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, 'goto-page'), FALSE, FALSE); ?>",
 		"type" : "post",
 		"cache" : false,
 		"data" : ({"start_page" : page}),
@@ -326,5 +296,88 @@ function post_list_goto()
 	});
 	return false;
 }
+
+function posts_goto(id)
+{
+	page = $("#posts-goto-form" + id +" input").val();
+	set_page(page);
+}
 </script>
 
+<?php if ($action == 'goto-page' || $action == 'submit') die;?>
+
+</div><!-- id: posts-all-container -->
+
+
+</div><!-- id: post-view-single-content -->
+
+<?php if (user_check_login()) { ?>
+<?php 
+$post_url = t_get_link('show-ajax-post-view-single', 
+	post_view_single_pack_arg($tid, 1000000, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, 'submit-nojs'),
+	FALSE, TRUE);
+?>
+<span style="float: left;"><?php echo __('Reply'); ?></span>
+<form style="clear: both;" method="post" id="post-reply-form" action="<?php echo $post_url; ?>">
+<table id="post-reply-table">
+	<?php post_reply_get_form($tid)?>
+	<a id="rep"></a>
+</table>
+<input id="post-reply-submit-button" type="submit" value="<?php echo __('Submit')?>" />
+<?php // TODO checkcode? ?>
+</form>
+<?php }?>
+
+</div><!-- id: posts-content-container -->
+
+
+<?php if (user_check_login()) {?> 
+<script type="text/javascript">
+/* logined */
+$("#post-reply-submit-button").button();
+<?php $ReplyTo = __('Reply to'); ?>
+<?php $Editor = "CKEDITOR.instances.$editor_id";?>
+function append_reply(floor)
+{
+	<?php echo $Editor; ?>.insertHtml(
+		"<?php echo $ReplyTo; ?> #" + floor + ": "
+	);
+}
+<?php
+$url = t_get_link('ajax-post-view-single', 
+	post_view_single_pack_arg($tid, 1000000, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, 'submit'),
+	FALSE, TRUE);
+?>
+$("#post-reply-form").bind("submit", function(){
+	var content = <?php echo $Editor; ?>.getData();
+	//$("#post-reply-form").serializeArray(),
+
+	var t = $("#posts-all-container");
+	t.animate({"opacity" : 0.5}, 1);
+	$.colorbox({"html" : "<?php echo __('Submitting...'); ?>"});
+	$.ajax({
+		"type": "post",
+			"cache": false,
+			"url": "<?php echo $url; ?>",
+			"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
+			"post_reply_uid" : "<?php echo $user->id; ?>",
+			"post_reply_content" : content
+			}),
+		"success" : function(data) {
+			t.animate({"opacity" : 1}, 1);
+			if (data.charAt(0) == '0')
+			{
+				$.colorbox({"html" : data.substr(1)});
+			}
+			else
+			{
+				t.html(data.substr(1));
+				<?php echo $Editor; ?>.setData("");
+				setTimeout("$.colorbox.close();", 1000);
+			}
+		}
+	});
+	return false;
+});
+</script>
+<?php }?>

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sun Oct 31 20:11:21 2010 +0800
+ * $Date: Mon Nov 01 15:27:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -518,9 +518,9 @@ $tables = array(
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'time' => array('type' => 'INT64'), // publishing time
 			'uid' => array('type' => 'INT32'), // user id
-			'prob_id' => array('type' => 'INT32'), // related problem id, 0 means no problem is related
-			'reply_amount' => array('type' => 'INT32'), // number of reply
-			'viewed_amount' => array('type' => 'INT32'), // number of viewed users
+			'prob_id' => array('type' => 'INT32', 'default' => 0), // related problem id, 0 means no problem is related
+			'reply_amount' => array('type' => 'INT32', 'default' => 0), // number of reply
+			'viewed_amount' => array('type' => 'INT32', 'default' => 0), // number of viewed users
 			'priority' => array('type' => 'INT32', 'default' => 0), // every post topic should have a priority, the bigger, the prior
 			'is_top' => array('type' => 'INT32', 'default' => 0), //whether the post should be on the top, ordering by priority and time if more than one.
 			'is_locked' => array('type' => 'INT32', 'default' => 0), // whether the post is locked
@@ -534,7 +534,8 @@ $tables = array(
 			'last_reply_time' => array('type' => 'INT64', 'default' => 0),
 			'last_reply_user' => array('type' => 'INT32', 'default' => 0), // user id
 			'subject' => array('type' => 'TEXT'),
-			'content' => array('type' => 'TEXT')
+			'content' => array('type' => 'TEXT'),
+			'floor_amount' => array('type' => 'INT32', 'default' => 1)
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -554,6 +555,7 @@ $tables = array(
 			'time' => array('type' => 'INT64'), // publishing time
 			'uid' => array('type' => 'INT32'), // user id
 			'tid' => array('type' => 'INT32'), // post topic id
+			'floor' => array('type' => 'INT32'), // XXX is the name right?
 			'content' => array('type' => 'TEXT'),
 			'last_modify_time' => array('type' => 'INT64', 'default' => '0'), // 0 means no body has modified this post yet
 			'last_modify_user' => array('type' => 'INT32', 'default' => '0') // user id, 0 no user has modified this post

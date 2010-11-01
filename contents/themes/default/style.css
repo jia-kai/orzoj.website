@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Nov 01 11:33:17 2010 +0800
+ * $Date: Mon Nov 01 21:44:39 2010 +0800
 
  This file is part of orzoj
 
@@ -1032,6 +1032,7 @@ div#posts-view-single-content
 
 div#post-subject
 {
+	clear: both;
 	font-size: 30px;
 	color: blue;
 	font-weight: bold;
@@ -1047,6 +1048,14 @@ table.posts-table
 	padding: 0;
 	margin-top: 20px;
 	text-align: left;
+	table-layout: fixed;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+table.posts-table th
+{
+	text-align: center;
 }
 
 table.posts-table th
@@ -1059,9 +1068,14 @@ div.posts-author
 	margin: 10px;
 }
 
-div.floor
+div.posts-time
 {
-	text-align: right;
+	float: left;
+}
+
+div.posts-floor
+{
+	float: right;
 }
 
 div.posts-avatar
@@ -1081,10 +1095,18 @@ div.posts-nickname
 	clear: both;
 }
 
+div.posts-container
+{
+	margin: 5px;
+}
+
 div.posts-content
 {
+	clear: both;
 	text-align: left;
-	margin: 5px;
+	border-top: 1px solid #8080f0;
+	overflow: auto;
+	max-width: 100%;
 }
 
 div.posts-reply-a
@@ -1106,6 +1128,18 @@ div.posts-reply-a
 
 table.post-reply-table
 {
+}
+
+div.posts-nav
+{
+	clear: both;
+	float: right;
+}
+
+form.posts-goto-form
+{
+	float: right;
+	margin-left: 20px;
 }
 
 /*

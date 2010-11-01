@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Sun Oct 31 20:05:55 2010 +0800
+ * $Date: Mon Nov 01 19:35:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -106,7 +106,7 @@ else $subject_pattern = NULL;
 <?php echo __('Filter:'); ?>
 </div>
 
-<form action="<?php t_get_link('ajax-post-list'); ?>" method="post" id="post-filter-form">
+<form action="<?php t_get_link('show-ajax-post-list'); ?>" method="post" id="post-filter-form">
 
 <?php
 /**
@@ -183,8 +183,8 @@ function _cv_subject()
 {
 	global $post, $start_page, $type, $uid, $subject, $author;
 	echo '<a class="post-subject" href="' 
-		. post_view_single_get_a_href($post['id'], 1, $start_page, $type, $uid, $subject, $author) . '"'
-		. 'onclick="' . post_view_single_get_a_onclick($post['id'], 1, $start_page, $type, $uid, $subject, $author) . '"'
+		. post_view_single_get_a_href($post['id'], 1, $start_page, $type, $uid, $subject, $author, 'new_viewer') . '"'
+		. 'onclick="' . post_view_single_get_a_onclick($post['id'], 1, $start_page, $type, $uid, $subject, $author, 'new_viewer') . '"'
 		. '>' . $post['subject'] . '</a>';
 }
 

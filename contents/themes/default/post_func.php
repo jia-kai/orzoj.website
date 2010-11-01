@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_func.php
- * $Date: Mon Nov 01 00:20:19 2010 +0800
+ * $Date: Mon Nov 01 17:16:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -116,18 +116,18 @@ function post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $ty
 /**
  * @ignore
  */
-function post_view_single_get_a_href($id, $start_page, $post_list_start_page, $type, $uid, $subject, $author)
+function post_view_single_get_a_href($id, $start_page, $post_list_start_page, $type, $uid, $subject, $author, $action = NULL)
 {
-	$arg = post_view_single_pack_arg($id, $start_page, $post_list_start_page, $type, $uid, $subject, $author);
+	$arg = post_view_single_pack_arg($id, $start_page, $post_list_start_page, $type, $uid, $subject, $author, $action);
 	return t_get_link('show-ajax-post-view-single', $arg, TRUE, TRUE);
 }
 
 /**
  * @ignore
  */
-function post_view_single_get_a_onclick($id, $start_page, $post_list_start_page, $type, $uid, $subject, $author)
+function post_view_single_get_a_onclick($id, $start_page, $post_list_start_page, $type, $uid, $subject, $author, $action = NULL)
 {
-	$arg = post_view_single_pack_arg($id, $start_page, $post_list_start_page, $type, $uid, $subject, $author);
+	$arg = post_view_single_pack_arg($id, $start_page, $post_list_start_page, $type, $uid, $subject, $author, $action);
 	return 'posts_view_set_content(\'' . t_get_link('ajax-post-view-single', $arg, FALSE, TRUE) . '\'); return false;';
 }
 
