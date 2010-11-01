@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sun Oct 31 21:55:37 2010 +0800
+ * $Date: Mon Nov 01 19:33:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -202,6 +202,8 @@ function _action_logout()
 	<script type="text/javascript" src="<?php _url("scripts/jquery/jquery.cookie.js"); ?>"></script>
 
 	<script type="text/javascript" src="<?php _url("scripts/json2.js"); ?>"></script>
+
+	<script type="text/javascript" src="<?php echo get_page_url($root_path . 'contents/editors/ckeditor/ckeditor.js');?>"></script>
 
 	<link rel="stylesheet" type="text/css" href="<?php _url('style.css'); ?>" />
 

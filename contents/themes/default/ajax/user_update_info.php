@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user_update_info.php
- * $Date: Wed Oct 27 18:51:57 2010 +0800
+ * $Date: Mon Nov 01 20:21:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -61,7 +61,10 @@ $("#user-update-info-form").bind("submit", function(){
 			if (data.charAt(0) == '1')
 				alert(data.substr(1));
 			else
+			{
 				$.colorbox({"html": data.substr(1)});
+				setTimeout("$.colorbox.close()", 1000);
+			}
 		}
 	});
 	return false;

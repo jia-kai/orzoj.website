@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Nov 01 15:00:28 2010 +0800
+ * $Date: Mon Nov 01 19:51:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -97,13 +97,14 @@ function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
  * @see tf_form_get_editor_data
  */
 
-require_once $root_path . 'contents/editors/ckeditor/ckeditor.php';
+// require_once $root_path . 'contents/editors/ckeditor/ckeditor.php';
 
 function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
 {
-	global $root_path;
+	global $root_path, $editor_id;
 	if (!is_string($default))
 		$default = '';
+	/*
 	$CKEditor = new CKEditor(get_page_url($root_path . 'contents/editors/ckeditor') . '/');
 	$CKEditor->returnOutput = TRUE;
 	$CKEditor->config['toolbar'] = array(
@@ -113,6 +114,22 @@ function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
 		array('Font', 'FontSize', 'TextColor', 'Bold', 'Italic', '-', 'About')
 	);
 	$ckeditor = $CKEditor->editor($editor_name, $default);
+	 */
+	$editor_id = get_random_id();
+	$ckeditor = <<<EOF
+<textarea id="$editor_id" name="$editor_name">$default</textarea>
+<script type="text/javascript">
+CKEDITOR.replace("$editor_id",{
+	toolbar :
+	[
+		['Source', '-', 'Undo', 'Redo'],
+		['Font', 'FontSize', 'TextColor', 'Bold', 'Italic', 'Subscript', 'Superscript'],
+		['Image', 'Flash', 'Table', 'Link', 'Unlink'],
+		['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'Outdent', 'Indent']
+	]
+});
+</script>
+EOF;
 	return "<tr><td><label>$prompt</label></td><td>
 		$ckeditor
 			</td></tr>";
@@ -128,17 +145,19 @@ function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
 function tf_form_get_rich_text_editor_data($editor_name)
 {
 	if (!isset($_POST[$editor_name]))
-		throw new Exc_runtime(__('Imcomplete POST'));
-	if (!strlen($_POST[$editor_name]))
-		throw new Exc_runtime(__('Hi buddy, something to say?'));
+		throw new Exc_runtime(__('Incomplete POST'));
+	$content = $_POST[$editor_name];
+	$content = trim($content);
+	if (!strlen($content))
+		throw new Exc_runtime(__('Hi buddy, something to comment?'));
 	try
 	{
-		xhtml_validate($_POST[$editor_name]);
+		xhtml_validate($content);
 	} catch (Exc_xthml $e)
 	{
 		throw new Exc_runtime($e->msg);
 	}
-	return $_POST[$editor_name];
+	return $content;
 }
 
 /**
@@ -330,7 +349,7 @@ function tf_form_get_select($prompt, $post_name, $options, $default = NULL)
  */
 function tf_form_get_hidden($post_name, $post_value)
 {
-	return "<input type=\"hidden\" name=\"post_name\" value=\"post_value\" />";
+	return "<input type=\"hidden\" name=\"$post_name\" value=\"$post_value\" />";
 }
 
 /**

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Mon Nov 01 11:45:41 2010 +0800
+ * $Date: Mon Nov 01 19:49:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,7 +30,7 @@ $POST_USER_NAME_SET = array('nickname', 'username', 'realname');
 
 /* post topic constants */
 $POST_TOPIC_FIELDS_SET = array('id', 'time', 'uid', 'prob_id',
-	'reply_amount', 'viewed_amount',
+	'reply_amount', 'viewed_amount', 'floor_amount',
 	'priority', 'is_top', 'type',
    	'last_reply_time', 'last_reply_user', 'subject', 'content',
 	'nickname_uid', 'nickname_last_reply_user',
@@ -55,6 +55,7 @@ foreach ($POST_TYPE_SET as $val)
 unset($tmp);
 
 $POST_TOPIC_ATTRIB_SET = array('is_top', 'is_locked', 'is_boutique');
+$POST_TOPIC_STATISTIC_SET = array('reply_amount', 'viewed_amount', 'floor_amount');
 
 $POST_PRIORITY = array('is_top' => 5, 'normal' => 0);
 
@@ -63,11 +64,11 @@ $AUTHOR_TYPE_SET = array('username');
 
 /* posts constants */
 $POSTS_FIELD_SET = array('id', 'time', 'uid', 'tid', 
-	'content',
+	'content', 'floor',
    	'last_modify_time',	'last_modify_user',
 	'nickname_uid', 'nickname_last_modify_user',
 	'username_uid', 'username_last_modify_user',
-	'realname_uid', 'realname_last_modify_user'
+	'realname_uid', 'realname_last_modify_user',
 );
 
 $POSTS_USER_ID_SET = array('uid', 'last_modify_user');
@@ -304,6 +305,42 @@ function post_topic_set_attrib($id, $attrib, $status = TRUE)
 }
 
 /**
+ * increase statistic of a post topic 
+ * @param int $id post topic id
+ * @param array|string $fields fields in $POST_TOPIC_STATISTIC_SET
+ * @param int|array $delta if $field is an array and $delta is a int, 
+ *			all fields in $field will be increased $delta; if array
+ *			if specified, the corresponding element in $field will
+ *			increased by number in $delta. fields with no corresponding
+ *			delta will be increased by one.
+ * @return void
+ */
+function post_topic_increase_statistic($id, $fields, $delta = 1)
+{
+	global $POST_TOPIC_STATISTIC_SET, $db, $DBOP;
+	if (is_string($fields))
+		$fields = array($fields);
+	else if (!is_array($fields))
+		return;
+	$fields = array_intersect($POST_TOPIC_STATISTIC_SET, $fields);
+	if (count($fields) == 0)
+		return;
+	$where = array($DBOP['='], 'id', $id);
+	$valset = $db->select_from('post_topics', $fields, $where);
+	$valset = $valset[0];
+	foreach ($fields as $item)
+	{
+		if (is_int($delta))
+			$valset[$item] += $delta;
+		else if (is_array($delta))
+			$valset[$item] += (isset($delta[$key]) ? $delta[$key] : 1);
+		else
+			$valset[$item] += 1;
+	}
+	$db->update_data('post_topics', $valset, $where);
+}
+
+/**
  * get post list
  * @param int $tid post topic id
  * @param array|string|NULL $fields @see $POSTS_FIELD_SET
@@ -320,7 +357,7 @@ function post_get_post_list($tid, $fields = NULL, $offset = NULL, $count = NULL,
 		$fields = array($fields);
 	if (is_array($fields))
 		$fields = array_intersect($fields, $POSTS_FIELD_SET);
-	else $fileds = array('id');
+	else $fields = array('id');
 	if (array_search('id', $fields) === FALSE)
 		$fields[] = 'id';
 
@@ -409,6 +446,12 @@ function post_reply()
 
 	$content = tf_form_get_rich_text_editor_data('post_reply_content');
 
+	$where = array($DBOP['='], 'id', $tid);
+	$topic = $db->select_from('post_topics', array('floor_amount', 'reply_amount'), $where);
+	$topic = $topic[0];
+
+	$basic_floor = $topic['floor_amount'];
+
 	$time = time();
 	for($len = strlen($content); $len > 0; $len -= POST_CONTENT_LEN_MAX)
 	{
@@ -416,19 +459,20 @@ function post_reply()
 			array('time' => $time,
 				'uid' => $uid,
 				'tid' => $tid,
-				'content' => substr($content, 0, POST_CONTENT_LEN_MAX)
+				'content' => substr($content, 0, POST_CONTENT_LEN_MAX),
+				'floor' => ++ $basic_floor
 			)
 		);
 		if ($len > POST_CONTENT_LEN_MAX)
 			$content = substr($content, POST_CONTENT_LEN_MAX);
 	}
-	$where = array($DBOP['='], 'id', $tid);
-	$nrep = $db->select_from('post_topics', 'reply_amount', $where);
-	$nrep = $nrep[0]['reply_amount'];
+
+	$nrep = $topic['reply_amount'];
 	$db->update_data('post_topics',
 		array('reply_amount' => $nrep + 1,
 			'last_reply_time' => $time,
-			'last_reply_user' => $uid
+			'last_reply_user' => $uid,
+			'floor_amount' => $basic_floor
 		), $where
 	);
 }
