@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Nov 01 11:18:57 2010 +0800
+ * $Date: Mon Nov 01 15:00:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -101,10 +101,10 @@ require_once $root_path . 'contents/editors/ckeditor/ckeditor.php';
 
 function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
 {
+	global $root_path;
 	if (!is_string($default))
 		$default = '';
-	$id = get_random_id();
-	$CKEditor = new CKEditor();
+	$CKEditor = new CKEditor(get_page_url($root_path . 'contents/editors/ckeditor') . '/');
 	$CKEditor->returnOutput = TRUE;
 	$CKEditor->config['toolbar'] = array(
 		array('Source', '-', 'Undo', 'Redo'),
@@ -113,7 +113,7 @@ function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
 		array('Font', 'FontSize', 'TextColor', 'Bold', 'Italic', '-', 'About')
 	);
 	$ckeditor = $CKEditor->editor($editor_name, $default);
-	return "<tr><td><label for=\"$id\">$prompt</label></td><td>
+	return "<tr><td><label>$prompt</label></td><td>
 		$ckeditor
 			</td></tr>";
 }
