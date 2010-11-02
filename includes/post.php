@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Tue Nov 02 16:21:02 2010 +0800
+ * $Date: Tue Nov 02 18:48:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -159,7 +159,7 @@ function _post_get_topic_list_build_where($type, $uid, $subject, $author, $prob_
 
 	if (is_int($uid))
 	{
-		if (!user_exists($uid))
+		if (is_null(user_get_username_by_id($uid)))
 			throw new Exc_runtime(__('No such user whose id is %d!', $uid));
 		db_where_add_and($where, array($DBOP['='], 'uid', $uid));
 	} else if (is_string($author) && strlen($author))
@@ -176,7 +176,7 @@ function _post_get_topic_list_build_where($type, $uid, $subject, $author, $prob_
 	if (!empty($prob_id))
 	{
 		$prob_id = intval($prob_id);
-		if (!prob_exists($prob_id))
+		if (is_null(prob_get_code_by_id($prob_id)))
 			throw new Exc_runtime(__('No such problem whose id is %d!', $prob_id));
 		db_where_add_and($where, array($DBOP['='], 'prob_id', $prob_id));
 	}
@@ -531,4 +531,5 @@ function post_reply()
 		), $where
 	);
 }
+
 

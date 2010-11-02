@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Mon Nov 01 19:10:37 2010 +0800
+ * $Date: Tue Nov 02 10:56:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,6 +28,10 @@
  *		$page: current page file path on the server
  *		$cur_page: current page name
  *		$cur_page_link: current page URL (parameters should be appended to it)
+ * page arguments:
+ *		POST:
+ *			ajax_mode:
+ *				if set, do not echo html head
  */
 try
 {
@@ -65,23 +69,36 @@ try
 			$cur_page = $_GET['page'];
 			$cur_page_link="index.php?page=$cur_page";
 			$page = $admin_path . $page[1];
+			if (!isset($_POST['ajax_mode']))
+			{
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>---</title>
 	<link href="style.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript">
+		var CKEDITOR_BASEPATH = '<?php echo get_page_url($root_path . 'contents/editors/ckeditor');?>/';
+	</script>
 	<script type="text/javascript"
 		src="<?php echo get_page_url($root_path . 'contents/editors/ckeditor/ckeditor.js');?>">
 	</script>
+	<script type="text/javascript">
+		CKEDITOR.basePath = CKEDITOR_BASEPATH;
+	</script>
+	<script type="text/javascript" src="./js/jquery.js"></script>
 </head>
 <?php
-			if ($_GET['page'] != 'nav')
-				echo '<body>';
+				if ($_GET['page'] != 'nav')
+					echo '<body>';
+			}
 			require_once $page;
-			if ($_GET['page'] != 'nav')
-				echo '</body>';
-			echo '</html>';
+			if (!isset($_POST['ajax_mode']))
+			{
+				if ($_GET['page'] != 'nav')
+					echo '</body>';
+				echo '</html>';
+			}
 			die;
 		}
 		else

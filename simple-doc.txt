@@ -85,7 +85,7 @@ standard theme page names and arguments:
 	| discuss	|	???						|
 	|---------------------------------------|
 
-problem description (column desc) in the database is a serialized array of (<field name> => <value>)
+problem description (column 'desc' in table 'problems') in the database is a serialized array of (<field name> => <value>)
 standard field names:
 	time: time limit 
 	memory: memory limit
@@ -97,7 +97,11 @@ standard field names:
 	range: data range
 	source: where the problem is originally published
 	hint: some hints?
-these fields are parsed and converted to HTML by themes
+  fields allowing XHTML: (see $PROB_DESC_FIELDS_ALLOW_XHTML in /includes/problem.php)
+	'desc', 'input_fmt', 'output_fmt', 'source', 'hint'
+  values of fields allowing XHTML should be displayed directly,
+  HTML special chars in other fields are converted before inserting into the database,
+  but HTML line breaks (<br />) are not inserted
 
 Note:
 	1. for required functions for theme, see theme-functions-template.php

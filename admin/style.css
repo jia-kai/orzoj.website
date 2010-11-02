@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Nov 01 20:42:36 2010 +0800
+ * $Date: Tue Nov 02 16:10:44 2010 +0800
 
  This file is part of orzoj
 
@@ -138,22 +138,40 @@ a[href]:hover
 	text-decoration: underline;
 }
 
-div.notice
+div.info-div
 {
-	/*
-	 * TODO
-	 */
+	float: none;
+	clear: both;
+	background-repeat: no-repeat;
+	background-position: 4px 3px;
+	background-attachment: scroll;
+	border: 2px solid #CC0000;
+	background-color: #FFFFCC;
+	padding: 2px;
+	padding-left: 32px;
 }
 
-div.error
+div.info
 {
-	/*
-	 * TODO
-	 */
+	background-image: url('images/info.png');
+}
+
+div.notice
+{
+	background-image: url('images/notice.png');
 }
 
 div.warning
 {
+	background-image: url('images/warning.png');
+}
+
+div.error
+{
+	background-image: url('images/error.png');
+	color: red;
+	font-weight: bold;
+	font-size: 18px;
 }
 
 div.form-field
@@ -197,5 +215,22 @@ div.gid-selector label, div.gid-selector input
 div.gid-selector li.subtree
 {
 	list-style-type: none;
+}
+
+div.form-field-prob-io, div.form-field-prob-io span, div.form-field-prob-io input
+{
+	float: left;
+}
+
+div.form-field-prob-io div
+{
+	clear: both;
+	float: left;
+}
+
+div.form-field-prob-io label
+{
+	clear: none;
+	margin-right: 20px;
 }
 

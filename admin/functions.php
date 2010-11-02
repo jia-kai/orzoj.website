@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Mon Nov 01 21:47:25 2010 +0800
+ * $Date: Tue Nov 02 10:12:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -192,7 +192,7 @@ function make_pgnum_nav($pgnum, $tot_page)
  * get group id selector
  * @param string $name selector name
  * @param int $type selector type (0: user group; otherwise problem group)
- * @param array|NULL $default items selected by default
+ * @param array|NULL $default array of id of groups, items selected by default
  * @param bool $direct_echo
  * @return void|string
  */
@@ -233,14 +233,14 @@ function form_get_gid_selector($name, $type, $default = NULL, $direct_echo = TRU
 /**
  * get gid selector value
  * @param string $name selector id
- * @return string
+ * @return array
  * @exception Exc_runtime
  */
 function form_get_gid_selector_val($name)
 {
 	$name = 'gid_selector_' . $name;
-	if (!is_array($_POST[$name]))
-		throw new Exc_runtime(__('incomplete post'));
+	if (!isset($_POST[$name]) || !is_array($_POST[$name]))
+		return array();
 	foreach ($_POST[$name] as &$v)
 		$v = intval($v);
 	return array_unique($_POST[$name]);
@@ -261,7 +261,8 @@ function _form_get_gid_selector_dfs(&$post_name, &$output, &$tree, $root, &$sele
 		else
 			$s = '';
 		$id = get_unique_id();
-		$output .= "<li><input type='checkbox' id='$id' $s /><label for='$id' title='$desc'>$name</label></li>";
+		$output .= "<li><input name='$post_name' value='$ch' type='checkbox' id='$id' $s />";
+		$output .= "<label for='$id' title='$desc'>$name</label></li>";
 		if (!empty($tree[$ch]->child))
 		{
 			$output .= '<li class="subtree">';
@@ -314,7 +315,18 @@ function form_get_perm_editor($name, $default = NULL, $direct_echo = TRUE)
 function form_get_perm_editor_val($name)
 {
 	$name = 'perm_editor_' . $name;
-
+	$ret = array();
+	$ret_idx = 0;
+	foreach (array('_order', '_no_match') as $idx)
+	{
+		$idx = $name . $idx;
+		if (!isset($_POST[$idx]))
+			throw new Exc_runtime(__('incomplete post'));
+		$ret[$ret_idx ++] = (intval($_POST[$idx]) == 1);
+	}
+	$ret[2] = form_get_gid_selector_val($name . '_allow');
+	$ret[3] = form_get_gid_selector_val($name . '_deny');
+	return serialize($ret);
 }
 
 /**
@@ -339,6 +351,22 @@ function form_get_select($prompt, $post_name, $options, $default = NULL, $direct
 		$str .= ">$name</option>";
 	}
 	$str .= "</select>";
+	if ($direct_echo)
+		echo $str;
+	else
+		return $str;
+}
+
+/**
+ * get an information div
+ * @param string $type type of the div, which is one of 'info', 'notice', 'warning', 'error' 
+ * @param string $content
+ * @param bool $direct_echo
+ * @return void|string
+ */
+function get_info_div($type, $content, $direct_echo = TRUE)
+{
+	$str = "<div class='info-div $type'>$content</div>";
 	if ($direct_echo)
 		echo $str;
 	else

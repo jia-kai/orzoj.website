@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Mon Nov 01 18:47:47 2010 +0800
+ * $Date: Tue Nov 02 11:52:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -144,7 +144,7 @@ function make_form_select($prompt, $post_name, &$options)
 	echo '</select></span>';
 }
 
-echo "<div><a href='$cur_page_link&amp;edit=0'><button>" . __('Add New Problem') . '</button></a></div>';
+echo "<div><a href='$cur_page_link&amp;edit=0'><button>" . __('Add a new problem') . '</button></a></div>';
 
 echo "<form action='$cur_page_link&amp;filter=1' method='post' class='filter-form'>";
 echo '<span><a title="' . __('you can enter patterns with * and ?') . '">' . __('Search problem:') . '</a></span>';

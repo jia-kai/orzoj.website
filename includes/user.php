@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Tue Nov 02 13:06:00 2010 +0800
+ * $Date: Tue Nov 02 18:30:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -680,7 +680,7 @@ function user_update_info_get_form()
 		tf_form_get_select(__('Preferred website language:'), 'wlang', $_user_wlang, $user->wlang) .
 		tf_form_get_gid_selector(__('User groups who can view your source:'), 'view_gid', $user->view_gid) .
 		tf_form_get_team_browser(__('Your team:'), 'tid', $user->tid) .
-		tf_form_get_long_text_input(__('Self description(XHTML):'), 'self_desc', $user->self_desc);
+		tf_form_get_long_text_input(__('Self description(XHTML):'), 'self_desc', htmlspecialchars($user->self_desc));
 
 	echo filter_apply('after_user_update_info_form', $str);
 }
@@ -843,16 +843,5 @@ function user_get_user_amount()
 {
 	global $db;
 	return $db->get_number_of_rows('users');
-}
-
-/**
- * to judge if a user exists
- * @param int $uid user id
- * @return BOOL the result
- */
-function user_exists($uid)
-{
-	global $db, $DBOP;
-	return ($db->get_number_of_rows('users', array($DBOP['='], 'id', $uid)) == 1) ? TRUE : FALSE;
 }
 

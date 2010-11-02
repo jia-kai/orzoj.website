@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Tue Nov 02 16:03:00 2010 +0800
+ * $Date: Tue Nov 02 18:48:54 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -122,12 +122,16 @@ try
 
 	/* problem description */
 
-	if (prob_future_contest($pid))
-		echo '<div style="clear: both;">' .
-		__('This problem belongs to an upcoming contest and you should not try to view it here.') .
-		'</div>';
-	else
+	try
+	{
 		echo prob_view($pid);
+	}
+	catch (Exc_orzoj $e)
+	{
+		echo '<div style="clear: both;">' .
+			__('Failed to view problem: %s', htmlencode($e->msg())) .
+			'</div>';
+	}
 
 	$pcode = prob_get_code_by_id($pid);
 	echo '<div id="prob-view-single-page-addr">';
@@ -141,7 +145,6 @@ try
 ?>
 
 	<script type="text/javascript">
-	$("button").button();
 	$(".need-colorbox").colorbox();
 	$("button").button();
 
@@ -174,4 +177,5 @@ catch (Exc_runtime $e)
 	die(__('Error while showing the problem: %s', htmlencode($e->msg())));
 }
 ?>
+
 

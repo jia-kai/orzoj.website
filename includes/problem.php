@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Tue Nov 02 16:19:08 2010 +0800
+ * $Date: Tue Nov 02 18:29:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -39,6 +39,9 @@ $PROB_VIEW_PINFO_STATISTICS = array('cnt_ac', 'cnt_unac', 'cnt_ce', 'cnt_submit'
 // grp: array of problem group ids that this problem belongs to
 // io: array of input/output file name, or NULL if using stdio
 // cnt_submit: cnt_ac + cnt_unac + cnt_ce
+$PROB_DESC_FIELDS_ALLOW_XHTML = array(
+	'desc', 'input_fmt', 'output_fmt', 'source', 'hint'
+);
 
 /**
  * check whether a user has permission for a problem
@@ -244,7 +247,11 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 		if (!$is_super_submiter)
 		{
 			if (prob_future_contest($pid))
-				$row = NULL;
+			{
+				$ct = ctal_get_class_by_pid($pid);
+				if (!$ct->allow_viewing())
+					$row = NULL;
+			}
 			else
 				if (!prob_check_perm($grp, $row['perm']))
 					$row = NULL;
@@ -478,30 +485,35 @@ function prob_delete($pid)
  */
 function prob_validate_code($code)
 {
+	if (empty($code))
+		throw new Exc_runtime(__('problem code can not be empty'));
 	static $charset = NULL;
 	if (is_null($charset))
 		$charset = str_range('a', 'z') . str_range('A', 'Z') . str_range('0', '9') .
 			'!@#$%&()-_+=[]{}';
 	for ($i = 0; $i < strlen($code); $i ++)
 		if (strpos($charset, $code[$i]) === FALSE)
-			throw new Exc_runtime(__('invalid character in problem code (char "%s", #%d)', $code[$i],
+			throw new Exc_runtime(__('invalid character in problem code (char "%s", ascii %d)', $code[$i],
 				ord($code[$i])));
 }
 
 /**
- * judge if a problem exists
- * @param string|int $id code or problem id
- * @return BOOL
+ * check whether the problem input/output is valid
+ * @param string $io input/output 
+ * @return void
+ * @exception Exc_runtime on error
  */
-function prob_exists($id)
+function prob_validate_io($io)
 {
-	$where = array();
-	global $db, $DBOP;
-	if (is_string($id))
-		$where = array($DBOP['='], 'code', $id);
-	else if (is_int($id))
-		$where = array($DBOP['='], 'id', $id);
-	else return NULL;
-	return ($db->get_number_of_rows('problems', $where) == 1);
+	if (empty($code))
+		throw new Exc_runtime(__('problem input/output can not be empty'));
+	static $charset = NULL;
+	if (is_null($charset))
+		$charset = str_range('a', 'z') . str_range('A', 'Z') . str_range('0', '9') .
+			'-_';
+	for ($i = 0; $i < strlen($io); $i ++)
+		if (strpos($charset, $io[$i]) === FALSE)
+			throw new Exc_runtime(__('invalid character in problem input/output (char "%s", ascii %d)', $io[$i],
+				ord($io[$i])));
 }
 

@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: oi.php
- * $Date: Tue Nov 02 09:22:26 2010 +0800
+ * $File: acm.php
+ * $Date: Tue Nov 02 09:17:28 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,12 +27,16 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+/*
+ * XXX: just for debug
+ */
+
 require_once $includes_path . 'contest/ctal.php';
 require_once $includes_path . 'problem.php';
 require_once $includes_path . 'sched.php';
 require_once $includes_path . 'record.php';
 
-class Ctal_oi extends Ctal
+class Ctal_acm extends Ctal
 {
 	public function get_form_fields()
 	{
@@ -138,17 +142,19 @@ class Ctal_oi extends Ctal
 
 	public function user_submit($pinfo, $lid, $src)
 	{
-		global $user, $db, $DBOP;
-		if (!user_check_login())
-			throw new Exc_runtime(__('please login first'));
-		if (!$this->allow_viewing())
-			throw new Exc_runtime(__('sorry, you can not submit problem in contest #%d now', $this->data['id']));
-		if (!$user->is_grp_member(GID_SUPER_SUBMITTER))
-			if (time() >= $this->data['time_end'])
-				throw new Exc_runtime(__('you can not submit after the contest ends'));
+		if (time() < $this->data['time_start'])
+			throw new Exc_runtime(__('please do not submit before the contest starts'));
+		if (time() >= $this->data['time_end'])
+			throw new Exc_runtime(__('you can not submit after the contest ends'));
 		$ltype = plang_get_type_by_id($lid);
 		if (is_null($ltype) || !in_array($ltype, array('c', 'cpp', 'pas')))
 			throw new Exc_runtime(__('sorry, your programming language is unavailable in this contest'));
+
+		global $user, $db, $DBOP;
+		if (!user_check_login())
+			throw new Exc_runtime(__('please login first'));
+		if (!prob_check_perm($user->get_groups(), $this->data['perm']))
+			throw new Exc_runtime(__('sorry, you are not allowed to submit in this contest'));
 
 		$rid = $this->get_record_id($pinfo['id']);
 		if (!is_null($rid))
@@ -161,7 +167,6 @@ class Ctal_oi extends Ctal
 		$io = $pinfo['io'];
 		if (is_null($io))
 			$io = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
-
 		submit_add_record($pinfo['id'], $lid, $src, $io,
 			RECORD_STATUS_WAITING_FOR_CONTEST, $this->data['id']);
 	}
@@ -333,19 +338,5 @@ class Ctal_oi extends Ctal
 			return NULL;
 		return intval($row[0]['id']);
 	}
-}
-
-function _ctal_oi_judge($cid)
-{
-	global $db, $DBOP;
-	$where = array($DBOP['='], 'cid', $cid);
-
-	$db->transaction_begin();
-	$num = $db->update_data('records', array('status' => RECORD_STATUS_WAITING_TO_BE_FETCHED), $where);
-	if ($num == 0)
-		$db->delete_item('contests_oi', $where);
-	else
-		$db->update_data('contests_oi', array('total_score' => $num), $where);
-	$db->transaction_commit();
 }
 

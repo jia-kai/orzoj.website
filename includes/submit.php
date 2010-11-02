@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Mon Nov 01 00:24:51 2010 +0800
+ * $Date: Tue Nov 02 09:19:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -75,13 +75,10 @@ function submit_src()
 		throw new Exc_runtime(__('no such problem'));
 	$row = $row[0];
 
-	if (!prob_check_perm($user->get_groups(), $row['perm']))
-		throw new Exc_runtime(__('permission denied for this problem'));
-
 	$src = tf_form_get_source_editor_data('src');
 	$max_src_length = intval(option_get('max_src_length'));
 	if (strlen($src) > $max_src_length)
-		throw new Exc_runtime(__('source length exceeds the limit (%d bytes)', $max_src_length));
+		throw new Exc_runtime(__('source can not be longer than %d bytes', $max_src_length));
 
 	if (!empty($row['io']))
 		$row['io'] = unserialize($row['io']);
@@ -92,6 +89,8 @@ function submit_src()
 		$ct->user_submit($row, $plang, $src);
 	else
 	{
+		if (!$user->is_grp_member(GID_SUPER_SUBMITTER) && !prob_check_perm($user->get_groups(), $row['perm']))
+			throw new Exc_runtime(__('permission denied for this problem'));
 		$io = $row['io'];
 		if (is_null($io))
 			$io = array('', '');
