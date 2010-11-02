@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Mon Nov 01 19:35:27 2010 +0800
+ * $Date: Tue Nov 02 13:24:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -33,6 +33,7 @@ if (!defined('IN_ORZOJ'))
  *		uid: user id
  *		subject: string
  *		author: string, both username and nickname are supported
+ *		action: ['goto-page']
  */
 require_once $includes_path . 'post.php';
 require_once $theme_path . 'post_func.php';
@@ -44,6 +45,7 @@ $type = NULL;
 $uid = NULL;
 $subject = NULL;
 $author = NULL;
+$action = NULL;
 
 if (isset($page_arg))
 {
@@ -53,26 +55,8 @@ if (isset($page_arg))
 		$expr = explode('=', $option);
 		if (count($expr) != 2)
 			die(__('Unknown page argument.'));
-		switch ($expr[0])
-		{
-		case 'start_page':
-			$start_page = intval($expr[1]);
-			break;
-		case 'type':
-			if (array_search($expr[1], $POST_TYPE_SET) === FALSE)
-				die(__('Unknown page argument.'));
-			$type = $expr[1];
-			break;
-		case 'uid':
-			$uid = intval($expr[1]);
-			break;
-		case 'subject':
-			$subject = $expr[1];
-			break;
-		case 'author':
-			$author = $expr[1];
-			break;
-		}
+		$item = $expr[0];
+		$$item = $expr[1];
 	}
 }
 
@@ -83,9 +67,10 @@ foreach (array('start_page', 'uid', 'subject', 'author', 'type') as $item)
 		if (empty($$item))
 			$$item = NULL;
 	}
-if (is_string($start_page))
+
+if (is_string($start_page) && !empty($start_page))
 	$start_page = intval($start_page);
-if (is_string($uid))
+if (is_string($uid) && !empty($uid))
 	$uid = intval($uid);
 
 if (array_search($type, $POST_TYPE_SET) === FALSE)
@@ -96,11 +81,12 @@ if ($type == 'all')
 if (is_string($subject))
 	$subject_pattern = transform_pattern($subject);
 else $subject_pattern = NULL;
-
-
 ?>
+<?php if ($action != 'goto-page') {?>
+<div id="post-topic-list-container">
+<?php }?>
 
-<div id="post-filter">
+<div id="post-filter-container">
 
 <div class="post-filter" style="margin-right: 10px; float: left;">
 <?php echo __('Filter:'); ?>
@@ -118,7 +104,7 @@ function _make_input($prompt, $post_name)
 	if (isset($$post_name))
 		$default = $$post_name;
 	else $default = '';
-	$id = get_unique_id();
+	$id = get_random_id();
 	echo <<<EOF
 <div class="post-filter"><label for="$id">$prompt</label></div>
 <div class="post-filter"><input type="text" name="$post_name" id="$id" value="$default" /></div>
@@ -151,6 +137,7 @@ EOF;
 	}
 	echo '</select></div>';
 }
+
 _make_input(__('Subject'), 'subject');
 _make_input(__('Author'), 'author');
 $types = array();
@@ -162,8 +149,69 @@ echo <<<EOF
 <div class="post-filter"><input type="submit" id="filter-apply-button" value="$Apply" /></div>
 EOF;
 ?>
-</form></div><!-- id: post-filter -->
+</form></div><!-- id: post-filter-container -->
+<div style="float:right">
+<a title="<?php echo __('Refresh')?>">
+	<img src="<?php _url('images/refresh.gif');?>" alt="&lt;refresh&gt;"
+	onclick="set_page(1);" 
+	style="cursor: pointer;" />
+</a>
 
+</div>
+
+
+<?php 
+$total_page = ceil(post_get_topic_amount($type, $uid, $subject_pattern, $author) / $POST_TOPIC_PER_PAGE);
+if ($start_page < 1) $start_page = 1;
+if ($start_page > $total_page) $start_page = $total_page;
+
+/**
+ * @ignore
+ */
+function _make_page_link($text, $page)
+{
+	global $type, $uid, $subject, $author;
+	return sprintf('<a href="%s" onclick="%s">%s</a>',
+		post_list_get_a_href($page, $type, $uid, $subject, $author),
+		"set_page($page); return false",
+		$text
+	);
+}
+
+/**
+ * @ignore
+ */
+function _make_page_nav()
+{
+	global $start_page, $total_page;
+	$ret = '';
+
+	if ($start_page > 1)
+		$ret .= '&lt;' . _make_page_link(__('Prev'), $start_page - 1);
+
+	if ($start_page < $total_page)
+		$ret .= ($start_page > 1 ? ' | ' : '') . _make_page_link(__('Next'), $start_page + 1) . '&gt;';
+
+	if (user_check_login())
+		echo '<div class="post-new-topic-button"><a href="#new-topic">' . __('New topic') . '</a></div>';
+
+	echo '<div class="post-list-navigator">';
+	echo $ret;
+	$id = get_random_id();
+	$GoToPage = __('Go to page');
+	static $cnt = 0;
+	$cnt ++;
+	echo <<<EOF
+<form action="#" class="post-list-goto-form" id="post-list-goto-form$cnt" method="post" onsubmit="post_list_goto($cnt); return false;">
+<label for="$id" style="float: left">$GoToPage</label>
+<input value="$start_page" name="goto_page" id="$id" style="float: left; width: 30px" type="text" />
+/$total_page
+</form>
+EOF;
+	echo '</div><!-- id: post-list-navigator-bottom -->';
+}
+_make_page_nav(); 
+?>
 <?php
 // cv : column value
 
@@ -232,10 +280,6 @@ $cols = array(
 $error = FALSE;
 try
 {
-	$total_page = ceil(post_get_topic_amount($type, $uid, $subject_pattern, $author) / $POST_TOPIC_PER_PAGE);
-	if ($start_page < 1) $start_page = 1;
-	if ($start_page > $total_page) $start_page = $total_page;
-
 	$posts = post_get_topic_list(
 		array('id', 'uid', 'prob_id', 'score', 'type', 'last_reply_time', 'last_reply_user', 'subject', 'nickname_last_reply_user', 'nickname_uid', 'reply_amount', 'viewed_amount'), 
 		$type,
@@ -275,65 +319,22 @@ if (!$error)
 	}
 ?>
 </table>
-<div id="post-list-navigator-bottom">
-<?
-	/**
-	 * @ignore
-	 */
-	function _make_page_link($text, $page)
-	{
-		global $type, $uid, $subject, $author;
-		return sprintf('<a href="%s" onclick="%s">%s</a>',
-			post_list_get_a_href($page, $type, $uid, $subject, $author),
-			post_list_get_a_onclick($page, $type, $uid, $subject, $author),
-			$text
-		);
-	}
-
-	/**
-	 * @ignore
-	 */
-	function _make_page_nav()
-	{
-		global $start_page, $total_page;
-		$ret = '';
-
-		if ($start_page > 1)
-			$ret .= '&lt;' . _make_page_link(__('Prev'), $start_page - 1);
-
-		if ($start_page < $total_page)
-			$ret .= ($start_page > 1 ? ' | ' : '') . _make_page_link(__('Next'), $start_page + 1) . '&gt;';
-		return $ret;
-	}
-	echo _make_page_nav();
-	$id = get_unique_id();
-	$GoToPage = __('Go to page');
-	echo <<<EOF
-<form action="#" id="post-list-goto-form" method="post" onsubmit="post_list_goto(); return false;">
-<label for="$id" style="float: left">$GoToPage</label>
-<input value="$start_page" name="goto_page" id="$id" style="float: left; width: 30px" type="text" />
-/$total_page
-</form>
-EOF;
-?>
-</div><!-- id: post-list-navigator-bottom -->
 <?php
+	_make_page_nav();
 	echo $db->get_query_amount() . ' database queries. ' . count($posts) . ' posts.';
 }
-
 ?>
-
+</div><!-- id: post-topic-list-container -->
 <script type="text/javascript">
 table_set_double_bgcolor();
 $(".post-last-reply-user a").colorbox();
 $("a.post-author").colorbox();
-function post_list_goto()
+function set_page(page)
 {
-	var t = $("#posts-view");
+	var t = $("#post-topic-list-container");
 	t.animate({"opacity" : 0.5}, 1);
-	page = $("#post-list-goto-form input").val();
 	$.ajax({
-		"url" : "<?php t_get_link('ajax-post-list', NULL, FALSE, FALSE); ?>",
+		"url" : "<?php t_get_link('ajax-post-list', 'action=goto-page', FALSE, FALSE); ?>",
 			"type" : "post",
 			"cache" : false,
 			"data" : ({
@@ -350,15 +351,23 @@ foreach (array('uid', 'subject', 'author', 'type') as $item)
 		}
 	});
 	return false;
+
 }
+
+function post_list_goto(id)
+{
+	var page = $("#post-list-goto-form" + id + " input").val();
+	set_page(page);
+}
+
 $("#post-filter-form").bind("submit", function(){
 	var t = $("#posts-view");
 	t.animate({"opacity" : 0.5}, 1);
 	$.ajax({
 		"type" : "post",
-		"cache" : false,
-		"url" : "<?php t_get_link('ajax-post-list', NULL, FALSE); ?>",
-		"data" : $("#post-filter-form").serializeArray(),
+			"cache" : false,
+			"url" : "<?php t_get_link('ajax-post-list', NULL, FALSE); ?>",
+			"data" : $("#post-filter-form").serializeArray(),
 		"success" : function(data) {
 			t.animate({"opacity": 1}, 1);
 			t.html(data);
@@ -367,4 +376,25 @@ $("#post-filter-form").bind("submit", function(){
 	return false;
 });
 $("#filter-apply-button").button();
+<?php if (user_check_login()) {?>
+$('div.post-new-topic-button a').click(function(){
+	$("#post-new-topic-container").slideToggle("slow");
+})
+<?php }?>
 </script>
+
+<?php if ($action == 'goto-page') die;?>
+
+<?php
+if (user_check_login())
+{
+?>
+	<a id="new-topic"></a>
+<?php
+	require_once $theme_path . 'ajax/post_new_topic.php';
+?>
+	<script type="text/javascript">
+	$("#post-new-topic-container").css("display", "none");
+	</script>
+<?php
+}

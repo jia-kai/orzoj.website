@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Mon Nov 01 19:49:39 2010 +0800
+ * $Date: Tue Nov 02 13:07:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,7 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 $POST_USER_NAME_SET = array('nickname', 'username', 'realname');
+require_once $includes_path . 'problem.php';
 
 /* post topic constants */
 $POST_TOPIC_FIELDS_SET = array('id', 'time', 'uid', 'prob_id',
@@ -41,6 +42,8 @@ $POST_TOPIC_FIELDS_SET = array('id', 'time', 'uid', 'prob_id',
 $POST_TOPIC_USER_ID_SET = array('uid', 'last_reply_user');
 
 $POST_TYPE_SET = array('all', 'normal', 'question', 'solution', 'vote');
+filter_apply('post_type_set', $POST_TYPE_SET);
+
 $POST_TYPE_DISP = array(
 	'all' => __('All'),
 	'normal' => __('Normal'),
@@ -75,46 +78,73 @@ $POSTS_USER_ID_SET = array('uid', 'last_modify_user');
 
 /**
  * get post add topic form
+ * @param int $prob_id the problem id
  * @return void
  */
 function post_add_topic_get_form($prob_id = 0)
 {
+	if ($prob_id == 0)
+		$prob_code = '';
+	else $prob_code = prob_get_code_by_id($prob_id);
 	$str = 
-		tf_form_get_post_type_selector()
-		. tf_form_get_text_input(__('Subject:'), 'subject')
-		. tf_form_get_rich_text_editor(__('Content:'), 'content')
-		. tf_form_get_text_input(__('Problem id:'), 'prob_id', NULL, "$prob_id");
+		tf_form_get_text_input(__('Problem code:'), 'prob_code', NULL, "$prob_code", 'post-add-topic-prob-code')
+		. tf_form_get_post_type_select(__('Post type:'), 'type', NULL, 'post-add-topic-post-type')
+		. tf_form_get_text_input(__('Subject:'), 'subject', NULL, NULL, 'post-add-topic-subject')
+		. tf_form_get_rich_text_editor(__('Content:'), 'content', NULL, 'post-add-topic-content');
 	echo filter_apply('after_post_add_form', $str);
 }
 
 /**
  *
  */
-function post_add_topic($prob_id = 0)
+function post_add_topic()
 {
-	global $db, $DBOP, $user;
+	global $db, $DBOP, $user, $POST_TYPE_SET, $POST_TYPE_TO_NUM;
 	if (!user_check_login())
 		throw new Exc_runtime(__('Please login first'));
-	if (!array_key_exists('subject', $_POST) || (strlen($_POST['subject']) == 0))
+	if (!isset($_POST['prob_code']) || !isset($_POST['type']))
+		throw new Exc_runtime(__('Incomplete POST'));
+	if (!array_key_exists('subject', $_POST) || empty($_POST['subject']))
 		throw new Exc_runtime(__('No post subject'));
 	if (strlen($_POST['subject']) > POST_SUBJECT_LEN_MAX)
 		throw new Exc_runtime(__('Subject is too long'));
-	$content = tf_form_get_rich_text_editor_data('content');
 
+	$type = $_POST['type'];
+	if (array_search($type, $POST_TYPE_SET) === FALSE)
+		throw new Exc_runtime(__('Invalid post type'));
+
+	$type = $POST_TYPE_TO_NUM[$type];
+	$subject = htmlencode($_POST['subject']);
+	$content = tf_form_get_rich_text_editor_data('content');
+	$content = trim($content);
+	if (empty($content))
+		throw new Exc_runtime(__('Hi buddy, Something to say?'));
+
+	$prob_code = $_POST['prob_code'];
+	$prob_code = trim($prob_code);
+	if (!empty($prob_code))
+	{
+		$prob_id = prob_get_id_by_code($prob_code);
+		if (is_null($prob_id))
+			throw new Exc_runtime(__('No such problem whose code is \'%s\'', $prob_code));
+	}
+	else $prob_id = 0;
 	$time = time();
-	$val = array('subject' => htmlencode($_POST['subject']),
-		'time' => $time, 'uid' => $user->id,
-		'prob_id' => $prob_id,
-		'last_reply_time' => $time, 'last_reply_user' => $user->id
-	);
+	$uid = $last_reply_user =  $user->id;
+	$last_reply_time = $time;
+	$val = array();
+	foreach (array('subject', 'content', 'time', 'uid', 'prob_id', 'last_reply_time', 'last_reply_user', 'type') as $item)
+		$val[$item] = $$item;
+
 	$val = filter_apply('before_post_topic_add', $val);
-	$topic_id = $db->insert_into('post_topics', $val);
-	$db->insert_into('posts', array(
-		'time' => $time, 'uid' => $user->id,
-		'tid' => $topic_id,
-		'content' => $content
-		));
-	return $topic_id;
+
+	$tid = $db->insert_into('post_topics', $val);
+
+	$floor = 0;
+
+	_post_reply_add_content($content, $time, $uid, $tid, $floor);
+
+	return $tid;
 }
 
 /**
@@ -189,7 +219,9 @@ function _deal_addtional_fields_end(&$fields, $ID_SET, &$additional_fields, &$li
 		for ($j = $i; $j < $cnt && $j < $i + $block_size; $j ++)
 			foreach ($ID_SET as $item)
 				db_where_add_or($where, array($DBOP['='], 'id', $list[$j][$item]));
+		//die(var_dump($val_set));
 		$ret = $db->select_from('users', $val_set, $where);
+
 		foreach ($ret as $us)
 			$_user[$us['id']] = $us;
 
@@ -255,9 +287,11 @@ function post_get_topic_amount($type = NULL, $uid = NULL, $subject = NULL, $auth
 /**
  *
  */
-function post_get_topic($id)
+function post_get_topic($id, $fields = NULL)
 {
-	global $db, $DBOP;
+	global $db, $DBOP, $POST_TOPIC_FIELDS_SET;
+	if (is_array($fields))
+		$fields = array_intersect($fields, $POST_TOPIC_FIELDS_SET);
 	$ret = $db->select_from('post_topics', NULL, array($DBOP['='], 'id', $id));
 	if (count($ret) != 1)
 		return NULL;
@@ -269,6 +303,8 @@ function post_get_topic($id)
  */
 function post_topic_exists($id)
 {
+	global $db, $DBOP;
+	return ($db->get_number_of_rows('post_topics', array($DBOP['='], 'id', $id)) == 1) ? TRUE : FALSE;
 }
 
 /**
@@ -348,11 +384,14 @@ function post_topic_increase_statistic($id, $fields, $delta = 1)
  * @param int|NULL $count
  * @param string $order 'ASC' or 'DESC', the way to sort posts by time
  * @return array the post list
+ * @exception Exc_runtime
  */
 function post_get_post_list($tid, $fields = NULL, $offset = NULL, $count = NULL, $order = 'ASC')
 {
 	global $POSTS_FIELD_SET, $db, $DBOP, $POSTS_USER_ID_SET;
 
+	if (!post_topic_exists($tid))
+		throw new Exc_runtime(__('Post topic whose id is %s doesn\'t exists'));
 	if (is_string($fields))
 		$fields = array($fields);
 	if (is_array($fields))
@@ -428,6 +467,27 @@ function post_reply_get_form($tid)
 }
 
 /**
+ * @ignore
+ */
+function _post_reply_add_content($content, $time, $uid, $tid, &$basic_floor)
+{
+	global $db;
+	for($len = strlen($content); $len > 0; $len -= POST_CONTENT_LEN_MAX)
+	{
+		$db->insert_into('posts', 
+			array('time' => $time,
+				'uid' => $uid,
+				'tid' => $tid,
+				'content' => substr($content, 0, POST_CONTENT_LEN_MAX),
+				'floor' => ++ $basic_floor
+			)
+		);
+		if ($len > POST_CONTENT_LEN_MAX)
+			$content = substr($content, POST_CONTENT_LEN_MAX);
+	}
+}
+
+/**
  * parse posted data and reply the topic
  * @exception Exc_runtime throw when something is wrong
  * @return void
@@ -451,21 +511,9 @@ function post_reply()
 	$topic = $topic[0];
 
 	$basic_floor = $topic['floor_amount'];
-
 	$time = time();
-	for($len = strlen($content); $len > 0; $len -= POST_CONTENT_LEN_MAX)
-	{
-		$db->insert_into('posts', 
-			array('time' => $time,
-				'uid' => $uid,
-				'tid' => $tid,
-				'content' => substr($content, 0, POST_CONTENT_LEN_MAX),
-				'floor' => ++ $basic_floor
-			)
-		);
-		if ($len > POST_CONTENT_LEN_MAX)
-			$content = substr($content, POST_CONTENT_LEN_MAX);
-	}
+
+	_post_reply_add_content($content, $time, $uid, $tid, $basic_floor);
 
 	$nrep = $topic['reply_amount'];
 	$db->update_data('post_topics',

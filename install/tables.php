@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Mon Nov 01 21:53:33 2010 +0800
+ * $Date: Tue Nov 02 10:23:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -555,6 +555,7 @@ $tables = array(
 			'time' => array('type' => 'INT64'), // publishing time
 			'uid' => array('type' => 'INT32'), // user id
 			'tid' => array('type' => 'INT32'), // post topic id
+			'floor' => array('type' => 'INT32'),
 			'content' => array('type' => 'TEXT'),
 			'last_modify_time' => array('type' => 'INT64', 'default' => '0'), // 0 means no body has modified this post yet
 			'last_modify_user' => array('type' => 'INT32', 'default' => '0') // user id, 0 no user has modified this post

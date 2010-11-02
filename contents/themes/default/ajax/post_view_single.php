@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Mon Nov 01 21:51:33 2010 +0800
+ * $Date: Tue Nov 02 12:57:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,20 +28,20 @@ if (!defined('IN_ORZOJ'))
 
 /*
  * page argument:<tid=int>|<start_page=int>| ...(see below)
+ * also POST:
  *		tid: int
  *			the id of topic
  *		start_page: int
  *			the start page of a single post
  *		post_list_start_page: int
- *		post_list_type: array or string
+ *		post_list_type: string
  *		post_list_uid: int
  *		post_list_subject: string
  *		post_list_author: string
- *		action: string ['submit', 'new_viewer']
+ *		action: string ['submit', 'submit-nosj', 'new_viewer', 'goto-page', 'goto-page-nojs']
  * POST:
  *		content: string
  *			reply content
- *		start_page: int
  */
 
 require_once $theme_path . 'post_func.php';
@@ -49,9 +49,15 @@ require_once $includes_path . 'avatar.php';
 
 $POSTS_PER_PAGE = 20;
 
+foreach (array('tid', 'start_page', 'post_list_start_page', 
+	'post_list_type', 'post_list_uid', 'post_list_subject', 
+	'post_list_author') as $item)
+	$$item = NULL;
+
+
 $start_page = 1;
 $tid = NULL;
-$post_list_args = array('start_page', 'type', 'uid', 'subject', 'author', 'action');
+$post_list_args = array('start_page', 'type', 'uid', 'subject', 'author');
 foreach ($post_list_args as $arg)
 {
 	$name = 'post_list_' . $arg;
@@ -91,13 +97,22 @@ if (isset($page_arg))
 	}
 }
 
-if (is_string($post_list_start_page))
-	$post_list_start_page = intval($post_list_start_page);
-if (is_string($post_list_uid))
-	$post_list_uid = intval($post_list_uid);
+foreach (array('tid', 'start_page', 'post_list_start_page', 
+	'post_list_type', 'post_list_uid', 'post_list_subject', 
+	'post_list_author') as $item)
+	if (isset($_POST[$item]))
+		$$item = $_POST[$item];
+
+
+foreach (array('tid', 'start_page', 'post_list_start_page', 'post_list_uid') as $item)
+	$$item = intval($$item);
+
 if (is_string($post_list_type))
 	if (array_search($post_list_type, $POST_TYPE_SET) === FALSE)
 		$post_list_type = NULL;
+
+if ($action == 'new_viewer')
+	post_topic_increase_statistic($tid,	'viewed_amount');
 
 if (empty($tid))
 	die(__('Which topic do you want to see?'));
@@ -115,15 +130,27 @@ if ($action == 'submit' || $action == 'submit-nojs')
 	}
 }
 
-if ($action == 'new_viewer')
-	post_topic_increase_statistic($tid,	'viewed_amount');
+
+$fields = array('time', 'nickname_uid', 'tid', 
+	'content', 'floor',
+	'nickname_last_modify_user'
+);
 
 
-if (isset($_POST['start_page']))
+$total_post = post_get_post_amount($tid);
+$total_page = ceil($total_post / $POSTS_PER_PAGE);
+
+if ($start_page < 1) $start_page = 1;
+if ($start_page > $total_page) $start_page = $total_page;
+try
 {
-	$start_page = intval($_POST['start_page']);
+	$posts = post_get_post_list($tid, $fields, ($start_page - 1) * $POSTS_PER_PAGE, $POSTS_PER_PAGE);
+} catch (Exc_orzoj $e)
+{
+	die($e->msg());
 }
 
+$topic = post_get_topic($tid);
 ?>
 <?php if ($action != 'goto-page' && $action != 'submit') {?>
 <div id="posts-content-container">
@@ -142,28 +169,11 @@ echo '<a href="' . post_list_get_a_href($post_list_start_page, $post_list_type, 
 	. '<button type="button">' . __('Back to list') . '</button></a>';
 
 
-$total_post = post_get_post_amount($tid);
-$total_page = ceil($total_post / $POSTS_PER_PAGE);
-
 ?>
 </div><!-- id: post-view-single-navigator-top -->
 <div id="post-view-single-statistic">
 <?php echo __('Total posts: <span>%d</span>', $total_post); ?>
 </div>
-<?php
-$fields = array('time', 'nickname_uid', 'tid', 
-	'content', 'floor',
-	'nickname_last_modify_user'
-);
-
-if ($start_page < 1) $start_page = 1;
-if ($start_page > $total_page) $start_page = $total_page;
-
-$posts = post_get_post_list($tid, $fields, ($start_page - 1) * $POSTS_PER_PAGE, $POSTS_PER_PAGE);
-
-$topic = post_get_topic($tid);
-
-?>
 
 <?php
 /**
@@ -315,7 +325,7 @@ function posts_goto(id)
 <?php 
 $post_url = t_get_link('show-ajax-post-view-single', 
 	post_view_single_pack_arg($tid, 1000000, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, 'submit-nojs'),
-	FALSE, TRUE);
+	TRUE, TRUE);
 ?>
 <span style="float: left;"><?php echo __('Reply'); ?></span>
 <form style="clear: both;" method="post" id="post-reply-form" action="<?php echo $post_url; ?>">
@@ -357,12 +367,12 @@ $("#post-reply-form").bind("submit", function(){
 	$.colorbox({"html" : "<?php echo __('Submitting...'); ?>"});
 	$.ajax({
 		"type": "post",
-			"cache": false,
-			"url": "<?php echo $url; ?>",
-			"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
-			"post_reply_uid" : "<?php echo $user->id; ?>",
-			"post_reply_content" : content
-			}),
+		"cache": false,
+		"url": "<?php echo $url; ?>",
+		"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
+		"post_reply_uid" : "<?php echo $user->id; ?>",
+		"post_reply_content" : content
+		}),
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
 			if (data.charAt(0) == '0')

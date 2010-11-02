@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sun Oct 31 18:41:31 2010 +0800
+ * $Date: Tue Nov 02 13:06:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -853,6 +853,6 @@ function user_get_user_amount()
 function user_exists($uid)
 {
 	global $db, $DBOP;
-	return ($db->get_number_of_rows('users', array($DBOP['='], 'uid', $uid)) == 1) ? TRUE : FALSE;
+	return ($db->get_number_of_rows('users', array($DBOP['='], 'id', $uid)) == 1) ? TRUE : FALSE;
 }
 

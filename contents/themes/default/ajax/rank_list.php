@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Sat Oct 23 15:55:04 2010 +0800
+ * $Date: Mon Nov 01 22:19:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -142,7 +142,7 @@ function _make_table_header($name, $col_name, $default_order)
 <?php if (!isset($post)) { ?>
 <div id="rank-title"><?php echo __('Rank List');?></div>
 <?php if (user_check_login()) {?>
-<div><?php echo __('Your current rank:');echo _get_single_rank($user->id);?></div>
+<div><?php echo __('Your current rank:');echo user_get_single_rank($user->id);?></div>
 <?php }?>
 <?php }?>
 
@@ -198,7 +198,7 @@ if ($flag)
 }
 
 $users = $db->select_from('users', 
-	array('id', 'nickname', 'realname', 'cnt_submitted_prob', 'cnt_ac_prob', 'ac_ratio'),
+	array('id', 'nickname', 'username', 'cnt_submitted_prob', 'cnt_ac_prob', 'ac_ratio'),
 	NULL,
 	$orderby,
 	($start_page - 1) * $USERS_PER_PAGE,
@@ -206,10 +206,8 @@ $users = $db->select_from('users',
 );
 
 
-/**
- * @ignore
- */
-function _get_single_rank($uid)
+
+function user_get_single_rank($uid)
 {
 	global $db, $DBOP, $sort_list;
 	$tmp = NULL;
@@ -279,15 +277,15 @@ foreach ($users as $_user)
 			$uid = $_user['id'];
 			$url_href = t_get_link('ajax-user-info', "$uid", TRUE, TRUE);
 			$nickname = $_user['nickname'];
-			$realname = $_user['realname'];
+			$username = $_user['username'];
 			$style = '';
 			if (user_check_login() && $uid == $user->id)
 			{
 				$style = "color: $RANK_LIST_COLOR_SELF;";
-				$realname = __('This is you!') . ' ' . $realname . '.';
+				$username = __('This is you!') . ' ' . $username . '.';
 			}
 			//$url_href = t_get_link('problem', "$uid", TRUE, TRUE);
-			echo "<td><a class=\"rank-list-nickname-a\" href=\"$url_href\" style=\"$style\" title=\"$realname\">$nickname</a></td>";
+			echo "<td><a class=\"rank-list-nickname-a\" href=\"$url_href\" style=\"$style\" title=\"$username\">$nickname</a></td>";
 			break;
 		default:
 			echo '<td>' . $_user[$head[1]] . '</td>';

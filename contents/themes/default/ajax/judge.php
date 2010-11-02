@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: judge.php
- * $Date: Fri Oct 29 21:50:57 2010 +0800
+ * $Date: Tue Nov 02 11:02:48 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,9 +27,9 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-$page_arg = (int)($page_arg);
+$page_arg = intval($page_arg);
 if ($page_arg < 0) 
-	exit();
+	exit;
 
 require_once $includes_path . 'judge.php';
 
@@ -70,9 +70,9 @@ echo '<tr><td>', __('Detail'), '</td><td>', _judge_detail($judge) , '</td></tr>'
 ?>
 </table>
 </div>
-<Br/>
+<br />
 <?php
 }
-echo '<br/><br/>';
+echo '<br /><br />';
 echo __('This judge status table was generated at %s and we don\'t guarantee it a realtime status.',$now);
 ?>

@@ -1,7 +1,7 @@
 <?php
-/* 
+/*
  * $File: discuss.php
- * $Date: Fri Oct 29 12:37:23 2010 +0800
+ * $Date: Tue Nov 02 12:51:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -23,23 +23,25 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 if (!defined('IN_ORZOJ'))
 	exit;
-/*
- * page argument: see ajax/post_view_single.php
- */
-?>
-<div id="post-page">
-	<div id="post-tabs">
-	<ul>
-	<li><a href="<?php t_get_link('show-ajax-posts', $page_arg); ?>" id="posts"><?php echo __('Posts'); ?></a></li>
-	<li><a href="<?php t_get_link('show-ajax-post-new-topic'); ?>" id="post-new-topic"><?php echo __('New Topic'); ?></a></li>
-	</ul>
-	</div>
-</div>
+
+?><div id="posts-view"><?php
+if (isset($page_arg))
+	require_once $theme_path . 'ajax/post_view_single.php';
+else require_once $theme_path . 'ajax/post_list.php';
+?></div>
 <script type="text/javascript">
-$("#posts").attr("href", "<?php t_get_link('ajax-posts', NULL, FALSE);?>");
-$("#post-new-topic").attr("href", "<?php t_get_link('ajax-post-new-topic', NULL, FALSE);?>");
-$("#post-tabs").tabs();
+function posts_view_set_content(addr)
+{
+	var t = $("#posts-view");
+	t.animate({"opacity" : 0.5}, 1);
+	$.ajax({
+		"url" : addr,
+		"success" : function(data) {
+			t.animate({"opacity" : 1}, 1);
+			t.html(data);
+		}
+	});
+}
 </script>

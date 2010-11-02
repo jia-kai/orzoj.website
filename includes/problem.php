@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Mon Nov 01 17:36:41 2010 +0800
+ * $Date: Mon Nov 01 22:36:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -96,7 +96,7 @@ function prob_view($pid)
 		if (!$ct)
 		{
 			if (!prob_check_perm($grp, $row['perm']))
-				throw new Exc_runtime(__('Your are not permitted to view this problem'));
+				throw new Exc_runtime(__('You are not permitted to view this problem'));
 		}
 	}
 	$row_grp = array();

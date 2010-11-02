@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Mon Nov 01 21:44:39 2010 +0800
+ * $Date: Tue Nov 02 11:27:03 2010 +0800
 
  This file is part of orzoj
 
@@ -974,14 +974,22 @@ a.post-subject
 	/* color: #3040e9; */
 }
 
-div#post-list-navigator-bottom
+div.post-new-topic-button
+{
+	clear: both;
+	float: left;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+div.post-list-navigator
 {
 	float: right;
 	margin-right: 20px;
 	margin-top: 6px;
 }
 
-form#post-list-goto-form
+form.post-list-goto-form
 {
 	clear: both;
 	float: right;
@@ -1140,6 +1148,27 @@ form.posts-goto-form
 {
 	float: right;
 	margin-left: 20px;
+}
+
+div#post-new-topic-container
+{
+	clear: both;
+	width: 100%;
+}
+
+form#post-new-topic-form
+{
+	width: 100%;
+}
+
+form#post-new-topic-form input
+{
+	width: 100%;
+}
+
+select#post-new-topic-post-type-select
+{
+	width: 80px;
 }
 
 /*

@@ -1,13 +1,13 @@
 <?php
 
 require_once '../pre_include.php';
+$db->delete_item('post_topics');
+$db->delete_item('posts');
 mysql_query('TRUNCATE TABLE post_topics');
 mysql_query('TRUNCATE TABLE posts');
-# $db->delete_item('post_topics');
-# $db->delete_item('posts');
 
-$N_POSTS = 200;
-$N_POST_TOPIC = 100;
+$N_POSTS = 50;
+$N_POST_TOPIC = 30;
 
 
 function add_post_topic()
@@ -15,11 +15,11 @@ function add_post_topic()
 	static $i = 0;
 	global $db, $DBOP;
 	$i ++;
-	$time = time() + $i;
+	$time = $i;
 	$uid = rand(1, 10);
-	$prob_id = rand(0, 20) < 10 ? 0 : rand(1, 10);
-	$is_top = rand(0, 1);
-	$priority = ($is_top ? 5 : 0);
+	$prob_id = (rand(0, 20) < 10 ? 0 : rand(1, 10));
+	$is_top = 0;
+	$priority = 0;
 	$is_locked = rand(0, 100) < 5 ? 1 : 0;
 	$is_boutique = rand(0, 1);
 	$type = rand(1, 4);
@@ -63,7 +63,7 @@ function add_post_reply()
 	global $db, $DBOP, $N_POST_TOPIC;
 	static $tt = 0;
 	$tt ++;
-	$time = time() + $tt + $N_POST_TOPIC + 10;
+	$time = $tt + $N_POST_TOPIC + 10;
 	$uid = rand(1, 10);
 	$tid = rand(1, $N_POST_TOPIC);
 	$topic = $db->select_from('post_topics', array('floor_amount', 'reply_amount', 'viewed_amount'), array($DBOP['='], 'id', $tid));

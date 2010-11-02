@@ -59,6 +59,10 @@ before_user_update_info:
 	file: includes/user.php
 	param: array the value to be inserted into the database
 
+post_type_set:
+	file: includes/post.php
+	param: array $POST_TYPE_SET
+
 after_post_add_form:
 	file: includes/post.php
 	param: string adding post form in HTML

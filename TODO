@@ -45,3 +45,5 @@ add index.html
 add some default expressions to the rich text editor.
 
 输入格式：  => 冒号哪儿来的?
+
+*** Add additional field in function tf_form_get*

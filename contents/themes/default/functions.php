@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Nov 01 21:51:51 2010 +0800
+ * $Date: Tue Nov 02 10:10:03 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -57,23 +57,57 @@ function tf_form_register_checker($func)
  * @return string the HTML code of this field
  * @see tf_register_checker
  */
-function tf_form_get_text_input($prompt, $post_name, $checker = NULL, $default = NULL)
+function tf_form_get_text_input($prompt, $post_name, $checker = NULL, $default = NULL, $class = NULL)
 {
-	global $_tf_checker, $_tf_cur_checker_div;
-	$id = get_unique_id();
-	if (!is_null($checker))
+	switch ($class)
 	{
-		$checker = <<<EOF
+	case 'post-add-topic-prob-code':
+		$id = get_random_id();
+		return "<tr><td><label for=\"$id\">$prompt</label></td>"
+			. "<td colspan=\"2\"><input type=\"text\" id=\"$id\" name=\"$post_name\" /></td>";
+
+	case 'post-add-topic-subject':
+		global $POST_TYPE_DISP;
+		$options = array();
+		foreach ($POST_TYPE_DISP as $val => $disp)
+			$options[$disp] = $val;
+		unset($options[array_search('all', $options)]);
+		$str = '';
+		if ($class == 'post-add-topic-post-type')
+			return '';
+		$str = "<td width=\"80px\"><select name=\"type\" id=\"post-new-topic-post-type-select\">";
+		foreach ($options as $name => $value)
+		{
+			$str .= "<option value=\"$value\" ";
+			if ($value == $default)
+				$str .= 'selected="selected"';
+			$str .= ">$name</option>\n";
+		}
+		$str .= "</select></td>\n";
+		$id = get_random_id();
+		return 
+			"<tr><td><label for=\"$id\">$prompt</label></td>"
+			. $str 
+			. "<td><input type=\"text\" id=\"$id\" name=\"$post_name\" value=\"$default\"></td></tr>";
+
+	default:
+		global $_tf_checker, $_tf_cur_checker_div;
+		$id = get_random_id();
+		if (!is_null($checker))
+		{
+			$checker = <<<EOF
 onblur='form_checker("$checker", "$id", "$_tf_cur_checker_div")'
 EOF;
-	} else $checker = '';
-	return sprintf('<tr><td><label  for="%s">%s</label></td>
-		<td><input type="text" id="%s" name="%s" %s %s /></td></tr>' . "\n",
-		$id, $prompt, $id, $post_name,
-		is_null($default) ? '' : sprintf('value="%s"', $default),
-		$checker);
-}
+		} else $checker = '';
 
+		$id = get_random_id();
+		return sprintf('<tr><td><label for="%s">%s</label></td>
+			<td><input type="text" id="%s" name="%s" %s %s /></td></tr>' . "\n",
+			$id, $prompt, $id, $post_name,
+			is_null($default) ? '' : sprintf('value="%s"', $default),
+			$checker);
+	}
+}
 /**
  * get a form input field for inputing long text
  * @see tf_form_get_text_input
@@ -93,13 +127,14 @@ function tf_form_get_long_text_input($prompt, $post_name, $default = NULL)
  * @param string $prompt
  * @param string $editor_name the editor name, used for retrieving data
  * @param string|NULL $default
+ * @param string|NULL $class
  * @return string the HTML code
  * @see tf_form_get_editor_data
  */
 
 require_once $root_path . 'contents/editors/ckeditor/ckeditor.php';
 
-function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
+function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL, $class = NULL)
 {
 	global $root_path, $editor_id;
 	if (!is_string($default))
@@ -115,7 +150,7 @@ function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL)
 	);
 	$ckeditor = $CKEditor->editor($editor_name, $default);
 	 */
-	$editor_id = get_unique_id();
+	$editor_id = get_random_id();
 	$ckeditor = <<<EOF
 <textarea id="$editor_id" name="$editor_name">$default</textarea>
 <script type="text/javascript">
@@ -130,9 +165,12 @@ CKEDITOR.replace("$editor_id",{
 });
 </script>
 EOF;
-	return "<tr><td><label>$prompt</label></td><td>
+	$colspan = '';
+	if ($class == 'post-add-topic-content')
+		$colspan = ' colspan="3"';
+	return "<tr><td><label>$prompt</label></td><td$colspan>
 		$ckeditor
-			</td></tr>";
+		</td></tr>";
 }
 
 /**
@@ -407,8 +445,8 @@ function tf_get_prob_html($pinfo)
 
 	if (isset($pinfo['cnt_submit']) && isset($pinfo['cnt_ac']))
 		$content .=
-			__('Total Submissions: ') . $pinfo['cnt_submit'] . '&nbsp;&nbsp;'
-			. __('Accepted Submissions: ') . $pinfo['cnt_ac'] . '<br />';
+		__('Total Submissions: ') . $pinfo['cnt_submit'] . '&nbsp;&nbsp;'
+		. __('Accepted Submissions: ') . $pinfo['cnt_ac'] . '<br />';
 
 	if ($show_grp)
 		$content .= ($prob_grp_cnt == 1 ? __('Problem Group: ') : __('Problem Groups: ')). $prob_grp  . '<br />';
@@ -496,13 +534,17 @@ function _tf_form_generate_body($gen_func)
  * get a post type selection list
  * @return string
  */
-function tf_form_get_post_type_selector($prompt, $post_name, $default = NULL)
+function tf_form_get_post_type_select($prompt, $post_name, $default = NULL, $class = NULL)
 {
+	if ($class == 'post-add-topic-post-type')
+		return '';
+
 	global $POST_TYPE_DISP;
 	$options = array();
 	foreach ($POST_TYPE_DISP as $val => $disp)
 		$options[$disp] = $val;
 	$id = get_unique_id();
+	$str = '';
 	$str = "<tr><td><label for=\"$id\">$prompt</label></td>
 		<td><select name=\"$post_name\" id=\"$id\">";
 	foreach ($options as $name => $value)
@@ -514,6 +556,5 @@ function tf_form_get_post_type_selector($prompt, $post_name, $default = NULL)
 	}
 	$str .= "</select></td></tr>\n";
 	return $str;
-
 }
 
