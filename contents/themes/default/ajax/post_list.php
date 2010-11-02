@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Tue Nov 02 13:24:49 2010 +0800
+ * $Date: Tue Nov 02 13:35:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -221,7 +221,8 @@ _make_page_nav();
 function _cv_type()
 {
 	global $post, $theme_path, $POST_TYPE_SET;
-	echo '<img src="' . $theme_path . 'images/post-type-' .$post['type'] . '.gif' . '" alt="' . $POST_TYPE_SET[$post['type']] . '"/>';
+	$alt = $POST_TYPE_SET[$post['type']];
+	echo '<img src="' . $theme_path . 'images/post-type-' .$post['type'] . '.gif' . '" alt="' . $alt . '" title="' . $alt . '"/>';
 }
 
 /**

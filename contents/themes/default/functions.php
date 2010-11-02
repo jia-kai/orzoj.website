@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Nov 02 10:10:03 2010 +0800
+ * $Date: Tue Nov 02 14:28:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -487,8 +487,8 @@ function tf_get_prob_html($pinfo)
 		}
 	if (isset($pinfo['cnt_submit']))
 	{
-		$content .= '<div class="prob-view-single-desc-title">' . __('Statistics') . '</div>
-			<div class="prob-view-single-desc-content">';
+		$content .= '<div class="prob-view-single-desc-title">' . __('Statistics') . '</div>';
+		$content .= '<div class="prob-view-single-desc-content">';
 		$FIELDS = array(
 			'cnt_ac' => __('Accepted submissions:'),
 			'cnt_unac' => __('Unaccepted submissions:'),
@@ -498,9 +498,37 @@ function tf_get_prob_html($pinfo)
 			'cnt_ac_user' => __('Number of users with accepted submission: '),
 			'cnt_ac_submission_sum' => __('Sum of submissions until the first accepted submission for each user: ')
 		);
+
+		$url = 'http://chart.apis.google.com/chart?';
+		$url .= 'cht=p3';
+		$num = array();
+		foreach(array('cnt_ac', 'cnt_unac', 'cnt_ce') as $item)
+			$num[] = $pinfo[$item];
+		$name = array('Accepted', 'Unaccepted', 'Compilation-error');
+		$color = array('DC3912', '3366CC', 'FF9900');
+		$url .= '&chd=t:' . implode(',', $num);
+		$url .= '&chds=0,200000';
+		$url .= '&chs=390x150';
+		$url .= '&chl=' . implode('|', $num);
+		//$url .= '&chtt=' . __('Statistic');
+		$url .= '&chdl=' . implode('|', $name);
+		$url .= '&chma=20,10,10,1|10';
+		$url .= '&chco=' . implode('|', $color);
+		$url .= '&chp=4.7';
+
+		$url = htmlencode($url);
+		$alt = __('Statistic chart');
+
+		$content .= '<div id="prob-view-single-statistic-chart">';
+		$content .= "<img src=\"$url\" alt=\"$alt\" title=\"$alt\" />";
+		$content .= '</div';
+
+		$content .= '<div style="clear: both">';
 		foreach ($FIELDS as $f => $disp)
 			$content .= $disp . ' ' . $pinfo[$f] . '<br />';
 		$content .= '</div>';
+
+		$content .= '</div><!-- id: prob-view-single-desc-content -->';
 	}
 	$content .= '</div> <!-- id: prob-view-single-desc-->';
 	$content .= '</div> <!-- id: prob-view-single -->';

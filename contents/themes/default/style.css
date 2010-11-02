@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Tue Nov 02 11:27:03 2010 +0800
+ * $Date: Tue Nov 02 14:24:12 2010 +0800
 
  This file is part of orzoj
 
@@ -601,6 +601,11 @@ div.prob-view-single-desc-content
 	text-align: left;
 	margin-left: 20px;
 	margin-bottom: 20px;
+}
+
+div#prob-view-single-statistic-chart
+{
+	clear: both;
 }
 
 div.prob-view-single-desc-content pre
