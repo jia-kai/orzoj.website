@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Tue Nov 02 14:24:12 2010 +0800
+ * $Date: Tue Nov 02 16:23:45 2010 +0800
 
  This file is part of orzoj
 
@@ -303,6 +303,7 @@ div#page a.status-ac:hover, div#page a.status-wa:hover, div#page a.status-ce:hov
 
 table.colorbox-table
 {
+	clear: both;
 	border-collapse: collapse;
 	margin: 0;
 	border: 0;
@@ -989,6 +990,7 @@ div.post-new-topic-button
 
 div.post-list-navigator
 {
+	clear: both;
 	float: right;
 	margin-right: 20px;
 	margin-top: 6px;

@@ -3,9 +3,9 @@
 require_once '../pre_include.php';
 require_once $includes_path . 'problem.php';
 
-define('NPROB', 50);
-define('NPGRP', 50);
-define('NMAP', 80);
+define('NPROB', 21);
+define('NPGRP', 21);
+define('NMAP', 30);
 
 $db->delete_item('problems');
 $db->delete_item('prob_grps');

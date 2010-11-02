@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Thu Oct 28 16:38:48 2010 +0800
+ * $Date: Tue Nov 02 16:03:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,6 +34,7 @@ if (!defined('IN_ORZOJ'))
  */
 require_once $includes_path . 'problem.php';
 require_once $theme_path . 'prob_func.php';
+require_once $theme_path . 'post_func.php';
 
 try
 {
@@ -87,11 +88,23 @@ try
 
 	// Best solutions 
 	echo '<a class="need-colorbox" href="'
-		.  t_get_link('ajax-prob-best-solutions', "$pid", TRUE, TRUE) . '"><button type="button">'
+		. t_get_link('ajax-prob-best-solutions', "$pid", TRUE, TRUE) . '"><button type="button">'
 		. __('Best solutions') . '</button></a>';
 
-	// Discuss TODO
+	function _make_post_list_button($prompt, $type = NULL)
+	{
+		global $pid;
+		$arg = post_list_pack_arg(1, NULL, $type, NULL, NULL, $pid, 'in-colorbox');
+		echo '<a class="need-colorbox" href="'
+			. t_get_link('ajax-post-list', $arg, TRUE, TRUE) . '"><button>'
+			. $prompt
+			. '</button></a>';
+	}
+	// Discuss 
+	_make_post_list_button(__('Discuss'));
 
+	// Solution
+	_make_post_list_button(__('Solution'), 'solution');
 	// Back to list
 	if ($start_page == -1) // from a unknown place..
 	{
@@ -111,8 +124,8 @@ try
 
 	if (prob_future_contest($pid))
 		echo '<div style="clear: both;">' .
-			__('This problem belongs to an upcoming contest and you should not try to view it here.') .
-			'</div>';
+		__('This problem belongs to an upcoming contest and you should not try to view it here.') .
+		'</div>';
 	else
 		echo prob_view($pid);
 
@@ -127,32 +140,32 @@ try
 
 ?>
 
-<script type="text/javascript">
-$("button").button();
-$(".need-colorbox").colorbox();
-$("button").button();
+	<script type="text/javascript">
+	$("button").button();
+	$(".need-colorbox").colorbox();
+	$("button").button();
 
-function bookmark_page()
-{
-	title = "<?echo __('Problem') . ' - ' . prob_get_title_by_id($pid) . ' - ' . $pcode;?>";
-	url = $("#page-addr").val();
-	if (window.sidebar) 
-		window.sidebar.addPanel(title, url, "");
-	else if(window.opera && window.print)
+	function bookmark_page()
 	{
-		var elem = document.createElement('a');
-		elem.setAttribute('href', url);
-		elem.setAttribute('title', title);
-		elem.setAttribute('rel', 'sidebar');
-		elem.click();
+		title = "<?echo __('Problem') . ' - ' . prob_get_title_by_id($pid) . ' - ' . $pcode;?>";
+		url = $("#page-addr").val();
+		if (window.sidebar) 
+			window.sidebar.addPanel(title, url, "");
+		else if(window.opera && window.print)
+		{
+			var elem = document.createElement('a');
+			elem.setAttribute('href', url);
+			elem.setAttribute('title', title);
+			elem.setAttribute('rel', 'sidebar');
+			elem.click();
+		}
+		else if(window.external)
+			window.external.AddFavorite(url,title);
+		else
+			alert("<?php echo __('Sorry, bookmarking this page is not supported on your browser.');?>");
 	}
-	else if(window.external)
-		window.external.AddFavorite(url,title);
-	else
-		alert("<?php echo __('Sorry, bookmarking this page is not supported on your browser.');?>");
-}
 
-</script>
+	</script>
 
 <?php
 }

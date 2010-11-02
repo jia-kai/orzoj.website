@@ -1,6 +1,6 @@
 <?php
 
-define('NUSER', 150);
+define('NUSER', 21);
 
 require_once '../pre_include.php';
 $db->delete_item('users');

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Tue Nov 02 13:35:57 2010 +0800
+ * $Date: Tue Nov 02 18:25:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,10 +30,10 @@ if (!defined('IN_ORZOJ'))
  * page argument: <start_page=int>|<type=string>|<uid=int>|<author=string>|<subject=string>
  *		type string see includes/post.php : $POST_TYPE_SET
  *		type option can appear more than once
- *		uid: user id
+ *		uid: int user id
  *		subject: string
- *		author: string, both username and nickname are supported
- *		action: ['goto-page']
+ *		author: string both username and nickname are supported
+ *		action: string ['goto-page', 'in-colorbox']
  */
 require_once $includes_path . 'post.php';
 require_once $theme_path . 'post_func.php';
@@ -45,6 +45,7 @@ $type = NULL;
 $uid = NULL;
 $subject = NULL;
 $author = NULL;
+$prob_id = NULL;;
 $action = NULL;
 
 if (isset($page_arg))
@@ -60,7 +61,7 @@ if (isset($page_arg))
 	}
 }
 
-foreach (array('start_page', 'uid', 'subject', 'author', 'type') as $item)
+foreach (array('start_page', 'uid', 'subject', 'author', 'type', 'prob_id', 'action') as $item)
 	if (isset($_POST[$item]))
 	{
 		$$item = $_POST[$item];
@@ -86,6 +87,7 @@ else $subject_pattern = NULL;
 <div id="post-topic-list-container">
 <?php }?>
 
+<?php if ($action != 'in-colorbox') {?>
 <div id="post-filter-container">
 
 <div class="post-filter" style="margin-right: 10px; float: left;">
@@ -150,18 +152,19 @@ echo <<<EOF
 EOF;
 ?>
 </form></div><!-- id: post-filter-container -->
+
 <div style="float:right">
 <a title="<?php echo __('Refresh')?>">
 	<img src="<?php _url('images/refresh.gif');?>" alt="&lt;refresh&gt;"
 	onclick="set_page(1);" 
 	style="cursor: pointer;" />
 </a>
-
 </div>
 
+<?php }?>
 
 <?php 
-$total_page = ceil(post_get_topic_amount($type, $uid, $subject_pattern, $author) / $POST_TOPIC_PER_PAGE);
+$total_page = ceil(post_get_topic_amount($type, $uid, $subject_pattern, $author, $prob_id) / $POST_TOPIC_PER_PAGE);
 if ($start_page < 1) $start_page = 1;
 if ($start_page > $total_page) $start_page = $total_page;
 
@@ -170,10 +173,18 @@ if ($start_page > $total_page) $start_page = $total_page;
  */
 function _make_page_link($text, $page)
 {
-	global $type, $uid, $subject, $author;
+	global $type, $uid, $subject, $author, $prob_id, $action;
+	if ($action == 'in-colorbox')
+	{
+		$arg = post_list_pack_arg($page, $type, $uid, $subject, $author, $prob_id, $action);
+		return sprintf('<a href="%s">%s</a>',
+			t_get_link('ajax-post-list', $arg, TRUE, TRUE),
+			$text
+			);
+	}
 	return sprintf('<a href="%s" onclick="%s">%s</a>',
-		post_list_get_a_href($page, $type, $uid, $subject, $author),
-		"set_page($page); return false",
+		post_list_get_a_href($page, $type, $uid, $subject, $author, $prob_id, $action),
+		"set_page($page); return false;",
 		$text
 	);
 }
@@ -183,7 +194,7 @@ function _make_page_link($text, $page)
  */
 function _make_page_nav()
 {
-	global $start_page, $total_page;
+	global $start_page, $total_page, $action;
 	$ret = '';
 
 	if ($start_page > 1)
@@ -192,7 +203,7 @@ function _make_page_nav()
 	if ($start_page < $total_page)
 		$ret .= ($start_page > 1 ? ' | ' : '') . _make_page_link(__('Next'), $start_page + 1) . '&gt;';
 
-	if (user_check_login())
+	if (user_check_login() && $action != 'in-colorbox')
 		echo '<div class="post-new-topic-button"><a href="#new-topic">' . __('New topic') . '</a></div>';
 
 	echo '<div class="post-list-navigator">';
@@ -222,7 +233,7 @@ function _cv_type()
 {
 	global $post, $theme_path, $POST_TYPE_SET;
 	$alt = $POST_TYPE_SET[$post['type']];
-	echo '<img src="' . $theme_path . 'images/post-type-' .$post['type'] . '.gif' . '" alt="' . $alt . '" title="' . $alt . '"/>';
+	echo '<img src="' . _url('images/post-type-' . $alt. '.png', TRUE) . '" alt="' . $alt . '" title="' . $alt . '"/>';
 }
 
 /**
@@ -230,11 +241,18 @@ function _cv_type()
  */
 function _cv_subject()
 {
-	global $post, $start_page, $type, $uid, $subject, $author;
-	echo '<a class="post-subject" href="' 
-		. post_view_single_get_a_href($post['id'], 1, $start_page, $type, $uid, $subject, $author, 'new_viewer') . '"'
-		. 'onclick="' . post_view_single_get_a_onclick($post['id'], 1, $start_page, $type, $uid, $subject, $author, 'new_viewer') . '"'
-		. '>' . $post['subject'] . '</a>';
+	global $post, $start_page, $type, $uid, $subject, $author, $action, $prob_id;
+	$s = '<a class="post-subject" href="' ;
+	if ($action == 'in-colorbox')
+	{
+		$arg = post_view_single_pack_arg(1, $type, $uid, $subject, $author, $prob_id, $action);
+		$s .= t_get_link('ajax-post-view-single', $arg, TRUE, TRUE) . '"';
+	}
+	else
+		$s .= post_view_single_get_a_href($post['id'], 1, $start_page, $type, $uid, $subject, $author, $prob_id, 'new_viewer' . $action) . '"'
+		. 'onclick="' . post_view_single_get_a_onclick($post['id'], 1, $start_page, $type, $uid, $subject, $author, $prob_id, 'new_viewer' . $action) . '"';
+	$s .= '>' . $post['subject'] . '</a>';
+	echo $s;
 }
 
 /**
@@ -242,8 +260,13 @@ function _cv_subject()
  */
 function _cv_author()
 {
-	global $post;
-	echo '<a class="post-author" href="' . t_get_link('ajax-user-info', $post['uid'], TRUE, TRUE) . '">' . $post['nickname_uid'] . '</a>';
+	global $post, $action;
+	$s = '<a class="post-author" '
+		. 'title="' . $post['username_uid'] . '" ';
+	if ($action != 'in-colorbox')
+		$s .= 'href="' . t_get_link('ajax-user-info', $post['uid'], TRUE, TRUE) . '" ';
+	$s .= '>' . $post['nickname_uid'] . '</a>';
+	echo $s;
 }
 
 /**
@@ -262,11 +285,15 @@ function _cv_rep_viewed()
  */
 function _cv_last_replay()
 {
-	global $post;
-	echo '<div class="post-last-reply">';
-	echo '<div class="post-last-reply-user"><a href="' . t_get_link('ajax-user-info', $post['last_reply_user'], TRUE, TRUE) . '">' . $post['nickname_last_reply_user'] . '</a></div>';
-	echo '<div class="post-last-reply-time">' . time2str($post['last_reply_time']) . '</div>';
-	echo '</div>';
+	global $post, $action;
+	$s = '<div class="post-last-reply">';
+	$s .= '<div class="post-last-reply-user"><a ';
+	if ($action != 'in-colorbox')
+		$s .= 'href="' . t_get_link('ajax-user-info', $post['last_reply_user'], TRUE, TRUE) . '"';
+	$s .= '>' . $post['nickname_last_reply_user'] . '</a></div>';
+	$s .= '<div class="post-last-reply-time">' . time2str($post['last_reply_time']) . '</div>';
+	$s .= '</div>';
+	echo $s;
 }
 
 $cols = array(
@@ -282,13 +309,14 @@ $error = FALSE;
 try
 {
 	$posts = post_get_topic_list(
-		array('id', 'uid', 'prob_id', 'score', 'type', 'last_reply_time', 'last_reply_user', 'subject', 'nickname_last_reply_user', 'nickname_uid', 'reply_amount', 'viewed_amount'), 
+		array('id', 'uid', 'prob_id', 'score', 'type', 'last_reply_time', 'last_reply_user', 'subject', 'nickname_last_reply_user', 'nickname_uid', 'username_uid', 'reply_amount', 'viewed_amount'), 
 		$type,
 		($start_page - 1) * $POST_TOPIC_PER_PAGE, 
 		$POST_TOPIC_PER_PAGE,
 		$uid,
 		$subject_pattern,
-		$author
+		$author,
+		$prob_id
 	);
 } catch (Exc_runtime $e)
 	{
@@ -298,7 +326,10 @@ try
 
 if (!$error)
 {
-	echo '<table class="page-table">';
+	$table_class = 'page-table';
+	if ($action == 'in-colorbox')
+		$table_class = 'colorbox-table';
+	echo "<table class=\"$table_class\">";
 
 	echo '<tr>';
 	foreach ($cols as $val)
@@ -327,9 +358,13 @@ if (!$error)
 ?>
 </div><!-- id: post-topic-list-container -->
 <script type="text/javascript">
+
+<?php if ($action != 'in-colorbox') {?>
 table_set_double_bgcolor();
 $(".post-last-reply-user a").colorbox();
 $("a.post-author").colorbox();
+<?php }?>
+
 function set_page(page)
 {
 	var t = $("#post-topic-list-container");
@@ -341,7 +376,7 @@ function set_page(page)
 			"data" : ({
 				"start_page" : page
 <?php
-foreach (array('uid', 'subject', 'author', 'type') as $item)
+foreach (array('uid', 'subject', 'author', 'type', 'prob_id', 'action') as $item)
 	if (is_int($$item) || (is_string($$item) && strlen($$item)))
 		echo ', "' . $item . '" : "' . $$item . '"';
 ?>

@@ -1,7 +1,7 @@
 <?php
 require_once '../pre_include.php';
 
-define('NTEAM', 50);
+define('NTEAM', 21);
 
 $db->insert_into('user_teams', array(
 	'id' => USER_TID_NONE,

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Mon Nov 01 22:36:01 2010 +0800
+ * $Date: Tue Nov 02 16:19:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -486,5 +486,22 @@ function prob_validate_code($code)
 		if (strpos($charset, $code[$i]) === FALSE)
 			throw new Exc_runtime(__('invalid character in problem code (char "%s", #%d)', $code[$i],
 				ord($code[$i])));
+}
+
+/**
+ * judge if a problem exists
+ * @param string|int $id code or problem id
+ * @return BOOL
+ */
+function prob_exists($id)
+{
+	$where = array();
+	global $db, $DBOP;
+	if (is_string($id))
+		$where = array($DBOP['='], 'code', $id);
+	else if (is_int($id))
+		$where = array($DBOP['='], 'id', $id);
+	else return NULL;
+	return ($db->get_number_of_rows('problems', $where) == 1);
 }
 

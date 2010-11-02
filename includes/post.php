@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Tue Nov 02 13:07:30 2010 +0800
+ * $Date: Tue Nov 02 16:21:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -42,7 +42,6 @@ $POST_TOPIC_FIELDS_SET = array('id', 'time', 'uid', 'prob_id',
 $POST_TOPIC_USER_ID_SET = array('uid', 'last_reply_user');
 
 $POST_TYPE_SET = array('all', 'normal', 'question', 'solution', 'vote');
-filter_apply('post_type_set', $POST_TYPE_SET);
 
 $POST_TYPE_DISP = array(
 	'all' => __('All'),
@@ -51,11 +50,12 @@ $POST_TYPE_DISP = array(
 	'solution' => __('Solution'),
 	'vote' => __('Vote')
 );
+
+filter_apply('post_type_set', $POST_TYPE_SET, $POST_TYPE_DISP);
+
 $POST_TYPE_TO_NUM = array();
-$tmp = 0;
-foreach ($POST_TYPE_SET as $val)
-	$POST_TYPE_TO_NUM[$val] = $tmp ++;
-unset($tmp);
+foreach ($POST_TYPE_SET as $key => $val)
+	$POST_TYPE_TO_NUM[$val] = $key;
 
 $POST_TOPIC_ATTRIB_SET = array('is_top', 'is_locked', 'is_boutique');
 $POST_TOPIC_STATISTIC_SET = array('reply_amount', 'viewed_amount', 'floor_amount');
@@ -150,7 +150,7 @@ function post_add_topic()
 /**
  * @ignore
  */
-function _post_get_topic_list_build_where($type, $uid, $subject, $author, $attrib)
+function _post_get_topic_list_build_where($type, $uid, $subject, $author, $prob_id, $attrib)
 {
 	global $DBOP, $POST_TYPE_SET, $POST_TYPE_TO_NUM, $AUTHOR_TYPE_SET, $POST_TOPIC_ATTRIB_SET;
 	$where = NULL;
@@ -166,13 +166,20 @@ function _post_get_topic_list_build_where($type, $uid, $subject, $author, $attri
 	{
 		$author_id = user_get_id_by_username($author);
 		if ($author_id === NULL)
-			throw new Exc_runtime(__('No such user whose %s is %s!', $tmp[0], $author));
+			throw new Exc_runtime(__('No such user whose username is %s!', $author));
 		db_where_add_add($where, array($DBOP['='], 'uid', $author_id));
 	}
 
 	if (is_string($subject) && strlen($subject))
 		db_where_add_and($where, array($DBOP['like'], 'subject', $subject));
 
+	if (!empty($prob_id))
+	{
+		$prob_id = intval($prob_id);
+		if (!prob_exists($prob_id))
+			throw new Exc_runtime(__('No such problem whose id is %d!', $prob_id));
+		db_where_add_and($where, array($DBOP['='], 'prob_id', $prob_id));
+	}
 	if (is_array($attrib))
 		foreach ($POST_TOPIC_ATTRIB_SET as $at)
 			if (array_key_exists($at, $attrib) && is_bool($attrib[$at]))
@@ -252,7 +259,7 @@ function _deal_addtional_fields_end(&$fields, $ID_SET, &$additional_fields, &$li
  * @param array|NULL $attrib valid attributes : array('is_top' => BOOL, 'is_locked' => BOOL), if set more than one, they will all to be matched
  * @exception Exc_runtime if user does not exists
  */
-function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $subject = NULL, $author = NULL, $attrib = NULL)
+function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $subject = NULL, $author = NULL, $prob_id, $attrib = NULL)
 {
 	global $db, $DBOP, $POST_TOPIC_FIELDS_SET, $POST_TOPIC_USER_ID_SET, $POST_USER_NAME_SET;
 	$fields = array_intersect($fields, $POST_TOPIC_FIELDS_SET);
@@ -262,7 +269,7 @@ function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $coun
 	// additional fields
 	$additional_fields = _deal_addtional_fields_start($fields, $POST_TOPIC_USER_ID_SET);
 
-	$where = _post_get_topic_list_build_where($type, $uid, $subject, $author, $attrib);
+	$where = _post_get_topic_list_build_where($type, $uid, $subject, $author, $prob_id, $attrib);
 
 	$order_by = array('priority' => 'DESC', 'last_reply_time' => 'DESC');
 
@@ -277,10 +284,10 @@ function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $coun
  * get amount of topic in a specific limitation
  * @see post_get_topic_list
  */
-function post_get_topic_amount($type = NULL, $uid = NULL, $subject = NULL, $author = NULL, $attrib = NULL)
+function post_get_topic_amount($type = NULL, $uid = NULL, $subject = NULL, $author = NULL, $prob_id = NULL, $attrib = NULL)
 {
 	global $db;
-	$where = _post_get_topic_list_build_where($type, $uid, $subject, $author, $attrib);
+	$where = _post_get_topic_list_build_where($type, $uid, $subject, $author, $prob_id, $attrib);
 	return $db->get_number_of_rows('post_topics', $where);
 }
 

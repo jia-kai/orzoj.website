@@ -1,7 +1,7 @@
 <?php
 require_once '../pre_include.php';
 
-define('NRAND', 100);
+define('NRAND', 10);
 
 $PREDEFINED_GRP_NAMES = array(
 	GID_ALL => 'All reg. users',

@@ -61,7 +61,8 @@ before_user_update_info:
 
 post_type_set:
 	file: includes/post.php
-	param: array $POST_TYPE_SET
+	param: array $POST_TYPE_SET 
+			array $POST_TYPE_DISP
 
 after_post_add_form:
 	file: includes/post.php

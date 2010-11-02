@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Nov 02 14:28:41 2010 +0800
+ * $Date: Tue Nov 02 14:46:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,23 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+
+/**
+ * @ignore
+ */
+function _disable_post_type()
+{
+	global $POST_TYPE_DISP, $POST_TYPE_SET;
+	$key = array_search('vote', $POST_TYPE_SET);
+	if ($key !== FALSE)
+	{
+		unset($POST_TYPE_SET[$key]);
+		unset($POST_TYPE_DISP[$key]);
+	}
+}
+
+filter_add('post_type_set', '_disable_post_type');
 
 /**
  * @ignore

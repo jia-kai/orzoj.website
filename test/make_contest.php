@@ -4,12 +4,13 @@ require_once '../pre_include.php';
 
 define('TEST_CONTEST_LIST', TRUE);
 
-define('CT_NUSER', 102);
+define('CT_NUSER', 10);
+
 if(defined('TEST_CONTEST_LIST'))
 {
-	define('NPAST', 100);
+	define('NPAST', 21);
 	define('NCURRENT', 5);
-	define('NFUTURE', 100);
+	define('NFUTURE', 21);
 }
 else
 {

@@ -6,23 +6,24 @@ $db->delete_item('posts');
 mysql_query('TRUNCATE TABLE post_topics');
 mysql_query('TRUNCATE TABLE posts');
 
-$N_POSTS = 50;
-$N_POST_TOPIC = 30;
+$N_POSTS = 30;
+$N_POST_TOPIC = 21;
 
 
-function add_post_topic()
+function add_post_topic($prob_id = NULL)
 {
 	static $i = 0;
 	global $db, $DBOP;
 	$i ++;
 	$time = $i;
 	$uid = rand(1, 10);
-	$prob_id = (rand(0, 20) < 10 ? 0 : rand(1, 10));
+	if (!is_int($prob_id))
+		$prob_id = (rand(0, 20) < 10 ? 0 : rand(1, 10));
 	$is_top = 0;
 	$priority = 0;
 	$is_locked = rand(0, 100) < 5 ? 1 : 0;
 	$is_boutique = rand(0, 1);
-	$type = rand(1, 4);
+	$type = rand(1, 3); // vote is temporary disabled
 	$subject = 'subject ' . $i;
 
 	$last_reply_time = $time;
@@ -103,7 +104,8 @@ function add_post_reply()
 
 for ($i = 0; $i < $N_POST_TOPIC; $i ++)
 	add_post_topic();
-
+for ($i = 0; $i < $N_POST_TOPIC; $i ++)
+	add_post_topic(1);
 for ($i = 0; $i < $N_POSTS; $i ++)
 	add_post_reply();
 
