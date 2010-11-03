@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Wed Nov 03 10:40:44 2010 +0800
+ * $Date: Wed Nov 03 21:52:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -369,18 +369,17 @@ function posts_goto(id)
 
 </div><!-- class: posts-all-container -->
 
-<?php if (_action('in-colorbox')) { ?>
 <script type="text/javascript">
-
+<?php if (_action('in-colorbox')) { ?>
 $(".post-view-single-navigator-top a").colorbox();
 $("table.colorbox-table").css("width", "900px");
 $("div.posts-nickname a").colorbox();
 $("div.posts-nav a").colorbox();
 $(".posts-content a").attr("target", "_blank");
-
+<?php } else {?>
+$(".posts-nickname a").colorbox();
+<?php } ?>
 </script>
-<?php }?>
-
 <?php /* Reply form */ ?>
 
 <?php
