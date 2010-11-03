@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Tue Nov 02 23:56:36 2010 +0800
+ * $Date: Wed Nov 03 10:37:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -180,6 +180,9 @@ try
 {
 	$total_page = ceil(post_get_topic_amount($type, $uid, $subject_pattern, $author, $prob_id) / $POST_TOPIC_PER_PAGE);
 
+	if ($start_page < 1) $start_page = 1;
+	if ($start_page > $total_page) $start_page = $total_page;
+
 	$posts = post_get_topic_list(
 		array('id', 'uid', 'prob_id', 'score', 'type',
 		'last_reply_time', 'last_reply_user', 
@@ -200,9 +203,6 @@ try
 	echo '<div style="clear: both;">' . $e->msg() . '</div>';
 	$error = TRUE;
 }
-
-if ($start_page < 1) $start_page = 1;
-if ($start_page > $total_page) $start_page = $total_page;
 
 
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Tue Nov 02 22:52:07 2010 +0800
+ * $Date: Wed Nov 03 12:48:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -105,6 +105,7 @@ try
 
 	// Solution
 	_make_post_list_button(__('Solution'), 'solution');
+
 	// Back to list
 	if ($start_page == -1) // from a unknown place..
 	{

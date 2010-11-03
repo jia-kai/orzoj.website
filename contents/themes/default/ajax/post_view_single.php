@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Wed Nov 03 09:07:40 2010 +0800
+ * $Date: Wed Nov 03 10:40:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -270,7 +270,7 @@ _make_posts_nav();
 ?>
 
 <div id="post-view-single-content" style="clear: both;">
-<div id="post-subject"><?php echo $topic['subject']; ?></div>
+<div class="post-subject"><?php echo $topic['subject']; ?></div>
 <?php
 $table_class = 'posts-table'; 
 if (_action('in-colorbox'))
@@ -346,6 +346,8 @@ function set_page(page)
 			t.animate({"opacity" : 1}, 1);
 			<?php if (_action('in-colorbox')) {?>
 			$.colorbox({"html" : data});
+			$(".post-view-single-navigator-top a").colorbox();
+			$("button").button();
 			<?php } else {?>
 			t.html(data);
 			<?php }?>
@@ -371,6 +373,7 @@ function posts_goto(id)
 <script type="text/javascript">
 
 $(".post-view-single-navigator-top a").colorbox();
+$("table.colorbox-table").css("width", "900px");
 $("div.posts-nickname a").colorbox();
 $("div.posts-nav a").colorbox();
 $(".posts-content a").attr("target", "_blank");
@@ -412,7 +415,6 @@ if (user_check_login() && !_action('in-colorbox')) {
 	<?php $Editor = "CKEDITOR.instances.$editor_id";?>
 	function append_reply(floor)
 	{
-		alert("<?php echo $Editor?>");
 		<?php echo $Editor; ?>.insertHtml(
 			"<?php echo $InReplyTo; ?> #" + floor + ": "
 		);

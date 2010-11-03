@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_func.php
- * $Date: Tue Nov 02 15:54:04 2010 +0800
+ * $Date: Wed Nov 03 12:38:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,10 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+function prob_view_by_group_pack_arg($gid, $start_page, $sort_col, $sort_way, $title_pattern_show)
+{
+	return sprintf('%d|%d|%s|%s|%s', $gid, $start_page, $sort_col, $sort_way, $title_pattern_show);
+}
 function prob_view_by_group_get_a_href($gid, $start_page, $sort_col = 'id', $sort_way = 'ASC', $title_pattern_show = NULL)
 {
 	if (is_null($title_pattern_show))
@@ -80,6 +84,7 @@ function _get_string(&$pos, $str, $len)
 		$ret .= $str[$pos ++];
 		$flag = true;
 	}
+	return $ret;
 	if (!$flag)
 		throw new Exc_orzoj($exc_msg . '2');
 	return $ret;

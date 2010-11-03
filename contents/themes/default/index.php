@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Tue Nov 02 13:30:09 2010 +0800
+ * $Date: Wed Nov 03 11:45:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -546,21 +546,35 @@ $is_old_browser = (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6') !== false) || (
 if ($is_old_browser)
 {
 ?>
-<div id="oldbrowser">
+<div class="oldbrowser">
+<div class="oldbrowser-content" style="text-align: center;">
 <?php
 	echo __('Your browser is out of date.Please upgrade your browser.If you insist on using your out-of-date browser,you can\'t get the best browsing experience.<br/>');
+	echo __('As follows are some up-to-date browsers(In alphabet order).').'<Br/>';
 	function _new_browser_a($brow,$downurl)
 	{
-		echo '<a href="'.$downurl.'" alt="" target="_blank" title="'.$brow.'"><img src="'._url('images/newbrowsers/'.$brow.'.gif',TRUE),'"></a>';
+		echo '<a href="'.$downurl.'" alt="" target="_blank" title="'.$brow.'"><img src="'._url('images/newbrowsers/'.$brow.'.gif',TRUE),'" style="float: none"/></a>';
 	}
-	echo __('As follows are some up-to-date browsers(In alphabet order).').'<Br/>';
+	echo '<div class="oldbrowser-brow" style="margin-left: auto; margin-right: auto;">';
 	_new_browser_a('chrome','http://www.google.com/chrome/');
 	_new_browser_a('firefox','http://www.mozilla.com/firefox/');
 	_new_browser_a('ie8','http://go.microsoft.com/fwlink/?LinkId=161354');
 	_new_browser_a('opera','http://www.opera.com/browser/download/');
 	_new_browser_a('safari','http://www.apple.com/safari/');
+	echo '</div>'
 ?>
 </div>
+<div class="oldbrowser-title" style="clear: both; text-align: center; font-weight: bold; font-size: 30px; color: red;" >
+<?php echo __('IMPORTANT NOTICE')?>
+</div>
+</div>
+<script type="text/javascript">
+	$("div.oldbrowser-content").css("display", "none");
+	$("div.oldbrowser-title").click(function(){
+		$("div.oldbrowser-content").slideToggle("slow");
+	});
+</script>
+
 <?php
 }
 ?>

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_group_tree_ask.php
- * $Date: Thu Oct 21 22:57:09 2010 +0800
+ * $Date: Wed Nov 03 12:39:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -47,20 +47,22 @@ if ($pgid == -1) // the first request
 }
 $grps = $db->select_from('prob_grps', array('id', 'name'),
 	array($DBOP['='], 'pgid', $pgid));
+
 foreach ($grps as $grp)
 {
 	$id = $grp['id'];
 	$name = $grp['name'];
+	$arg = prob_view_by_group_pack_arg($id, 1, 'id', 'ASC', NULL);
+	$href = 'javascript: prob_view_set_content("' . t_get_link('ajax-prob-view-by-group', $arg, FALSE, TRUE) . '")';
 	$grp = array(
 		'data' => array(
 			'title' => $name,
 			'attr' => array(
-				'href' => prob_view_by_group_get_a_href($id, 1, FALSE),
-				'onclick' => prob_view_by_group_get_a_onclick($id, 1, 'id', 'ASC', NULL, FALSE)
-			)
-		),
-		'attr' => array('id' => $id)
-	);
+				'href' => $href
+				)
+			),
+			'attr' => array('id' => $id),
+		);
 	$nchild = $db->get_number_of_rows('prob_grps',
 		array($DBOP['='], 'pgid', $id));
 	if ($nchild)
@@ -69,23 +71,23 @@ foreach ($grps as $grp)
 }
 
 if ($first_request)
+{
+	$arg = prob_view_by_group_pack_arg(0, 1, 'id', 'ASC', NULL);
+	$href = 'javascript: prob_view_set_content("' . t_get_link('ajax-prob-view-by-group', $arg, FALSE, TRUE) . '")';
 	$ret = array(
 		'data' => array(
 			'title' => __('All'),
 			'attr' => array(
-				'href' => prob_view_by_group_get_a_href(0, 1),
-				'onclick' => prob_view_by_group_get_a_onclick(0, 1, 'id', 'ASC', NULL, FALSE)
+				'href' => $href
 			)
 		),
 		'attr' => array('id' => 0),
 		'state' => 'open',
-		'children' => $ret
+		'children' => $ret,
+		'callback' => array(
+			'onselect' => "function(){alert(1);}"
+		)
 	);
+}
 echo json_encode($ret);
 
-/*
-[
-	{ "data" : "A node", "attr" : {"id" : 1} ,"children" : [ { "data" : "Only child", "state" : "closed", "attr" : {"id" : 2}} ], "state" : "open" },
-	{ "data" : "Node ?", "attr" : {"id" : 3}}
-]
- */

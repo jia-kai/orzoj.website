@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Nov 03 00:09:11 2010 +0800
+ * $Date: Wed Nov 03 14:12:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -170,6 +170,28 @@ function tf_form_get_rich_text_editor($prompt, $editor_name, $default = NULL, $c
 	$ckeditor = $CKEditor->editor($editor_name, $default);
 	 */
 	$editor_id = get_random_id();
+	$language = '';
+	if (user_check_login())
+	{
+		global $user;
+		$language = (intval($user->wlang) == 2) ? ', language : "zh-cn"' : '';
+	}
+	$font_names = ', font_names : "Arial;Times New Roman;Verdana;楷体_GB2312;宋体;黑体;"';
+	$basePath = get_page_url($root_path . 'contents/editors/ckeditor/');
+
+	$smiley_path = get_page_url($root_path . 'contents/editors/ckeditor/' . 'plugins/smiley/images/tsj') . '/';
+
+	$smiley_images = array();
+	$smiley_descriptions = array();
+	for ($i = 0; $i < 40; $i ++)
+	{
+		$smiley_images[] = '"' . $i . '.gif"';
+		$smiley_descriptions[] = '"' . __('You know...') . '"';
+	}
+	$smiley_images = implode(',', $smiley_images);
+	$smiley_descriptions = implode(',', $smiley_descriptions);
+
+
 	$ckeditor = <<<EOF
 <textarea id="$editor_id" name="$editor_name">$default</textarea>
 <script type="text/javascript">
@@ -177,10 +199,19 @@ CKEDITOR.replace("$editor_id",{
 	toolbar :
 	[
 		['Source', '-', 'Undo', 'Redo'],
+		['Smiley'],
 		['Font', 'FontSize', 'TextColor', 'Bold', 'Italic', 'Subscript', 'Superscript'],
 		['Image', 'Flash', 'Table', 'Link', 'Unlink'],
 		['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'Outdent', 'Indent']
-	]
+	],
+	startupFocus : true,
+	tabSpaces : 4
+	$language
+	$font_names
+	, smiley_path : '$smiley_path'
+	, basePath : '$basePath'
+	, smiley_images : [ $smiley_images ]
+	, smiley_descriptions : [ $smiley_descriptions ]
 });
 </script>
 EOF;

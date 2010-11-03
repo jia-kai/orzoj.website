@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Nov 03 09:00:11 2010 +0800
+ * $Date: Wed Nov 03 11:47:11 2010 +0800
 
  This file is part of orzoj
 
@@ -329,7 +329,7 @@ table.colorbox-table tr:hover
 	background-color: #E5EEFF;
 }
 
-#oldbrowser
+div.oldbrowser
 {
 	border-bottom: 1px solid #eb7429;   
 	background: #fc9453;   
@@ -1047,8 +1047,9 @@ div#posts-view-single-content
 	margin-bottom: 100px;
 }
 
-div#post-subject
+div.post-subject
 {
+	text-align: center;
 	clear: both;
 	font-size: 30px;
 	color: blue;
@@ -1133,7 +1134,7 @@ div.posts-content
 	text-align: left;
 	border-top: 1px solid #8080f0;
 	overflow: auto;
-	max-width: 100%;
+	max-width: 800px;
 }
 
 div.posts-reply-a
