@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Tue Nov 02 18:29:43 2010 +0800
+ * $Date: Tue Nov 02 19:16:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -498,19 +498,19 @@ function prob_validate_code($code)
 }
 
 /**
- * check whether the problem input/output is valid
- * @param string $io input/output 
+ * check whether the problem input/output filename is valid
+ * @param string $io input/output filename
  * @return void
  * @exception Exc_runtime on error
  */
 function prob_validate_io($io)
 {
-	if (empty($code))
-		throw new Exc_runtime(__('problem input/output can not be empty'));
+	if (empty($io))
+		throw new Exc_runtime(__('problem input/output filename can not be empty'));
 	static $charset = NULL;
 	if (is_null($charset))
 		$charset = str_range('a', 'z') . str_range('A', 'Z') . str_range('0', '9') .
-			'-_';
+			'-_.';
 	for ($i = 0; $i < strlen($io); $i ++)
 		if (strpos($charset, $io[$i]) === FALSE)
 			throw new Exc_runtime(__('invalid character in problem input/output (char "%s", ascii %d)', $io[$i],

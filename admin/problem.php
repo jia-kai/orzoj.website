@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Tue Nov 02 11:52:01 2010 +0800
+ * $Date: Tue Nov 02 20:36:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,9 +38,6 @@ require_once $includes_path . 'problem.php';
  *		[sort_col, sort_way]: string, int
  *			sort_way: 0: ASC; otherwise DESC
  *		[filter]: indicate a submission of the filter form
- *
- * SESSION prefix:
- *		prob
  *
  * SESSION variables:
  *		[code]:string, problem code
@@ -86,7 +83,7 @@ if ($pgnum < 0)
 	$pgnum = 0;
 
 $fields = array(
-	// <database column name> => array(<display name>, <sort way>, [<transition function>])
+	// <database column name> => array(<display name>, <default sort way>, [<transition function>])
 	'id' => array(__('ID'), 0),
 	'title' => array(__('TITLE'), 0),
 	'code' => array(__('CODE'), 0),

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Wed Oct 27 11:59:29 2010 +0800
+ * $Date: Tue Nov 02 20:10:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -115,8 +115,10 @@ unset($tmp);
  */
 function _mysql_build_where_clause($whereclause)
 {
-	if (!is_array($whereclause))
+	if (!is_array($whereclause) || empty($whereclause))
 		return FALSE;
+	if (count($whereclause) < 3)
+		throw new Exc_inner(__('invalid where clause'));
 	$whereclause = array_reverse($whereclause);
 	// postfix expression is easier to handle
 

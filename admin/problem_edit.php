@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: Tue Nov 02 16:10:19 2010 +0800
+ * $Date: Tue Nov 02 20:36:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,6 +38,7 @@ if (!defined('IN_ORZOJ'))
  *		[delete]: 
  *			delete this problem (already confirmed), id must be sent via $_POST['pid']
  *			and verification code must be sent via $_POST['delete_verify']
+ *
  * POST arguments:
  *		those in the form
  *		['delete_verify']: verification code for deleting a problem
@@ -45,14 +46,11 @@ if (!defined('IN_ORZOJ'))
  *		['ajax_mode']: if set, the first character will be 0 to refresh only page-info div, or
  *			1 to refresh the whole page
  *
- * SESSION prefix:
- *		prob_edit
- * 
  * SESSION variables:
  *		delete_verify, edit_verify
  */
 
-session_add_prefix('prob_edit');
+session_add_prefix('edit');
 
 if (isset($_GET['delete']) && !empty($_POST['pid']) &&
 	!empty($_POST['delete_verify']) && $_POST['delete_verify'] == session_get('delete_verify'))
@@ -336,26 +334,31 @@ function edit_io()
 	echo '<span>' . __('I/O method:') . '</span>';
 
 	$id = get_unique_id();
-	echo "<input type='radio' name='io_method' value='0' id='$id' $checked[0] />";
+	echo "<input type='radio' onchange='$(\"#prob-io\").slideUp()' name='io_method' value='0' id='$id' $checked[0] />";
 	echo "<label for='$id'>" . __('Standard I/O') . '</label>';
 	$id = get_unique_id();
-	echo "<input type='radio' name='io_method' value='1' id='$id' $checked[1] />";
+	echo "<input type='radio' onchange='$(\"#prob-io\").slideDown()' name='io_method' value='1' id='$id' $checked[1] />";
 	echo "<label for='$id'>" . __('File I/O') . '</label>';
 
 	echo '</div>';
 	echo '<div id="prob-io">';
-	_make_form_input(__('Input:'), 'io0', $io[0], FALSE);
+	_make_form_input(__('Input filename:'), 'io0', $io[0], FALSE);
 	echo '<br />';
-	_make_form_input(__('Output:'), 'io1', $io[1], FALSE);
+	_make_form_input(__('Output filename:'), 'io1', $io[1], FALSE);
 	echo '</div></div></div>';
 }
 
 function get_io()
 {
 	global $pinfo;
-	$pinfo['io'] = serialize(array(
-		prob_validate_io(get_post('io0')),
-		prob_validate_io(get_post('io1'))));
+	if (get_post('io_method') == '0')
+		$pinfo['io'] = NULL;
+	else
+	{
+		prob_validate_io($io0 = get_post('io0'));
+		prob_validate_io($io1 = get_post('io1'));
+		$pinfo['io'] = serialize(array($io0, $io1));
+	}
 }
 
 function edit_perm()
@@ -396,6 +399,7 @@ $(document).ready(function(){
 		});
 		return false;
 	});
+	<?php if (empty($pinfo['io'])) echo '$("#prob-io").slideUp();' ?>
 });
 
 function delete_prob()

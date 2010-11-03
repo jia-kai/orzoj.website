@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Tue Nov 02 09:22:26 2010 +0800
+ * $Date: Wed Nov 03 08:57:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -58,6 +58,17 @@ class Ctal_oi extends Ctal
 		if (count($row) != 1)
 			throw new Exc_inner(__('trying to update contest #%d before insertion'));
 		sched_update($row[0]['total_score'], $this->data['time_end']);
+	}
+
+	public function delete_contest()
+	{
+		global $db, $DBOP;
+		$where = array($DBOP['='], 'id', $this->data['id']);
+		$row = $db->select_from('contests_oi', 'total_score', $where);
+		if (count($row) != 1)
+			throw new Exc_inner(__('trying to delete contest #%d before insertion'));
+		sched_remove($row[0]['total_score']);
+		$db->delete_item('contests_oi', $where);
 	}
 
 	public function view_prob(&$pinfo)

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Thu Oct 28 10:41:12 2010 +0800
+ * $Date: Wed Nov 03 08:54:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -49,7 +49,9 @@ abstract class Ctal
 	}
 
 	/**
-	 * echo contest-type specific form fields when adding a new contest
+	 * echo contest-type specific form fields when adding a new contest/edit a contest
+	 * if $this->data is NULL, generate form fields for adding a new contest
+	 * otherwise generate fields for editing the contest
 	 * @return void
 	 */
 	abstract protected function get_form_fields();
@@ -66,6 +68,12 @@ abstract class Ctal
 	 * @return void
 	 */
 	abstract protected function update_contest();
+
+	/**
+	 * this function is called when the contest is deleted (before contest starts)
+	 * @return void
+	 */
+	abstract protected function delete_contest();
 
 	/**
 	 * called when user tries to view a problem in this contest before the contest ends
