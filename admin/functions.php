@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Tue Nov 02 10:12:04 2010 +0800
+ * $Date: Wed Nov 03 14:20:37 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -334,7 +334,7 @@ function form_get_perm_editor_val($name)
  * @param string $prompt
  * @param string $post_name
  * @param array $options in the format array(&lt;display name&rt; => &lt;option value&rt;)
- * @param string $default the value of defaultly selected option
+ * @param string $default the value of option selected by default
  * @param bool $direct_echo
  * @return string|void
  */
@@ -371,5 +371,92 @@ function get_info_div($type, $content, $direct_echo = TRUE)
 		echo $str;
 	else
 		return $str;
+}
+
+/**
+ * get value of a key in an array, or return the default value if unavailable
+ * @param &array $array
+ * @param mixed $key
+ * @param mixed $default
+ * return mixed
+ */
+function get_array_val(&$array, $key, $default = NULL)
+{
+	return is_array($array) && isset($array[$key]) ? $array[$key] : $default;
+}
+
+/**
+ * get an input element
+ * @param string $prompt
+ * @param string $post_name
+ * @param string|NULL $default
+ * @param bool $add_div whether to put the input in a div with class form-field
+ */
+function form_get_input($prompt, $post_name, $default = NULL, $add_div = TRUE)
+{
+	$id = get_unique_id();
+	if (is_null($default))
+		$default = '';
+	if ($add_div)
+		echo '<div class="form-field">';
+	echo "<label for='$id'>$prompt</label><input type='text' name='$post_name' value='$default' id='$id' />";
+	if ($add_div)
+		echo '</div>';
+}
+
+/**
+ * get a hidden input
+ * @param string $name
+ * @param string $value
+ */
+function form_get_hidden($name, $value)
+{
+	echo "<input type='hidden' name='$name' value='$value' />";
+}
+
+/**
+ * get a textarea
+ * @param string $prompt
+ * @param string $post_name
+ * @param string|NULL $default
+ * @param bool $small
+ */
+function form_get_textarea($prompt, $post_name, $default = NULL, $small = FALSE)
+{
+	$id = get_unique_id();
+	if (is_null($default))
+		$default = '';
+	$class = $small ? 'small' : 'big';
+	echo "<div class='form-field'><label for='$id'>$prompt</label>
+		<textarea class='$class' id='$id' name='$post_name'>$default</textarea></div>";
+}
+
+/**
+ * get a textarea with CKEditor
+ */
+function form_get_ckeditor($prompt, $post_name, $default = NULL)
+{
+	$id = get_random_id();
+	if (is_null($default))
+		$default = '';
+	echo "<div class='form-field'><label for='$id'>$prompt</label><br />";
+	echo "<textarea id='$id' name='$post_name'>";
+	echo $default;
+	echo '</textarea><script type="text/javascript">
+		CKEDITOR.replace("' . $id . '");
+		</script></div>';
+}
+
+/**
+ * get the value of a post
+ * @param string $name
+ * @return string
+ * @exception Exc_runtime if no such $name
+ */
+function get_post($name)
+{
+	if (!isset($_POST[$name]))
+		throw new Exc_runtime(__('incomplete post, field %s not found', $name));
+	return $_POST[$name];
 }
 

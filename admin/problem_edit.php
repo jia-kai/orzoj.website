@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: Tue Nov 02 20:36:50 2010 +0800
+ * $Date: Wed Nov 03 19:21:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,6 +52,8 @@ if (!defined('IN_ORZOJ'))
 
 session_add_prefix('edit');
 
+require_once $includes_path . 'contest/ctal.php';
+
 if (isset($_GET['delete']) && !empty($_POST['pid']) &&
 	!empty($_POST['delete_verify']) && $_POST['delete_verify'] == session_get('delete_verify'))
 {
@@ -90,6 +92,7 @@ if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify']
 		}
 		else
 			$db->update_data('problems', $pinfo, array($DBOP['='], 'id', $pinfo['id'] = $_GET['edit']));
+		get_contest();
 		if (isset($_POST['ajax_mode']) && isset($new_prob))
 			echo '1';
 		else
@@ -135,9 +138,10 @@ foreach ($fields as $f)
 		$f = $f[0];
 	$f();
 }
+edit_contest();
 $edit_verify = get_random_id();
 session_set('edit_verify', $edit_verify);
-_make_form_hidden('edit_verify', $edit_verify);
+form_get_hidden('edit_verify', $edit_verify);
 echo '<input style="clear:both; float: left" type="submit" value="' . __('submit') . '" />';
 echo '</form>';
 if (isset($pinfo['id']))
@@ -145,57 +149,18 @@ if (isset($pinfo['id']))
 	echo '<div style="clear: both; float: left; margin-top: 50px;">';
 	echo "<form action='$cur_page_link&amp;delete=1' method='post' id='delete-prob-form'>";
 	$delete_verify = get_random_id();
-	_make_form_hidden('pid', $pinfo['id']);
-	_make_form_hidden('delete_verify', $delete_verify);
+	form_get_hidden('pid', $pinfo['id']);
+	form_get_hidden('delete_verify', $delete_verify);
 	session_set('delete_verify', $delete_verify);
 	echo '<button type="button" onclick="delete_prob()">' . __('Delete problem') . '</button>';
 	echo '</form>';
 	echo '</div>';
 }
 
-function _get_val(&$array, $key, $default = NULL)
-{
-	return is_array($array) && isset($array[$key]) ? $array[$key] : $default;
-}
-
-function _make_form_input($prompt, $post_name, $default = NULL, $add_div = TRUE)
-{
-	$id = get_unique_id();
-	if (is_null($default))
-		$default = '';
-	if ($add_div)
-		echo '<div class="form-field">';
-	echo "<label for='$id'>$prompt</label><input type='text' name='$post_name' value='$default' id='$id' />";
-	if ($add_div)
-		echo '</div>';
-}
-
-function _make_form_hidden($name, $value)
-{
-	echo "<input type='hidden' name='$name' value='$value' />";
-}
-
-function _make_form_textarea($prompt, $post_name, $default = NULL, $small = FALSE)
-{
-	$id = get_unique_id();
-	if (is_null($default))
-		$default = '';
-	$class = $small ? 'small' : 'big';
-	echo "<div class='form-field'><label for='$id'>$prompt</label>
-		<textarea class='$class' id='$id' name='$post_name'>$default</textarea></div>";
-}
-
-function get_post($name)
-{
-	if (!isset($_POST[$name]))
-		throw new Exc_runtime(__('incomplete post'));
-	return $_POST[$name];
-}
-
 function show_id()
 {
 	global $pinfo;
-	$id = _get_val($pinfo, 'id');
+	$id = get_array_val($pinfo, 'id');
 	if (!empty($id))
 		echo '<div class="form-field"><label>' . __('Problem id:') . '</label>' . $pinfo['id'] . '</div>';
 }
@@ -203,7 +168,7 @@ function show_id()
 function edit_code()
 {
 	global $pinfo;
-	_make_form_input(__('Problem code:'), 'code', _get_val($pinfo, 'code'));
+	form_get_input(__('Problem code:'), 'code', get_array_val($pinfo, 'code'));
 }
 
 function get_code()
@@ -217,7 +182,7 @@ function get_code()
 function edit_title()
 {
 	global $pinfo;
-	_make_form_input(__('Problem title:'), 'title', _get_val($pinfo, 'title'));
+	form_get_input(__('Problem title:'), 'title', get_array_val($pinfo, 'title'));
 }
 
 function get_title()
@@ -233,22 +198,14 @@ function edit_desc()
 		$desc = unserialize($pinfo['desc']);
 	else
 		$desc = array();
-	_make_form_input(__('Time limit:'), 'desc[time]', _get_val($desc, 'time', __('1 second')));
-	_make_form_input(__('Memory limit:'), 'desc[memory]', _get_val($desc, 'memory', __('256 MB')));
+	form_get_input(__('Time limit:'), 'desc[time]', get_array_val($desc, 'time', __('1 second')));
+	form_get_input(__('Memory limit:'), 'desc[memory]', get_array_val($desc, 'memory', __('256 MB')));
 	$fields = array(
 		'desc' => __('Description'),
 		'input_fmt' => __('Input Format'),
 		'output_fmt' => __('Output Format'));
 	foreach ($fields as $key => $val)
-	{
-		$id = get_random_id();
-		echo "<div class='form-field'><label for='$id'>$val</label><br />";
-		echo "<textarea id='$id' name='desc[$key]'>";
-		echo htmlspecialchars(_get_val($desc, $key));
-		echo '</textarea><script type="text/javascript">
-			CKEDITOR.replace("' . $id . '");
-		</script></div>';
-	}
+		form_get_ckeditor($val, "desc[$key]", htmlspecialchars(get_array_val($desc, $key, '')));
 
 	$fields = array(
 		'input_samp' => __('Sample Input'),
@@ -262,7 +219,7 @@ function edit_desc()
 	foreach ($fields as $key => $val)
 	{
 		$small ++;
-		_make_form_textarea($val, "desc[$key]", _get_val($desc, $key), $small > 2);
+		form_get_textarea($val, "desc[$key]", get_array_val($desc, $key), $small > 2);
 	}
 }
 
@@ -342,9 +299,9 @@ function edit_io()
 
 	echo '</div>';
 	echo '<div id="prob-io">';
-	_make_form_input(__('Input filename:'), 'io0', $io[0], FALSE);
+	form_get_input(__('Input filename:'), 'io0', $io[0], FALSE);
 	echo '<br />';
-	_make_form_input(__('Output filename:'), 'io1', $io[1], FALSE);
+	form_get_input(__('Output filename:'), 'io1', $io[1], FALSE);
 	echo '</div></div></div>';
 }
 
@@ -367,7 +324,7 @@ function edit_perm()
 	echo '<div class="form-field">';
 	echo '<label style="float: left">' . __('Set problem permission') .
 		'</label><div style="float: left">';
-	form_get_perm_editor('perm', _get_val($pinfo, 'perm'));
+	form_get_perm_editor('perm', get_array_val($pinfo, 'perm'));
 	echo '</div></div>';
 }
 
@@ -375,6 +332,44 @@ function get_perm()
 {
 	global $pinfo;
 	$pinfo['perm'] = form_get_perm_editor_val('perm');
+}
+
+function edit_contest()
+{
+	$list = ctal_get_list(array('id', 'type', 'name'), 0);
+	$list = array_merge($list, ctal_get_list(array('id', 'type', 'name'), 1));
+	$opt = array(__('None') => 0);
+	foreach ($list as $r)
+		$opt[$r['id'] . ':' . ctal_get_typename_by_type($r['type']) .
+			':' . $r['name']] = $r['id'];
+	global $pinfo;
+	$default = NULL;
+	if (!is_null($pid = get_array_val($pinfo, 'id')))
+		$default = prob_future_contest($pid);
+	if (is_null($default))
+		$default = '0';
+	echo '<div class="form-field">';
+	form_get_select(__('Related contest:'), 'ctid', $opt, $default);
+	echo '</div>';
+}
+
+function get_contest()
+{
+	global $pinfo, $db, $DBOP;
+	$cid = intval(get_post('ctid'));
+	$cur_cid = intval(prob_future_contest($pid = $pinfo['id']));
+	if ($cid == $cur_cid)
+		return;
+	$where = array($DBOP['&&'],
+			$DBOP['='], 'cid', $cur_cid,
+			$DBOP['='], 'pid', $pid);
+	if (!$cid)
+		$db->delete_item('map_prob_ct', $where);
+	else if (!$cur_cid)
+		$db->insert_into('map_prob_ct',
+			array('cid' => $cid, 'pid' => $pid, 'order' => $pid));
+	else
+		$db->update_data('map_prob_ct', array('cid' => $cid), $where);
 }
 
 ?>

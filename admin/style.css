@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Tue Nov 02 16:10:44 2010 +0800
+ * $Date: Wed Nov 03 19:33:38 2010 +0800
 
  This file is part of orzoj
 
@@ -176,7 +176,14 @@ div.error
 
 div.form-field
 {
-	display: block;
+	float: left;
+	clear: both;
+	margin-bottom: 10px;
+}
+
+div.form-field input
+{
+	width: 300px;
 }
 
 div.form-field label
@@ -184,6 +191,7 @@ div.form-field label
 	clear: both;
 	float: left;
 	width: 250px;
+	font-weight: bold;
 }
 
 div.form-field textarea.big
@@ -210,6 +218,7 @@ div.gid-selector label, div.gid-selector input
 {
 	width: auto;
 	float: none;
+	font-weight: normal;
 }
 
 div.gid-selector li.subtree
@@ -232,5 +241,14 @@ div.form-field-prob-io label
 {
 	clear: none;
 	margin-right: 20px;
+	font-weight: normal;
+}
+
+div.form-help-msg
+{
+	font-style: italic;
+	margin-left: 200px;
+	float: left;
+	clear: both;
 }
 

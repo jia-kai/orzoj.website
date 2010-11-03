@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: acm.php
- * $Date: Wed Nov 03 09:27:49 2010 +0800
+ * $Date: Wed Nov 03 21:54:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -41,34 +41,46 @@ class Ctal_acm extends Ctal
 
 	public function add_contest()
 	{
+		$this->check_data();
 		global $db;
-		$id = $this->data['id'];
+		$id = $db->insert_into('contests', $this->data);
+		$this->data['id'] = $id;
 		$db->insert_into('contests_oi', array(
 			'cid' => $id,
 			'uid' => 0,
 			'total_score' => sched_add($this->data['time_end'], __FILE__, '_ctal_oi_judge', array($id))
 		));
+		return $id;
 	}
 
 	public function update_contest()
 	{
+		$this->check_data();
 		global $db, $DBOP;
-		$row = $db->select_from('contests_oi', 'total_score',
-			array($DBOP['='], 'id', $this->data['id']));
+		$where = array($DBOP['='], 'cid', $this->data['id']);
+		$row = $db->select_from('contests_oi', 'total_score', $where);
 		if (count($row) != 1)
-			throw new Exc_inner(__('trying to update contest #%d before insertion'));
+			throw new Exc_inner(__('trying to update contest #%d before insertion', $this->data['id']));
 		sched_update($row[0]['total_score'], $this->data['time_end']);
+		$val = $this->data;
+		unset($val['id']);
+		$where[1] = 'id';
+		$db->update_data('contests', $val, $where);
 	}
 
 	public function delete_contest()
 	{
+		if (time() >= $this->data['time_start'])
+			throw new Exc_runtime(__('contests having already started can not be deleted'));
 		global $db, $DBOP;
-		$where = array($DBOP['='], 'id', $this->data['id']);
+		$where = array($DBOP['='], 'cid', $this->data['id']);
 		$row = $db->select_from('contests_oi', 'total_score', $where);
 		if (count($row) != 1)
 			throw new Exc_inner(__('trying to delete contest #%d before insertion'));
 		sched_remove($row[0]['total_score']);
 		$db->delete_item('contests_oi', $where);
+		$where[1] = 'id';
+		$db->delete_item('contests', $where);
 	}
 
 	public function view_prob(&$pinfo)
@@ -343,6 +355,16 @@ class Ctal_acm extends Ctal
 		if (count($row) != 1)
 			return NULL;
 		return intval($row[0]['id']);
+	}
+
+	/**
+	 * check whether $this->data is valid
+	 * @exception Exc_runtime
+	 */
+	private function check_data()
+	{
+		if ($this->data['time_start'] >= $this->data['time_end'])
+			throw new Exc_runtime(__('the contest seems to end before it starts'));
 	}
 }
 

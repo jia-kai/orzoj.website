@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Wed Nov 03 08:54:33 2010 +0800
+ * $Date: Wed Nov 03 19:04:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -58,13 +58,14 @@ abstract class Ctal
 
 	/**
 	 * this function is called when a new contest of a this type is added
-	 * and data in the 'contests' table are inserted
-	 * @return void
+	 * data in the 'contests' table are NOT inserted, and should be inserted by this function
+	 * @return int contest id
 	 */
 	abstract protected function add_contest();
 
 	/**
 	 * this function is called when the contest is updated
+	 * data in the 'contests' table should be updated by this function
 	 * @return void
 	 */
 	abstract protected function update_contest();
@@ -243,10 +244,13 @@ function &ctal_get_typename_all()
  * get contest type name by type id
  * @param int $tid type id
  * @return string
+ * @exception Exc_inner if no such type
  */
 function ctal_get_typename_by_type($tid)
 {
 	$t = &ctal_get_typename_all();
+	if (!isset($t[$tid]))
+		throw new Exc_inner(__('unknown contest type: %s', var_export($tid, TRUE)));
 	return $t[$tid];
 }
 

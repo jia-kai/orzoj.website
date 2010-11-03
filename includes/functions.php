@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Nov 01 20:59:50 2010 +0800
+ * $Date: Wed Nov 03 11:15:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -419,10 +419,13 @@ function email_validate($email)
 /**
  * get a human readable string representing the Unix time stamp
  * @param int $time the Unix time stamp
+ * @param bool $l10n whether to localize the output
  * @return string
  */
-function time2str($time)
+function time2str($time, $l10n = TRUE)
 {
+	if (!$l10n)
+		return strftime('%a %b %d %H:%M:%S %Y %Z', $time);
 	return strftime('%a %b %d %H:%M:%S %Y %Z', $time);
 }
 
