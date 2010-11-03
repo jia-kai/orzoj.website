@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_new_topic.php
- * $Date: Tue Nov 02 13:20:01 2010 +0800
+ * $Date: Wed Nov 03 00:09:09 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -31,7 +31,10 @@ if (!defined('IN_ORZOJ'))
  *		'submit'
  *
  * POST:
+ *		prob_id
  *		prob_code
+ *		start_page
+ *		uid
  *		type
  *		subject
  *		content
@@ -39,20 +42,29 @@ if (!defined('IN_ORZOJ'))
 
 require_once $includes_path . 'post.php';
 
-if ($page_arg == 'submit')
+if ($page_arg == 'submit' || $page_arg == 'submit-nojs')
 {
 	try
 	{
-		die('1' . post_add_topic());
+		$tid = post_add_topic();
+		if ($page_arg == 'submit')
+			die('1' . $tid);
+		else
+		{
+			$page_arg = "tid=$tid";
+			require_once $theme_path . 'ajax/post_view_single.php';
+		}
+		die;
 	}
 	catch (Exc_orzoj $e)
 	{
-		echo '0';
-		die('0' . $e->msg());
+		if ($page_arg == 'submit')
+			die('0' . $e->msg());
+		else die($e->msg());
 	}
 }
 
-$post_url = t_get_link('show-ajax-post-new-topic', NULL, TRUE, TRUE);
+$post_url = t_get_link('show-ajax-post-new-topic', 'submit-nojs', TRUE, TRUE);
 ?>
 <div id="post-new-topic-container">
 <form id="post-new-topic-form" method="post" action="<?php echo $post_url; ?>">
@@ -98,7 +110,7 @@ $("#post-new-topic-form").bind("submit", function(){
 			{
 				tid = data.substr(1);
 <?php
-$post_list_args = array('start_page', 'uid', 'subject', 'author', 'type');
+$post_list_args = array('start_page', 'uid', 'subject', 'author', 'type', 'prob_id', 'prob_code');
 foreach ($post_list_args as $item)
 	if (!isset($$item))
 		$$item = NULL;
@@ -115,7 +127,7 @@ $url = t_get_link('ajax-post-view-single', NULL, FALSE, TRUE);
 					"data" : ({<?php echo implode(',', $data); ?>, "tid": tid}),
 					"success" : function(data) {
 						setTimeout('$.colorbox({"html" : "<?php echo __('Congruatulation! New topic has been successfully posted'); ?>"});', 1000);
-						setTimeout("$.colorbox.close();", 2000);
+						setTimeout("$.colorbox.close();", 1500);
 						$("#posts-view").html(data);
 					}
 				})

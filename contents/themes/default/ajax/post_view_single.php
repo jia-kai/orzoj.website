@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Tue Nov 02 17:24:28 2010 +0800
+ * $Date: Wed Nov 03 09:07:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -39,7 +39,7 @@ if (!defined('IN_ORZOJ'))
  *		post_list_subject: string
  *		post_list_author: string
  *		post_list_prob_id: int
- *		action: string ['submit', 'submit-nosj', 'new_viewer', 'goto-page', 'goto-page-nojs'] or array
+ *		action: string ['submit', 'submit-nosj', 'new_viewer', 'goto-page', 'goto-page-nojs', 'in-colorbox'] or array
  * POST:
  *		content: string
  *			reply content
@@ -100,12 +100,11 @@ if (isset($page_arg))
 
 foreach (array('tid', 'start_page', 'post_list_start_page', 
 	'post_list_type', 'post_list_uid', 'post_list_subject', 
-	'post_list_author') as $item)
+	'post_list_author', 'post_list_prob_id', 'action') as $item)
 	if (isset($_POST[$item]))
 		$$item = $_POST[$item];
 
-
-foreach (array('tid', 'start_page', 'post_list_start_page', 'post_list_uid') as $item)
+foreach (array('tid', 'start_page', 'post_list_start_page', 'post_list_uid', 'post_list_prob_id') as $item)
 	$$item = intval($$item);
 
 if (is_string($post_list_type))
@@ -113,28 +112,41 @@ if (is_string($post_list_type))
 		$post_list_type = NULL;
 
 $action = explode(',', $action);
-if (array_search('new_viewer', $action) !== FALSE)
+
+/**
+ * @ignore
+ */
+function _action($item)
+{
+	global $action;
+	return array_search($item, $action) !== FALSE;
+}
+
+if (_action('new_viewer'))
 	post_topic_increase_statistic($tid,	'viewed_amount');
 
 if (empty($tid))
 	die(__('Which topic do you want to see?'));
 
-if (array_search('submit', $action) !== FALSE || array_search('submit-nojs', $action) !== FALSe)
+if (_action('submit') || _action('submit-nojs'))
 {
 	try
 	{
 		post_reply();
-		echo 1;
+		if (_action('submit'))
+			echo 1;
 	}
 	catch (Exc_orzoj $e)
 	{
-		die('0' . $e->msg());
+		if (_action('submit'))
+			die('0' . $e->msg());
 	}
 }
 
-$fields = array('time', 'nickname_uid', 'tid', 
+$fields = array('time', 'tid', 
 	'content', 'floor',
-	'nickname_last_modify_user'
+	'nickname_last_modify_user', 'username_last_modify_user',
+	'username_uid', 'nickname_uid'
 );
 
 
@@ -153,25 +165,35 @@ try
 
 $topic = post_get_topic($tid);
 ?>
-<?php if (!(array_search('goto-page', $action) !== FALSE || array_search('submit', $action) !== FALSE)) {?>
-<div id="posts-content-container">
-<div id="posts-all-container" style="clear: both;">
+<?php if ((!(_action('goto-page') || _action('submit'))) || (_action('in-colorbox'))) {?>
+
+<div class="posts-content-container">
+<div class="posts-all-container" style="clear: both;">
 <?php }?>
 
 <a id="top"></a>
 
-<div id="post-view-single-navigator-top">
-<?php
-// Reply
+<div class="post-view-single-navigator-top">
 
+<?php
 // Back to list
-echo '<a href="' . post_list_get_a_href($post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author) . '"'
-	. ' onclick="' . post_list_get_a_onclick($post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author) . '">'
+$param = array($post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, (_action('in-colorbox') ? 'in-colorbox' : ''));
+
+$href = ' href="' . call_user_func_array('post_list_get_a_href', $param) . '"';
+
+$onclick = ' onclick="' . call_user_func_array('post_list_get_a_onclick', $param) . '"';
+
+if (_action('in-colorbox'))
+{
+	$arg = call_user_func_array('post_list_pack_arg', $param);
+	$href = 'href="' . t_get_link('ajax-post-list', $arg, TRUE, TRUE) . '"';
+	$onclick = '';
+}
+echo "<a $href $onclick>"
 	. '<button type="button">' . __('Back to list') . '</button></a>';
 
-
 ?>
-</div><!-- id: post-view-single-navigator-top -->
+</div><!-- class: post-view-single-navigator-top -->
 <div id="post-view-single-statistic">
 <?php echo __('Total posts: <span>%d</span>', $total_post); ?>
 </div>
@@ -184,9 +206,10 @@ function _make_page_link($text, $page)
 {
 	global $tid,  $post_list_start_page, $post_list_type;
 	global $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, $action;
-	if (array_search($action, 'in-colorbox') !== FALSE)
+
+	if (_action('in-colorbox'))
 	{
-		$arg = post_view_single_pack_arg($tid, $page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, $action);
+		$arg = post_view_single_pack_arg($tid, $page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, implode(',', $action));
 		return sprintf('<a href="%s">%s</a>',
 			t_get_link('ajax-post-view-single', $arg, TRUE, TRUE),
 			$text
@@ -248,7 +271,12 @@ _make_posts_nav();
 
 <div id="post-view-single-content" style="clear: both;">
 <div id="post-subject"><?php echo $topic['subject']; ?></div>
-<table class="posts-table">
+<?php
+$table_class = 'posts-table'; 
+if (_action('in-colorbox'))
+	$table_class = 'colorbox-table';
+?>
+<table class="<?php echo $table_class; ?>">
 <tr>
 	<th width="160px"><?php echo __('Author'); ?></th>
 	<th><?php echo __('Content'); ?></th>
@@ -259,21 +287,25 @@ foreach ($posts as $post)
 	$avatar_url = avatar_get_url_by_user_id($post['uid']);
 	$avatar_alt = __('Avatar');
 	$nickname_uid = $post['nickname_uid'];
+	$username_uid = $post['username_uid'];
 	$nickname_url = t_get_link('ajax-user-info', $post['uid'], TRUE, TRUE);
 	$floor = $post['floor'];
 	$Floor = __('#%d', $floor);
 	$content = $post['content'];
 	$PostTime = __('Posted: ') . time2str($post['time']);
 	$Reply_href = '';
-	if (user_check_login() && (!array_search($action, 'in-colorbox')))
+	if (user_check_login() && !_action('in-colorbox'))
 		$Reply_href = '<div class="posts-reply-a"><a href="#rep" onclick="append_reply(' . $floor. '); return false;">' . __('Reply') . '</div>';
 	$Top = __('To top');
+	$author = "<a href=\"$nickname_url\" title=\"$username_uid\">$nickname_uid</a>";
+	if (_action('in-colorbox'))
+		$author = "<span title=\"$username_uid\">$nickname_uid</span>";
 	echo <<<EOF
 <tr>
 	<td valign="top">
 		<div class="posts-author">
-			<div class="posts-avatar"><img src="$avatar_url" alt="$avatar_alt" /></div>
-			<div class="posts-nickname"><a href="$nickname_url">$nickname_uid</a></div>
+			<div class="posts-avatar"><img src="$avatar_url" alt="$avatar_alt" title="$username_uid"/></div>
+			<div class="posts-nickname">$author</div>
 			<div class="posts-to-top"><a href="#top">$Top</a></div>
 		</div>
 	</td>
@@ -295,21 +327,28 @@ EOF;
 <script type="text/javascript">
 /* common */
 $("button").button();
-$("div.posts-nickname a").colorbox();
+
+<?php if (!_action('in-colorbox')) {?>
 $(".posts-table tr:odd").addClass("posts-table-color-odd");
 $(".posts-table tr:even").addClass("posts-table-color-even");
+<?php } ?>
+
 function set_page(page)
 {
-	var t = $("#posts-all-container");
+	var t = $(".posts-all-container");
 	t.animate({"opacity" : 0.5}, 1);
 	$.ajax({
-		"url" : "<?php t_get_link('ajax-post-view-single', post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, 'goto-page'), FALSE, FALSE); ?>",
+		"url" : "<?php t_get_link('ajax-post-view-single', post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, 'goto-page,' . implode(',', $action)), FALSE, FALSE); ?>",
 		"type" : "post",
 		"cache" : false,
 		"data" : ({"start_page" : page}),
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
+			<?php if (_action('in-colorbox')) {?>
+			$.colorbox({"html" : data});
+			<?php } else {?>
 			t.html(data);
+			<?php }?>
 		}
 	});
 	return false;
@@ -322,23 +361,30 @@ function posts_goto(id)
 }
 </script>
 
-<?php if (array_search('goto-page', $action) !== FALSE || array_search('submit', $action) !== FALSE) die;?>
-
-</div><!-- id: posts-all-container -->
-
-
 </div><!-- id: post-view-single-content -->
 
+<?php if ((_action('goto-page') || _action('submit')) && !_action('in-colorbox')) die;?>
 
+</div><!-- class: posts-all-container -->
 
+<?php if (_action('in-colorbox')) { ?>
+<script type="text/javascript">
+
+$(".post-view-single-navigator-top a").colorbox();
+$("div.posts-nickname a").colorbox();
+$("div.posts-nav a").colorbox();
+$(".posts-content a").attr("target", "_blank");
+
+</script>
+<?php }?>
 
 <?php /* Reply form */ ?>
 
-<?php if (user_check_login() && $action != 'in-colorbox') { ?>
-<?php 
-$post_url = t_get_link('show-ajax-post-view-single', 
-	post_view_single_pack_arg($tid, 1000000, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, 'submit-nojs'),
-	TRUE, TRUE);
+<?php
+if (user_check_login() && !_action('in-colorbox')) { 
+	$post_url = t_get_link('show-ajax-post-view-single', 
+		post_view_single_pack_arg($tid, 1000000, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, 'submit-nojs'),
+		TRUE, TRUE);
 ?>
 <span style="float: left;"><?php echo __('Reply'); ?></span>
 <form style="clear: both;" method="post" id="post-reply-form" action="<?php echo $post_url; ?>">
@@ -351,45 +397,46 @@ $post_url = t_get_link('show-ajax-post-view-single',
 </form>
 <?php }?>
 
-</div><!-- id: posts-content-container -->
+</div><!-- class : posts-content-container -->
 
 
 
 
 
 <?php /* Reply */ ?>
-<?php if (user_check_login() && $action != 'in-colorbox') {?> 
-<script type="text/javascript">
-/* logined */
-$("#post-reply-submit-button").button();
-<?php $ReplyTo = __('Reply to'); ?>
-<?php $Editor = "CKEDITOR.instances.$editor_id";?>
-function append_reply(floor)
-{
-	<?php echo $Editor; ?>.insertHtml(
-		"<?php echo $ReplyTo; ?> #" + floor + ": "
-	);
-}
+<?php if (user_check_login() && !_action('in-colorbox')) {?> 
+	<script type="text/javascript">
+	/* logined */
+	$("#post-reply-submit-button").button();
+	<?php $InReplyTo = __('In reply to'); ?>
+	<?php $Editor = "CKEDITOR.instances.$editor_id";?>
+	function append_reply(floor)
+	{
+		alert("<?php echo $Editor?>");
+		<?php echo $Editor; ?>.insertHtml(
+			"<?php echo $InReplyTo; ?> #" + floor + ": "
+		);
+	}
 <?php
-$url = t_get_link('ajax-post-view-single', 
-	post_view_single_pack_arg($tid, 1000000, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, 'submit'),
-	FALSE, TRUE);
+	$url = t_get_link('ajax-post-view-single', 
+		post_view_single_pack_arg($tid, 1000000, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, 'submit'),
+		FALSE, TRUE);
 ?>
-$("#post-reply-form").bind("submit", function(){
-	var content = <?php echo $Editor; ?>.getData();
-	//$("#post-reply-form").serializeArray(),
+	$("#post-reply-form").bind("submit", function(){
+		var content = <?php echo $Editor; ?>.getData();
+		//$("#post-reply-form").serializeArray(),
 
-	var t = $("#posts-all-container");
-	t.animate({"opacity" : 0.5}, 1);
-	$.colorbox({"html" : "<?php echo __('Submitting...'); ?>"});
-	$.ajax({
-		"type": "post",
-		"cache": false,
-		"url": "<?php echo $url; ?>",
-		"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
-		"post_reply_uid" : "<?php echo $user->id; ?>",
-		"post_reply_content" : content
-		}),
+		var t = $(".posts-all-container");
+		t.animate({"opacity" : 0.5}, 1);
+		$.colorbox({"html" : "<?php echo __('Submitting...'); ?>"});
+		$.ajax({
+			"type": "post",
+				"cache": false,
+				"url": "<?php echo $url; ?>",
+				"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
+				"post_reply_uid" : "<?php echo $user->id; ?>",
+				"post_reply_content" : content
+				}),
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
 			if (data.charAt(0) == '0')
@@ -405,9 +452,9 @@ $("#post-reply-form").bind("submit", function(){
 			else
 				$.colorbox({"html" : data});
 		}
+		});
+		return false;
 	});
-	return false;
-});
-</script>
+	</script>
 <?php }?>
 

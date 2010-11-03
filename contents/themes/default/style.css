@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Tue Nov 02 16:23:45 2010 +0800
+ * $Date: Wed Nov 03 09:00:11 2010 +0800
 
  This file is part of orzoj
 
@@ -308,6 +308,8 @@ table.colorbox-table
 	margin: 0;
 	border: 0;
 	padding: 0;
+	word-break: break-all;
+	word-wrap: break-word;
 }
 
 table.colorbox-table tr, table.colorbox-table th, table.colorbox-table td
@@ -1021,7 +1023,7 @@ div.post-filter #filter-apply-button
 	padding: 2px 8px;
 }
 
-div#post-view-single-navigator-top
+div.post-view-single-navigator-top
 {
 	font-size: 12px;
 	float: left;
@@ -1053,13 +1055,17 @@ div#post-subject
 	font-weight: bold;
 }
 
+div.post-topic-list-container
+{
+	max-width: 900px;
+}
+
 table.posts-table
 {
 	clear: both;
 	width: 100%;
-	border: 1px solid #eb7429;
+	border: 4px double #2020ff;
 	margin: 0;
-	border: 0;
 	padding: 0;
 	margin-top: 20px;
 	text-align: left;
@@ -1071,11 +1077,12 @@ table.posts-table
 table.posts-table th
 {
 	text-align: center;
+	background-color: #203089;
 }
 
-table.posts-table th
+table.posts-table tr:hover
 {
-	background-color: #203089;
+	background-color: #444477;
 }
 
 div.posts-author
@@ -1108,6 +1115,11 @@ div.posts-avatar img
 div.posts-nickname
 {
 	clear: both;
+}
+
+div.posts-content-container
+{
+	max-width: 900px;
 }
 
 div.posts-container

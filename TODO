@@ -7,18 +7,12 @@ default settings such as:
 
 set time format
 
-
 Problem page: discuss
 
 code editor
 
 status filter:
 	an optional radio box contains code and id supposed to be setted
-
-
-users.php: user_get_user_amount
-
-题目打钩
 
 
 删除久远的代码
@@ -47,8 +41,20 @@ add some default expressions to the rich text editor.
 输入格式：  => 冒号哪儿来的?
 
 *** Add additional field in function tf_form_get*
+
 题目更新失败！！！！
 
 CKEDITOR_BASEPATH
 
 seperate user rank from rank_list.php
+
+table.colorbox user defined links do not open in colorbox
+
+user info link in colorbox 
+
+prob-grp-tree does not work well in chrome
+
+** 'In reply to' does'nt work well!!
+
+*** MORE information of a post topic
+

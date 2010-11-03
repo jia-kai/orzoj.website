@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Tue Nov 02 18:48:12 2010 +0800
+ * $Date: Tue Nov 02 23:50:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -167,7 +167,7 @@ function _post_get_topic_list_build_where($type, $uid, $subject, $author, $prob_
 		$author_id = user_get_id_by_username($author);
 		if ($author_id === NULL)
 			throw new Exc_runtime(__('No such user whose username is %s!', $author));
-		db_where_add_add($where, array($DBOP['='], 'uid', $author_id));
+		db_where_add_and($where, array($DBOP['='], 'uid', $author_id));
 	}
 
 	if (is_string($subject) && strlen($subject))
@@ -194,6 +194,8 @@ function _post_get_topic_list_build_where($type, $uid, $subject, $author, $prob_
 function _deal_addtional_fields_start(&$fields, $ID_SET)
 {
 	global $POST_USER_NAME_SET;
+	if (!is_array($fields))
+		return NULL;
 	$additional_fields = array();
 	foreach ($POST_USER_NAME_SET as $prefix)
 		foreach ($ID_SET as $item)
@@ -215,6 +217,8 @@ function _deal_addtional_fields_start(&$fields, $ID_SET)
 function _deal_addtional_fields_end(&$fields, $ID_SET, &$additional_fields, &$list)
 {
 	global $POST_USER_NAME_SET, $db, $DBOP;
+	if (is_null($fields) || is_null($additional_fields))
+		return;
 	$cnt = count($list);
 	$block_size = sqrt($cnt);
 	$_users = array();
@@ -262,9 +266,12 @@ function _deal_addtional_fields_end(&$fields, $ID_SET, &$additional_fields, &$li
 function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $subject = NULL, $author = NULL, $prob_id, $attrib = NULL)
 {
 	global $db, $DBOP, $POST_TOPIC_FIELDS_SET, $POST_TOPIC_USER_ID_SET, $POST_USER_NAME_SET;
-	$fields = array_intersect($fields, $POST_TOPIC_FIELDS_SET);
-	if (array_search('id', $fields) === FALSE)
-		$fields[] = 'id';
+	if (is_array($fields))
+	{
+		$fields = array_intersect($fields, $POST_TOPIC_FIELDS_SET);
+		if (array_search('id', $fields) === FALSE)
+			$fields[] = 'id';
+	}
 
 	// additional fields
 	$additional_fields = _deal_addtional_fields_start($fields, $POST_TOPIC_USER_ID_SET);
@@ -469,7 +476,7 @@ function post_reply_get_form($tid)
 		throw new Exc_runtime(__('You must be logined to reply.'));
 	$s .= tf_form_get_hidden('post_reply_uid', $user->id);
 	$s .= tf_form_get_rich_text_editor(__('Content:'), 'post_reply_content');
-	
+
 	echo filter_apply('after_post_reply_form', $s);
 }
 
@@ -483,12 +490,12 @@ function _post_reply_add_content($content, $time, $uid, $tid, &$basic_floor)
 	{
 		$db->insert_into('posts', 
 			array('time' => $time,
-				'uid' => $uid,
-				'tid' => $tid,
-				'content' => substr($content, 0, POST_CONTENT_LEN_MAX),
-				'floor' => ++ $basic_floor
-			)
-		);
+			'uid' => $uid,
+			'tid' => $tid,
+			'content' => substr($content, 0, POST_CONTENT_LEN_MAX),
+			'floor' => ++ $basic_floor
+		)
+	);
 		if ($len > POST_CONTENT_LEN_MAX)
 			$content = substr($content, POST_CONTENT_LEN_MAX);
 	}
@@ -525,11 +532,11 @@ function post_reply()
 	$nrep = $topic['reply_amount'];
 	$db->update_data('post_topics',
 		array('reply_amount' => $nrep + 1,
-			'last_reply_time' => $time,
-			'last_reply_user' => $uid,
-			'floor_amount' => $basic_floor
-		), $where
-	);
+		'last_reply_time' => $time,
+		'last_reply_user' => $uid,
+		'floor_amount' => $basic_floor
+	), $where
+);
 }
 
 

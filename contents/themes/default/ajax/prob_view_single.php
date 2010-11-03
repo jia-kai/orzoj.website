@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Tue Nov 02 18:48:54 2010 +0800
+ * $Date: Tue Nov 02 22:52:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -94,7 +94,7 @@ try
 	function _make_post_list_button($prompt, $type = NULL)
 	{
 		global $pid;
-		$arg = post_list_pack_arg(1, NULL, $type, NULL, NULL, $pid, 'in-colorbox');
+		$arg = post_list_pack_arg(1, $type, NULL, NULL, NULL, $pid, 'in-colorbox');
 		echo '<a class="need-colorbox" href="'
 			. t_get_link('ajax-post-list', $arg, TRUE, TRUE) . '"><button>'
 			. $prompt

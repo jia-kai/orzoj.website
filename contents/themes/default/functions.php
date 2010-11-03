@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Nov 02 18:58:20 2010 +0800
+ * $Date: Wed Nov 03 00:09:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -186,7 +186,7 @@ CKEDITOR.replace("$editor_id",{
 EOF;
 	$colspan = '';
 	if ($class == 'post-add-topic-content')
-		$colspan = ' colspan="3"';
+		$colspan = ' colspan="2"';
 	return "<tr><td><label>$prompt</label></td><td$colspan>
 		$ckeditor
 		</td></tr>";

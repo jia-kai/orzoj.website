@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: judge.php
- * $Date: Tue Oct 26 13:14:22 2010 +0800
+ * $Date: Tue Nov 02 20:50:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -88,7 +88,7 @@ table_set_double_bgcolor();
 foreach ($aJudgeList as $judge)
 {
 ?>
-$("#judge_<?php echo $judge->id;?>").slideUp("slow");
+$("#judge_<?php echo $judge->id;?>").css("display", "none");
 $("#preview_<?php echo $judge->id;?>").click(function() {
 	$("#judge_<?php echo $judge->id;?>").slideToggle("slow");
 })

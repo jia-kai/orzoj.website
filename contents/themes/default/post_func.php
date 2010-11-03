@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_func.php
- * $Date: Tue Nov 02 17:21:59 2010 +0800
+ * $Date: Tue Nov 02 22:32:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -113,8 +113,11 @@ function post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $ty
 	if (is_string($author) && strlen($author))
 		$s .= "|post_list_author=$author";
 
+	if (is_string($prob_id))
+		$prob_id = intval($prob_id);
+
 	if (is_int($prob_id))
-		$s .= "post_list_prob_id=$prob_id";
+		$s .= "|post_list_prob_id=$prob_id";
 
 	if (is_string($action) && strlen($action))
 		$s .= "|action=$action";
