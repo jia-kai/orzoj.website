@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Thu Nov 04 19:55:44 2010 +0800
+ * $Date: Thu Nov 04 20:36:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -480,7 +480,7 @@ if (user_check_login() && !_action('in-colorbox')) {
 	function append_reply(floor)
 	{
 		<?php echo $Editor; ?>.insertHtml(
-			"<?php echo $InReplyTo; ?> #" + floor + ": \n"
+			"<?php echo $InReplyTo; ?> #" + floor + "<?php echo __(': \n'); ?>"
 		);
 	}
 <?php
