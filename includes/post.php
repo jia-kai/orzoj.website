@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Thu Nov 04 13:49:49 2010 +0800
+ * $Date: Thu Nov 04 14:16:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -431,7 +431,7 @@ function post_get_post_list($tid, $fields = NULL, $offset = NULL, $count = NULL,
 	global $POSTS_FIELD_SET, $db, $DBOP, $POSTS_USER_ID_SET;
 
 	if (!post_topic_exists($tid))
-		throw new Exc_runtime(__('Post topic whose id is %s doesn\'t exists'));
+		throw new Exc_runtime(__('Post topic whose id is %d doesn\'t exists'), $tid);
 	if (is_string($fields))
 		$fields = array($fields);
 	if (is_array($fields))
