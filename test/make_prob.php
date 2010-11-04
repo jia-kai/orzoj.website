@@ -2,6 +2,7 @@
 
 require_once '../pre_include.php';
 require_once $includes_path . 'problem.php';
+require_once $includes_path . 'user.php';
 
 define('NPROB', 21);
 define('NPGRP', 21);

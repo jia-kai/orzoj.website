@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Nov 02 10:23:49 2010 +0800
+ * $Date: Thu Nov 04 19:32:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -102,8 +102,6 @@ $tables = array(
 	),
 
 	// if a user belongs to a group, it belongs to all this group's ancestor groups
-	//
-	// BUT a user belongs to the administrator group iff it belongs to the group directly
 
 	/* user_grps */
 	'user_grps' => array(
@@ -111,7 +109,7 @@ $tables = array(
 			'id' => array('type' => 'INT32', 'auto_increment' => TRUE),
 			'pgid' => array('type' => 'INT32'), // parent group id, or 0 if none
 			'name' => array('type' => 'TEXT200'), // group name
-			'desc' => array('type' => 'TEXT'), // description
+			'desc' => array('type' => 'TEXT') // description
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -119,6 +117,7 @@ $tables = array(
 				'cols' => array('pgid')
 			),
 			array(
+				'type' => 'UNIQUE',
 				'cols' => array('name')
 			)
 		),
@@ -137,6 +136,17 @@ $tables = array(
 		),
 		'index' => array(
 			array('cols' => array('uid', 'gid')),
+			array('cols' => array('gid'))
+		)
+	),
+
+	/* cache_ugrp_child */
+	'cache_ugrp_child' => array( // cache of all children of each user group (each group itself included)
+		'cols' => array(
+			'gid' => array('type' => 'INT32'),
+			'chid' => array('type' => 'INT32') // id of one of the children of the user group
+		),
+		'index' => array(
 			array('cols' => array('gid'))
 		)
 	),
@@ -245,8 +255,15 @@ $tables = array(
 		'index' => array(
 			array(
 				'cols' => array('pgid')
+			),
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('name')
 			)
 		),
+		'index_len' => array(
+			'name' => PROB_GRP_NAME_LEN_MAX
+		)
 	),
 
 
@@ -265,7 +282,7 @@ $tables = array(
 	),
 
 	/* cache_pgrp_child */
-	'cache_pgrp_child' => array( // cache of all children of each problem group
+	'cache_pgrp_child' => array( // cache of all children of each problem group (each group itself included)
 		'cols' => array(
 			'gid' => array('type' => 'INT32'),
 			'chid' => array('type' => 'INT32') // id of one of the children of the problem group

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: Wed Nov 03 19:21:46 2010 +0800
+ * $Date: Thu Nov 04 16:08:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,17 +34,20 @@ if (!defined('IN_ORZOJ'))
 /**
  * GET arguments:
  *		[edit]: int, the id of problem to be edited, or 0 for adding a new problem
- *		[do]:  indicate the submission of the form
+ *		[do]:  indicate the submission of the form (ajax_mode)
+ *			return:
+ *				the first character will be 0 to refresh only page-info div,
+ *				or 1 to refresh the whole page (new page address followed)
  *		[delete]: 
  *			delete this problem (already confirmed), id must be sent via $_POST['pid']
  *			and verification code must be sent via $_POST['delete_verify']
+ *		[success_info]:
+ *			if set, print success information at the beginning
  *
  * POST arguments:
  *		those in the form
  *		['delete_verify']: verification code for deleting a problem
  *		['edit_verify']: verification code for adding/editing a problem
- *		['ajax_mode']: if set, the first character will be 0 to refresh only page-info div, or
- *			1 to refresh the whole page
  *
  * SESSION variables:
  *		delete_verify, edit_verify
@@ -57,6 +60,7 @@ require_once $includes_path . 'contest/ctal.php';
 if (isset($_GET['delete']) && !empty($_POST['pid']) &&
 	!empty($_POST['delete_verify']) && $_POST['delete_verify'] == session_get('delete_verify'))
 {
+	session_set('delete_verify', NULL);
 	prob_delete(intval($_POST['pid']));
 }
 
@@ -71,7 +75,6 @@ $fields = array(
 	'perm' => array('edit_perm', 'get_perm')
 );
 
-$pinfo = NULL;
 if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify'] == session_get('edit_verify'))
 {
 	try
@@ -85,51 +88,41 @@ if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify']
 			if (prob_get_id_by_code($pinfo['code']))
 				throw new Exc_runtime(__('problem code %s already exists', $pinfo['code']));
 			$pid = $db->insert_into('problems', $pinfo);
-			$_GET['edit'] = $pid;
-			$cur_page_link  = "index.php?page=$cur_page&amp;edit=$pid";
-			$new_prob = TRUE;
 			$pinfo['id'] = $pid;
 		}
 		else
+		{
 			$db->update_data('problems', $pinfo, array($DBOP['='], 'id', $pinfo['id'] = $_GET['edit']));
+			$pid = $_GET['edit'];
+		}
 		get_contest();
-		if (isset($_POST['ajax_mode']) && isset($new_prob))
-			echo '1';
-		else
-			echo '0';
-		if (isset($new_prob))
-			echo '<div id="ajax-page">';
-		get_info_div('info', __('Problem successfully added/updated (at %s)', time2str(time())));
-		if (isset($new_prob))
-			echo '</div>';
+		session_set('edit_verify', NULL);
+		echo "1index.php?page=$cur_page&edit=$pid&success_info=1";
+		return
 	}
 	catch (Exc_orzoj $e)
 	{
-		if (isset($_POST['ajax_mode']))
-			echo '0';
+		echo '0';
 		get_info_div('error', __('Failed to add/updated problem: %s', htmlencode($e->msg())));
-		$pinfo = NULL;
-	}
-	if (isset($_POST['ajax_mode']) && !isset($new_prob))
 		return;
-}
-if (is_null($pinfo))
-{
-	if (!empty($_GET['edit']))
-	{
-		$pinfo = $db->select_from('problems', array_keys($fields), array(
-			$DBOP['='], 'id', $_GET['edit']));
-		if (empty($pinfo))
-			die('no such problem');
-		else
-			$pinfo = $pinfo[0];
-		if (empty($pinfo['desc']))
-			get_info_div('warning', __('This problem has been marked as being deleted'));
 	}
+}
+if (!empty($_GET['edit']))
+{
+	$pinfo = $db->select_from('problems', array_keys($fields), array(
+		$DBOP['='], 'id', $_GET['edit']));
+	if (empty($pinfo))
+		die('no such problem');
+	else
+		$pinfo = $pinfo[0];
+	if (empty($pinfo['desc']))
+		get_info_div('warning', __('This problem has been marked as being deleted'));
 }
 
-if (!isset($new_prob))
-	echo '<div id="ajax-page"></div>';
+echo '<div id="ajax-page">';
+if (isset($_GET['success_info']))
+	get_info_div('info', __('Problem successfully added/updated (at %s)', time2str(time())));
+echo '</div>';
 
 echo "<form action='$cur_page_link&amp;do=1' method='post' id='edit-prob-form'>";
 foreach ($fields as $f)
@@ -379,6 +372,8 @@ $(document).ready(function(){
 	f.append('<input type="hidden" name="ajax_mode" value="1" />');
 	f.bind('submit', function(){
 		var f = $("#edit-prob-form");
+		for (instance in CKEDITOR.instances)
+			CKEDITOR.instances[instance].updateElement();
 		$.ajax({
 			'type': 'post',
 			'cache': false,
@@ -386,10 +381,12 @@ $(document).ready(function(){
 			'data': f.serializeArray(),
 			'success': function(data){
 				if (data.charAt(0) == '0')
+				{
 					$('#ajax-page').html(data.substr(1));
+					window.scrollTo(0, 0);
+				}
 				else
-					$('#ajax-page').parent().html(data.substr(1));
-				window.scrollTo(0, 0);
+					window.location = data.substr(1);
 			}
 		});
 		return false;

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Fri Oct 29 18:25:49 2010 +0800
+ * $Date: Thu Nov 04 19:40:06 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -39,7 +39,10 @@ define('ORZOJ_DEBUG_MODE', TRUE);
 $root_path = rtrim(realpath(dirname(__FILE__)), '/') . '/';
 $includes_path = $root_path . 'includes/';
 
-require_once $root_path . 'config.php';
+if (defined('CONFIG_FILE_PATH'))
+	require_once CONFIG_FILE_PATH;
+else
+	require_once $root_path . 'config.php';
 require_once $includes_path . 'const.php';
 require_once $includes_path . 'exception.php';
 require_once $includes_path . 'functions.php';

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Nov 04 09:41:46 2010 +0800
+ * $Date: Thu Nov 04 20:19:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,12 +29,12 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'message.php';
 require_once $includes_path . 'avatar.php';
 
-
-define('GID_NONE', -1); // nobody should be in this group
+// definitions for default user groups
 $cnt = 1;
+define('GID_NONE', $cnt ++); // nobody should be in this group
+define('GID_GUEST', $cnt ++); // unregistered users should be in this group
 define('GID_ALL', $cnt ++); // every registered user should be in this group
 define('GID_LOCK', $cnt ++); // locked group id
-define('GID_GUEST', $cnt ++);
 define('GID_ADMIN_USER', $cnt ++); // manage users (lock a user, change password, etc)
 define('GID_ADMIN_GROUP', $cnt ++);  // manage user groups (add, remove groups and assign group administrators)
 define('GID_ADMIN_TEAM', $cnt ++); // manage user teams
@@ -48,9 +48,6 @@ define('GID_SUPER_SUBMITTER', $cnt ++);
 define('GID_SUPER_RECORD_VIEWER', $cnt ++);
 // view all records and sources
 define('GID_UINFO_VIEWER', $cnt ++); // view register IP, submission IP, user real name etc.
-
-define('GID_START_ADMIN', GID_ADMIN_USER); // the first gid of admin groups
-define('GID_END_ADMIN', GID_ADMIN_ANNOUNCEMENT); // the last gid of admin groups
 
 
 /**
@@ -141,6 +138,8 @@ class User
 		foreach ($rows as $row)
 		{
 			$gid = intval($row['gid']);
+			if ($gid == GID_NONE || $gid == GID_GUEST)
+				continue;
 			$groups[] = $gid;
 			if ($row['admin'] == 1)
 				$this->admin_groups[] = $gid;
@@ -154,13 +153,20 @@ class User
 				array($DBOP['='], 'id', $groups[$i]));
 			if (empty($rows))
 				continue;
-			$tmp = intval($rows[0]['pgid']);
-			if (!isset($grp_set[$tmp]))
+			$pgid = intval($rows[0]['pgid']);
+			if (!isset($grp_set[$pgid]))
 			{
-				array_push($groups, $tmp);
-				$grp_set[$tmp] = 1;
+				$groups[] = $pgid;
+				$grp_set[$pgid] = 1;
 			}
 		}
+
+		if (isset($grp_set[GID_NONE]))
+			unset($groups[array_search(GID_NONE, $groups)]);
+		if (isset($grp_set[GID_GUEST]))
+			unset($groups[array_search(GID_GUEST, $groups)]);
+		if (!isset($grp_set[GID_ALL]))
+			$groups[] = GID_ALL;
 
 		$this->groups = $groups;
 
@@ -868,4 +874,96 @@ function user_get_user_amount()
 	global $db;
 	return $db->get_number_of_rows('users');
 }
+
+/**
+ * initialize default user groups
+ * should only be called on installation
+ */
+function user_init_default_grp()
+{
+	$grps = array(
+		// <group id> => array(<name>, <description>, <parant group id>)
+		GID_NONE => array('Nobody', __('nobody can be in this group'), 0),
+		GID_GUEST => array('Guests', __('unregistered visitors'), 0),
+		GID_ALL => array('All', __('all registered users'), 0),
+		GID_LOCK => array('Lock', __('locked users'), GID_ALL),
+		GID_ADMIN_USER => array('Admin-User', __('administrate users and user groups'), GID_ALL),
+		GID_ADMIN_TEAM => array('Admin-Team', __('administrate user teams'), GID_ALL),
+		GID_ADMIN_PROB => array('Admin-Prob', __('administrate problems and problem groups'), GID_ALL),
+		GID_ADMIN_CONTEST => array('Admin-Contest', __('administrate contests'), GID_ALL),
+		GID_ADMIN_POST => array('Admin-Post', __('administrate posts'), GID_ALL),
+		GID_ADMIN_ANNOUNCEMENT => array('Admin-Announcement', __('administrate announcements'), GID_ALL),
+		GID_SUPER_SUBMITTER => array('Super-Submitter', __(
+			'view problem and submit regardless of problem permission or contest permission or other limitations'),
+			GID_ALL),
+		GID_SUPER_RECORD_VIEWER => array('Record-Viewer', __('view all records and sources'), GID_ALL),
+		GID_UINFO_VIEWER => array('User-Info-Viewer', __('view register IP, submission IP, real name, etc'), GID_ALL)
+	);
+	global $db;
+	foreach ($grps as $gid => $info)
+	{
+		$db->insert_into('user_grps', array(
+			'id' => $gid,
+			'pgid' => $info[2],
+			'name' => $info[0],
+			'desc' => $info[1]
+		));
+		user_update_grp_cache_add($gid);
+	}
+}
+
+/**
+ * put the user in all privileged groups
+ * @param int $uid the id of user to be operated on
+ * @return void
+ */
+function user_set_super_admin($uid)
+{
+	global $db;
+	for ($i = GID_ADMIN_USER; $i <= GID_UINFO_VIEWER; $i ++)
+		$db->insert_into('map_user_grp', array(
+			'uid' => $uid,
+			'gid' => $i,
+			'pending' => 0,
+			'admin' => 1
+		));
+}
+
+/**
+ * update cache, must be called exactly once after adding a user group
+ * @param int $gid id of newly added user group
+ * @return void
+ */
+function user_update_grp_cache_add($gid)
+{
+	global $db, $DBOP;
+	$pgid = $gid;
+	while (TRUE)
+	{
+		$db->insert_into('cache_ugrp_child',
+			array('gid' => $pgid, 'chid' => $gid));
+		$pgid = $db->select_from('user_grps', 'pgid',
+			array($DBOP['='], 'id', $pgid));
+		if (empty($pgid))
+			return;
+		$pgid = intval($pgid[0]['pgid']);
+		if ($pgid == 0)
+			return;
+	}
+}
+
+/**
+ * update cache, must be called after deleting a user group
+ * @param int $gid id of the deleted user group
+ * @return void
+ */
+function user_update_grp_cache_delete($gid)
+{
+	global $db, $DBOP;
+	$db->delete_item('cache_ugrp_child',
+		array($DBOP['||'],
+		$DBOP['='], 'gid', $gid,
+		$DBOP['='], 'chid', $gid));
+}
+
 

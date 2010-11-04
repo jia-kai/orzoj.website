@@ -1,7 +1,7 @@
 <?php
 /*
- * $File: page_defs.php
- * $Date: Thu Nov 04 09:13:29 2010 +0800
+ * $File: user.php
+ * $Date: Thu Nov 04 20:14:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,14 +26,4 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
-
-$PAGES = array(
-	// <page name> => array(<display name|NULL>, <file|NULL>, <required group0>, <required group1>, ...)
-	'nav' => array(NULL, 'navigation.php'),
-	'default' => array(NULL, 'content_default.php'),
-	'prob' => array(__('Problem Administration'), 'problem.php', GID_ADMIN_PROB),
-	'prob_grp' => array(__('Problem Group Administration'), 'problem_grp.php', GID_ADMIN_PROB),
-	'contest' => array(__('Contest Administration'), 'contest.php', GID_ADMIN_CONTEST),
-	'user' => array(__('User Administration'), 'user.php', GID_ADMIN_USER)
-);
 

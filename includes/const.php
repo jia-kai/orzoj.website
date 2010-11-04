@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Thu Nov 04 09:41:19 2010 +0800
+ * $Date: Thu Nov 04 17:10:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -39,6 +39,7 @@ define('USERNAME_LEN_MIN', 3);
 define('NICKNAME_LEN_MAX', 20);
 define('REALNAME_LEN_MAX', 20);
 define('USER_GRP_NAME_LEN_MAX', 20);
+define('PROB_GRP_NAME_LEN_MAX', 20);
 define('WLANG_NAME_LEN_MAX', 20);
 define('POST_SUBJECT_LEN_MAX', 127);
 define('POST_CONTENT_LEN_MAX', 10240); // 10kb

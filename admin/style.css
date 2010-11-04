@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Nov 03 19:33:38 2010 +0800
+ * $Date: Thu Nov 04 16:37:01 2010 +0800
 
  This file is part of orzoj
 
@@ -214,6 +214,16 @@ div.gid-selector
 	overflow: auto;
 }
 
+div.with-onclick label
+{
+	cursor: pointer;
+}
+
+div.with-onclick label:hover
+{
+	text-decoration: underline;
+}
+
 div.gid-selector label, div.gid-selector input
 {
 	width: auto;
@@ -250,5 +260,26 @@ div.form-help-msg
 	margin-left: 200px;
 	float: left;
 	clear: both;
+}
+
+div.grp-batch-edit div.gid-selector
+{
+	border: none;
+	max-width: none;
+	max-height: none;
+}
+
+div.form-title
+{
+	font-weight: bold;
+	text-align: center;
+	font-size: 18px;
+}
+
+div#edit-grp-div
+{
+	clear: both;
+	float: left;
+	margin: 10px;
 }
 

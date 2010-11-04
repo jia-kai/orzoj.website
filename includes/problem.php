@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Tue Nov 02 19:16:09 2010 +0800
+ * $Date: Thu Nov 04 19:11:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -463,6 +463,21 @@ function prob_grp_get_name_desc_by_id($gid)
 }
 
 /**
+ * get problem group id by group name
+ * @param string $name group name
+ * @return int|NULL group id or NULL if no such group
+ */
+function prob_grp_get_id_by_name($name)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('prob_grps', 'id', array(
+		$DBOP['=s'], 'name', $name));
+	if (empty($row))
+		return NULL;
+	return $row[0]['id'];
+}
+
+/**
  * delete a problem
  * if the problem has no associated submissions, contests and posts, it will be deleted;
  * otherwise it will be marked as deleted (set 'desc' to empty string)
@@ -515,5 +530,19 @@ function prob_validate_io($io)
 		if (strpos($charset, $io[$i]) === FALSE)
 			throw new Exc_runtime(__('invalid character in problem input/output (char "%s", ascii %d)', $io[$i],
 				ord($io[$i])));
+}
+
+/**
+ * check whether problem group name is valid
+ * @param string $name the problem group name
+ * @return void
+ * @exception Exc_runtime on error
+ */
+function prob_validate_grp_name($name)
+{
+	if (strlen($name) > PROB_GRP_NAME_LEN_MAX)
+		throw new Exc_runtime(__('problem group name should not be longer than %d bytes'));
+	if (htmlencode($name) != $name)
+		throw new Exc_runtime(__('problem group name should not contain html specialchars'));
 }
 

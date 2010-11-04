@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Nov 03 11:15:58 2010 +0800
+ * $Date: Wed Nov 03 22:02:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -425,7 +425,7 @@ function email_validate($email)
 function time2str($time, $l10n = TRUE)
 {
 	if (!$l10n)
-		return strftime('%a %b %d %H:%M:%S %Y %Z', $time);
+		return strftime('%a %b %d %H:%M:%S %Y %z', $time);
 	return strftime('%a %b %d %H:%M:%S %Y %Z', $time);
 }
 

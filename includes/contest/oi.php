@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Wed Nov 03 17:11:44 2010 +0800
+ * $Date: Thu Nov 04 14:57:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -185,8 +185,17 @@ class Ctal_oi extends Ctal
 		if (is_null($io))
 			$io = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
 
-		submit_add_record($pinfo['id'], $lid, $src, $io,
-			RECORD_STATUS_WAITING_FOR_CONTEST, $this->data['id']);
+		if (time() < $this->data['time_start']) // super submitter
+		{
+			$st = RECORD_STATUS_WAITING_TO_BE_FETCHED;
+			$cid = 0;
+		}
+		else
+		{
+			$st = RECORD_STATUS_WAITING_FOR_CONTEST;
+			$cid = $this->data['id'];
+		}
+		submit_add_record($pinfo['id'], $lid, $src, $io, $st, $cid);
 	}
 
 	public function judge_done($rid)

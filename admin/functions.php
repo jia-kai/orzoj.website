@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Wed Nov 03 14:20:37 2010 +0800
+ * $Date: Thu Nov 04 16:35:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -126,13 +126,16 @@ class _Grp_tree_node
 
 /**
  * get options for problem group select
+ * @param string|NULL $gid0_name the name of group with gid 0 (default to 'All')
  * @return array array of array(<text>, <group id>)
  */
-function &make_pgid_select_opt()
+function &make_pgid_select_opt($gid0_name = NULL)
 {
 	global $db;
 	$rows = $db->select_from('prob_grps', array('id', 'pgid', 'name'));
-	$tree = array(new _Grp_tree_node(__('All')));
+	if (is_null($gid0_name))
+		$gid0_name = __('All');
+	$tree = array(new _Grp_tree_node($gid0_name));
 	foreach ($rows as $row)
 	{
 		$gid = intval($row['id']);
@@ -193,13 +196,17 @@ function make_pgnum_nav($pgnum, $tot_page)
  * @param string $name selector name
  * @param int $type selector type (0: user group; otherwise problem group)
  * @param array|NULL $default array of id of groups, items selected by default
+ * @param string|NULL $onclick onclick js function, which takes the group id as argument
  * @param bool $direct_echo
  * @return void|string
  */
-function form_get_gid_selector($name, $type, $default = NULL, $direct_echo = TRUE)
+function form_get_gid_selector($name, $type, $default = NULL, $onclick = NULL, $direct_echo = TRUE)
 {
 	global $db;
-	$code = '<div class="gid-selector">';
+	$class = 'gid-selector';
+	if (!is_null($onclick))
+		$class .= ' with-onclick';
+	$code = "<div class='$class'>";
 	$rows = $db->select_from($type ? 'prob_grps' : 'user_grps');
 	$tree = array();
 	foreach ($rows as $row)
@@ -222,7 +229,7 @@ function form_get_gid_selector($name, $type, $default = NULL, $direct_echo = TRU
 		foreach ($default as $f)
 			$selected[$f] = TRUE;
 	$name = 'gid_selector_' . $name . '[]';
-	_form_get_gid_selector_dfs($name, $code, $tree, 0, $selected);
+	_form_get_gid_selector_dfs($name, $code, $tree, 0, $selected, $onclick);
 	$code .= '</div>';
 	if ($direct_echo)
 		echo $code;
@@ -249,24 +256,29 @@ function form_get_gid_selector_val($name)
 /**
  * @ignore
  */
-function _form_get_gid_selector_dfs(&$post_name, &$output, &$tree, $root, &$selected)
+function _form_get_gid_selector_dfs(&$post_name, &$output, &$tree, $root, &$selected, &$onclick)
 {
 	$output .= '<ul>';
 	foreach ($tree[$root]->child as $ch)
 	{
 		$desc = $tree[$ch]->desc;
 		$name = $tree[$ch]->name;
-		if (isset($selected[$ch]))
-			$s = 'checked="checked"';
+		if (is_null($onclick))
+			$attr = sprintf('id="%s"', $id = get_unique_id());
 		else
-			$s = '';
-		$id = get_unique_id();
-		$output .= "<li><input name='$post_name' value='$ch' type='checkbox' id='$id' $s />";
-		$output .= "<label for='$id' title='$desc'>$name</label></li>";
+			$attr = '';
+		if (isset($selected[$ch]))
+			$attr .= ' checked="checked"';
+		$output .= "<li><input name='$post_name' value='$ch' type='checkbox' $attr/>";
+		if (is_null($onclick))
+			$attr = "for='$id'";
+		else
+			$attr = "onclick='$onclick($ch)'";
+		$output .= "<label title='$desc' $attr>$name</label></li>";
 		if (!empty($tree[$ch]->child))
 		{
 			$output .= '<li class="subtree">';
-			_form_get_gid_selector_dfs($post_name, $output, $tree, $ch, $selected);
+			_form_get_gid_selector_dfs($post_name, $output, $tree, $ch, $selected, $onclick);
 			$output .= '</li>';
 		}
 	}
@@ -295,10 +307,10 @@ function form_get_perm_editor($name, $default = NULL, $direct_echo = TRUE)
 
 	$code .= '<div style="clear: both; float: left">';
 	$code .= '<label>' . __('Allowed user groups:') . '</label><br />' .
-		form_get_gid_selector($name . '_allow', 0, $default[2], FALSE);
+		form_get_gid_selector($name . '_allow', 0, $default[2], NULL, FALSE);
 	$code .= '</div><div style="float: left; margin-left: 10px;">';
 	$code .= '<label>' . __('Denied user groups:') . '</label><br />' .
-		form_get_gid_selector($name . '_deny', 0, $default[3], FALSE);
+		form_get_gid_selector($name . '_deny', 0, $default[3], NULL, FALSE);
 	$code .= '</div>';
 	if ($direct_echo)
 		echo $code;

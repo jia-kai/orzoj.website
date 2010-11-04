@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Thu Oct 14 14:28:39 2010 +0800
+ * $Date: Thu Nov 04 19:45:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,7 +28,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 ob_start();
-define('IN_ORZOJ',true);
 header('Content-type:text/html;charset=utf-8');
 
 function conf_file_generate($db_layer,$db_host,$db_port,$db_username,$db_password,$db_name,$table_prefix)
@@ -125,24 +124,15 @@ case 2:
 	$table_prefix = $_POST['table_prefix'];
 	try
 	{
-		$root_path = rtrim(realpath('..'),'/').'/';
-		$includes_path = $root_path . 'includes/';
-
-		require_once $includes_path . 'exception.php';
-		require_once $includes_path . 'l10n.php';
-		require_once $includes_path . 'db/'.$db_layer.'.php';
-		require_once 'tables.php';
 
 		conf_file_generate($db_layer, $db_host, $db_port, $db_username,
 			$db_password, $db_name, $table_prefix);
 
+		$root_path = rtrim(realpath('..'),'/').'/';
+		define('CONFIG_FILE_PATH', $root_path . 'install/config.php');
+		require_once '../pre_include.php';
+		require_once 'tables.php';
 
-		$classname = 'Dbal_'.$db_layer;
-		$db = new $classname;
-
-
-		$db->connect($db_host, $db_port, $db_username, $db_password, $db_name);
-		$db->set_prefix($table_prefix);
 		foreach ($tables as $name => $table)
 		{
 			if ($db->table_exists($name))
@@ -152,6 +142,8 @@ case 2:
 			echo 'Table "'. $name . '" created successfully<br />';
 			ob_flush();
 		}
+		require_once $includes_path . 'user.php';
+		user_init_default_grp();
 		// XXX TEST
 		echo __('Installation completed. Please move install/config.php to the top direcotry of orzoj-website and delete "install" directory.');
 	}

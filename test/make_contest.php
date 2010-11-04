@@ -1,6 +1,7 @@
 <?php
 
 require_once '../pre_include.php';
+require_once $includes_path . 'user.php';
 
 define('TEST_CONTEST_LIST', TRUE);
 

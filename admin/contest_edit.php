@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_edit.php
- * $Date: Wed Nov 03 21:50:27 2010 +0800
+ * $Date: Thu Nov 04 16:09:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,18 +34,21 @@ if (!defined('IN_ORZOJ'))
 /**
  * GET arguments:
  *		[edit]:int the id of contest to be edited, or 0 for adding a new contest
- *		[delete]:
+ *		[delete]: (ajax_mode)
  *			delete this contest (already confirmed), id must be sent via $_POST['cid']
  *			and verification code must be sent via $_POST['delete_verify']
  *			the contest must not have started
  *			return 0 for success, 1 for error with error message followed
- *		[do]: indicate the submission of the form
+ *		[do]: indicate the submission of the form (ajax_mode)
+ *			return:
+ *				the first character will be 0 to refresh only page-info div,
+ *				or 1 to refresh the whole page (new page address followed)
+ *		[success_info]:
+ *			if set, print success information at the beginning
  * POST arguments:
  *		those in the form
  *		['delete_verify']: verification code for deleting a contest
  *		['edit_verify']: verification code for adding/editing a contest
- *		['ajax_mode']: if set, the first character will be 0 to refresh only page-info div, or
- *			1 to refresh the whole page
  *		[type]:int the contest type for adding a new contest (valid when edit=0)
  * SESSION variables:
  *		delete_verify, edit_verify
@@ -92,12 +95,15 @@ if (isset($_GET['delete']) && !empty($_POST['delete_verify']) &&
 	{
 		$ct = ctal_get_class_by_cid($_POST['cid']);
 		$ct->delete_contest();
-		die('0');
+		session_set('delete_verify', NULL);
+		echo '0';
+		return;
 	}
 	catch (Exc_orzoj $e)
 	{
 		echo '1';
-		die(__('Failed to delete contest: %s', htmlencode($e->msg())));
+		echo __('Failed to delete contest: %s', htmlencode($e->msg()));
+		return;
 	}
 }
 
@@ -114,7 +120,7 @@ $fields = array(
 	array('edit_order', 'get_order')
 );
 
-if (isset($_GET['do']))
+if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify'] == session_get('edit_verify'))
 {
 	try
 	{
@@ -128,27 +134,25 @@ if (isset($_GET['do']))
 			$cur_page_link  = "index.php?page=$cur_page&amp;edit=$cid";
 		}
 		else
+		{
 			$ct->update_contest();
-		if (isset($_POST['ajax_mode']))
-			echo '1';
-		echo '<div id="ajax-page">';
-		get_info_div('info', __('Contest successfully added/updated (at %s )', time2str(time())));
-		echo '</div>';
+			$cid = $ct->data['id'];
+		}
+		session_set('edit_verify', NULL);
+		echo "1index.php?page=$cur_page&edit=$cid&success_info=1";
+		return;
 	}
 	catch(Exc_orzoj $e)
 	{
-		if (isset($_POST['ajax_mode']))
-			echo '0';
-		else
-			echo  '<div id="ajax-page">';
+		echo '0';
 		get_info_div('error', __('Failed to add/update contest: %s', htmlencode($e->msg())));
-		if (isset($_POST['ajax_mode']))
-			return;
-		echo '</div>';
+		return;
 	}
 }
-else
-	echo '<div id="ajax-page"></div>';
+echo '<div id="ajax-page">';
+if (isset($_GET['success_info']))
+	get_info_div('info', __('Contest successfully added/updated (at %s )', time2str(time())));
+echo '</div>';
 
 echo "<form action='$cur_page_link&amp;do=1' method='post' id='edit-ct-form'>";
 foreach ($fields as $f)
@@ -254,7 +258,7 @@ function edit_time_end()
 	echo __('Examples:') . '<br />';
 	$example = array('now', '10 September 2000',
 		'+1 day', '+1 week', '+1 week 2 days 4 hours 2 seconds',
-		'next Thursday', 'last Monday', '2012-12-21 23:00:00 CST');
+		'next Thursday', 'last Monday', '2012-12-21 23:00:00 +0800');
 	echo '<ul>';
 	foreach ($example as $eg)
 	{
@@ -352,6 +356,8 @@ $(document).ready(function(){
 	f.append('<input type="hidden" name="ajax_mode" value="1" />');
 	f.bind('submit', function(){
 		var f = $("#edit-ct-form");
+		for (instance in CKEDITOR.instances)
+			CKEDITOR.instances[instance].updateElement();
 		$.ajax({
 			'type': 'post',
 			'cache': false,
@@ -359,10 +365,12 @@ $(document).ready(function(){
 			'data': f.serializeArray(),
 			'success': function(data){
 				if (data.charAt(0) == '0')
+				{
 					$('#ajax-page').html(data.substr(1));
+					window.scrollTo(0, 0);
+				}
 				else
-					$('#ajax-page').parent().html(data.substr(1));
-				window.scrollTo(0, 0);
+					window.location = data.substr(1);
 			}
 		});
 		return false;
