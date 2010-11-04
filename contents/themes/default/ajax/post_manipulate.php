@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_manipulate.php
- * $Date: Thu Nov 04 13:49:15 2010 +0800
+ * $Date: Thu Nov 04 14:08:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -64,7 +64,7 @@ try
 		}
 	}
 	if (!post_topic_exists($tid))
-		die(__('Post topic id: %s does not exists', $tid));
+		die(__('Post topic id: %d does not exists', $tid));
 
 	echo '<div class="post-manipulate">';
 	function _report_success($item)
