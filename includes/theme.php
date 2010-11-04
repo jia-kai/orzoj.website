@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Tue Nov 02 13:29:32 2010 +0800
+ * $Date: Thu Nov 04 14:29:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -60,8 +60,8 @@ function t_get_footer()
 	/*
 	if ($db->record_query)
 		$str .= '<br /> <div style="text-align: left">Queries:' . htmlencode(print_r($db->query_log, TRUE)) . '</div>';
-	echo filter_apply('after_footer', $str);
 	 */
+	echo filter_apply('after_footer', $str);
 }
 
 /**
