@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Thu Nov 04 09:22:04 2010 +0800
+ * $Date: Thu Nov 04 18:15:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -284,19 +284,15 @@ function _cv_subject()
 	$s = '<div class="post-topic-subject">';
 	if ($post['is_top'])
 		$s .= '<span class="post-subject-sticky">[' . __('Sticky') . ']</span>';
-	if ($post['is_boutique'])
-		$s .= '<span class="post-subject-boutique">[' . __('Boutique') . ']</span>';
 	if ($post['is_locked'])
 		$s .= '<span class="post-subject-locked">[' . __('Locked') . ']</span>';
 	$s .= '<a class="post-list-topic-subject" style="color: #9999ee" href="' ;
-	if ($action == 'in-colorbox')
-	{
 		$arg = post_view_single_pack_arg($post['id'], 1, $start_page, $type, $uid, $subject, $author, $prob_id, 'new_viewer,' . $action);
-		$s .= t_get_link('ajax-post-view-single', $arg, TRUE, TRUE) . '"';
-	}
+	if ($action == 'in-colorbox')
+		$s .= t_get_link('ajax-post-view-single', $arg, TRUE, TRUE);
 	else
-		$s .= post_view_single_get_a_href($post['id'], 1, $start_page, $type, $uid, $subject, $author, $prob_id, 'new_viewer,' . $action) . '"'
-		. 'onclick="' . post_view_single_get_a_onclick($post['id'], 1, $start_page, $type, $uid, $subject, $author, $prob_id, 'new_viewer,' . $action) . '"';
+		$s .= t_get_link('discuss', $post['id'], TRUE, TRUE);
+	$s .= '" onclick="' . post_view_single_get_a_onclick($post['id'], 1, $start_page, $type, $uid, $subject, $author, $prob_id, 'new_viewer,' . $action) . '"';
 	$s .= '>' . $post['subject'] . '</a>';
 	if ($post['prob_id'])
 	{
@@ -307,6 +303,9 @@ function _cv_subject()
 		else
 			$s .= '<a style="color: #ccccff" class="post-list-prob-code" target="_blank" href="' . t_get_link('problem', $prob_code, TRUE, TRUE) . '">[' . $prob_code . ']</a>';
 	}
+	if ($post['is_boutique'])
+		$s .= '<span class="post-subject-boutique">[' . __('Boutique') . ']</span>';
+
 	$s .= '</div>';
 	echo $s;
 }

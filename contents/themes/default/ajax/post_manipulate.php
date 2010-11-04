@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_manipulate.php
- * $Date: Thu Nov 04 14:08:57 2010 +0800
+ * $Date: Thu Nov 04 19:55:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,15 +34,16 @@ try
 	if (!user_check_login() || (user_check_login() && !$user->is_grp_member(GID_ADMIN_POST)) || !isset($page_arg) || empty($page_arg))
 		die(__('Hi buddy, what\'s up?'));
 
-	$POST_MAN_OPTION = array('tid', 'action');
+	$POST_MAN_OPTION = array('tid', 'action', 'pid', 'start_page');
 	$POST_ACTION_SET = array(
 		'stick', 'unstick',
 		'set_boutique', 'unset_boutique',
 		'lock', 'unlock', 
-		'delete', 'do_delete'
+		'delete', 'do_delete',
+		'delete_post', 'do_delete_post'
 	);
-	$tid = NULL;
-	$action = NULL;
+	foreach ($POST_MAN_OPTION as $item) 
+		$$item = NULL;
 
 	$options = explode('|', $page_arg);
 	foreach ($options as $option)
@@ -57,14 +58,26 @@ try
 		case 'tid':
 			$tid = intval($expr[1]);
 			break;
+		case 'pid':
+			$pid = intval($expr[1]);
+			break;
+		case 'start_page':
+			$start_page = intval($expr[1]);
+			break;
 		case 'action':
 			if (array_search($expr[1], $POST_ACTION_SET) === FALSE )
 				die(__('Unknown action'));
 			$action = $expr[1];
 		}
 	}
-	if (!post_topic_exists($tid))
+	if (empty($tid))
+		die(__('What do you wanna do?'));
+
+	if (!empty($tid) && !post_topic_exists($tid))
 		die(__('Post topic id: %d does not exists', $tid));
+
+	if (!empty($pid) && !post_reply_exists($pid))
+		die(__('Post reply id: %d does not exists', $pid));
 
 	echo '<div class="post-manipulate">';
 	function _report_success($item)
@@ -73,7 +86,7 @@ try
 		echo __('%s succeed.', $item);
 ?>
 		<script type="text/javascript">
-			setTimeout("$.colorbox.close()", 1500);
+			setTimeout("$.colorbox.close()", 800);
 			posts_view_set_content("<?php t_get_link('ajax-post-view-single', 'tid=' . $tid, FALSE, FALSE);?>");
 		</script>
 <?php
@@ -112,10 +125,10 @@ try
 		$href_no = t_get_link('discuss', 'tid=' . $tid, TRUE, TRUE);
 		$onclick_yes = '';
 		$onclick_no = '$.colorbox.close(); return false;';
-		echo '<a class="delete-post-topic-yes" href="' . $href_yes . '" onclick="' . $onclick_yes . '"><button>' . __('Yes') . '</button></a>';
+		echo '<a class="delete-post-yes" href="' . $href_yes . '" onclick="' . $onclick_yes . '"><button>' . __('Yes') . '</button></a>';
 		echo __('Are you sure to delete <b>%s</b> ?', $subject);
-		echo '<a class="delete-post-topic-no" href="' . $href_no . '" onclick="' . $onclick_no . '"><button>' . __('No') . '</button></a>';
-		echo '<script type="text/javascript">$("a.delete-post-topic-yes").colorbox();</script>';
+		echo '<a class="delete-post-no" href="' . $href_no . '" onclick="' . $onclick_no . '"><button>' . __('No') . '</button></a>';
+		echo '<script type="text/javascript">$("a.delete-post-yes").colorbox();</script>';
 		break;
 	case 'do_delete':
 		post_topic_delete($tid);
@@ -127,9 +140,32 @@ try
 		</script>
 <?php
 		break;
+
+	case 'delete_post':
+		$href_yes = t_get_link('ajax-post-manipulate', 'tid=' . $tid . '|start_page=' . $start_page . '|pid=' . $pid. '|action=do_delete_post', TRUE, TRUE);
+		$href_no = t_get_link('discuss', 'tid=' . $tid, TRUE, TRUE);
+		$onclick_yes = '';
+		$onclick_no = '$.colorbox.close(); return false;';
+		echo '<a class="delete-post-yes" href="' . $href_yes . '" onclick="' . $onclick_yes . '"><button>' . __('Yes') . '</button></a>';
+		echo __('Are you sure to delete?');
+		echo '<a class="delete-post-no" href="' . $href_no . '" onclick="' . $onclick_no . '"><button>' . __('No') . '</button></a>';
+		echo '<script type="text/javascript">$("a.delete-post-yes").colorbox();</script>';
+
+		break;
+	case 'do_delete_post':
+		post_reply_delete($pid);
+		echo __('Reply has been successfully deleted');
+?>
+		<script type="text/javascript">
+			setTimeout("$.colorbox.close()", 1500);
+			posts_view_set_content("<?php t_get_link('ajax-post-view-single', 'tid=' . $tid . '|start_page=' . $start_page, FALSE, FALSE);?>");
+		</script>
+<?php
+
+		break;
 	}
 	echo '</div>';
-	if ($action != 'delete')
+	if ($action != 'delete' && $action != 'delete_post')
 		echo '<script type="text/javascript">$(".post-manipulate a").colorbox();</script>';
 } catch (Exc_orzoj $e)
 	{

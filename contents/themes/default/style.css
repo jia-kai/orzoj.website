@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Thu Nov 04 09:51:31 2010 +0800
+ * $Date: Thu Nov 04 19:25:33 2010 +0800
 
  This file is part of orzoj
 
@@ -1090,9 +1090,15 @@ div.posts-time
 	float: left;
 }
 
+div.posts-delete-post-reply
+{
+	float: right;
+}
+
 div.posts-floor
 {
 	float: right;
+	margin-left: 5px;
 }
 
 div.posts-avatar

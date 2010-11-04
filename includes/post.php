@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Thu Nov 04 14:16:24 2010 +0800
+ * $Date: Thu Nov 04 19:55:53 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -323,7 +323,9 @@ function post_get_topic($id, $fields = NULL)
 }
 
 /**
- *
+ * judge if a topic exists
+ * @param int $id
+ * @return BOOL
  */
 function post_topic_exists($id)
 {
@@ -354,6 +356,8 @@ function post_topic_delete($id)
 		throw new Exc_runtime(__('You must login first'));
 	if (!$user->is_grp_member(GID_ADMIN_POST))
 		throw new Exc_runtime(__('You are not permitted to do this operation'));
+	if (!post_topic_exists($id))
+		throw new Exc_runtime(__('No such post topic whose id is %d', $id));
 	$db->delete_item('post_topics', array($DBOP['='], 'id', $id));
 	$db->delete_item('posts', array($DBOP['='], 'tid', $id));
 }
@@ -426,12 +430,12 @@ function post_topic_increase_statistic($id, $fields, $delta = 1)
  * @return array the post list
  * @exception Exc_runtime
  */
-function post_get_post_list($tid, $fields = NULL, $offset = NULL, $count = NULL, $order = 'ASC')
+function post_get_post_reply_list($tid, $fields = NULL, $offset = NULL, $count = NULL, $order = 'ASC')
 {
 	global $POSTS_FIELD_SET, $db, $DBOP, $POSTS_USER_ID_SET;
 
 	if (!post_topic_exists($tid))
-		throw new Exc_runtime(__('Post topic whose id is %d doesn\'t exists'), $tid);
+		throw new Exc_runtime(__('Post topic whose id is %d doesn\'t exists', $tid));
 	if (is_string($fields))
 		$fields = array($fields);
 	if (is_array($fields))
@@ -461,7 +465,7 @@ function post_get_post_list($tid, $fields = NULL, $offset = NULL, $count = NULL,
 /**
  * get the amount of post of a topic
  */
-function post_get_post_amount($tid)
+function post_get_post_reply_amount($tid)
 {
 	global $db, $DBOP;
 	return $db->get_number_of_rows('posts', array($DBOP['='], 'tid', $tid));
@@ -578,8 +582,76 @@ function post_reply()
 		'last_reply_time' => $time,
 		'last_reply_user' => $uid,
 		'floor_amount' => $basic_floor
-	), $where
-);
+		), $where
+	);
+}
+
+/**
+ * @ignore
+ */
+function _get_post_reply($id)
+{
+	global $db, $DBOP;
+	static $cache = array();
+	if (array_key_exists($id, $cache))
+		return $cache[$id];
+	$ret = $db->select_from('posts', NULL, array($DBOP['='], 'id', $id));
+	if (count($ret) != 1)
+		return $cache[$id] = NULL;
+	return $cache[$id] = $ret[0];
+}
+/**
+ * judge if a post reply exists
+ * @param int $id
+ * @return BOOL
+ */
+function post_reply_exists($id)
+{
+	global $db, $DBOP;
+	static $cache = array();
+	if (array_key_exists($id, $cache))
+		return $cache[$id];
+	$post = _get_post_reply($id);
+	return $cache[$id] = ($post !== NULL);
+}
+
+
+/**
+ * @ignore
+ */
+function _post_reply_is_first_floor($id)
+{
+	global $db, $DBOP;
+	static $cache = array();
+	if (array_key_exists($id, $cache))
+		return $cache[$id];
+	$post = _get_post_reply($id);
+	$where = array($DBOP['='], 'tid', $id);
+	db_where_add_and($where, array($DBOP['<='], 'time', $post['time']));
+	db_where_add_and($where, array($DBOP['<'], 'id', $id));
+	return $cache[$id] = ($db->get_number_of_rows('posts', $where) == 0);
+}
+
+
+/**
+ * delete a post reply
+ * @param int $id
+ * @return void
+ * @exception Exc_runtime
+ */
+function post_reply_delete($id)
+{
+	global $db, $DBOP, $user;
+	if (!user_check_login())
+		throw new Exc_runtime(__('You must login first'));
+	if (!$user->is_grp_member(GID_ADMIN_POST))
+		throw new Exc_runtime(__('You are not permitted to do this operation'));
+	if (!post_reply_exists($id))
+		throw new Exc_runtime(__('No such post reply whose id is %d', $id));
+	$post = _get_post_reply($id);
+	if (_post_reply_is_first_floor($id))
+		$db->update_data('post_topics', array('content' => ''), array($DBOP['='], 'id', $post['tid']));
+	$db->delete_item('posts', array($DBOP['='], 'id', $id));
 }
 
 

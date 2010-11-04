@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Thu Nov 04 13:29:13 2010 +0800
+ * $Date: Thu Nov 04 19:55:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,7 +27,7 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 /*
- * page argument:<tid=int>|<start_page=int>| ...(see below)
+ * page argument:<tid=int>|<start_page=int>| ...(see below) or int: tid
  * also POST:
  *		tid: int
  *			the id of topic
@@ -67,33 +67,40 @@ foreach ($post_list_args as $arg)
 
 if (isset($page_arg))
 {
-	$options = explode('|', $page_arg);
-	foreach ($options as $option)
+	if (is_numeric($page_arg))
 	{
-		$expr = explode('=', $option);
-		if (count($expr) != 2)
-			die(__('Invalid page argument.'));
-		switch ($expr[0])
+		$tid = intval($page_arg);
+	}
+	else
+	{
+		$options = explode('|', $page_arg);
+		foreach ($options as $option)
 		{
-		case 'tid':
-			$tid = intval($expr[1]);
-			break;
-		case 'start_page':
-			$start_page = intval($expr[1]);
-			break;
-		case 'action':
-			$action = $expr[1];
-			break;
-		default:
-			$name = $expr[0];
-			$val = $expr[1];
-			foreach ($post_list_args as $arg)
-				if ($name == 'post_list_' . $arg)
-				{
-					$$name = $val;
-					break;
-				}
-			break;
+			$expr = explode('=', $option);
+			if (count($expr) != 2)
+				die(__('Invalid page argument.'));
+			switch ($expr[0])
+			{
+			case 'tid':
+				$tid = intval($expr[1]);
+				break;
+			case 'start_page':
+				$start_page = intval($expr[1]);
+				break;
+			case 'action':
+				$action = $expr[1];
+				break;
+			default:
+				$name = $expr[0];
+				$val = $expr[1];
+				foreach ($post_list_args as $arg)
+					if ($name == 'post_list_' . $arg)
+					{
+						$$name = $val;
+						break;
+					}
+				break;
+			}
 		}
 	}
 }
@@ -150,15 +157,16 @@ $fields = array('time', 'tid',
 );
 
 
-$total_post = post_get_post_amount($tid);
+$total_post = post_get_post_reply_amount($tid);
 $total_page = ceil($total_post / $POSTS_PER_PAGE);
 
 if ($start_page < 1) $start_page = 1;
 if ($start_page > $total_page) $start_page = $total_page;
 try
 {
-	$posts = post_get_post_list($tid, $fields, ($start_page - 1) * $POSTS_PER_PAGE, $POSTS_PER_PAGE);
-} catch (Exc_orzoj $e)
+	$posts = post_get_post_reply_list($tid, $fields, ($start_page - 1) * $POSTS_PER_PAGE, $POSTS_PER_PAGE);
+}
+catch (Exc_orzoj $e)
 {
 	die($e->msg());
 }
@@ -341,9 +349,15 @@ foreach ($posts as $post)
 	$Floor = __('#%d', $floor);
 	$content = $post['content'];
 	$PostTime = __('Posted: ') . time2str($post['time']);
-	$Reply_href = '';
+	$Reply_href = $DeletePost = '';
 	if (user_check_login() && !_action('in-colorbox'))
+	{
 		$Reply_href = '<div class="posts-reply-a"><a href="#rep" onclick="append_reply(' . $floor. '); return false;">' . __('Reply') . '</div>';
+		if ($user->is_grp_member(GID_ADMIN_POST))
+			$DeletePost = '<div class="posts-delete-post-reply"><a href="' 
+			. t_get_link('ajax-post-manipulate', 'pid=' . $post['id']. '|action=delete_post|tid=' . $tid . '|start_page=' . $start_page, TRUE, TRUE)
+			. '">' . __('Delete this post') . '</a></div>';
+	}
 	$Top = __('To top');
 	$author = "<a href=\"$nickname_url\" title=\"$username_uid\">$nickname_uid</a>";
 	if (_action('in-colorbox'))
@@ -361,6 +375,7 @@ foreach ($posts as $post)
 		<div class="posts-container">
 			<div class="posts-time">$PostTime</div>
 			<div class="posts-floor">$Floor</div>
+			$DeletePost
 			<div class="posts-content">$content</div>
 			$Reply_href
 		</div>
@@ -458,6 +473,7 @@ if (user_check_login() && !_action('in-colorbox')) {
 	<script type="text/javascript">
 	/* logined */
 	$(".post-topic-manipulation a").colorbox();
+	$(".posts-delete-post-reply a").colorbox();
 	$("#post-reply-submit-button").button();
 	<?php $InReplyTo = __('In reply to'); ?>
 	<?php $Editor = "CKEDITOR.instances.$editor_id";?>

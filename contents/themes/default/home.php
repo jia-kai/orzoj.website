@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: home.php
- * $Date: Thu Nov 04 12:45:07 2010 +0800
+ * $Date: Thu Nov 04 16:18:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,5 +38,27 @@ support@orzoj.org
 to help improve this site. ALL KINDS OF SUGGESTIONS are WELCOME!<br />
 THANKS FOR YOU HELP!<br />
 </div>
-
+<?php
+$people = array('Ted', 'Theo', 'FYD',
+	'Lonely King', '张超Q', 'Rayan',
+   	'卡男', '囧', '工', '风哥');
+function _get_cleaner()
+{
+	global $people;
+	$last_time = option_get('last_time');
+	$lastday = strftime('%d', $last_time);
+	$time = time();
+	option_set('last_time', $time);
+	$today = strftime('%d', $time);
+	if ($lastday != $today)
+	{
+		$cleaner = $people[rand(0, count($people) - 1)];
+		option_set('cleaner', $cleaner);
+	}
+	else
+		$cleaner = option_get('cleaner');
+	echo $cleaner;
+}
+?>
+Cleaner Today: <?php _get_cleaner();?>
 </div>
