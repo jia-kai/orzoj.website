@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Wed Nov 03 11:45:07 2010 +0800
+ * $Date: Wed Nov 03 18:50:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -101,9 +101,10 @@ $PAGES = array(
 	'contest' => array(__('Contest'), 'contest.php'),
 	'discuss' => array(__('Discuss'), 'discuss.php'),
 	'team' => array(__('User Teams'), 'team.php'),
-	'judge' => array(__('Judges'), 'judge.php'),
-	'faq' => array(__('FAQ'), 'faq.php')
+	'judge' => array(__('Judges'), 'judge.php')
+	//'faq' => array(__('FAQ'), 'faq.php')
 );
+
 
 if (isset($PAGES_ACTION[$cur_page]))
 	_restore_page();

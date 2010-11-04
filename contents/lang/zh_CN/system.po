@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orzojweb-0.0.1-alpha\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-01 20:41+0800\n"
+"POT-Creation-Date: 2010-11-04 12:55+0800\n"
 "PO-Revision-Date: 2010-10-13 23:02+0800\n"
 "Last-Translator: Qijiang Fan <fqj1994@gmail.com>\n"
 "Language-Team: Chinese (simplified)\n"
@@ -24,7 +24,7 @@ msgid "Record detail"
 msgstr "记录详情"
 
 #: contents/themes/default/status.php:100
-#: contents/themes/default/ajax/post_list.php:106
+#: contents/themes/default/ajax/post_list.php:102
 msgid "Filter:"
 msgstr "过滤器："
 
@@ -58,14 +58,35 @@ msgid "Ranklist Mode"
 msgstr "排名模式"
 
 #: contents/themes/default/status.php:185
-#: contents/themes/default/ajax/post_list.php:160
+#: contents/themes/default/ajax/post_list.php:159
 msgid "Apply"
 msgstr "执行"
 
 #: contents/themes/default/status.php:198
 #: contents/themes/default/ajax/contest_view.php:103
+#: contents/themes/default/ajax/post_list.php:167
 msgid "Refresh"
 msgstr "刷新"
+
+#: contents/themes/default/ajax/post_new_topic.php:73
+#: contents/themes/default/ajax/post_view_single.php:397
+#: contents/themes/default/ajax/contest_view_prob.php:59
+#: contents/themes/default/ajax/prob_view_single.php:87
+msgid "Submit"
+msgstr "提交"
+
+#: contents/themes/default/ajax/post_new_topic.php:87
+#: contents/themes/default/ajax/post_view_single.php:432
+msgid "Submitting..."
+msgstr "提交中..."
+
+#: contents/themes/default/ajax/post_new_topic.php:105
+msgid "Oops!"
+msgstr "Oops!"
+
+#: contents/themes/default/ajax/post_new_topic.php:129
+msgid "Congruatulation! New topic has been successfully posted"
+msgstr "恭喜！新主题已被成功发布"
 
 #: contents/themes/default/ajax/gid_selector.php:138
 msgid "Please select a group first"
@@ -101,10 +122,10 @@ msgstr "祝你好运^_^"
 msgid "Good luck"
 msgstr "祝你好运"
 
-#: contents/themes/default/ajax/prob_group_tree_ask.php:74
+#: contents/themes/default/ajax/prob_group_tree_ask.php:79
 #: contents/themes/default/ajax/prob_view_by_group.php:118
-#: contents/themes/default/functions.php:365 includes/post.php:45
-#: admin/functions.php:143
+#: contents/themes/default/functions.php:470 includes/post.php:47
+#: admin/functions.php:135
 msgid "All"
 msgstr "全部"
 
@@ -113,7 +134,7 @@ msgid "Unknown argument."
 msgstr "未知参数。"
 
 #: contents/themes/default/ajax/rank_list.php:118
-#: contents/themes/default/index.php:101
+#: contents/themes/default/index.php:100
 msgid "Rank"
 msgstr "排名"
 
@@ -141,34 +162,34 @@ msgstr "排名表"
 msgid "Your current rank:"
 msgstr "你的当前排名："
 
-#: contents/themes/default/ajax/rank_list.php:287
+#: contents/themes/default/ajax/rank_list.php:285
 msgid "This is you!"
 msgstr "这个是你！"
 
-#: contents/themes/default/ajax/rank_list.php:315
-#: contents/themes/default/ajax/post_view_single.php:177
+#: contents/themes/default/ajax/rank_list.php:313
+#: contents/themes/default/ajax/post_view_single.php:235
 #: contents/themes/default/ajax/contest_view_result.php:233
 #: contents/themes/default/ajax/status_list.php:343
 #: contents/themes/default/ajax/prob_view_by_group.php:347
 #: contents/themes/default/ajax/contest_list.php:191
-#: contents/themes/default/ajax/post_list.php:302 admin/functions.php:184
+#: contents/themes/default/ajax/post_list.php:239 admin/functions.php:181
 msgid "Prev"
 msgstr "上一页"
 
-#: contents/themes/default/ajax/rank_list.php:320
-#: contents/themes/default/ajax/post_view_single.php:179
+#: contents/themes/default/ajax/rank_list.php:318
+#: contents/themes/default/ajax/post_view_single.php:237
 #: contents/themes/default/ajax/contest_view_result.php:251
 #: contents/themes/default/ajax/status_list.php:349
 #: contents/themes/default/ajax/prob_view_by_group.php:350
 #: contents/themes/default/ajax/contest_list.php:206
-#: contents/themes/default/ajax/post_list.php:305 admin/functions.php:190
+#: contents/themes/default/ajax/post_list.php:242 admin/functions.php:187
 msgid "Next"
 msgstr "下一页"
 
-#: contents/themes/default/ajax/rank_list.php:324
-#: contents/themes/default/ajax/post_view_single.php:190
+#: contents/themes/default/ajax/rank_list.php:322
+#: contents/themes/default/ajax/post_view_single.php:253
 #: contents/themes/default/ajax/prob_view_by_group.php:358
-#: contents/themes/default/ajax/post_list.php:310
+#: contents/themes/default/ajax/post_list.php:250
 msgid "Go to page"
 msgstr "跳转到页面"
 
@@ -177,13 +198,13 @@ msgid "Please log in first."
 msgstr "请先登录。"
 
 #: contents/themes/default/ajax/user_chpasswd.php:35
-#: contents/themes/default/functions.php:205 includes/user.php:705
-#: includes/message.php:71
+#: contents/themes/default/functions.php:312 includes/user.php:705
+#: includes/message.php:71 admin/functions.php:324 admin/problem_edit.php:251
 msgid "incomplete post"
 msgstr "不完整的表单"
 
 #: contents/themes/default/ajax/user_chpasswd.php:37
-#: contents/themes/default/index.php:373 includes/user.php:580
+#: contents/themes/default/index.php:375 includes/user.php:580
 msgid "Passwords do not match"
 msgstr "两次输入的密码不一样"
 
@@ -208,62 +229,72 @@ msgid "Confirm new passowrd:"
 msgstr "确认新密码："
 
 #: contents/themes/default/ajax/user_chpasswd.php:61
-#: contents/themes/default/index.php:223 contents/themes/default/index.php:530
+#: contents/themes/default/index.php:225 contents/themes/default/index.php:532
 msgid "OK"
 msgstr "OK"
 
-#: contents/themes/default/ajax/post_view_single.php:68
+#: contents/themes/default/ajax/post_view_single.php:75
 msgid "Invalid page argument."
 msgstr "不合法的页面参数。"
 
 #: contents/themes/default/ajax/post_view_single.php:129
+msgid "Which topic do you want to see?"
+msgstr "你想看哪个主题？"
+
+#: contents/themes/default/ajax/post_view_single.php:193
 #: contents/themes/default/ajax/contest_view.php:94
-#: contents/themes/default/ajax/prob_view_single.php:106
+#: contents/themes/default/ajax/prob_view_single.php:120
 msgid "Back to list"
 msgstr "返回列表"
 
-#: contents/themes/default/ajax/post_view_single.php:152
+#: contents/themes/default/ajax/post_view_single.php:198
 #, php-format
 msgid "Total posts: <span>%d</span>"
 msgstr "总帖子：<span>%d</span>"
 
-#: contents/themes/default/ajax/post_view_single.php:209
-#: contents/themes/default/ajax/post_list.php:155
-#: contents/themes/default/ajax/post_list.php:227
+#: contents/themes/default/ajax/post_view_single.php:233
+msgid "First page"
+msgstr "第一页"
+
+#: contents/themes/default/ajax/post_view_single.php:239
+msgid "Last page"
+msgstr "末页"
+
+#: contents/themes/default/ajax/post_view_single.php:281
+#: contents/themes/default/ajax/post_list.php:152
+#: contents/themes/default/ajax/post_list.php:350
 msgid "Author"
 msgstr "作者"
 
-#: contents/themes/default/ajax/post_view_single.php:210
+#: contents/themes/default/ajax/post_view_single.php:282
 msgid "Content"
 msgstr "正文"
 
-#: contents/themes/default/ajax/post_view_single.php:217
+#: contents/themes/default/ajax/post_view_single.php:288
 msgid "Avatar"
 msgstr "头像"
 
-#: contents/themes/default/ajax/post_view_single.php:221
+#: contents/themes/default/ajax/post_view_single.php:293
 #, php-format
 msgid "#%d"
 msgstr "#%d"
 
-#: contents/themes/default/ajax/post_view_single.php:225
-#: contents/themes/default/ajax/post_view_single.php:248
+#: contents/themes/default/ajax/post_view_single.php:295
+msgid "Posted: "
+msgstr "发布时间："
+
+#: contents/themes/default/ajax/post_view_single.php:298
+#: contents/themes/default/ajax/post_view_single.php:391
 msgid "Reply"
 msgstr "回复"
 
-#: contents/themes/default/ajax/post_view_single.php:254
-#: contents/themes/default/ajax/contest_view_prob.php:59
-#: contents/themes/default/ajax/prob_view_single.php:86
-msgid "Submit"
-msgstr "提交"
+#: contents/themes/default/ajax/post_view_single.php:299
+msgid "To top"
+msgstr "回到顶部"
 
-#: contents/themes/default/ajax/post_view_single.php:267
-msgid "Reply to"
-msgstr "回复"
-
-#: contents/themes/default/ajax/post_view_single.php:285
-msgid "Submitting..."
-msgstr "提交中..."
+#: contents/themes/default/ajax/post_view_single.php:413
+msgid "In reply to"
+msgstr "回复："
 
 #: contents/themes/default/ajax/prob_filter.php:34
 #: contents/themes/default/ajax/avatar_browser.php:110
@@ -276,7 +307,8 @@ msgstr "题目导航"
 
 #: contents/themes/default/ajax/prob_filter.php:90
 #: contents/themes/default/ajax/prob_view_by_group.php:183
-#: contents/themes/default/ajax/contest_list.php:116 admin/problem.php:90
+#: contents/themes/default/ajax/contest_list.php:116 admin/contest.php:49
+#: admin/problem.php:87 admin/contest_edit.php:305
 msgid "ID"
 msgstr "ID"
 
@@ -315,6 +347,7 @@ msgid "Programming language: %s"
 msgstr "编程语言：%s"
 
 #: contents/themes/default/ajax/record_detail.php:81
+#: admin/problem_edit.php:341
 msgid "None"
 msgstr "无"
 
@@ -520,7 +553,7 @@ msgid "DATE"
 msgstr "日期"
 
 #: contents/themes/default/ajax/status_list.php:263
-#: includes/contest/oi.php:255
+#: includes/contest/oi.php:281 includes/contest/acm.php:281
 msgid "RANK"
 msgstr "排名"
 
@@ -529,7 +562,7 @@ msgid "Problem Groups"
 msgstr "题目组"
 
 #: contents/themes/default/ajax/prob_view_by_group.php:89
-#: contents/themes/default/ajax/prob_view_single.php:74
+#: contents/themes/default/ajax/prob_view_single.php:75
 msgid "Unknown problem filter."
 msgstr "未知题目过滤器。"
 
@@ -538,7 +571,7 @@ msgid "Problems filter"
 msgstr "题目过滤器："
 
 #: contents/themes/default/ajax/prob_view_by_group.php:123
-#: contents/themes/default/index.php:99
+#: contents/themes/default/index.php:98
 msgid "Problems"
 msgstr "题目"
 
@@ -579,6 +612,7 @@ msgid ""
 msgstr "对不起，这个题目属于一个将来的比赛#%d，并且你现在不被允许查看它"
 
 #: contents/themes/default/ajax/contest_view_prob.php:100
+#: contents/themes/default/ajax/prob_view_single.php:133
 #, php-format
 msgid "Failed to view problem: %s"
 msgstr "浏览题目失败：%s"
@@ -594,6 +628,7 @@ msgid "Contest type: %s"
 msgstr "比赛类型：%s"
 
 #: contents/themes/default/ajax/contest_view.php:117
+#: admin/contest_edit.php:214
 msgid "Contest description:"
 msgstr "比赛描述："
 
@@ -636,7 +671,7 @@ msgstr "请等待数分钟以查看比赛结果。（你可以到状态页面查
 msgid "Sorry, you are not allowed to view problems in this contest now"
 msgstr "对不起，你现在不被允许浏览该比赛中的题目"
 
-#: contents/themes/default/ajax/contest_view.php:171 admin/problem.php:168
+#: contents/themes/default/ajax/contest_view.php:171 admin/problem.php:165
 msgid "Problem list"
 msgstr "题目列表"
 
@@ -733,76 +768,79 @@ msgid "Sum of submissions until first AC for each problem"
 msgstr "每题第一次通过前（含）的提交次数"
 
 #: contents/themes/default/ajax/user_info.php:156
-#: contents/themes/default/functions.php:433
+#: contents/themes/default/functions.php:543
 msgid "Statistics"
 msgstr "统计信息"
 
-#: contents/themes/default/ajax/prob_view_single.php:53
+#: contents/themes/default/ajax/prob_view_single.php:54
 msgid "Give me an id please."
 msgstr "请输入一个ID。"
 
-#: contents/themes/default/ajax/prob_view_single.php:57
+#: contents/themes/default/ajax/prob_view_single.php:58
 msgid "Give me an INT please - -!"
 msgstr "请输入一个整数 --！"
 
-#: contents/themes/default/ajax/prob_view_single.php:61
+#: contents/themes/default/ajax/prob_view_single.php:62
 #, php-format
 msgid "No such problem whose id is '%d'."
 msgstr "没有编号为%d的题目。"
 
-#: contents/themes/default/ajax/prob_view_single.php:67
+#: contents/themes/default/ajax/prob_view_single.php:68
 msgid "Give me a code please."
 msgstr "请输入一个代码。"
 
-#: contents/themes/default/ajax/prob_view_single.php:70
+#: contents/themes/default/ajax/prob_view_single.php:71 includes/post.php:129
 #, php-format
 msgid "No such problem whose code is '%s'"
 msgstr "没有代码为%s的题目"
 
-#: contents/themes/default/ajax/prob_view_single.php:91
+#: contents/themes/default/ajax/prob_view_single.php:92
 msgid "Best solutions"
 msgstr "最优解"
 
-#: contents/themes/default/ajax/prob_view_single.php:114
-msgid ""
-"This problem belongs to an upcoming contest and you should not try to view "
-"it here."
-msgstr "该题目属于一个将来的比赛所以你不能浏览该题。"
+#: contents/themes/default/ajax/prob_view_single.php:104
+#: contents/themes/default/index.php:102
+msgid "Discuss"
+msgstr "讨论"
 
-#: contents/themes/default/ajax/prob_view_single.php:121
+#: contents/themes/default/ajax/prob_view_single.php:107 includes/post.php:50
+msgid "Solution"
+msgstr "解决方案"
+
+#: contents/themes/default/ajax/prob_view_single.php:139
 msgid "URL of this problem:"
 msgstr "该题的URL"
 
-#: contents/themes/default/ajax/prob_view_single.php:122
+#: contents/themes/default/ajax/prob_view_single.php:140
 msgid "Bookmark this problem"
 msgstr "收藏该题"
 
-#: contents/themes/default/ajax/prob_view_single.php:137
+#: contents/themes/default/ajax/prob_view_single.php:154
 msgid "Problem"
 msgstr "题目"
 
-#: contents/themes/default/ajax/prob_view_single.php:152
+#: contents/themes/default/ajax/prob_view_single.php:169
 msgid "Sorry, bookmarking this page is not supported on your browser."
 msgstr "对不起，收藏该页在你的浏览器上不可用。"
 
-#: contents/themes/default/ajax/prob_view_single.php:161
+#: contents/themes/default/ajax/prob_view_single.php:178
 #, php-format
 msgid "Error while showing the problem: %s"
 msgstr "显示题目时错误：%s"
 
-#: contents/themes/default/ajax/contest_list.php:117
+#: contents/themes/default/ajax/contest_list.php:117 admin/contest.php:50
 msgid "TYPE"
 msgstr "类型"
 
-#: contents/themes/default/ajax/contest_list.php:118
+#: contents/themes/default/ajax/contest_list.php:118 admin/contest.php:51
 msgid "NAME"
 msgstr "名称"
 
-#: contents/themes/default/ajax/contest_list.php:119
+#: contents/themes/default/ajax/contest_list.php:119 admin/contest.php:52
 msgid "START"
 msgstr "开始时间"
 
-#: contents/themes/default/ajax/contest_list.php:120
+#: contents/themes/default/ajax/contest_list.php:120 admin/contest.php:53
 msgid "END"
 msgstr "结束时间"
 
@@ -818,25 +856,33 @@ msgstr "更新用户信息失败："
 msgid "Update!"
 msgstr "更新！"
 
-#: contents/themes/default/ajax/post_list.php:55
-#: contents/themes/default/ajax/post_list.php:63
+#: contents/themes/default/ajax/post_list.php:60
 msgid "Unknown page argument."
 msgstr "未知页面参数。"
 
-#: contents/themes/default/ajax/post_list.php:154
-#: contents/themes/default/ajax/post_list.php:226
+#: contents/themes/default/ajax/post_list.php:151
+#: contents/themes/default/ajax/post_list.php:349
 msgid "Subject"
 msgstr "主题"
 
-#: contents/themes/default/ajax/post_list.php:159
+#: contents/themes/default/ajax/post_list.php:153 includes/post.php:90
+#: includes/submit.php:50 admin/problem_edit.php:171
+msgid "Problem code:"
+msgstr "题目代码："
+
+#: contents/themes/default/ajax/post_list.php:158
 msgid "Type"
 msgstr "类型"
 
-#: contents/themes/default/ajax/post_list.php:228
+#: contents/themes/default/ajax/post_list.php:245
+msgid "New topic"
+msgstr "新主题"
+
+#: contents/themes/default/ajax/post_list.php:351
 msgid "Rep./Viewed"
 msgstr "回复/查看"
 
-#: contents/themes/default/ajax/post_list.php:229
+#: contents/themes/default/ajax/post_list.php:352
 msgid "Last reply"
 msgstr "上次回复"
 
@@ -879,7 +925,7 @@ msgid "Judge Name"
 msgstr "评测机名称"
 
 #: contents/themes/default/ajax/judge.php:67
-#: contents/themes/default/index.php:100 contents/themes/default/judge.php:73
+#: contents/themes/default/index.php:99 contents/themes/default/judge.php:73
 msgid "Status"
 msgstr "状态"
 
@@ -916,179 +962,171 @@ msgstr "当前的比赛"
 msgid "Upcoming Contests"
 msgstr "将来的比赛"
 
-#: contents/themes/default/functions.php:131
-msgid "Imcomplete POST"
+#: contents/themes/default/functions.php:189
+msgid "You know..."
+msgstr "你懂的..."
+
+#: contents/themes/default/functions.php:236 includes/post.php:106
+msgid "Incomplete POST"
 msgstr "不完整的帖子"
 
-#: contents/themes/default/functions.php:133
-msgid "Hi buddy, something to say?"
-msgstr "你好，有什么要说的码？"
+#: contents/themes/default/functions.php:240
+msgid "Hi buddy, something to comment?"
+msgstr "你好，有什么要评论的码？"
 
-#: contents/themes/default/functions.php:211
+#: contents/themes/default/functions.php:318
 msgid "wrong format for gid selector"
 msgstr "gid选择器处错误的格式"
 
-#: contents/themes/default/functions.php:216
+#: contents/themes/default/functions.php:323
 #, php-format
 msgid "No such user group: %s"
 msgstr "没有这个用户组：%s"
 
-#: contents/themes/default/functions.php:245
+#: contents/themes/default/functions.php:352
 msgid "Imcomplete post"
 msgstr "不完整的帖子"
 
-#: contents/themes/default/functions.php:247
+#: contents/themes/default/functions.php:354
 msgid "Hi buddy, source please?"
 msgstr "Orz,代码呢？"
 
-#: contents/themes/default/functions.php:263
+#: contents/themes/default/functions.php:370
 msgid "Browse"
 msgstr "浏览"
 
-#: contents/themes/default/functions.php:353
-msgid "Sorry, this problem has been deleted"
-msgstr "抱歉，该题目已被删除"
-
-#: contents/themes/default/functions.php:371
+#: contents/themes/default/functions.php:476
 msgid "standard input"
 msgstr "标准输入"
 
-#: contents/themes/default/functions.php:372
+#: contents/themes/default/functions.php:477
 msgid "standard output"
 msgstr "标准输出"
 
-#: contents/themes/default/functions.php:385
+#: contents/themes/default/functions.php:489
+msgid "Sorry, this problem has been deleted"
+msgstr "抱歉，该题目已被删除"
+
+#: contents/themes/default/functions.php:493
 msgid "Problem code: "
 msgstr "题目代码："
 
-#: contents/themes/default/functions.php:386
+#: contents/themes/default/functions.php:494
 msgid "Time Limit: "
 msgstr "时间限制："
 
-#: contents/themes/default/functions.php:387
+#: contents/themes/default/functions.php:495
 msgid "Memory Limit: "
 msgstr "内存限制："
 
-#: contents/themes/default/functions.php:391
+#: contents/themes/default/functions.php:499
 msgid "Total Submissions: "
 msgstr "总计提交次数："
 
-#: contents/themes/default/functions.php:392
+#: contents/themes/default/functions.php:500
 msgid "Accepted Submissions: "
 msgstr "通过次数："
 
-#: contents/themes/default/functions.php:395
+#: contents/themes/default/functions.php:503
 msgid "Problem Group: "
 msgstr "题目组："
 
-#: contents/themes/default/functions.php:395
+#: contents/themes/default/functions.php:503
 msgid "Problem Groups: "
 msgstr "题目组："
 
-#: contents/themes/default/functions.php:398
+#: contents/themes/default/functions.php:506
 msgid "Input: "
 msgstr "输入："
 
-#: contents/themes/default/functions.php:399
+#: contents/themes/default/functions.php:507
 msgid "Output: "
 msgstr "输出："
 
-#: contents/themes/default/functions.php:403
+#: contents/themes/default/functions.php:511 admin/problem_edit.php:204
 msgid "Description"
 msgstr "描述："
 
-#: contents/themes/default/functions.php:404
+#: contents/themes/default/functions.php:512 admin/problem_edit.php:205
 msgid "Input Format"
 msgstr "输入格式："
 
-#: contents/themes/default/functions.php:405
+#: contents/themes/default/functions.php:513 admin/problem_edit.php:206
 msgid "Output Format"
 msgstr "输出格式："
 
-#: contents/themes/default/functions.php:406
+#: contents/themes/default/functions.php:514 admin/problem_edit.php:211
 msgid "Sample Input"
 msgstr "样例输入"
 
-#: contents/themes/default/functions.php:407
+#: contents/themes/default/functions.php:515 admin/problem_edit.php:212
 msgid "Sample Output"
 msgstr "样例输出"
 
-#: contents/themes/default/functions.php:408
+#: contents/themes/default/functions.php:516 admin/problem_edit.php:213
 msgid "Range"
 msgstr "范围"
 
-#: contents/themes/default/functions.php:409
+#: contents/themes/default/functions.php:517 admin/problem_edit.php:215
 msgid "Hint"
 msgstr "提示"
 
-#: contents/themes/default/functions.php:410
+#: contents/themes/default/functions.php:518 admin/problem_edit.php:214
 msgid "Source"
 msgstr "来源"
 
-#: contents/themes/default/functions.php:418
+#: contents/themes/default/functions.php:526
 #, php-format
 msgid "Extra info %s"
 msgstr "额外的信息 %s"
 
-#: contents/themes/default/functions.php:436
+#: contents/themes/default/functions.php:546
 msgid "Accepted submissions:"
 msgstr "通过次数："
 
-#: contents/themes/default/functions.php:437
+#: contents/themes/default/functions.php:547
 msgid "Unaccepted submissions:"
 msgstr "未通过次数："
 
-#: contents/themes/default/functions.php:438
+#: contents/themes/default/functions.php:548
 msgid "Compilation-error submissions:"
 msgstr "编译错误的次数："
 
-#: contents/themes/default/functions.php:439
+#: contents/themes/default/functions.php:549
 msgid "Total submissions:"
 msgstr "总计提交次数："
 
-#: contents/themes/default/functions.php:440
+#: contents/themes/default/functions.php:550
 msgid "Number of users having submitted:"
 msgstr "提交的用户数："
 
-#: contents/themes/default/functions.php:441
+#: contents/themes/default/functions.php:551
 msgid "Number of users with accepted submission: "
 msgstr "通过的用户数："
 
-#: contents/themes/default/functions.php:442
+#: contents/themes/default/functions.php:552
 msgid "Sum of submissions until the first accepted submission for each user: "
 msgstr "每个用户在第一次通过前（含）提交的次数："
 
-#: contents/themes/default/discuss.php:36
-msgid "Posts"
-msgstr "帖子"
+#: contents/themes/default/functions.php:572
+msgid "Statistic chart"
+msgstr "统计图表"
 
-#: contents/themes/default/discuss.php:37
-msgid "New Topic"
-msgstr "新主题"
-
-#: contents/themes/default/index.php:98
+#: contents/themes/default/index.php:97
 msgid "Home"
 msgstr "主页"
 
-#: contents/themes/default/index.php:102
+#: contents/themes/default/index.php:101
 msgid "Contest"
 msgstr "比赛"
 
 #: contents/themes/default/index.php:103
-msgid "Discuss"
-msgstr "讨论"
-
-#: contents/themes/default/index.php:104
 msgid "User Teams"
 msgstr "用户团队"
 
-#: contents/themes/default/index.php:105
+#: contents/themes/default/index.php:104
 msgid "Judges"
 msgstr "评测机"
-
-#: contents/themes/default/index.php:106
-msgid "FAQ"
-msgstr "常见问题"
 
 #: contents/themes/default/index.php:160
 msgid "Failed to login"
@@ -1102,71 +1140,71 @@ msgstr "登录失败："
 msgid "Error while logging out: "
 msgstr "登出失败："
 
-#: contents/themes/default/index.php:256 admin/login.php:48
+#: contents/themes/default/index.php:258 admin/login.php:48
 msgid "Login"
 msgstr "登录"
 
-#: contents/themes/default/index.php:258
+#: contents/themes/default/index.php:260
 msgid "Register"
 msgstr "注册"
 
-#: contents/themes/default/index.php:265
+#: contents/themes/default/index.php:267
 #, php-format
 msgid "Hello, %s!"
 msgstr "你好，%s！"
 
-#: contents/themes/default/index.php:267
+#: contents/themes/default/index.php:269
 #, php-format
 msgid "Solved prob.: %d Submitted prob.: %d <br />AC Ratio: %.2f%%"
 msgstr "通过题数：%d 提交题数：%d <br />通过率：%.2f%%"
 
-#: contents/themes/default/index.php:280
+#: contents/themes/default/index.php:282
 msgid "User info."
 msgstr "用户信息"
 
-#: contents/themes/default/index.php:281
+#: contents/themes/default/index.php:283
 msgid "Update profile"
 msgstr "更新信息"
 
-#: contents/themes/default/index.php:282
+#: contents/themes/default/index.php:284
 msgid "Change password"
 msgstr "修改密码"
 
-#: contents/themes/default/index.php:283
+#: contents/themes/default/index.php:285
 msgid "Logout"
 msgstr "登出"
 
-#: contents/themes/default/index.php:312
+#: contents/themes/default/index.php:314
 #, php-format
 msgid "This is an AJAX page. Please visit %s to find the complete page."
 msgstr ""
 "这个是一个AJAX（异步式Javascript和XML）页面。请访问 %s 以找到完整的页面。"
 
-#: contents/themes/default/index.php:327
+#: contents/themes/default/index.php:329
 msgid "User group selector"
 msgstr "用户组选择器"
 
-#: contents/themes/default/index.php:333
+#: contents/themes/default/index.php:335
 msgid "Message"
 msgstr "消息"
 
-#: contents/themes/default/index.php:377
+#: contents/themes/default/index.php:379
 msgid "You must set a password"
 msgstr "你必须设置一个密码"
 
-#: contents/themes/default/index.php:521
+#: contents/themes/default/index.php:523
 msgid "ADD"
 msgstr "添加"
 
-#: contents/themes/default/index.php:524
+#: contents/themes/default/index.php:526
 msgid "REMOVE"
 msgstr "删除"
 
-#: contents/themes/default/index.php:527
+#: contents/themes/default/index.php:529
 msgid "CANCEL"
 msgstr "取消"
 
-#: contents/themes/default/index.php:550
+#: contents/themes/default/index.php:553
 msgid ""
 "Your browser is out of date.Please upgrade your browser.If you insist on "
 "using your out-of-date browser,you can't get the best browsing experience."
@@ -1175,9 +1213,13 @@ msgstr ""
 "你的浏览器已过时。请更新浏览器。如果你坚持使用你的旧浏览器，你可能不会得到最"
 "佳的浏览体验。"
 
-#: contents/themes/default/index.php:555
+#: contents/themes/default/index.php:554
 msgid "As follows are some up-to-date browsers(In alphabet order)."
 msgstr "下面是一些最新的浏览器（字母序排序）。"
+
+#: contents/themes/default/index.php:569
+msgid "IMPORTANT NOTICE"
+msgstr "重要提示"
 
 #: contents/themes/default/judge.php:54
 msgid "There is only ONE judge"
@@ -1283,320 +1325,369 @@ msgstr "非零返回值"
 msgid "System error"
 msgstr "系统错误"
 
-#: includes/contest/oi.php:59
+#: includes/contest/oi.php:63 includes/contest/acm.php:63
 #, php-format
 msgid "trying to update contest #%d before insertion"
 msgstr "在插入之前尝试更新比赛#%d"
 
-#: includes/contest/oi.php:67
+#: includes/contest/oi.php:74 includes/contest/acm.php:74
+msgid "contests having already started can not be deleted"
+msgstr "已经开始的比赛不能删除"
+
+#: includes/contest/oi.php:79 includes/contest/acm.php:79
+#, php-format
+msgid "trying to delete contest #%d before insertion"
+msgstr "在插入之前尝试删除比赛#%d"
+
+#: includes/contest/oi.php:90 includes/contest/acm.php:90
 msgid "sorry, you are not allowed to view this problem now"
 msgstr "对不起，你现在不被允许浏览该题目"
 
-#: includes/contest/oi.php:69
+#: includes/contest/oi.php:92 includes/contest/acm.php:92
 msgid ""
 "sorry, this problem belongs to a future contest and you are not allowed\n"
 " to view it here"
 msgstr "对不起，这个题目属于一个将来的比赛，并且你不被允许在这里查看它"
 
-#: includes/contest/oi.php:97
+#: includes/contest/oi.php:124 includes/contest/acm.php:124
 msgid "NO."
 msgstr "编号"
 
-#: includes/contest/oi.php:97 admin/problem.php:91
+#: includes/contest/oi.php:124 includes/contest/acm.php:124
+#: admin/problem.php:88 admin/contest_edit.php:305
 msgid "TITLE"
 msgstr "标题"
 
-#: includes/contest/oi.php:97
+#: includes/contest/oi.php:124 includes/contest/acm.php:124
 msgid "TIME"
 msgstr "时间"
 
-#: includes/contest/oi.php:97
+#: includes/contest/oi.php:124 includes/contest/acm.php:124
 msgid "MEMORY"
 msgstr "内存"
 
-#: includes/contest/oi.php:97
+#: includes/contest/oi.php:124 includes/contest/acm.php:124
 msgid "INPUT"
 msgstr "输入"
 
-#: includes/contest/oi.php:97
+#: includes/contest/oi.php:124 includes/contest/acm.php:124
 msgid "OUTPUT"
 msgstr "输出"
 
-#: includes/contest/oi.php:101
+#: includes/contest/oi.php:128 includes/contest/acm.php:128
 msgid "SUBMITTED?"
 msgstr "已提交？"
 
-#: includes/contest/oi.php:116
+#: includes/contest/oi.php:143 includes/contest/acm.php:143
 #, php-format
 msgid "no such problem #%d for contest #%d"
 msgstr "对比赛#%2$d没有这个题目#%1$d"
 
-#: includes/contest/oi.php:127
+#: includes/contest/oi.php:154 includes/contest/acm.php:154
 msgid "YES"
 msgstr "是"
 
-#: includes/contest/oi.php:138
-msgid "please do not submit before the contest starts"
-msgstr "请不要在比赛开始之前提交代码"
-
-#: includes/contest/oi.php:140
-msgid "you can not submit after the contest ends"
-msgstr "请不要在比赛结束之后提交代码"
-
-#: includes/contest/oi.php:143
-msgid "sorry, your programming language is unavailable in this contest"
-msgstr "抱歉，你的编程语言在本比赛中不可用"
-
-#: includes/contest/oi.php:147
+#: includes/contest/oi.php:166 includes/contest/acm.php:166
 msgid "please login first"
 msgstr "请先登录"
 
-#: includes/contest/oi.php:149
-msgid "sorry, you are not allowed to submit in this contest"
-msgstr "对不起，你现在不被允许在该比赛中提交"
+#: includes/contest/oi.php:168 includes/contest/acm.php:168
+#, php-format
+msgid "sorry, you can not submit problem in contest #%d now"
+msgstr "对不起，你现在不被允许提交在比赛#%d中的题目"
 
-#: includes/contest/oi.php:172
+#: includes/contest/oi.php:171 includes/contest/acm.php:171
+msgid "you can not submit after the contest ends"
+msgstr "请不要在比赛结束之后提交代码"
+
+#: includes/contest/oi.php:174 includes/contest/acm.php:174
+msgid "sorry, your programming language is unavailable in this contest"
+msgstr "抱歉，你的编程语言在本比赛中不可用"
+
+#: includes/contest/oi.php:198 includes/contest/acm.php:198
 #, php-format
 msgid "Ctal_oi::judge_done: no such record #%d"
 msgstr "Ctal_oi::judge_done: 没有这个记录#%d"
 
-#: includes/contest/oi.php:212
+#: includes/contest/oi.php:238 includes/contest/acm.php:238
 #, php-format
 msgid "No data row for contest #%d"
 msgstr "对比赛#%d 没有data raw"
 
-#: includes/contest/oi.php:255
+#: includes/contest/oi.php:281 includes/contest/acm.php:281
 msgid "USERNAME"
 msgstr "用户名"
 
-#: includes/contest/oi.php:255
+#: includes/contest/oi.php:281 includes/contest/acm.php:281
 msgid "REAL NAME"
 msgstr "真实姓名"
 
-#: includes/contest/oi.php:256
+#: includes/contest/oi.php:282 includes/contest/acm.php:282
 msgid "TOTAL SCORE"
 msgstr "总分"
 
-#: includes/contest/oi.php:256
+#: includes/contest/oi.php:282 includes/contest/acm.php:282
 msgid "TOTAL TIME [SEC]"
 msgstr "总时间[秒]"
 
-#: includes/contest/oi.php:294
+#: includes/contest/oi.php:320 includes/contest/acm.php:320
 msgid "Not submitted"
 msgstr "未提交"
 
-#: includes/contest/ctal.php:194
+#: includes/contest/oi.php:367 includes/contest/acm.php:367
+msgid "the contest seems to end before it starts"
+msgstr "该比赛貌似在结束之前开始"
+
+#: includes/contest/ctal.php:203
 #, php-format
 msgid "No such contest #%d"
 msgstr "没有这个比赛#%d"
 
-#: includes/contest/ctal.php:227
+#: includes/contest/ctal.php:236
 msgid "Olympiad in informatics"
 msgstr "信息学奥林匹克"
 
-#: includes/contest/ctal.php:228
+#: includes/contest/ctal.php:237
 msgid "ACM/ICPC"
 msgstr "美国计算机学会/国际大学生程序设计竞赛"
 
-#: includes/db/mysql.php:129 includes/db/mysql.php:152
+#: includes/contest/ctal.php:253
+#, php-format
+msgid "unknown contest type: %s"
+msgstr "未知比赛类型：%s"
+
+#: includes/db/mysql.php:121 includes/db/mysql.php:131
+#: includes/db/mysql.php:154
 msgid "invalid where clause"
 msgstr "非法的where从句"
 
-#: includes/db/mysql.php:213
+#: includes/db/mysql.php:215
 #, php-format
 msgid "SQL error: %s"
 msgstr "SQL错误：%s"
 
-#: includes/db/mysql.php:214
+#: includes/db/mysql.php:216
 #, php-format
 msgid "failed to conenct to database: %s"
 msgstr "连接数据库失败：%s"
 
-#: includes/db/mysql.php:269
+#: includes/db/mysql.php:271
 #, php-format
 msgid "unknown index type: %s"
 msgstr "未知索引类型：%s"
 
-#: includes/db/mysql.php:303
+#: includes/db/mysql.php:305
 msgid "unexpected SQL error"
 msgstr "未预料的SQL错误"
 
-#: includes/db/mysql.php:476
+#: includes/db/mysql.php:478
 msgid "nested transaction"
 msgstr "嵌套事务"
 
-#: includes/db/mysql.php:488
+#: includes/db/mysql.php:490
 msgid "attempt to commit before beginning transaction"
 msgstr "在事务开始前尝试提交它"
 
-#: includes/db/mysql.php:500
+#: includes/db/mysql.php:502
 msgid "attempt to rollback before beginning transaction"
 msgstr "在事务开始前尝试回滚它"
 
-#: includes/db/mysql.php:559
+#: includes/db/mysql.php:561
 #, php-format
 msgid "SQL query error [query: %s]: %s"
 msgstr "SQL请求错误·［请求：%s］：%s"
 
-#: includes/functions.php:278
+#: includes/functions.php:300
 msgid "invalid document"
 msgstr "不合法的文档"
 
-#: includes/functions.php:282
+#: includes/functions.php:304
 #, php-format
 msgid "disallowed tag: %s"
 msgstr "不允许的标签：%s"
 
-#: includes/functions.php:308
+#: includes/functions.php:330
 msgid "javascript is not allowed"
 msgstr "Javascript不被允许"
 
-#: includes/functions.php:365
+#: includes/functions.php:387
 msgid "invalid email address: no at symbol (@) found"
 msgstr "不合法的邮件地址：没有@符号"
 
-#: includes/functions.php:371
+#: includes/functions.php:393
 msgid "invalid email address: local part length exceeded"
 msgstr "不合法的邮件地址：本地部分（@前面）超长"
 
-#: includes/functions.php:373
+#: includes/functions.php:395
 msgid "invalid email address: domain part length exceeded"
 msgstr "不合法的邮件地址：域名部分超长"
 
-#: includes/functions.php:375
+#: includes/functions.php:397
 msgid "invalid email address: local part starts or ends with dot(.)"
 msgstr "不合法的邮件地址：本地部分（@前面）以以点开始或结尾"
 
-#: includes/functions.php:377
+#: includes/functions.php:399
 msgid "invalid email address: local part has two consecutive dots"
 msgstr "不合法的邮件地址：本地部分（@前面）有两个连续的点"
 
-#: includes/functions.php:379
+#: includes/functions.php:401
 msgid "invalid email address: character not valid in domain part"
 msgstr "不合法的邮件地址：域名部分的字符不合法"
 
-#: includes/functions.php:381
+#: includes/functions.php:403
 msgid "invalid email address: domain part has two consecutive dots"
 msgstr "不合法的邮件地址：域名部分有两个连续的点"
 
-#: includes/functions.php:387
+#: includes/functions.php:409
 msgid ""
 "invalid email address: character not valid in local part unless local part "
 "is quoted"
 msgstr "不合法的邮件地址：如果本地部分没有在引号内，本地部分有不合法的字符"
 
-#: includes/functions.php:393
+#: includes/functions.php:415
 msgid "invalid email address: MX record not found in DNS"
 msgstr ""
 "不合法的邮件地址：域名部分的域名解析记录中没有邮件交换记录，这可能是一个不存"
 "在的邮箱"
 
-#: includes/functions.php:419
+#: includes/functions.php:444
 msgid "second"
 msgstr "秒"
 
-#: includes/functions.php:419
+#: includes/functions.php:444
 msgid "seconds"
 msgstr "秒"
 
-#: includes/functions.php:420
+#: includes/functions.php:445
 msgid "minute"
 msgstr "分"
 
-#: includes/functions.php:420
+#: includes/functions.php:445
 msgid "minutes"
 msgstr "分"
 
-#: includes/functions.php:421
+#: includes/functions.php:446
 msgid "hour"
 msgstr "小时"
 
-#: includes/functions.php:421
+#: includes/functions.php:446
 msgid "hours"
 msgstr "小时"
 
-#: includes/functions.php:422
+#: includes/functions.php:447
 msgid "day"
 msgstr "天"
 
-#: includes/functions.php:422
+#: includes/functions.php:447
 msgid "days"
 msgstr "天"
 
-#: includes/functions.php:423
+#: includes/functions.php:448
 msgid "year"
 msgstr "年"
 
-#: includes/functions.php:423
+#: includes/functions.php:448
 msgid "years"
 msgstr "年"
 
-#: includes/post.php:46
+#: includes/post.php:48
 msgid "Normal"
 msgstr "普通"
 
-#: includes/post.php:47
+#: includes/post.php:49
 msgid "Question"
 msgstr "问题"
 
-#: includes/post.php:48
-msgid "Solution"
-msgstr "解决方案"
-
-#: includes/post.php:49
+#: includes/post.php:51
 msgid "Vote"
 msgstr "投票"
 
-#: includes/post.php:83
+#: includes/post.php:91
+msgid "Post type:"
+msgstr "比赛类型："
+
+#: includes/post.php:92
 msgid "Subject:"
 msgstr "主题："
 
-#: includes/post.php:84 includes/post.php:388 includes/message.php:93
+#: includes/post.php:93 includes/post.php:478 includes/message.php:93
 msgid "Content:"
 msgstr "正文："
 
-#: includes/post.php:85 admin/problem_edit.php:140
-msgid "Problem id:"
-msgstr "题目编号："
-
-#: includes/post.php:96
+#: includes/post.php:104
 msgid "Please login first"
 msgstr "请先登录"
 
-#: includes/post.php:98
+#: includes/post.php:108
 msgid "No post subject"
 msgstr "没有帖子主题"
 
-#: includes/post.php:100
+#: includes/post.php:110
 msgid "Subject is too long"
 msgstr "主题太长"
 
-#: includes/post.php:132
+#: includes/post.php:114
+msgid "Invalid post type"
+msgstr "不合法的帖子类型"
+
+#: includes/post.php:121
+msgid "Hi buddy, Something to say?"
+msgstr "你好，有什么要说的吗？"
+
+#: includes/post.php:163
 #, php-format
 msgid "No such user whose id is %d!"
-msgstr "没有编号为%d的用户。"
+msgstr "没有编号为%d的用户！"
 
-#: includes/post.php:138
+#: includes/post.php:169
 #, php-format
-msgid "No such user whose %s is %s!"
-msgstr "没有%s为%s的用户。"
+msgid "No such user whose username is %s!"
+msgstr "没有用户名为%s的用户！"
 
-#: includes/post.php:386 includes/post.php:402
+#: includes/post.php:180
+#, php-format
+msgid "No such problem whose id is %d!"
+msgstr "没有编号为%d的题目！"
+
+#: includes/post.php:408
+#, php-format
+msgid "Post topic whose id is %s doesn't exists"
+msgstr "ID为%s的帖子不存在"
+
+#: includes/post.php:476 includes/post.php:513
 msgid "You must be logined to reply."
 msgstr "你必须登录以回复"
 
-#: includes/post.php:405
+#: includes/post.php:516
 msgid "Incomplete POST."
 msgstr "不完整的帖子。"
 
-#: includes/problem.php:80
+#: includes/problem.php:83
 #, php-format
 msgid "No such problem #%d"
 msgstr "没有这个题目#%d"
 
-#: includes/problem.php:99
-msgid "Your are not permitted to view this problem"
+#: includes/problem.php:102
+msgid "You are not permitted to view this problem"
 msgstr "你没有权限浏览该题"
+
+#: includes/problem.php:489
+msgid "problem code can not be empty"
+msgstr "题目代码不能为空"
+
+#: includes/problem.php:496
+#, php-format
+msgid "invalid character in problem code (char \"%s\", ascii %d)"
+msgstr "题目代码中有不合法的字符（字符\"%s\"，ASCII %d）"
+
+#: includes/problem.php:509
+msgid "problem input/output filename can not be empty"
+msgstr "题目输入/输出文件名不能为空"
+
+#: includes/problem.php:516
+#, php-format
+msgid "invalid character in problem input/output (char \"%s\", ascii %d)"
+msgstr "在输入/输出中不合法的字符（字符\"%s\", ASCII %d）"
 
 #: includes/user.php:83 includes/user.php:195 includes/user.php:223
 #, php-format
@@ -1693,7 +1784,7 @@ msgstr "无权限"
 msgid "old password is not correct"
 msgstr "旧密码不正确"
 
-#: includes/user.php:671 includes/user.php:696 includes/submit.php:116
+#: includes/user.php:671 includes/user.php:696 includes/submit.php:115
 #: includes/message.php:64
 msgid "Not logged in"
 msgstr "未登录"
@@ -1713,10 +1804,6 @@ msgstr "你的团队："
 #: includes/submit.php:43
 msgid "You must be logined to sumbit source."
 msgstr "你必须登录以提交代码"
-
-#: includes/submit.php:50 admin/problem_edit.php:146
-msgid "Problem code:"
-msgstr "题目代码："
 
 #: includes/submit.php:51
 msgid "Programming language:"
@@ -1738,14 +1825,14 @@ msgstr "不完整的帖子"
 msgid "no such problem"
 msgstr "没有该题"
 
-#: includes/submit.php:79
-msgid "permission denied for this problem"
-msgstr "没有权限"
-
-#: includes/submit.php:84
+#: includes/submit.php:81
 #, php-format
-msgid "source length exceeds the limit (%d bytes)"
-msgstr "源代码长度超过限制（%d 字节）"
+msgid "source can not be longer than %d bytes"
+msgstr "源代码不应该长于%d个字节"
+
+#: includes/submit.php:93
+msgid "permission denied for this problem"
+msgstr "没有该题权限"
 
 #: includes/message.php:51
 msgid "attempt to read non-existent message"
@@ -1759,7 +1846,7 @@ msgstr "用户名不存在"
 msgid "Receiver:"
 msgstr "接收人："
 
-#: includes/message.php:92 admin/problem.php:152
+#: includes/message.php:92 admin/problem.php:149
 msgid "Title:"
 msgstr "标题："
 
@@ -1843,9 +1930,54 @@ msgstr "对记录#%2$d没有对应的题目#%1$d"
 msgid "Exit"
 msgstr "退出"
 
-#: admin/functions.php:103
+#: admin/contest.php:59
+msgid "Add a new contest"
+msgstr "添加新比赛"
+
+#: admin/contest.php:62
+msgid "List of unterminated contests"
+msgstr "未结束的比赛列表"
+
+#: admin/functions.php:94
 msgid "Administration"
 msgstr "管理"
+
+#: admin/functions.php:290
+msgid "Order:"
+msgstr "顺序："
+
+#: admin/functions.php:290
+msgid "Allow, deny"
+msgstr "允许，不允许"
+
+#: admin/functions.php:290
+msgid "Deny, allow"
+msgstr "不允许，允许"
+
+#: admin/functions.php:292
+msgid "What to do if no match:"
+msgstr "如果没有匹配，该做什么："
+
+#: admin/functions.php:293
+msgid "Allow"
+msgstr "允许"
+
+#: admin/functions.php:293
+msgid "Deny"
+msgstr "不允许"
+
+#: admin/functions.php:297
+msgid "Allowed user groups:"
+msgstr "允许的用户组："
+
+#: admin/functions.php:300
+msgid "Denied user groups:"
+msgstr "被禁止的用户组："
+
+#: admin/functions.php:459
+#, php-format
+msgid "incomplete post, field %s not found"
+msgstr "不完整的表单：项目\"%s\"未找到"
 
 #: admin/content_default.php:30
 msgid "Welcome to orzoj administration page!"
@@ -1859,73 +1991,172 @@ msgstr "请先从左边栏选择一个任务"
 msgid "Remember to click \"Exit\" when finished!"
 msgstr "记住在结束后点击“退出”"
 
-#: admin/problem_edit.php:88
+#: admin/problem_edit.php:86
 #, php-format
-msgid "no such problem #%d"
-msgstr "没有这个题目#%d"
+msgid "problem code %s already exists"
+msgstr "题目代码 %s 已经存在"
 
-#: admin/problem_edit.php:89
-msgid "Problem successfully added/updated"
-msgstr "题目提交/更新失败"
+#: admin/problem_edit.php:102
+#, php-format
+msgid "Problem successfully added/updated (at %s)"
+msgstr "题目提交/更新成功(在 %s)"
 
-#: admin/problem_edit.php:93
+#: admin/problem_edit.php:110
 #, php-format
 msgid "Failed to add/updated problem: %s"
 msgstr "添加/更新题目失败：%s"
 
-#: admin/problem_edit.php:108
+#: admin/problem_edit.php:127
 msgid "This problem has been marked as being deleted"
 msgstr "该题目被标记为已删除"
 
-#: admin/problem_edit.php:157
+#: admin/problem_edit.php:145 admin/contest_edit.php:165
+msgid "submit"
+msgstr "提交"
+
+#: admin/problem_edit.php:155
+msgid "Delete problem"
+msgstr "删除题目"
+
+#: admin/problem_edit.php:165
+msgid "Problem id:"
+msgstr "题目编号："
+
+#: admin/problem_edit.php:185
 msgid "Problem title:"
 msgstr "题目标题："
 
-#: admin/problem_edit.php:171
+#: admin/problem_edit.php:201
 msgid "Time limit:"
 msgstr "时间限制："
 
-#: admin/problem_edit.php:171
+#: admin/problem_edit.php:201
 msgid "1 second"
 msgstr "1秒"
 
-#: admin/problem_edit.php:172
+#: admin/problem_edit.php:202
 msgid "Memory limit:"
 msgstr "内存限制："
 
-#: admin/problem_edit.php:172
+#: admin/problem_edit.php:202
 msgid "256 MB"
 msgstr "256兆字节"
 
-#: admin/problem.php:92
+#: admin/problem_edit.php:233
+msgid "time limit"
+msgstr "时间限制"
+
+#: admin/problem_edit.php:234
+msgid "memory limit"
+msgstr "内存限制"
+
+#: admin/problem_edit.php:235
+msgid "problem description"
+msgstr "题目描述"
+
+#: admin/problem_edit.php:236
+msgid "input format"
+msgstr "输入格式"
+
+#: admin/problem_edit.php:237
+msgid "output format"
+msgstr "输出格式"
+
+#: admin/problem_edit.php:238
+msgid "sample input"
+msgstr "样例输入"
+
+#: admin/problem_edit.php:239
+msgid "sample output"
+msgstr "样例输出"
+
+#: admin/problem_edit.php:240
+msgid "range"
+msgstr "范围"
+
+#: admin/problem_edit.php:241
+msgid "problem source"
+msgstr "题目来源"
+
+#: admin/problem_edit.php:242
+msgid "hint"
+msgstr "提示"
+
+#: admin/problem_edit.php:253
+#, php-format
+msgid "%s can not be empty"
+msgstr "%s不能为空"
+
+#: admin/problem_edit.php:263
+#, php-format
+msgid "XHTML validation error for field %s: %s"
+msgstr "XHTML验证错误（项目%s:%s）"
+
+#: admin/problem_edit.php:288
+msgid "Problem I/O:"
+msgstr "题目输入输出方式："
+
+#: admin/problem_edit.php:291
+msgid "I/O method:"
+msgstr "输入输出方式："
+
+#: admin/problem_edit.php:295
+msgid "Standard I/O"
+msgstr "标准输入/输出"
+
+#: admin/problem_edit.php:298
+msgid "File I/O"
+msgstr "文件输入/输出"
+
+#: admin/problem_edit.php:302
+msgid "Input filename:"
+msgstr "输入文件："
+
+#: admin/problem_edit.php:304
+msgid "Output filename:"
+msgstr "输出文件："
+
+#: admin/problem_edit.php:325
+msgid "Set problem permission"
+msgstr "设置题目权限"
+
+#: admin/problem_edit.php:352
+msgid "Related contest:"
+msgstr "相关的比赛："
+
+#: admin/problem_edit.php:402
+msgid "Are you sure to delete this problem?"
+msgstr "你确认删除该题吗？"
+
+#: admin/problem.php:89 admin/contest_edit.php:305
 msgid "CODE"
 msgstr "代码"
 
-#: admin/problem.php:93
+#: admin/problem.php:90
 msgid "LAST MODIFIED"
 msgstr "最后修改时间"
 
-#: admin/problem.php:147
-msgid "Add New Problem"
+#: admin/problem.php:144
+msgid "Add a new problem"
 msgstr "添加新题目"
 
-#: admin/problem.php:150
+#: admin/problem.php:147
 msgid "you can enter patterns with * and ?"
 msgstr "你可以输入带有‘*’和'?'的模式"
 
-#: admin/problem.php:150
+#: admin/problem.php:147
 msgid "Search problem:"
 msgstr "搜索题目："
 
-#: admin/problem.php:151
+#: admin/problem.php:148
 msgid "Code:"
 msgstr "代码："
 
-#: admin/problem.php:153
+#: admin/problem.php:150
 msgid "Problem group:"
 msgstr "题目组："
 
-#: admin/problem.php:154
+#: admin/problem.php:151
 msgid "Search"
 msgstr "搜索"
 
@@ -1940,6 +2171,103 @@ msgstr "比赛管理"
 #: admin/page_defs.php:36
 msgid "User Administration"
 msgstr "用户管理"
+
+#: admin/contest_edit.php:62 admin/contest_edit.php:192
+msgid "Contest type:"
+msgstr "比赛类型："
+
+#: admin/contest_edit.php:63
+msgid "Next step"
+msgstr "下一步"
+
+#: admin/contest_edit.php:80
+#, php-format
+msgid "Sorry, you can not edit a contest that has ended at %s"
+msgstr "对不起，你不能编辑在%s结束的比赛"
+
+#: admin/contest_edit.php:100
+#, php-format
+msgid "Failed to delete contest: %s"
+msgstr "删除比赛失败：%s"
+
+#: admin/contest_edit.php:135
+#, php-format
+msgid "Contest successfully added/updated (at %s )"
+msgstr "比赛添加/更新成功（在%s）"
+
+#: admin/contest_edit.php:144
+#, php-format
+msgid "Failed to add/update contest: %s"
+msgstr "添加/更新比赛失败：%s"
+
+#: admin/contest_edit.php:177
+msgid "Delete this contest"
+msgstr "删除该比赛"
+
+#: admin/contest_edit.php:186
+msgid "Contest id:"
+msgstr "比赛ID："
+
+#: admin/contest_edit.php:199
+msgid "Contest name:"
+msgstr "比赛名称："
+
+#: admin/contest_edit.php:206
+msgid "please tell me the contest name"
+msgstr "请告诉我比赛的名称"
+
+#: admin/contest_edit.php:231
+msgid "Start time:"
+msgstr "开始时间："
+
+#: admin/contest_edit.php:249
+msgid "End time:"
+msgstr "结束时间："
+
+#: admin/contest_edit.php:252
+#, php-format
+msgid "Please refer to %s for time formats"
+msgstr "请参考%s以查看时间格式"
+
+#: admin/contest_edit.php:254
+msgid "Examples:"
+msgstr "例子："
+
+#: admin/contest_edit.php:283
+msgid "Set contest permission"
+msgstr "设置比赛权限"
+
+#: admin/contest_edit.php:303
+msgid "Problem order"
+msgstr "题目顺序"
+
+#: admin/contest_edit.php:305
+msgid "ORDER"
+msgstr "顺序"
+
+#: admin/contest_edit.php:374
+msgid "Are you sure to delete this contest?"
+msgstr "你确认删除该比赛吗？"
+
+#~ msgid ""
+#~ "This problem belongs to an upcoming contest and you should not try to "
+#~ "view it here."
+#~ msgstr "该题目属于一个将来的比赛所以你不能浏览该题。"
+
+#~ msgid "Imcomplete POST"
+#~ msgstr "不完整的帖子"
+
+#~ msgid "FAQ"
+#~ msgstr "常见问题"
+
+#~ msgid "sorry, you are not allowed to submit in this contest"
+#~ msgstr "对不起，你现在不被允许在该比赛中提交"
+
+#~ msgid "source length exceeds the limit (%d bytes)"
+#~ msgstr "源代码长度超过限制（%d 字节）"
+
+#~ msgid "no such problem #%d"
+#~ msgstr "没有这个题目#%d"
 
 #~ msgid "Floor %d"
 #~ msgstr "%d楼"
@@ -1956,12 +2284,6 @@ msgstr "用户管理"
 #~ msgid "No such user whose nickname or username is %s!"
 #~ msgstr "没有昵称或用户名为%s的用户"
 
-#~ msgid "Invalid post id: id <= 0"
-#~ msgstr "不合法的帖子编号：id <= 0"
-
-#~ msgid "You are not permitted to delete this post"
-#~ msgstr "你没有权限删除这个帖子"
-
 #~ msgid "You are not permitted to modify this post."
 #~ msgstr "你没有权限修改这个帖子。"
 
@@ -1976,12 +2298,6 @@ msgstr "用户管理"
 
 #~ msgid "Hello buddy: %s"
 #~ msgstr "你好，%s"
-
-#~ msgid "Input Sample"
-#~ msgstr "输入样例"
-
-#~ msgid "Output Sample"
-#~ msgstr "输出样例"
 
 #~ msgid "Status: %s<br />Score: %d<br />Time: %.3f[sec]"
 #~ msgstr "状态：%s<br />分数：%d<br />时间：%.3f[秒]"
@@ -2047,9 +2363,6 @@ msgstr "用户管理"
 
 #~ msgid "Goto page:"
 #~ msgstr "跳转到页面："
-
-#~ msgid "previous page"
-#~ msgstr "上一页"
 
 #~ msgid "ANY"
 #~ msgstr "任意"
