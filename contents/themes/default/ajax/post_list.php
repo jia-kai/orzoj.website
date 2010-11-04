@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Wed Nov 03 10:37:34 2010 +0800
+ * $Date: Thu Nov 04 09:22:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,7 +38,7 @@ if (!defined('IN_ORZOJ'))
 
 require_once $includes_path . 'post.php';
 require_once $theme_path . 'post_func.php';
-
+require_once $theme_path . 'prob_func.php';
 $POST_TOPIC_PER_PAGE = 20;
 
 $start_page = 1;
@@ -145,7 +145,7 @@ EOF;
 <option value="$val" $selected>$disp</option>
 EOF;
 	}
-	echo '</select></div>';
+	echo '</select>';
 }
 
 _make_input(__('Subject'), 'subject');
@@ -156,6 +156,7 @@ $types = array();
 foreach ($POST_TYPE_SET as $ty)
 	$types[$POST_TYPE_DISP[$ty]] = $ty;
 _make_select(__('Type'), 'type', $types);
+echo '</div>';
 $Apply = __('Apply');
 echo <<<EOF
 <div class="post-filter"><input type="submit" id="filter-apply-button" value="$Apply" /></div>
@@ -188,7 +189,7 @@ try
 		'last_reply_time', 'last_reply_user', 
 		'nickname_last_reply_user', 'username_last_reply_user', 
 		'nickname_uid', 'username_uid', 
-		'subject', 'content',
+		'subject', 'content', 'is_top', 'is_locked', 'is_boutique',
 		'reply_amount', 'viewed_amount'), 
 		$type,
 		($start_page - 1) * $POST_TOPIC_PER_PAGE, 
@@ -243,8 +244,8 @@ function _make_page_nav()
 
 	if (user_check_login() && $action != 'in-colorbox')
 		echo '<div class="post-new-topic-button"><a href="#new-topic">' . __('New topic') . '</a></div>';
-
 	echo '<div class="post-list-navigator">';
+
 	echo $ret;
 	$id = get_random_id();
 	$GoToPage = __('Go to page');
@@ -257,7 +258,7 @@ function _make_page_nav()
 /$total_page
 </form>
 EOF;
-	echo '</div><!-- id: post-list-navigator-bottom -->';
+	echo '</div><!-- class: post-list-navigator -->';
 }
 _make_page_nav(); 
 ?>
@@ -280,7 +281,14 @@ function _cv_type()
 function _cv_subject()
 {
 	global $post, $start_page, $type, $uid, $subject, $author, $action, $prob_id;
-	$s = '<a class="post-subject" href="' ;
+	$s = '<div class="post-topic-subject">';
+	if ($post['is_top'])
+		$s .= '<span class="post-subject-sticky">[' . __('Sticky') . ']</span>';
+	if ($post['is_boutique'])
+		$s .= '<span class="post-subject-boutique">[' . __('Boutique') . ']</span>';
+	if ($post['is_locked'])
+		$s .= '<span class="post-subject-locked">[' . __('Locked') . ']</span>';
+	$s .= '<a class="post-list-topic-subject" style="color: #9999ee" href="' ;
 	if ($action == 'in-colorbox')
 	{
 		$arg = post_view_single_pack_arg($post['id'], 1, $start_page, $type, $uid, $subject, $author, $prob_id, 'new_viewer,' . $action);
@@ -290,6 +298,16 @@ function _cv_subject()
 		$s .= post_view_single_get_a_href($post['id'], 1, $start_page, $type, $uid, $subject, $author, $prob_id, 'new_viewer,' . $action) . '"'
 		. 'onclick="' . post_view_single_get_a_onclick($post['id'], 1, $start_page, $type, $uid, $subject, $author, $prob_id, 'new_viewer,' . $action) . '"';
 	$s .= '>' . $post['subject'] . '</a>';
+	if ($post['prob_id'])
+	{
+		$s .= ' ';
+		$prob_code = prob_get_code_by_id($post['prob_id']);
+		if ($action == 'in-colorbox')
+			$s .= '<span style="color: #ccccff" class="post-list-prob-code">[' . $prob_code . ']</span>';
+		else
+			$s .= '<a style="color: #ccccff" class="post-list-prob-code" target="_blank" href="' . t_get_link('problem', $prob_code, TRUE, TRUE) . '">[' . $prob_code . ']</a>';
+	}
+	$s .= '</div>';
 	echo $s;
 }
 
@@ -337,9 +355,10 @@ function _cv_last_replay()
 	else
 		$s .= '<span title="' . $post['username_last_reply_user'] . '">' . $post['nickname_last_reply_user'] . '</span>';
 
-	$s .= '</div>';
-	$s .= '<div class="post-last-reply-time">' . time2str($post['last_reply_time']) . '</div>';
-	$s .= '</div>';
+	$time = strftime('%H:%M:%S %d %b %Y', $post['last_reply_time']);
+	$s .= '</div><!-- class: post-last-reply-user -->';
+	$s .= '<div class="post-last-reply-time">' . $time . '</div>';
+	$s .= '</div><!-- class: post-last-reply -->';
 	echo $s;
 }
 
@@ -451,8 +470,8 @@ $("div.post-new-topic-button a").click(function(){
 })
 	<?php }?>
 
-<?php if ($action == 'in-colorbox'){?>
-$(".post-topic-list-container a").colorbox();
+	<?php if ($action == 'in-colorbox'){?>
+	$(".post-topic-list-container a").colorbox();
 <?php }?>
 
 </script>

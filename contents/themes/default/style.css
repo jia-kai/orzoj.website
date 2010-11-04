@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Nov 03 11:47:11 2010 +0800
+ * $Date: Thu Nov 04 09:51:31 2010 +0800
 
  This file is part of orzoj
 
@@ -976,12 +976,6 @@ div.post-last-reply-user a
 	/* XXX */
 }
 
-a.post-subject
-{
-	/* XXX: it doen't work */
-	/* color: #3040e9; */
-}
-
 div.post-new-topic-button
 {
 	clear: both;
@@ -1186,9 +1180,35 @@ form#post-new-topic-form input
 	width: 100%;
 }
 
-select#post-new-topic-post-type-select
+select.post-new-topic-post-type-select
 {
 	width: 80px;
+}
+
+div.post-topic-subject
+{
+	text-align: left;
+}
+
+span.post-subject-sticky
+{
+	color: #ff3344;
+}
+
+span.post-subject-boutique
+{
+	color: #ff3344
+}
+
+span.post-subject-locked
+{
+	color: #ff3344
+}
+
+div.post-topic-manipulation
+{
+	clear: both;
+	float: right;
 }
 
 /*
@@ -1196,3 +1216,27 @@ select#post-new-topic-post-type-select
  * post styles
  */
 
+
+/*
+ * home styles
+ * {
+ */
+div.home-container
+{
+}
+
+div.home-title
+{
+	font-size: 30px;
+}
+
+div.home-content
+{
+	font-size: 20px;
+	margin: 2px;
+}
+
+/*
+ * }
+ * home styles
+ */

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Wed Nov 03 14:12:43 2010 +0800
+ * $Date: Thu Nov 04 13:44:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -38,7 +38,7 @@ function _disable_post_type()
 	if ($key !== FALSE)
 	{
 		unset($POST_TYPE_SET[$key]);
-		unset($POST_TYPE_DISP[$key]);
+		unset($POST_TYPE_DISP['vote']);
 	}
 }
 
@@ -92,7 +92,7 @@ function tf_form_get_text_input($prompt, $post_name, $checker = NULL, $default =
 		$str = '';
 		if ($class == 'post-add-topic-post-type')
 			return '';
-		$str = "<td width=\"80px\"><select name=\"type\" id=\"post-new-topic-post-type-select\">";
+		$str = "<td width=\"80px\"><select name=\"type\" class=\"post-new-topic-post-type-select\">";
 		foreach ($options as $name => $value)
 		{
 			$str .= "<option value=\"$value\" ";

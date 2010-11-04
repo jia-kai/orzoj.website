@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Wed Nov 03 18:50:14 2010 +0800
+ * $Date: Thu Nov 04 13:52:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -69,6 +69,7 @@ $PAGES_AJAX = array(
 	'ajax-post-list' => 'ajax/post_list.php',
 	'ajax-post-view-single' => 'ajax/post_view_single.php',
 	'ajax-post-new-topic' => 'ajax/post_new_topic.php',
+	'ajax-post-manipulate' => 'ajax/post_manipulate.php',
 	'ajax-judge' => 'ajax/judge.php'
 );
 /**
@@ -104,7 +105,6 @@ $PAGES = array(
 	'judge' => array(__('Judges'), 'judge.php')
 	//'faq' => array(__('FAQ'), 'faq.php')
 );
-
 
 if (isset($PAGES_ACTION[$cur_page]))
 	_restore_page();
@@ -544,14 +544,23 @@ if (isset($startup_msg))
 	</script>
 <?php
 $is_old_browser = (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6') !== false) || (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5') !== false);
-if ($is_old_browser)
+if ($is_old_browser || $userbrowser == USER_BROWSER_MSIE)
 {
 ?>
 <div class="oldbrowser">
 <div class="oldbrowser-content" style="text-align: center;">
 <?php
-	echo __('Your browser is out of date.Please upgrade your browser.If you insist on using your out-of-date browser,you can\'t get the best browsing experience.<br/>');
-	echo __('As follows are some up-to-date browsers(In alphabet order).').'<Br/>';
+	if ($is_old_browser)
+	{
+		echo __('Your browser is <b>OUT OF DATE</b>.Please upgrade your browser.') . '<br />';
+		echo __('If you insist on using your <b>OUT OF DATE</b> browser, you will get the best browsing experience.') . '<br />';
+		echo __('As follows are some <b>UP-TO-DATE</b> browsers(In alphabet order).') . '<br />';
+	}
+	else
+	{
+		echo __('We do not suggest using <b>Microsoft Internet Explorer</b> as it doesn\'t work well in some places') . '<br />';
+		echo __('As follows are some other browsers.') . '<br />';
+	}
 	function _new_browser_a($brow,$downurl)
 	{
 		echo '<a href="'.$downurl.'" alt="" target="_blank" title="'.$brow.'"><img src="'._url('images/newbrowsers/'.$brow.'.gif',TRUE),'" style="float: none"/></a>';
@@ -559,10 +568,15 @@ if ($is_old_browser)
 	echo '<div class="oldbrowser-brow" style="margin-left: auto; margin-right: auto;">';
 	_new_browser_a('chrome','http://www.google.com/chrome/');
 	_new_browser_a('firefox','http://www.mozilla.com/firefox/');
-	_new_browser_a('ie8','http://go.microsoft.com/fwlink/?LinkId=161354');
 	_new_browser_a('opera','http://www.opera.com/browser/download/');
 	_new_browser_a('safari','http://www.apple.com/safari/');
-	echo '</div>'
+	echo '</div>';
+	if ($is_old_browser)
+	{
+		echo __('We do not suggest using <b>Microsoft Internet Explorer</b> as it <b>DOES NOT WORK WELL</b> in many places') . '<br />';
+		_new_browser_a('ie8','http://go.microsoft.com/fwlink/?LinkId=161354');
+	}
+
 ?>
 </div>
 <div class="oldbrowser-title" style="clear: both; text-align: center; font-weight: bold; font-size: 30px; color: red;" >

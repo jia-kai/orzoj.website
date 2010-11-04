@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Tue Nov 02 23:50:40 2010 +0800
+ * $Date: Thu Nov 04 13:49:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,8 +32,9 @@ require_once $includes_path . 'problem.php';
 /* post topic constants */
 $POST_TOPIC_FIELDS_SET = array('id', 'time', 'uid', 'prob_id',
 	'reply_amount', 'viewed_amount', 'floor_amount',
-	'priority', 'is_top', 'type',
-   	'last_reply_time', 'last_reply_user', 'subject', 'content',
+	'priority', 'is_top', 'is_locked', 'is_boutique', 'type',
+	'last_reply_time', 'last_reply_user',
+   	'subject', 'content',
 	'nickname_uid', 'nickname_last_reply_user',
 	'username_uid', 'username_last_reply_user',
 	'realname_uid', 'realname_last_reply_user'
@@ -60,7 +61,7 @@ foreach ($POST_TYPE_SET as $key => $val)
 $POST_TOPIC_ATTRIB_SET = array('is_top', 'is_locked', 'is_boutique');
 $POST_TOPIC_STATISTIC_SET = array('reply_amount', 'viewed_amount', 'floor_amount');
 
-$POST_PRIORITY = array('is_top' => 5, 'normal' => 0);
+$POST_TOPIC_PRIORITY = array('is_top' => 5, 'normal' => 0);
 
 $AUTHOR_TYPE_SET = array('username');
 
@@ -115,10 +116,10 @@ function post_add_topic()
 
 	$type = $POST_TYPE_TO_NUM[$type];
 	$subject = htmlencode($_POST['subject']);
+
+	global $content;
 	$content = tf_form_get_rich_text_editor_data('content');
-	$content = trim($content);
-	if (empty($content))
-		throw new Exc_runtime(__('Hi buddy, Something to say?'));
+	_validate_content();
 
 	$prob_code = $_POST['prob_code'];
 	$prob_code = trim($prob_code);
@@ -299,14 +300,23 @@ function post_get_topic_amount($type = NULL, $uid = NULL, $subject = NULL, $auth
 }
 
 /**
- *
+ * get content of a topic
+ * @param int $id
+ * @param string|array|NULL $fields
+ * @return array
  */
 function post_get_topic($id, $fields = NULL)
 {
 	global $db, $DBOP, $POST_TOPIC_FIELDS_SET;
+	if (!is_int($id))
+		throw new Exc_runtime(__('type of parameter `%s` wrong'), 'id');
+	if (is_string($fields))
+		$fields = array($fields);
 	if (is_array($fields))
 		$fields = array_intersect($fields, $POST_TOPIC_FIELDS_SET);
-	$ret = $db->select_from('post_topics', NULL, array($DBOP['='], 'id', $id));
+	else if (!is_null($fields))
+		throw new Exc_runtime(__('type of parameter `%s` wrong'), 'fields');
+	$ret = $db->select_from('post_topics', $fields, array($DBOP['='], 'id', $id));
 	if (count($ret) != 1)
 		return NULL;
 	return $ret[0];
@@ -318,21 +328,34 @@ function post_get_topic($id, $fields = NULL)
 function post_topic_exists($id)
 {
 	global $db, $DBOP;
-	return ($db->get_number_of_rows('post_topics', array($DBOP['='], 'id', $id)) == 1) ? TRUE : FALSE;
+	static $cache = array();
+	if (array_key_exists($id, $cache))
+		return $cache[$id];
+	return $cache[$id] = ($db->get_number_of_rows('post_topics', array($DBOP['='], 'id', $id)) == 1) ? TRUE : FALSE;
 }
 
 /**
  *
  */
-function post_modify_topic_priority($id, $priority)
+function post_topic_modify_priority($id, $priority)
 {
 }
 
 /**
- * 
+ * delete a post topic
+ * @param int $id
+ * @return void
+ * @exception Exc_runtime
  */
-function post_del_topic($id)
+function post_topic_delete($id)
 {
+	global $db, $DBOP, $user;
+	if (!user_check_login())
+		throw new Exc_runtime(__('You must login first'));
+	if (!$user->is_grp_member(GID_ADMIN_POST))
+		throw new Exc_runtime(__('You are not permitted to do this operation'));
+	$db->delete_item('post_topics', array($DBOP['='], 'id', $id));
+	$db->delete_item('posts', array($DBOP['='], 'tid', $id));
 }
 
 /**
@@ -344,12 +367,15 @@ function post_del_topic($id)
  */
 function post_topic_set_attrib($id, $attrib, $status = TRUE)
 {
-	global $db, $DBOP, $POST_TOPIC_ATTRIB_SET;
+	global $db, $DBOP, $POST_TOPIC_ATTRIB_SET, $POST_TOPIC_PRIORITY;
 	if (array_search($attrib, $POST_TOPIC_ATTRIB_SET) === FALSE)
 		return FALSE;
 	if (!is_bool($status))
 		return FALSE;
-	$db->update_data('post_topics', array($attrib => $status),
+	$val = array($attrib => $status);
+	if ($attrib == 'is_top')
+		$val['priority'] = ($status == TRUE ? $POST_TOPIC_PRIORITY['is_top'] : $POST_TOPIC_PRIORITY['normal']);
+	$db->update_data('post_topics', $val,
 		array($DBOP['='], 'id', $id));
 	return TRUE;
 }
@@ -502,6 +528,21 @@ function _post_reply_add_content($content, $time, $uid, $tid, &$basic_floor)
 }
 
 /**
+ * @ignore
+ */
+
+function _validate_content()
+{
+	global $content;
+	$content = trim($content);
+	if (empty($content))
+		throw new Exc_runtime(__('Hi buddy, Something to say?'));
+	if ($content > POST_CONTENT_LEN_MAX)
+		throw new Exc_runtime(__('Content is too long'));
+
+}
+
+/**
  * parse posted data and reply the topic
  * @exception Exc_runtime throw when something is wrong
  * @return void
@@ -518,7 +559,9 @@ function post_reply()
 	$tid = $_POST['post_reply_tid'];
 	$uid = $_POST['post_reply_uid'];
 
+	global $content;
 	$content = tf_form_get_rich_text_editor_data('post_reply_content');
+	_validate_content();
 
 	$where = array($DBOP['='], 'id', $tid);
 	$topic = $db->select_from('post_topics', array('floor_amount', 'reply_amount'), $where);

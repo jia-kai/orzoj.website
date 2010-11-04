@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Wed Nov 03 21:52:39 2010 +0800
+ * $Date: Thu Nov 04 13:29:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -270,7 +270,55 @@ _make_posts_nav();
 ?>
 
 <div id="post-view-single-content" style="clear: both;">
-<div class="post-subject"><?php echo $topic['subject']; ?></div>
+<div class="post-subject">
+<?php 
+if ($topic['is_top'])
+	echo '<span class="post-subject-sticky">[' . __('Sticky') . ']</span>';
+if ($topic['is_boutique'])
+	echo '<span class="post-subject-boutique">[' . __('Boutique') . ']</span>';
+if ($topic['is_locked'])
+	echo '<span class="post-subject-locked">[' . __('Locked') . ']</span>';
+echo $topic['subject'];
+?>
+</div><!-- class: post-subject -->
+
+<?php
+/**
+ * @ignore
+ */
+function _get_man_href($action)
+{
+	global $tid;
+	return t_get_link('ajax-post-manipulate', 'tid=' . $tid . '|action=' . $action, TRUE, TRUE);
+}
+/**
+ * @ignore
+ */
+function _make_post_topic_manipulation()
+{
+	global $topic;
+	foreach (array('is_top', 'is_boutique', 'is_locked') as $item)
+		$$item = $topic[$item];
+	echo '<div class="post-topic-manipulation">';
+	$Sticky = $is_top ? __('Unstick') : __('Stick');
+	$Boutique = $is_boutique ? __('Unset boutique') : __('Set outique');
+	$Locked = $is_locked ? __('Unlock') : __('Lock');
+	$href_sticky = _get_man_href($is_top ? 'unstick' : 'stick');
+	$href_boutique = _get_man_href($is_boutique ? 'unset_boutique' : 'set_boutique');
+	$href_locked = _get_man_href($is_locked ? 'unlock' : 'lock');
+	$href_delete = _get_man_href('delete');
+	echo '<a class="post-subject-sticky" href="' . $href_sticky. '">[' . $Sticky. ']</a>';
+	echo '<a class="post-subject-boutique" href="' . $href_boutique . '">[' . $Boutique . ']</a>';
+	echo '<a class="post-subject-locked" href="' . $href_locked . '">[' . $Locked . ']</a>';
+	echo '<a class="post-subject-delete" href="' . $href_delete. '">[' . __('DELETE') . ']</a>';
+	echo '</div>';
+}
+// modify delete, set topic attrib
+if (!_action('in-colorbox') && user_check_login())
+	if ($user->is_grp_member(GID_ADMIN_POST))
+		_make_post_topic_manipulation();
+?>
+
 <?php
 $table_class = 'posts-table'; 
 if (_action('in-colorbox'))
@@ -339,9 +387,9 @@ function set_page(page)
 	t.animate({"opacity" : 0.5}, 1);
 	$.ajax({
 		"url" : "<?php t_get_link('ajax-post-view-single', post_view_single_pack_arg($tid, $start_page, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, 'goto-page,' . implode(',', $action)), FALSE, FALSE); ?>",
-		"type" : "post",
-		"cache" : false,
-		"data" : ({"start_page" : page}),
+			"type" : "post",
+			"cache" : false,
+			"data" : ({"start_page" : page}),
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
 			<?php if (_action('in-colorbox')) {?>
@@ -409,13 +457,14 @@ if (user_check_login() && !_action('in-colorbox')) {
 <?php if (user_check_login() && !_action('in-colorbox')) {?> 
 	<script type="text/javascript">
 	/* logined */
+	$(".post-topic-manipulation a").colorbox();
 	$("#post-reply-submit-button").button();
 	<?php $InReplyTo = __('In reply to'); ?>
 	<?php $Editor = "CKEDITOR.instances.$editor_id";?>
 	function append_reply(floor)
 	{
 		<?php echo $Editor; ?>.insertHtml(
-			"<?php echo $InReplyTo; ?> #" + floor + ": "
+			"<?php echo $InReplyTo; ?> #" + floor + ": \n"
 		);
 	}
 <?php

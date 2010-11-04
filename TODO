@@ -44,27 +44,21 @@ add some default expressions to the rich text editor.
 
 题目更新失败！！！！
 
-CKEDITOR_BASEPATH
-
 seperate user rank from rank_list.php
-
-table.colorbox user defined links do not open in colorbox
-
-user info link in colorbox 
 
 prob-grp-tree does not work well in chrome
 
-** 'In reply to' does'nt work well!!
+'In reply to' does'nt work well!!
 
 *** MORE information of a post topic
 
-some to make user notice its account has been logined by someone else
+something to make user notice its account has been logined by someone else
 
 href=javascript!!!!
 
-some secure policies while publishing posts;
+some secure policies while publishing posts => check code
 
-server掉线处理
+********************** server掉线处理
 
 Cha代码
 
@@ -74,3 +68,6 @@ goto框颜色。。
 
 header utf-8
 
+*********** check code!!!!!!
+
+div in post-list has something wrong?????

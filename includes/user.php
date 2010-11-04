@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Tue Nov 02 18:30:52 2010 +0800
+ * $Date: Thu Nov 04 09:41:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -28,6 +28,30 @@ if (!defined('IN_ORZOJ'))
 
 require_once $includes_path . 'message.php';
 require_once $includes_path . 'avatar.php';
+
+
+define('GID_NONE', -1); // nobody should be in this group
+$cnt = 1;
+define('GID_ALL', $cnt ++); // every registered user should be in this group
+define('GID_LOCK', $cnt ++); // locked group id
+define('GID_GUEST', $cnt ++);
+define('GID_ADMIN_USER', $cnt ++); // manage users (lock a user, change password, etc)
+define('GID_ADMIN_GROUP', $cnt ++);  // manage user groups (add, remove groups and assign group administrators)
+define('GID_ADMIN_TEAM', $cnt ++); // manage user teams
+define('GID_ADMIN_PROB', $cnt ++); // manage problems and problem groups
+define('GID_ADMIN_CONTEST', $cnt ++);  // manage contests
+define('GID_ADMIN_POST', $cnt ++); // manage posts
+define('GID_ADMIN_ANNOUNCEMENT', $cnt ++); // manage announcements
+define('GID_SUPER_SUBMITTER', $cnt ++);
+// view and submit regardless of which contest the problem belongs to
+// or other limits on viewing or submitting problem
+define('GID_SUPER_RECORD_VIEWER', $cnt ++);
+// view all records and sources
+define('GID_UINFO_VIEWER', $cnt ++); // view register IP, submission IP, user real name etc.
+
+define('GID_START_ADMIN', GID_ADMIN_USER); // the first gid of admin groups
+define('GID_END_ADMIN', GID_ADMIN_ANNOUNCEMENT); // the last gid of admin groups
+
 
 /**
  * user structure
@@ -560,7 +584,7 @@ function user_register_get_form()
  * @param bool $login_after_register whether to set cookies indicating
  * the user has logged in after succesful regesteration
  * @return int user id
- * @see user_register_get_form_fields
+ * @see user_register_get_form fields
  * @exception Exc_runtime if failed
  */
 function user_register($login_after_register = FALSE)

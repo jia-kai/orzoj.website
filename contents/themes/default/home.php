@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: home.php
- * $Date: Wed Oct 27 19:03:30 2010 +0800
+ * $Date: Thu Nov 04 12:45:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,15 +27,16 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 ?>
-Welcome to Orz Online Judge!
+<div class="home-container">
+<div class="home-title"><?php echo __('Welcome to <b>%s</b>!', $website_name);?></div>
 
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
+<div class="home-content">
+Orz Online Judge is on the way.<br />
+This site is now temporary running for test, all data will not be reserved when it is to hold contests.<br />
+If you find any bugs, or have some suggestions, PLEASE tell us via email:<br />
+support@orzoj.org
+to help improve this site. ALL KINDS OF SUGGESTIONS are WELCOME!<br />
+THANKS FOR YOU HELP!<br />
+</div>
 
+</div>

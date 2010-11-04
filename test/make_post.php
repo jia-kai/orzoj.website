@@ -19,9 +19,9 @@ function add_post_topic($prob_id = NULL)
 	$uid = rand(1, 10);
 	if (!is_int($prob_id))
 		$prob_id = (rand(0, 20) < 10 ? 0 : rand(1, 10));
-	$is_top = 0;
-	$priority = 0;
-	$is_locked = rand(0, 100) < 5 ? 1 : 0;
+	$is_top = (rand(0, 99) < 20) ? 1 : 0;
+	$priority = ($is_top ? 5 : 0);
+	$is_locked = rand(0, 100) < 20 ? 1 : 0;
 	$is_boutique = rand(0, 1);
 	$type = rand(1, 3); // vote is temporary disabled
 	$subject = 'subject ' . $i;
