@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Nov 04 13:54:38 2010 +0800
+ * $Date: Thu Nov 04 14:10:05 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -553,7 +553,7 @@ if ($is_old_browser || $userbrowser == USER_BROWSER_MSIE)
 	if ($is_old_browser)
 	{
 		echo __('Your browser is <b>OUT OF DATE</b>.Please upgrade your browser.') . '<br />';
-		echo __('If you insist on using your <b>OUT OF DATE</b> browser, you will get the best browsing experience.') . '<br />';
+		echo __('If you insist on using your <b>OUT OF DATE</b> browser, you will not get the best browsing experience.') . '<br />';
 		echo __('As follows are some <b>UP-TO-DATE</b> browsers(In alphabet order).') . '<br />';
 	}
 	else
