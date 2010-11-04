@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: orzojweb-0.0.1-alpha\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-04 14:17+0800\n"
+"POT-Creation-Date: 2010-11-04 14:19+0800\n"
 "PO-Revision-Date: 2010-10-13 23:02+0800\n"
 "Last-Translator: Qijiang Fan <fqj1994@gmail.com>\n"
 "Language-Team: Chinese (simplified)\n"
@@ -1780,8 +1780,8 @@ msgstr "你没有权限做该操作"
 
 #: includes/post.php:434
 #, php-format
-msgid "Post topic whose id is %s doesn't exists"
-msgstr "ID为%s的帖子不存在"
+msgid "Post topic whose id is %d doesn't exists"
+msgstr "ID为%d的帖子不存在"
 
 #: includes/post.php:502 includes/post.php:554
 msgid "You must be logined to reply."
