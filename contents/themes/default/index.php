@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Nov 04 13:52:07 2010 +0800
+ * $Date: Thu Nov 04 13:54:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -593,9 +593,6 @@ if ($is_old_browser || $userbrowser == USER_BROWSER_MSIE)
 <?php
 }
 ?>
-
-
-
 </body>
 
 </html>
