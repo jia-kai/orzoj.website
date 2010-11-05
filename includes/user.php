@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Nov 04 20:19:32 2010 +0800
+ * $Date: Fri Nov 05 09:26:07 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -885,7 +885,7 @@ function user_init_default_grp()
 		// <group id> => array(<name>, <description>, <parant group id>)
 		GID_NONE => array('Nobody', __('nobody can be in this group'), 0),
 		GID_GUEST => array('Guests', __('unregistered visitors'), 0),
-		GID_ALL => array('All', __('all registered users'), 0),
+		GID_ALL => array('All-Reg.', __('all registered users'), 0),
 		GID_LOCK => array('Lock', __('locked users'), GID_ALL),
 		GID_ADMIN_USER => array('Admin-User', __('administrate users and user groups'), GID_ALL),
 		GID_ADMIN_TEAM => array('Admin-Team', __('administrate user teams'), GID_ALL),

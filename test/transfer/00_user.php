@@ -1,5 +1,6 @@
 <?php
 require_once 'pre_include.php';
+require_once $includes_path . 'user.php';
 
 $rows = $odb->select_from('users');
 
@@ -15,7 +16,7 @@ foreach ($rows as $row)
 		$nickname = 'too long';
 	$nickname = htmlencode($nickname);
 
-	$db->insert_into('users', array(
+	$uid = $db->insert_into('users', array(
 		'username' => odb_convert_username($row['username'], $row['id']),
 		'realname' => $realname,
 		'nickname' => $nickname,
@@ -26,9 +27,12 @@ foreach ($rows as $row)
 		'self_desc' => 'no desc now',
 		'plang' => $trans_plang[$row['language']],
 		'wlang' => 2,
-		'view_gid' => json_encode(array()),
+		'view_gid' => json_encode(array(GID_ALL, GID_GUEST)),
 		'reg_time' => time(),
 		'reg_ip' => 'transferred from old orzoj'
 	));
+
+	if ($row['usergroup'] == 2)
+		user_set_super_admin($uid);
 }
 

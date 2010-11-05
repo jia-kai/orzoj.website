@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Thu Nov 04 16:37:01 2010 +0800
+ * $Date: Fri Nov 05 09:12:08 2010 +0800
 
  This file is part of orzoj
 
@@ -179,6 +179,7 @@ div.form-field
 	float: left;
 	clear: both;
 	margin-bottom: 10px;
+	width: 100%;
 }
 
 div.form-field input
@@ -208,10 +209,19 @@ div.form-field textarea.small
 
 div.gid-selector
 {
-	max-width: 300px;
-	max-height: 300px;
 	border: 1px solid green;
 	overflow: auto;
+}
+
+div.perm-editor
+{
+	float: left;
+}
+
+div.perm-editor div.gid-selector
+{
+	max-width: 300px;
+	max-height: 300px;
 }
 
 div.with-onclick label

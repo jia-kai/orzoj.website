@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Thu Nov 04 16:35:49 2010 +0800
+ * $Date: Fri Nov 05 09:13:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -57,7 +57,10 @@ function admin_check_user_login()
 		$passwd_encr = $db->select_from('users', 'passwd', array($DBOP['='], 'id', $user->id));
 		$passwd_encr = $passwd_encr[0]['passwd'];
 		if (is_null(_user_check_passwd($user->username, $_POST['admin-login-passwd'], $passwd_encr)))
+		{
 			return FALSE;
+			admin_user_logout();
+		}
 		session_set('login_time', time());
 		session_set('login_uid', $user->id);
 		return TRUE;
@@ -299,7 +302,8 @@ function form_get_perm_editor($name, $default = NULL, $direct_echo = TRUE)
 		$default = array(0, 1, array(), array());
 	else
 		$default = unserialize($default);
-	$code = form_get_select(__('Order:'), $name . '_order', array(__('Allow, deny') => 0, __('Deny, allow') => 1),
+	$code = '<div class="perm-editor">';
+	$code .= form_get_select(__('Order:'), $name . '_order', array(__('Allow, deny') => 0, __('Deny, allow') => 1),
 		$default[0], FALSE) . '<br />';
 	$code .= form_get_select(__('What to do if no match:'), $name . '_no_match',
 		array(__('Allow') => 1, __('Deny') => 0),
@@ -311,6 +315,7 @@ function form_get_perm_editor($name, $default = NULL, $direct_echo = TRUE)
 	$code .= '</div><div style="float: left; margin-left: 10px;">';
 	$code .= '<label>' . __('Denied user groups:') . '</label><br />' .
 		form_get_gid_selector($name . '_deny', 0, $default[3], NULL, FALSE);
+	$code .= '</div>';
 	$code .= '</div>';
 	if ($direct_echo)
 		echo $code;

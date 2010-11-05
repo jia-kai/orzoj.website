@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user.php
- * $Date: Thu Nov 04 20:14:35 2010 +0800
+ * $Date: Thu Nov 04 20:46:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,4 +26,21 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+/*
+ * page argument:
+ *	GET:
+ *		[filter]: indicate the submission of search user form
+ *		[sort_col]:string
+ *		[sort_way]:int 0: ASC; otherwise DESC
+ *		[edit]:int the id of user to be edited
+ *		[pgnum]:int page number, starting at 0
+ *
+ *	POST:
+ *		those in the form
+ *		[pgnum]:int page number, starting at 1
+ *
+ *	SESSION:
+ *		[sort_col, sort_way, pgnum]
+ */
 

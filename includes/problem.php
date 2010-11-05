@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Thu Nov 04 19:11:10 2010 +0800
+ * $Date: Thu Nov 04 21:18:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -525,7 +525,7 @@ function prob_validate_io($io)
 	static $charset = NULL;
 	if (is_null($charset))
 		$charset = str_range('a', 'z') . str_range('A', 'Z') . str_range('0', '9') .
-			'-_.';
+			'-_.+';
 	for ($i = 0; $i < strlen($io); $i ++)
 		if (strpos($charset, $io[$i]) === FALSE)
 			throw new Exc_runtime(__('invalid character in problem input/output (char "%s", ascii %d)', $io[$i],

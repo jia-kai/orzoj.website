@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_submit.php
- * $Date: Tue Oct 26 10:02:05 2010 +0800
+ * $Date: Fri Nov 05 09:49:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -71,7 +71,10 @@ $("#contest-submit-form").bind("submit", function(){
 			if (data.charAt(0) == "1")
 				alert(data.substr(1));
 			else
+			{
 				$.colorbox({"html": data.substr(1)});
+				setTimeout("$.colorbox.close()", 1000);
+			}
 		}
 	});
 	return false;

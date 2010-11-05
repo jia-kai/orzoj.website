@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: group.php
- * $Date: Thu Nov 04 19:27:35 2010 +0800
+ * $Date: Fri Nov 05 09:16:13 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -268,17 +268,20 @@ function edit_grp_submit(f)
 
 	private function do_move($grps, $tgid)
 	{
-		try
+		if ($tgid)
 		{
-			$info = $this->get_info($tgid);
+			try
+			{
+				$info = $this->get_info($tgid);
+			}
+			catch (Exc_orzoj $e)
+			{
+				throw new Exc_runtime(__('target group #%d does not exist', $tgid));
+			}
+			if (in_array(intval($tgid), $grps))
+				throw new Exc_runtime(__('sorry, I can not change the parent of group #%d("%s") to itself...',
+					$info['id'], $info['name']));
 		}
-		catch (Exc_orzoj $e)
-		{
-			throw new Exc_runtime(__('target group #%d does not exist', $tgid));
-		}
-		if (in_array(intval($tgid), $grps))
-			throw new Exc_runtime(__('sorry, I can not change the parent of group #%d("%s") to itself...',
-				$info['id'], $info['name']));
 		foreach ($grps as $g)
 		{
 			$info = $this->get_info($g);

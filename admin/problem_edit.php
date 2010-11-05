@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: Thu Nov 04 16:08:32 2010 +0800
+ * $Date: Thu Nov 04 22:03:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -95,10 +95,11 @@ if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify']
 			$db->update_data('problems', $pinfo, array($DBOP['='], 'id', $pinfo['id'] = $_GET['edit']));
 			$pid = $_GET['edit'];
 		}
+		get_grp();
 		get_contest();
 		session_set('edit_verify', NULL);
 		echo "1index.php?page=$cur_page&edit=$pid&success_info=1";
-		return
+		return;
 	}
 	catch (Exc_orzoj $e)
 	{
@@ -131,6 +132,7 @@ foreach ($fields as $f)
 		$f = $f[0];
 	$f();
 }
+edit_grp();
 edit_contest();
 $edit_verify = get_random_id();
 session_set('edit_verify', $edit_verify);
@@ -325,6 +327,53 @@ function get_perm()
 {
 	global $pinfo;
 	$pinfo['perm'] = form_get_perm_editor_val('perm');
+}
+
+function edit_grp()
+{
+	global $pinfo, $db, $DBOP;
+	if (isset($pinfo['id']))
+	{
+		$rows = $db->select_from('map_prob_grp', 'gid', array($DBOP['='], 'pid', $pinfo['id']));
+		$default = array();
+		foreach ($rows as $row)
+			$default[] = $row['gid'];
+	}
+	else 
+		$default = NULL;
+
+	echo '<div class="form-field">';
+	echo '<label>' . __('Problem groups:') . '</label>';
+	form_get_gid_selector('prob_grps', 1, $default);
+	echo '</div>';
+}
+
+function get_grp()
+{
+	global $pinfo, $db, $DBOP;
+	$pid = $pinfo['id'];
+	$old = array();
+	$rows = $db->select_from('map_prob_grp', 'gid', array($DBOP['='], 'pid', $pid));
+	foreach ($rows as $row)
+		$old[intval($row['gid'])] = TRUE;
+	$new = array();
+	foreach(form_get_gid_selector_val('prob_grps') as $i)
+		$new[intval($i)] = TRUE;
+
+	$where = array($DBOP['&&'],
+		$DBOP['='], 'gid', -1,
+		$DBOP['='], 'pid', $pid);
+	foreach ($old as $i => $nouse)
+		if (!isset($new[$i]))
+		{
+			$where[3] =  $i;
+			$db->delete_item('map_prob_grp', $where);
+		}
+	foreach ($new as $i => $nouse)
+		if (!isset($old[$i]))
+			$db->insert_into('map_prob_grp', array(
+				'pid' => $pid, 'gid' => $i
+			));
 }
 
 function edit_contest()
