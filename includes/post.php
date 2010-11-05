@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Fri Nov 05 10:00:12 2010 +0800
+ * $Date: Fri Nov 05 13:37:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -553,7 +553,7 @@ function _validate_content()
  */
 function post_reply()
 {
-	global $db, $DBOP;
+	global $db, $DBOP, $user;
 	if (!user_check_login())
 		throw new Exc_runtime(__('You must be logined to reply.'));
 	filter_apply_no_iter('before_post_reply');

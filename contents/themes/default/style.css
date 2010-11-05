@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Thu Nov 04 19:25:33 2010 +0800
+ * $Date: Fri Nov 05 13:36:29 2010 +0800
 
  This file is part of orzoj
 
@@ -111,7 +111,7 @@ div#show-ajax-info-div
 
 img
 {
-	float: left;
+	float: left; 
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -1126,6 +1126,11 @@ div.posts-content-container
 div.posts-container
 {
 	margin: 5px;
+}
+
+div.posts-content img
+{
+	float: none;
 }
 
 div.posts-content
