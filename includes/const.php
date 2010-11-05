@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Thu Nov 04 17:10:11 2010 +0800
+ * $Date: Fri Nov 05 09:51:46 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -43,6 +43,7 @@ define('PROB_GRP_NAME_LEN_MAX', 20);
 define('WLANG_NAME_LEN_MAX', 20);
 define('POST_SUBJECT_LEN_MAX', 127);
 define('POST_CONTENT_LEN_MAX', 10240); // 10kb
+define('POST_CONTENT_FLOOR_LEN_MAX', 5120); // 10kb
 define('MESSAGE_SUBJECT_LEN_MAX', 127);
 define('TEAM_NAME_LEN_MAX', 50);
 

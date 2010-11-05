@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Thu Nov 04 20:36:10 2010 +0800
+ * $Date: Fri Nov 05 10:00:14 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -446,7 +446,7 @@ $(".posts-nickname a").colorbox();
 <?php /* Reply form */ ?>
 
 <?php
-if (user_check_login() && !_action('in-colorbox')) { 
+if (user_check_login() && !_action('in-colorbox') && (!$topic['is_locked'] || ($topic['is_locked'] && $user->is_grp_member(GID_ADMIN_POST)))) { 
 	$post_url = t_get_link('show-ajax-post-view-single', 
 		post_view_single_pack_arg($tid, 1000000, $post_list_start_page, $post_list_type, $post_list_uid, $post_list_subject, $post_list_author, $post_list_prob_id, 'submit-nojs'),
 		TRUE, TRUE);
@@ -469,7 +469,7 @@ if (user_check_login() && !_action('in-colorbox')) {
 
 
 <?php /* Reply */ ?>
-<?php if (user_check_login() && !_action('in-colorbox')) {?> 
+<?php if (user_check_login() && !_action('in-colorbox') && (!$topic['is_locked'] || ($topic['is_locked'] && $user->is_grp_member(GID_ADMIN_POST)))) {?> 
 	<script type="text/javascript">
 	/* logined */
 	$(".post-topic-manipulation a").colorbox();
@@ -497,26 +497,26 @@ if (user_check_login() && !_action('in-colorbox')) {
 		$.colorbox({"html" : "<?php echo __('Submitting...'); ?>"});
 		$.ajax({
 			"type": "post",
-				"cache": false,
-				"url": "<?php echo $url; ?>",
-				"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
-				"post_reply_uid" : "<?php echo $user->id; ?>",
-				"post_reply_content" : content
+			"cache": false,
+			"url": "<?php echo $url; ?>",
+			"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
+			"post_reply_uid" : "<?php echo $user->id; ?>",
+			"post_reply_content" : content
 				}),
-		"success" : function(data) {
-			t.animate({"opacity" : 1}, 1);
-			if (data.charAt(0) == '0')
-			{
-				$.colorbox({"html" : data.substr(1)});
-			}
-			else if (data.charAt(0) == '1')
-			{
-				t.html(data.substr(1));
-				<?php echo $Editor; ?>.setData("");
-				setTimeout("$.colorbox.close();", 1000);
-			}
-			else
-				$.colorbox({"html" : data});
+			"success" : function(data) {
+				t.animate({"opacity" : 1}, 1);
+				if (data.charAt(0) == '0')
+				{
+					$.colorbox({"html" : data.substr(1)});
+				}
+				else if (data.charAt(0) == '1')
+				{
+					t.html(data.substr(1));
+					<?php echo $Editor; ?>.setData("");
+					setTimeout("$.colorbox.close();", 1000);
+				}
+				else
+					$.colorbox({"html" : data});
 		}
 		});
 		return false;

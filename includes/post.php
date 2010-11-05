@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Thu Nov 04 19:55:53 2010 +0800
+ * $Date: Fri Nov 05 10:00:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -309,13 +309,13 @@ function post_get_topic($id, $fields = NULL)
 {
 	global $db, $DBOP, $POST_TOPIC_FIELDS_SET;
 	if (!is_int($id))
-		throw new Exc_runtime(__('type of parameter `%s` wrong'), 'id');
+		throw new Exc_runtime(__('type of parameter `%s` wrong', 'id'));
 	if (is_string($fields))
 		$fields = array($fields);
 	if (is_array($fields))
 		$fields = array_intersect($fields, $POST_TOPIC_FIELDS_SET);
 	else if (!is_null($fields))
-		throw new Exc_runtime(__('type of parameter `%s` wrong'), 'fields');
+		throw new Exc_runtime(__('type of parameter `%s` wrong', 'fields'));
 	$ret = $db->select_from('post_topics', $fields, array($DBOP['='], 'id', $id));
 	if (count($ret) != 1)
 		return NULL;
@@ -516,13 +516,13 @@ function post_reply_get_form($tid)
 function _post_reply_add_content($content, $time, $uid, $tid, &$basic_floor)
 {
 	global $db;
-	for($len = strlen($content); $len > 0; $len -= POST_CONTENT_LEN_MAX)
+	for($len = strlen($content); $len > 0; $len -= POST_CONTENT_FLOOR_LEN_MAX)
 	{
 		$db->insert_into('posts', 
 			array('time' => $time,
 			'uid' => $uid,
 			'tid' => $tid,
-			'content' => substr($content, 0, POST_CONTENT_LEN_MAX),
+			'content' => substr($content, 0, POST_CONTENT_FLOOR_LEN_MAX),
 			'floor' => ++ $basic_floor
 		)
 	);
@@ -560,8 +560,12 @@ function post_reply()
 	if (!isset($_POST['post_reply_tid']) || !isset($_POST['post_reply_uid']))
 		throw new Exc_runtime(__('Incomplete POST.'));
 
-	$tid = $_POST['post_reply_tid'];
-	$uid = $_POST['post_reply_uid'];
+	$tid = intval($_POST['post_reply_tid']);
+	$uid = intval($_POST['post_reply_uid']);
+
+	$topic = post_get_topic($tid, 'is_locked');
+	if ($topic['is_locked'] && !$user->is_grp_member(GID_ADMIN_POST))
+		throw new Exc_runtime(__('This topic is locked and you are not permitted to reply'));
 
 	global $content;
 	$content = tf_form_get_rich_text_editor_data('post_reply_content');
