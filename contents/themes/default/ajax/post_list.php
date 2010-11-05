@@ -129,7 +129,7 @@ function _make_select($prompt, $post_name, $options)
 	if (is_string($type))
 		$default = $type;
 	else $default = '';
-	$id = get_unique_id();
+	$id = get_random_id();
 	echo <<<EOF
 <div class="post-filter"><label for="$id">$prompt</label></div>
 <div class="post-filter"><select id="$id" name="$post_name">

@@ -318,7 +318,7 @@ if ($start_page < $total_page)
 	_make_page_link(__('Next') . '&gt;', $start_page + 1);
 }
 
-$id = get_unique_id();
+$id = get_random_id();
 $GoToPage = __('Go to page');
 echo <<<EOF
 <form action="#" id="rank-list-goto-form" method="post" onsubmit="rank_list_goto(); return false;">

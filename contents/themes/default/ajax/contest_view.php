@@ -56,7 +56,7 @@ catch (Exc_orzoj $e)
 	return;
 }
 
-$html_id_page = get_unique_id();
+$html_id_page = get_random_id();
 
 echo "<div id='$html_id_page'>";
 
@@ -130,7 +130,7 @@ echo __('End time: %s', time2str($ct_time_end)) . '<br />';
 echo __('Contest duration: %s', time_interval_to_str($ct_time_end - $ct_time_start)) . '<br />';
 
 
-$html_id_countdown = get_unique_id();
+$html_id_countdown = get_random_id();
 $now = time();
 
 echo '<div class="contest-result">';

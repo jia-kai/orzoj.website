@@ -257,7 +257,7 @@ function _make_goto_form()
 	static $cnt = 0;
 	$cnt ++;
 	$ID = 'posts-goto-form' . $cnt;
-	$id = get_unique_id();
+	$id = get_random_id();
 	$GoToPage = __('Go to page');
 ?>
 	<form action="#" class="posts-goto-form" id="<?php echo $ID; ?>" method="post" onsubmit="posts_goto(<?php echo $cnt; ?>); return false;">

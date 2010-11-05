@@ -46,7 +46,7 @@ if (isset($_POST['arg']))
 if (sscanf($page_arg, '%d|%d', $pid, $cid) != 2)
 	die('invalid argument');
 
-$html_id_page = get_unique_id();
+$html_id_page = get_random_id();
 
 echo "<div id='$html_id_page'>";
 
