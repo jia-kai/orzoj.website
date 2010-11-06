@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user.php
- * $Date: Thu Nov 04 20:46:29 2010 +0800
+ * $Date: Sat Nov 06 11:53:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,17 +30,159 @@ if (!defined('IN_ORZOJ'))
 /*
  * page argument:
  *	GET:
- *		[filter]: indicate the submission of search user form
  *		[sort_col]:string
  *		[sort_way]:int 0: ASC; otherwise DESC
  *		[edit]:int the id of user to be edited
  *		[pgnum]:int page number, starting at 0
  *
  *	POST:
- *		those in the form
+ *		[filters]:array array of applied filters
  *		[pgnum]:int page number, starting at 1
  *
  *	SESSION:
- *		[sort_col, sort_way, pgnum]
+ *		[sort_col, sort_way, filters]
  */
+session_add_prefix('user');
+
+define('PAGE_SIZE', 50);
+
+require_once $includes_path . 'team.php';
+
+if (!empty($_GET['edit']))
+{
+	$cur_page_link = "$cur_page_link&amp;edit=$_GET[edit]";
+	require_once $admin_path . 'user_edit.php';
+	return;
+}
+
+$fields = array(
+	// <database column name> => array(<table head>, <default sort way>, [<display function>])
+	'id' => array(__('ID'), 0),
+	'username' => array(__('USERNAME'), 0),
+	'nickname' => array(__('NICKNAME'), 0),
+	'realname' => array(__('REAL NAME'), 0),
+	'tid' => array(__('TEAM'), 0, 'team_get_name_by_id'),
+	'reg_time' => array(__('REGISTER'), 1, 'time2str'),
+	'last_login_time' => array(__('LAST LOGIN'), 1, 'time2str')
+);
+ 
+if (isset($_GET['sort_col']) && isset($_GET['sort_way']))
+{
+	$s = $_GET['sort_col'];
+	if (!isset($fields[$s]))
+		die('no such sorting column');
+	session_set('sort_col', $_GET['sort_col']);
+	session_set('sort_way', $_GET['sort_way'] == 1);
+}
+
+$sort_col = session_get('sort_col');
+$sort_way = session_get('sort_way');
+if (is_null($sort_col))
+	$sort_col = 'id';
+if (is_null($sort_way))
+	$sort_way = $fields[$sort_col][1];
+
+if (isset($_GET['pgnum']))
+	$pgnum = intval($_GET['pgnum']);
+else
+	$pgnum = 0;
+
+if (isset($_POST['pgnum']))
+	$pgnum = intval($_POST['pgnum']) - 1;
+
+if ($pgnum < 0)
+	$pgnum = 0;
+
+$filters = array(
+	'uid' => array($DBOP['='], 'id'),
+	'tid' => array($DBOP['='], 'tid'),
+	'username' => array($DBOP['like'], 'username'),
+	'realname' => array($DBOP['like'], 'realname'),
+	'nickname' => array($DBOP['like'], 'nickname')
+);
+
+$filters_allow_empty = array('tid');
+
+if (isset($_POST['filters']) && is_array($_POST['filters']))
+	session_set('filters', array_intersect_key($_POST['filters'], $filters));
+
+$where = NULL;
+if (is_array($filters_req = session_get('filters')))
+	foreach ($filters_req as $f => $v)
+		if (!empty($v) || in_array($f, $filters_allow_empty))
+			db_where_add_and($where, array_merge($filters[$f], array($v))); 
+
+
+$rows = $db->select_from('users', array_keys($fields), $where,
+	array($sort_col => ($sort_way ? 'DESC' : 'ASC')),
+	PAGE_SIZE * $pgnum, PAGE_SIZE);
+
+echo "<form action='$cur_page_link' method='post' class='filter-form'>";
+echo '<span><a title="' . __('you can enter patterns with * and ?') . '">' . __('Search user:') . '</a></span>';
+filter_form_get_input(__('ID:'), 'uid');
+filter_form_get_input(__('Username:'), 'username');
+filter_form_get_input(__('Nickname:'), 'nickname');
+filter_form_get_input(__('Real name:'), 'realname');
+echo '<div style="clear:both;height:5px;">&nbsp;</div>';
+make_tid_select();
+echo '<span><input type="submit" value="' . __('search') . '" />' . '</span>';
+echo '</form>';
+
+echo '<table class="page-table">';
+echo '<caption>' . __('User List') . '</caption>';
+echo '<tr>';
+foreach ($fields as $f => $v)
+{
+	if ($f == $sort_col)
+	{
+		$way = 1 - $sort_way;
+		$arr = $sort_way ? '&darr' : '&uarr;';
+	}
+	else
+	{
+		$way = $v[1];
+		$arr = '';
+	}
+	echo "<th><a href='$cur_page_link&amp;sort_col=$f&amp;sort_way=$way&amp'>$v[0]$arr</a></th>";
+}
+echo '</tr>';
+foreach ($rows as $row)
+{
+	echo '<tr>';
+	foreach ($fields as $f => $v)
+	{
+		echo '<td>';
+		$out = $row[$f];
+		if (isset($v[2]))
+			$out = $v[2]($row[$f]);
+		else
+			$out = "<a href='$cur_page_link&amp;edit=$row[id]'>$out</a>";
+		echo $out;
+		echo '</td>';
+	}
+	echo '</tr>';
+}
+echo '</table>';
+
+make_pgnum_nav($pgnum, ceil($db->get_number_of_rows('users', $where) / PAGE_SIZE));
+
+function filter_form_get_input($prompt, $pname)
+{
+	global $filters_req;
+	echo '<span>';
+	form_get_input($prompt, "filters[$pname]", get_array_val($filters_req, $pname), FALSE);
+	echo '</span>';
+}
+
+function make_tid_select()
+{
+	global $filters_req;
+	echo '<span>';
+	$list = team_get_list();
+	$opt = array();
+	foreach ($list as $team)
+		$opt[$team->name] = $team->id;
+	form_get_select(__('User team:'), 'filters[tid]', $opt, get_array_val($filters_req, 'tid'));
+	echo '</span>';
+}
 

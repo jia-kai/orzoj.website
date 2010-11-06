@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Thu Nov 04 14:57:11 2010 +0800
+ * $Date: Fri Nov 05 18:13:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -185,7 +185,7 @@ class Ctal_oi extends Ctal
 		if (is_null($io))
 			$io = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
 
-		if (time() < $this->data['time_start']) // super submitter
+		if ($user->is_grp_member(GID_SUPER_SUBMITTER))
 		{
 			$st = RECORD_STATUS_WAITING_TO_BE_FETCHED;
 			$cid = 0;

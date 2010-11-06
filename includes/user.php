@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Fri Nov 05 09:26:07 2010 +0800
+ * $Date: Sat Nov 06 09:34:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -133,18 +133,19 @@ class User
 		$groups = array(GID_ALL);
 		$this->admin_groups = array();
 
-		$grp_set = array();
+		$grp_set = array(GID_ALL => 1, GID_NONE => 1, GID_GUEST => 1);
 
 		foreach ($rows as $row)
 		{
 			$gid = intval($row['gid']);
-			if ($gid == GID_NONE || $gid == GID_GUEST)
-				continue;
-			$groups[] = $gid;
-			if ($row['admin'] == 1)
-				$this->admin_groups[] = $gid;
+			if (!isset($grp_set[$gid]))
+			{
+				$groups[] = $gid;
+				if ($row['admin'] == 1)
+					$this->admin_groups[] = $gid;
 
-			$grp_set[$gid] = 1;
+				$grp_set[$gid] = 1;
+			}
 		}
 
 		for ($i = 0; $i < count($groups); $i ++)
@@ -160,13 +161,6 @@ class User
 				$grp_set[$pgid] = 1;
 			}
 		}
-
-		if (isset($grp_set[GID_NONE]))
-			unset($groups[array_search(GID_NONE, $groups)]);
-		if (isset($grp_set[GID_GUEST]))
-			unset($groups[array_search(GID_GUEST, $groups)]);
-		if (!isset($grp_set[GID_ALL]))
-			$groups[] = GID_ALL;
 
 		$this->groups = $groups;
 
@@ -632,7 +626,7 @@ function user_register($login_after_register = FALSE)
 	$val['realname'] = htmlencode($val['realname']);
 	$val['nickname'] = htmlencode($val['nickname']);
 	$val['email'] = htmlencode($val['email']);
-	$val['view_gid'] = json_encode(array());
+	$val['view_gid'] = json_encode(array(GID_ALL, GID_GUEST));
 	$val['reg_time'] = time();
 	$val['reg_ip'] = get_remote_addr();
 

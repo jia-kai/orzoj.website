@@ -1,6 +1,6 @@
 <?php
 
-define('NUSER', 21);
+define('NUSER', 105);
 
 require_once '../pre_include.php';
 require_once $includes_path . 'user.php';

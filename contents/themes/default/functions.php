@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Nov 06 13:20:22 2010 +0800
+ * $Date: Fri Nov 05 20:17:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,6 +27,8 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
+require_once $includes_path . 'team.php';
+
 
 /**
  * @ignore
@@ -43,7 +45,6 @@ function _disable_post_type()
 }
 
 filter_add('post_type_set', '_disable_post_type');
-
 
 /**
  * @ignore
@@ -264,11 +265,10 @@ function tf_form_get_theme_browser($prompt, $post_name, $default = NULL)
  */
 function tf_form_get_team_browser($prompt, $post_name, $default = NULL)
 {
-	global $db;
-	$rows = $db->select_from('user_teams', array('id', 'name'));
+	$list = team_get_list();
 	$opt = array();
-	foreach ($rows as $row)
-		$opt[$row['name']] = $row['id'];
+	foreach ($list as $row)
+		$opt[$row->name] = $row->id;
 	return tf_form_get_select($prompt, $post_name, $opt, $default);
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sat Nov 06 18:16:23 2010 +0800
+ * $Date: Sat Nov 06 19:44:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -595,12 +595,11 @@ if ($is_old_browser || $userbrowser == USER_BROWSER_MSIE)
 
 ?>
 </div>
-<div class="oldbrowser-title" style="clear: both; text-align: center; font-weight: bold; font-size: 30px; color: red;" >
+<div class="oldbrowser-title">
 <?php echo __('IMPORTANT NOTICE')?>
 </div>
 </div>
 <script type="text/javascript">
-	$("div.oldbrowser-content").css("display", "none");
 	$("div.oldbrowser-title").click(function(){
 		$("div.oldbrowser-content").slideToggle("slow");
 	});
@@ -612,4 +611,5 @@ if ($is_old_browser || $userbrowser == USER_BROWSER_MSIE)
 </body>
 
 </html>
+
 

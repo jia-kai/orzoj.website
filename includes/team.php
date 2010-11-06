@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: team.php
- * $Date: Tue Oct 19 18:21:06 2010 +0800
+ * $Date: Fri Nov 05 20:15:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -123,7 +123,7 @@ function team_get_list($offset = NULL, $cnt = NULL, $set_desc = FALSE)
 	$fields = array('id', 'name', 'img');
 	if ($set_desc)
 		$fields[] = 'desc';
-	$rows = $db->select_from('user', $fields, NULL, NULL, $offset, $cnt);
+	$rows = $db->select_from('user_teams', $fields, NULL, NULL, $offset, $cnt);
 	$ret = array();
 	foreach ($rows as $row)
 	{
@@ -134,5 +134,22 @@ function team_get_list($offset = NULL, $cnt = NULL, $set_desc = FALSE)
 		$ret[] = $t;
 	}
 	return $ret;
+}
+
+/**
+ * get team name by team id
+ * @param int $tid team id
+ * @return string|NULL team name, or NULL if no such team
+ */
+function team_get_name_by_id($tid)
+{
+	static $cache = array();
+	if (array_key_exists($tid, $cache))
+		return $cache[$tid];
+	global $db, $DBOP;
+	$row = $db->select_from('user_teams', 'name', array(
+		$DBOP['='], 'id', $tid
+	));
+	return $cache[$tid] = empty($row) ? NULL : $row[0]['name'];
 }
 

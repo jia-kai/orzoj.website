@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Fri Nov 05 09:13:49 2010 +0800
+ * $Date: Fri Nov 05 20:14:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -355,7 +355,7 @@ function form_get_perm_editor_val($name)
  * @param bool $direct_echo
  * @return string|void
  */
-function form_get_select($prompt, $post_name, $options, $default = NULL, $direct_echo = TRUE)
+function form_get_select($prompt, $post_name, &$options, $default = NULL, $direct_echo = TRUE)
 {
 	$id = get_unique_id();
 	$str = "<label for='$id'>$prompt</label>
