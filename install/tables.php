@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Thu Nov 04 19:32:22 2010 +0800
+ * $Date: Sat Nov 06 13:19:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -599,6 +599,7 @@ $tables = array(
 				'cols' => array('uid', 'status')
 			)
 		)
-	)
+	),
+
 );
 

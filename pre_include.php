@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Thu Nov 04 19:40:06 2010 +0800
+ * $Date: Sat Nov 06 13:11:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,7 +27,8 @@ $PAGE_START_TIME = microtime(TRUE);
 ob_start();
 date_default_timezone_set('Asia/Shanghai');
 error_reporting(E_ALL);
-define('IN_ORZOJ', TRUE);
+if (!defined('IN_ORZOJ'))
+	define('IN_ORZOJ', TRUE);
 
 define('ORZOJ_VERSION', '0.0.1-alpha');
 define('ORZOJ_OFFICIAL_WEBSITE', 'http://code.google.com/p/orzoj');
@@ -39,18 +40,30 @@ define('ORZOJ_DEBUG_MODE', TRUE);
 $root_path = rtrim(realpath(dirname(__FILE__)), '/') . '/';
 $includes_path = $root_path . 'includes/';
 
+$config_file_path = '';
+
 if (defined('CONFIG_FILE_PATH'))
-	require_once CONFIG_FILE_PATH;
+	$config_file_path = CONFIG_FILE_PATH;
 else
-	require_once $root_path . 'config.php';
-require_once $includes_path . 'const.php';
-require_once $includes_path . 'exception.php';
-require_once $includes_path . 'functions.php';
+	$config_file_path = $root_path . 'config.php';
+
 require_once $includes_path . 'l10n.php';
 
-// FIXME: this should be determined by where the config file exsists
-if (!defined('IS_INSTALLED'))
-	die(__('You must install first.<br />Please run %sinstall.', $root_path));
+if (!file_exists($config_file_path))
+{
+	echo '<div style="text-align: center; font-size: 40px">';
+	echo __('File `%s` does not exists.', $config_file_path) . '<br />';
+	echo __('Please install first.');
+	echo '</div>';
+die;
+}
+
+require_once $config_file_path;
+
+require_once $includes_path . 'functions.php';
+require_once $includes_path . 'const.php';
+require_once $includes_path . 'exception.php';
+
 
 try
 {

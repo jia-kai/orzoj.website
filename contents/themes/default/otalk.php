@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: otalk.php
- * $Date: Sat Nov 06 12:46:25 2010 +0800
+ * $Date: Sat Nov 06 16:13:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -29,6 +29,9 @@ if (!defined('IN_ORZOJ'))
 <div class="otalk">
 <?php
 if (!user_check_login())
-	die(__('Please login first.'));
+	echo (__('Please login first.'));
+else
+{
+}
 ?>
 </div>
