@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Thu Nov 04 13:44:55 2010 +0800
+ * $Date: Sat Nov 06 13:20:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -43,6 +43,7 @@ function _disable_post_type()
 }
 
 filter_add('post_type_set', '_disable_post_type');
+
 
 /**
  * @ignore

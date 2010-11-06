@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Thu Nov 04 18:15:22 2010 +0800
+ * $Date: Fri Nov 05 16:44:24 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -386,13 +386,17 @@ if (!$error)
 	foreach ($posts as $post)
 	{
 		echo '<tr>';
-		foreach ($cols as $col)
-		{
-			echo '<td>';
-			$func = $col[1];
-			$func();
-			echo '</td>';
-		}
+		if (prob_future_contest($post['prob_id']))
+			for ($i = count($cols); $i; $i --)
+				echo '<td>---</td>';
+		else
+			foreach ($cols as $col)
+			{
+				echo '<td>';
+				$func = $col[1];
+				$func();
+				echo '</td>';
+			}
 		echo '</tr>';
 	}
 ?>
