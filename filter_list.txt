@@ -117,6 +117,14 @@ before_prob_html:
 	file: includes/problem.php
 	param: array an array containing $PROB_VIEW_PINFO
 
-after:prob_html:
+after_prob_html:
 	file: includes/problem.php
 	param: string the HTML code converted from problem info
+
+after_pages_get_list:
+	file: includes/pages.php
+	param array(Page,Page,...) the list of pages added by admin.Element type:Page(defined in includes/pages.php)
+
+after_pages_get_detail:
+	file: includes/pages.php
+	param Page the info searched by calling pages_get_detail

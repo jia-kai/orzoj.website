@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Sat Nov 06 13:11:25 2010 +0800
+ * $Date: Sat Nov 06 17:14:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -63,6 +63,7 @@ require_once $config_file_path;
 require_once $includes_path . 'functions.php';
 require_once $includes_path . 'const.php';
 require_once $includes_path . 'exception.php';
+require_once $includes_path . 'pages.php';
 
 
 try

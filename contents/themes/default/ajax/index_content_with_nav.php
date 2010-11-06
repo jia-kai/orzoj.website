@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index_content_with_nav.php
- * $Date: Sat Oct 16 19:00:13 2010 +0800
+ * $Date: Sat Nov 06 17:08:44 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,11 +37,22 @@ echo '
 
 foreach ($PAGES as $name => $value)
 {
+	if (isset($value['hidden'])) continue;
 	if ($name == $cur_page)
 		echo '<a href="#" id="nav_disable">';
 	else
 	{
-		$addr = t_get_link($name, NULL, TRUE, TRUE);
+		if (isset($value['sys_pages_id']))
+		{
+			if ($value['sys_pages_id'] == $page_arg)
+			{
+				echo '<a href="#" id="nav_disable">',$value[0],'</a>';
+				continue;
+			}
+			$addr = t_get_link('pages',$value['sys_pages_id'],TRUE,TRUE);
+		}
+		else
+			$addr = t_get_link($name, NULL, TRUE, TRUE);
 		echo "<a href=\"$addr\" onclick=\"index_navigate('$addr'); return false;\">";
 	}
 	echo "$value[0]</a>\n";

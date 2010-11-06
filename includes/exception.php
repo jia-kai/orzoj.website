@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: exception.php
- * $Date: Fri Oct 08 13:25:36 2010 +0800
+ * $Date: Fri Nov 05 12:53:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -77,3 +77,10 @@ class Exc_xhtml extends Exc_runtime
 {
 }
 
+
+/**
+ * CAPTCHA Exception
+ */
+class Exc_captcha extends Exc_runtime
+{
+}

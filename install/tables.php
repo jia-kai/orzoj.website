@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sat Nov 06 13:19:31 2010 +0800
+ * $Date: Sat Nov 06 18:12:19 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -600,6 +600,24 @@ $tables = array(
 			)
 		)
 	),
-
+	/* custom pages */
+	'pages' => array(
+		'cols' => array(
+			'id' => array('type' => 'INT32','auto_increment' => TRUE),
+			'title' => array('type' => 'TEXT'),
+			'slug' => array('type' => 'TEXT200'),
+			'content' => array('type' => 'TEXT'),
+			'time' => array('type' => 'INT64')
+		),
+		'primary_key' => 'id',
+		'index' => array(
+			array(
+				'type' => 'UNIQUE',
+				'cols' => array('slug')
+			)
+		),
+		'index_len' => array(
+			'slug' => PAGES_SLUG_LEN_MAX
+		)
+	)
 );
-

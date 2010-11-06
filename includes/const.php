@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: const.php
- * $Date: Fri Nov 05 09:51:46 2010 +0800
+ * $Date: Sat Nov 06 18:11:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,6 +32,7 @@ define('DB_REAL_PRECISION', 10000);
 // converted to integer to be inserted in the database
 
 define('OPTION_KEY_LEN_MAX', 30);
+define('PAGES_SLUG_LEN_MAX',200);
 define('JUDGE_NAME_LEN_MAX', 20);
 define('PROB_CODE_LEN_MAX', 25);
 define('USERNAME_LEN_MAX', 20);

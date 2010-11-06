@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Thu Nov 04 14:10:05 2010 +0800
+ * $Date: Sat Nov 06 18:16:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -102,9 +102,16 @@ $PAGES = array(
 	'contest' => array(__('Contest'), 'contest.php'),
 	'discuss' => array(__('Discuss'), 'discuss.php'),
 	'team' => array(__('User Teams'), 'team.php'),
-	'judge' => array(__('Judges'), 'judge.php')
+	'judge' => array(__('Judges'), 'judge.php'),
+	'pages' => array(__('Pages'),'pages.php','hidden' => TRUE)
 	//'faq' => array(__('FAQ'), 'faq.php')
 );
+
+$SYS_PAGES = pages_get_list();
+foreach ($SYS_PAGES as $v)
+{
+	$PAGES['pages_'.$v->id] = array($v->title,'pages.php','sys_pages_id' => $v->id);
+}
 
 if (isset($PAGES_ACTION[$cur_page]))
 	_restore_page();
@@ -112,7 +119,10 @@ if (isset($PAGES_ACTION[$cur_page]))
 if (isset($_POST['index_navigate_ajax']))
 {
 	if (!isset($PAGES[$cur_page]))
+	{
+		set_error(404,'Not Found');
 		die('nothing what you are looking for');
+	}
 	require_once $theme_path . 'ajax/index_content_with_nav.php';
 	die;
 }
@@ -125,7 +135,10 @@ if (substr($cur_page, 0, 10) == 'show-ajax-')
 
 if (!isset($PAGES[$cur_page]) && !isset($PAGES_AJAX[$cur_page]) &&
 	!isset($PAGES_ACTION[$cur_page]))
+{
+	set_error(404,'Not Found');
 	die("unknown page: $cur_page");
+}
 
 if (isset($PAGES_AJAX[$cur_page]) && !isset($show_ajax))
 {
@@ -146,7 +159,10 @@ function _restore_page()
 	else list($cur_page, $page_arg) = unserialize($cur_page);
 
 	if (!is_string($cur_page) || !isset($PAGES[$cur_page]))
+	{
+		set_error(404,'Not Found');
 		die("unknown page: $cur_page");
+	}
 }
 
 /**

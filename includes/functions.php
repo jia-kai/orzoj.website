@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Nov 06 13:11:59 2010 +0800
+ * $Date: Sat Nov 06 17:25:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -610,3 +610,11 @@ function str_range($low, $high)
 	return $ret;
 }
 
+/**
+ * Set Error Code like 404(Not Found),500(Internal Error)
+ */
+function set_error($code,$info)
+{
+	$code = (int)($code);
+	header($_SERVER['SERVER_PROTOCOL'].' '.$code.' '.$info);
+}
