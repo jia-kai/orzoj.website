@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Sat Nov 06 17:14:11 2010 +0800
+ * $Date: Sat Nov 06 20:43:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -52,7 +52,7 @@ require_once $includes_path . 'l10n.php';
 if (!file_exists($config_file_path))
 {
 	echo '<div style="text-align: center; font-size: 40px">';
-	echo __('File `%s` does not exists.', $config_file_path) . '<br />';
+	echo __('File `%s` does not exist.', $config_file_path) . '<br />';
 	echo __('Please install first.');
 	echo '</div>';
 die;

@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Sat Nov 06 13:14:21 2010 +0800
+ * $Date: Sat Nov 06 20:48:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -36,12 +36,8 @@ require_once '../includes/l10n.php';
 
 $root_path = rtrim(realpath('..'),'/').'/';
 
-$config_file_path = '';
-
-if (defined('CONFIG_FILE_PATH'))
-	$config_file_path = CONFIG_FILE_PATH;
-else
-	$config_file_path = $root_path . 'config.php';
+$config_file_path = $root_path . 'install/config.php';
+define('CONFIG_FILE_PATH', $config_file_path);
 
 if (file_exists($config_file_path))
 {
@@ -124,7 +120,8 @@ function install_database()
 	require_once $includes_path . 'user.php';
 	user_init_default_grp();
 	// XXX TEST
-	echo __('Installation completed');//. Please move install/config.php to the top direcotry of orzoj-website and delete "install" directory.');
+	echo __('Installation completed') . '<br />';
+	echo __('Please move install/config.php to the top direcotry of orzoj-website and delete "install" directory.');
 
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Fri Oct 29 10:53:24 2010 +0800
+ * $Date: Sat Nov 06 20:30:41 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -125,12 +125,12 @@ if (isset($_GET['action'])) // login
 // authentication and data decoding
 if (isset($_POST['data']))
 {
-	$data = json_decode($_POST['data']);
-	if (is_null($data))
-		die('invalid json encoded data');
-	if (isset($data->thread_id) && isset($data->data) && isset($data->checksum))
+	$data = unserialize($_POST['data']);
+	if ($data === FALSE)
+		die('can not unserialize data');
+	if (isset($data['thread_id']) && isset($data['data']) && isset($data['checksum']))
 	{
-		$thread_id = $data->thread_id;
+		$thread_id = $data['thread_id'];
 		$dynamic_password = option_get('dynamic_password');
 
 		$where = array($DBOP['='], 'tid', $thread_id);
@@ -140,8 +140,8 @@ if (isset($_POST['data']))
 			$thread_reqid = 0;
 		else $thread_reqid = intval($thread_reqid[0]['reqid']);
 
-		$stdchecksum = sha1($thread_id . '$' . $thread_reqid . '$' . sha1($dynamic_password . $static_password) . $data->data);
-		if ($stdchecksum != $data->checksum)
+		$stdchecksum = sha1($thread_id . '$' . $thread_reqid . '$' . sha1($dynamic_password . $static_password) . $data['data']);
+		if ($stdchecksum != $data['checksum'])
 			exit('relogin');
 
 		$val = array('reqid' => $thread_reqid + 1);
@@ -156,10 +156,10 @@ if (isset($_POST['data']))
 	else
 		exit('4');
 
-	$func_param = json_decode($data->data);
+	$func_param = unserialize($data['data']);
 
 	// use $func_param as a global variable
-	call_func($func_param->action);
+	call_func($func_param['action']);
 }
 else
 	exit('Please DO NOT orz me... I am too weak...<br /> Tim orz!!!');
@@ -175,8 +175,8 @@ function msg_write($status, $data)
 {
 	global $thread_id, $thread_reqid, $static_password, $dynamic_password;
 	if ($status == MSG_STATUS_OK)
-		$data = json_encode($data);
-	die(json_encode(array(
+		$data = serialize($data);
+	die(serialize(array(
 		'status' => $status,
 		'data' => $data,
 		'checksum' => sha1($thread_id . '$' . $thread_reqid . '$' . sha1($dynamic_password . $static_password) . $status . $data)
@@ -208,8 +208,8 @@ function call_func($name)
 function report_error()
 {
 	global $func_param, $db, $DBOP;
-	$task_id = $func_param->task;
-	$msg = $func_param->msg;
+	$task_id = $func_param['task'];
+	$msg = $func_param['msg'];
 	$value_array = array(
 		'status' => RECORD_STATUS_ERROR,
 		'detail' => $msg
@@ -240,9 +240,9 @@ function get_query_list()
 function register_new_judge()
 {
 	global $func_param, $db;
-	$judge_name = $func_param->judge;
-	$lang_sup = $func_param->lang_supported;
-	$query_ans = json_decode($func_param->query_ans, TRUE);
+	$judge_name = $func_param['judge'];
+	$lang_sup = $func_param['lang_supported'];
+	$query_ans = unserialize($func_param['query_ans']);
 	$ret = judge_get_id_by_name($judge_name);
 	if (is_null($ret))
 		$ret = judge_add($judge_name, $lang_sup, $query_ans);
@@ -259,7 +259,7 @@ function register_new_judge()
 function remove_judge()
 {
 	global $func_param;
-	judge_set_offline($func_param->judge);
+	judge_set_offline($func_param['judge']);
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -334,7 +334,7 @@ function fetch_task()
 function report_no_data()
 {
 	global $db, $func_param, $DBOP;
-	$rid = $func_param->task;
+	$rid = $func_param['task'];
 	$value = array('status' => RECORD_STATUS_DATA_NOT_FOUND);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
@@ -348,7 +348,7 @@ function report_no_data()
 function report_judge_waiting()
 {
 	global $db, $func_param, $DBOP;
-	$rid = $func_param->task;
+	$rid = $func_param['task'];
 	$value = array('status' => RECORD_STATUS_JUDGE_BUSY);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
@@ -479,8 +479,8 @@ function update_statistics($rid, $type)
 function report_sync_data()
 {
 	global $db, $DBOP, $func_param;
-	$jid = $func_param->judge;
-	$rid = $func_param->task;
+	$jid = $func_param['judge'];
+	$rid = $func_param['task'];
 	$value = array(
 		'status' => RECORD_STATUS_SYNC_DATA,
 		'jid' => $jid,
@@ -497,7 +497,7 @@ function report_sync_data()
 function report_compiling()
 {
 	global $db, $func_param, $DBOP;
-	$rid = $func_param->task;
+	$rid = $func_param['task'];
 	$value = array('status' => RECORD_STATUS_COMPILING);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
@@ -511,10 +511,10 @@ function report_compiling()
 function report_compile_success()
 {
 	global $db, $func_param, $DBOP;
-	$rid = $func_param->task;
+	$rid = $func_param['task'];
 	$value = array(
 		'status' => RECORD_STATUS_COMPILE_SUCCESS,
-		'mem' => $func_param->ncase
+		'mem' => $func_param['ncase']
 	);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
@@ -528,9 +528,9 @@ function report_compile_success()
 function report_compile_failure()
 {
 	global $db, $func_param, $DBOP;
-	$rid = $func_param->task;
+	$rid = $func_param['task'];
 	$value = array('status' => RECORD_STATUS_COMPILE_FAILURE,
-		'detail' => $func_param->info);
+		'detail' => $func_param['info']);
 	$where_clause = array($DBOP['='], 'id', $rid);
 	$db->update_data('records', $value, $where_clause);
 	update_statistics($rid, 'ce');
@@ -546,10 +546,10 @@ function report_judge_progress()
 	global $db, $func_param, $DBOP;
 	$db->update_data('records',
 		array(
-			'time' => $func_param->now,
+			'time' => $func_param['now'],
 			'status' => RECORD_STATUS_RUNNING
 		),
-		array($DBOP['='], 'id', $func_param->task));
+		array($DBOP['='], 'id', $func_param['task']));
 	msg_write(MSG_STATUS_OK, NULL);
 }
 
@@ -609,7 +609,7 @@ function report_prob_result()
 	$tot_time = 0;
 	$max_mem = 0;
 	foreach (get_class_vars('Case_result') as $var => $val)
-		foreach ($func_param->$var as $idx => $val)
+		foreach ($func_param[$var] as $idx => $val)
 		{
 			if (!isset($result[$idx]))
 				$result[$idx] = new Case_result();
@@ -651,7 +651,7 @@ function report_prob_result()
 	if ($status == -1)
 		$status = determin_record_status($result);
 
-	$rid = $func_param->task;
+	$rid = $func_param['task'];
 	$db->update_data('records',
 		array(
 			'status' => $status,
