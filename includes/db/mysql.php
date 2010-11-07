@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Tue Nov 02 20:10:45 2010 +0800
+ * $Date: Sun Nov 07 20:49:31 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -87,6 +87,7 @@ class _Mysql_opt
 }
 
 $tmp = array('_mysql_escape_col_name', 'intval');
+global $DBOP;
 $DBOP['='] = new _Mysql_opt(2, '=', $tmp);
 $DBOP['!='] = new _Mysql_opt(2, '!=', $tmp);
 $DBOP['>'] = new _Mysql_opt(2, '>', $tmp);

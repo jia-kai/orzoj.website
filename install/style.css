@@ -1,0 +1,54 @@
+div.container
+{
+	text-align: center;
+   	font-size: 16px;
+}
+
+div.container-inner
+{
+	margin-left: auto;
+	margin-right: auto;
+	width: 800px;
+	word-wrap: break-word;
+	text-align: left;
+}
+
+div.content
+{
+	background-color: #ddddee;
+	border: dotted 2px #999999;
+	padding: 10px;
+}
+
+div.content li
+{
+	font-weight: bold;
+}
+
+.step
+{
+	border: double 2px #dddddd;
+	text-decoration: none;
+	margin: 2px;
+}
+
+table.form-table th
+{
+	width: 180px;
+	text-align: left;
+}
+
+textarea
+{
+	font-weight: bold;
+	text-align: left;
+	border: dotted 2px #808080;
+	width: 100%;
+	height: 190px;
+}
+
+div.logo
+{
+	text-align: center;
+}
+

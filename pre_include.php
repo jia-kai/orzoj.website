@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Sun Nov 07 19:11:16 2010 +0800
+ * $Date: Sun Nov 07 21:55:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -25,7 +25,9 @@
  */
 $PAGE_START_TIME = microtime(TRUE);
 ob_start();
+
 date_default_timezone_set('Asia/Shanghai');
+
 error_reporting(E_ALL);
 if (!defined('IN_ORZOJ'))
 	define('IN_ORZOJ', TRUE);
@@ -40,32 +42,23 @@ define('ORZOJ_DEBUG_MODE', TRUE);
 $root_path = rtrim(realpath(dirname(__FILE__)), '/') . '/';
 $includes_path = $root_path . 'includes/';
 
-$config_file_path = '';
-
-if (defined('CONFIG_FILE_PATH'))
-	$config_file_path = CONFIG_FILE_PATH;
-else
-	$config_file_path = $root_path . 'config.php';
+$config_file_path = $root_path . 'config.php';
 
 require_once $includes_path . 'l10n.php';
 
-if (!file_exists($config_file_path))
+if (!defined('IN_INSTALLATION'))
 {
-	echo '<div style="text-align: center; font-size: 40px">';
-	echo __('File `%s` does not exist.', $config_file_path) . '<br />';
-	echo __('Please install first.');
-	echo '</div>';
+	if (!file_exists($config_file_path))
+	{
+		echo '<div style="text-align: center; font-size: 40px">';
+		echo __('File `%s` does not exists.', $config_file_path) . '<br />';
+		echo __('Please install first.');
+		echo '<a href="install">' . __('Click here to install') . '</a>';
+		echo '</div>';
 die;
-}
-
-require_once $config_file_path;
-
-require_once $includes_path . 'functions.php';
-require_once $includes_path . 'const.php';
-require_once $includes_path . 'exception.php';
-require_once $includes_path . 'pages.php';
-
-
+	}
+	require_once $config_file_path;
+	require_once $includes_path . 'functions.php';
 try
 {
 	db_init();
@@ -74,6 +67,14 @@ catch (Exc_db $e)
 {
 	die(__('failed to connect to database'));
 }
+}
+
+if (defined('IN_INSTALLATION'))
+	require_once $includes_path . 'functions.php';
+
+require_once $includes_path . 'const.php';
+require_once $includes_path . 'exception.php';
+require_once $includes_path . 'pages.php';
 
 if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 {
@@ -94,6 +95,5 @@ if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 	unset($process);
 }
 
-
-require_once $includes_path . 'plugin.php';
-
+if (!defined('IN_INSTALLATION'))
+	require_once $includes_path . 'plugin.php';
