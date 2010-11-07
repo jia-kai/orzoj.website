@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pages.php
- * $Date: Sat Nov 06 18:24:03 2010 +0800
+ * $Date: Sun Nov 07 19:13:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -27,7 +27,6 @@
 if (!defined('IN_ORZOJ'))
 	exit;
 
-require_once $includes_path . 'plugin.php';
 
 class Page 
 {

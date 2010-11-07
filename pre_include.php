@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Sat Nov 06 20:43:11 2010 +0800
+ * $Date: Sun Nov 07 19:11:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -94,4 +94,6 @@ if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 	unset($process);
 }
 
+
+require_once $includes_path . 'plugin.php';
 

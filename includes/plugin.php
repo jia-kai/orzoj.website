@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: plugin.php
- * $Date: Tue Nov 02 14:44:58 2010 +0800
+ * $Date: Sun Nov 07 19:18:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -169,4 +169,10 @@ function filter_apply_no_iter($hook_name)
 			call_user_func_array($filter['func'], $args);
 }
 
+
+$_plugin_enabled_plugins = unserialize(option_get('enabled_plugins','a:0:{}'));
+foreach ($_plugin_enabled_plugins as $plugin)
+{
+	require_once $root_path . 'contents/plugins/' . $plugin . '/plugin.php';
+}
 

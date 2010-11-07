@@ -1172,7 +1172,7 @@ msgstr "输出："
 
 #: contents/themes/default/functions.php:512 admin/problem_edit.php:199
 msgid "Description"
-msgstr "描述："
+msgstr "描述"
 
 #: contents/themes/default/functions.php:513 admin/problem_edit.php:200
 msgid "Input Format"

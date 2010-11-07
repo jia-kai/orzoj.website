@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: page_defs.php
- * $Date: Thu Nov 04 09:13:29 2010 +0800
+ * $Date: Sat Nov 06 20:16:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,6 +34,7 @@ $PAGES = array(
 	'prob' => array(__('Problem Administration'), 'problem.php', GID_ADMIN_PROB),
 	'prob_grp' => array(__('Problem Group Administration'), 'problem_grp.php', GID_ADMIN_PROB),
 	'contest' => array(__('Contest Administration'), 'contest.php', GID_ADMIN_CONTEST),
-	'user' => array(__('User Administration'), 'user.php', GID_ADMIN_USER)
+	'user' => array(__('User Administration'), 'user.php', GID_ADMIN_USER),
+	'plugin' => array(__('Plugin Administration'),'plugin.php',GID_ADMIN_PLUGIN)
 );
 

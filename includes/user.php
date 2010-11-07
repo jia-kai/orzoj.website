@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sat Nov 06 09:34:39 2010 +0800
+ * $Date: Sat Nov 06 19:56:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -42,6 +42,7 @@ define('GID_ADMIN_PROB', $cnt ++); // manage problems and problem groups
 define('GID_ADMIN_CONTEST', $cnt ++);  // manage contests
 define('GID_ADMIN_POST', $cnt ++); // manage posts
 define('GID_ADMIN_ANNOUNCEMENT', $cnt ++); // manage announcements
+define('GID_ADMIN_PLUGIN', $cnt ++);
 define('GID_SUPER_SUBMITTER', $cnt ++);
 // view and submit regardless of which contest the problem belongs to
 // or other limits on viewing or submitting problem
@@ -887,6 +888,7 @@ function user_init_default_grp()
 		GID_ADMIN_CONTEST => array('Admin-Contest', __('administrate contests'), GID_ALL),
 		GID_ADMIN_POST => array('Admin-Post', __('administrate posts'), GID_ALL),
 		GID_ADMIN_ANNOUNCEMENT => array('Admin-Announcement', __('administrate announcements'), GID_ALL),
+		GID_ADMIN_PLUGIN => array('Admin-Plugin',__('administrate plugins'),GID_ALL),
 		GID_SUPER_SUBMITTER => array('Super-Submitter', __(
 			'view problem and submit regardless of problem permission or contest permission or other limitations'),
 			GID_ALL),

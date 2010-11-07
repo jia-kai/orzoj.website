@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sat Nov 06 17:25:34 2010 +0800
+ * $Date: Sun Nov 07 15:46:42 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -183,9 +183,10 @@ static $_option_cache = array();
 /**
  * get option value
  * @param string $key option key
- * @return string|NULL option value on success, NULL if no such option
+ * @param mixed $default default value to return if no such option
+ * @return string|NULL option value on success, $default if no such option
  */
-function option_get($key)
+function option_get($key,$default = NULL)
 {
 	global $db, $DBOP, $_option_cache;
 	if (array_key_exists($key, $_option_cache))
@@ -195,7 +196,7 @@ function option_get($key)
 	if (count($data))
 		$data = $data[0]['value'];
 	else
-		$data = NULL;
+		return $default;
 	return $_option_cache[$key] = $data;
 }
 
