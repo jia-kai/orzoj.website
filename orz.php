@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Sat Nov 06 20:30:41 2010 +0800
+ * $Date: Sun Nov 07 10:58:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -302,10 +302,23 @@ function get_unjudged_submission()
 	$req['input'] = $tmp[0];
 	$req['output'] = $tmp[1];
 
-	$db->update_data('records', array('status' => RECORD_STATUS_WAITING_ON_SERVER),
-		array($DBOP['='], 'id', $row['id']));
 	msg_write(MSG_STATUS_OK, $req);
 	return TRUE;
+}
+
+/**
+ * the server has received previous unjudged submission
+ * @param array $req
+ * @return void
+ */
+function get_unjudged_submission_done($req)
+{
+	global $db, $DBOP;
+	$db->update_data('records', array('status' => RECORD_STATUS_WAITING_ON_SERVER),
+		array(
+			$DBOP['&&'],
+			$DBOP['='], 'id', $req['id'],
+			$DBOP['='], 'status', RECORD_STATUS_WAITING_TO_BE_FETCHED));
 }
 
 /**
@@ -323,6 +336,15 @@ function no_task()
  */
 function fetch_task()
 {
+	global $func_param;
+	$prev = $func_param['prev'];
+	if (!is_null($prev) && $prev['type'] != 'none')
+	{
+		if ($prev['type'] == 'src')
+			get_unjudged_submission_done($prev);
+		else
+			get_request_done($prev);
+	}
 	get_request() || get_unjudged_submission() || no_task();
 }
 
