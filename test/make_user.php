@@ -18,7 +18,7 @@ for ($i = 1; $i <= NUSER; $i ++)
 		'self_desc' => "self_desc $i",
 		'plang' => rand(1, 3),
 		'wlang' => rand(1, 2),
-		'view_gid' => serialize(array(GID_ALL)),
+		'view_gid' => json_encode(array(GID_ALL)),
 		'tid' => 1,
 		'reg_time' => time(),
 		'reg_ip' => '127.0.0.1',

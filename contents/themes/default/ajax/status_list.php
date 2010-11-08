@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Sat Oct 30 12:06:22 2010 +0800
+ * $Date: Mon Nov 08 16:36:58 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -79,8 +79,8 @@ if (isset($_POST['prob_best_solutions']))
 {
 	$_POST['filter']['pid'] = $_POST['prob_best_solutions'];
 	$_POST['filter']['ranklist'] = 1;
-	define('PAGE_SIZE', 5);
-} else define('PAGE_SIZE', 10);
+	define('PAGE_SIZE', 10);
+} else define('PAGE_SIZE', 20);
 
 
 $pgnum = 0;

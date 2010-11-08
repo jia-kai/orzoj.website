@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Fri Nov 05 14:15:36 2010 +0800
+ * $Date: Mon Nov 08 21:35:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -282,11 +282,19 @@ _make_posts_nav();
 <?php 
 if ($topic['is_top'])
 	echo '<span class="post-subject-sticky">[' . __('Sticky') . ']</span>';
-if ($topic['is_boutique'])
-	echo '<span class="post-subject-boutique">[' . __('Boutique') . ']</span>';
 if ($topic['is_locked'])
 	echo '<span class="post-subject-locked">[' . __('Locked') . ']</span>';
 echo $topic['subject'];
+$prob_id = $topic['prob_id'];
+if ($prob_id && !_action('in-colorbox'))
+{
+	$prob_code = prob_get_code_by_id($prob_id);
+	echo '<a style="color: #ccccff" target="_blank" href="'
+		. t_get_link('problem', $prob_code, TRUE, TRUE) . '">[' . $prob_code . ']</a>';
+}
+if ($topic['is_boutique'])
+	echo '<span class="post-subject-boutique">[' . __('Boutique') . ']</span>';
+
 ?>
 </div><!-- class: post-subject -->
 
@@ -502,7 +510,7 @@ if (user_check_login() && !_action('in-colorbox') && (!$topic['is_locked'] || ($
 			"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
 			"post_reply_uid" : "<?php echo $user->id; ?>",
 			"post_reply_content" : content
-				}),
+			}),
 			"success" : function(data) {
 				t.animate({"opacity" : 1}, 1);
 				if (data.charAt(0) == '0')
@@ -517,7 +525,7 @@ if (user_check_login() && !_action('in-colorbox') && (!$topic['is_locked'] || ($
 				}
 				else
 					$.colorbox({"html" : data});
-		}
+			}
 		});
 		return false;
 	});

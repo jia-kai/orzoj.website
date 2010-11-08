@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Mon Nov 08 15:48:57 2010 +0800
+ * $Date: Mon Nov 08 19:09:29 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -433,7 +433,7 @@ EOF;
 				'self_desc' => 'The god.',
 				'plang' => 1,
 				'wlang' => 1,
-				'view_gid' => serialize(array(GID_ALL)),
+				'view_gid' => json_encode(array(GID_ALL)),
 				'tid' => 1,
 				'reg_time' => time(),
 				'reg_ip' => get_remote_addr(),

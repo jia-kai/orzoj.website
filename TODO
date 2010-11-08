@@ -36,8 +36,6 @@ the time2str function returns a too-long string..
 
 add index.html
 
-add some default expressions to the rich text editor.
-
 输入格式：  => 冒号哪儿来的?
 
 *** Add additional field in function tf_form_get*
@@ -45,8 +43,6 @@ add some default expressions to the rich text editor.
 题目更新失败！！！！
 
 seperate user rank from rank_list.php
-
-prob-grp-tree does not work well in chrome
 
 'In reply to' does'nt work well!!
 
@@ -71,3 +67,11 @@ header utf-8
 *********** check code!!!!!!
 
 详情代码
+
+用户题目提交机制
+
+Best Solutions
+
+Data Not Found
+
+prob edit HTML textarea

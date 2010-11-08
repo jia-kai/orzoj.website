@@ -7,29 +7,29 @@ require_once $includes_path . 'submit.php';
 
 $src = '
 #include <cstdio>
-#include <cassert>
+
 int main()
 {
-	FILE *fin = fopen("a+b.in", "r"),
-		*fout = fopen("a+b.out", "w");
-	//FILE *fin = stdin, *fout = stdout;
-	assert(fin);
-	assert(fout);
+//	freopen("a+b.in", "r", stdin); freopen("a+b.out", "w", stdout);
 	int a, b;
-	fscanf(fin, "%d%d", &a, &b);
-	fprintf(fout, "%d\n", a + b);
-	fclose(fin);
-	fclose(fout);
+	scanf("%d%d", &a, &b);
+	printf("%d\n", a + b);
+	return 0;
 }
 	';
 
 if (isset($_GET['src']))
 	die(htmlencode($src));
+$n = 1;
+if (isset($_GET['n']))
+	$n = intval($_GET['n']);
 
 $row = $db->select_from('plang', 'id', array($DBOP['=s'], 'name', 'g++'));
 
-$rid = submit_add_record(prob_get_id_by_code('a+b'),
-	$row[0]['id'],
-	$src, array('a+b.in', 'a+b.out'));
-
+for ($i = 0; $i < $n; $i ++)
+{
+	$rid = submit_add_record(prob_get_id_by_code('a+b'),
+		$row[0]['id'],
+		$src, array('', ''));
+}
 

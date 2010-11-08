@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Fri Nov 05 18:12:34 2010 +0800
+ * $Date: Mon Nov 08 20:05:31 2010 +0800
 
  This file is part of orzoj
 
@@ -64,7 +64,7 @@ a:link, a:visited
 {
 	color: black;
 	text-decoration: none;
-	font-style: italic;
+/*	font-style: italic; */
 }
 
 a:hover
@@ -88,7 +88,7 @@ div#page a:link, div#page a:visited, div#gid-treeview a, div#gidtreeview a:visit
 {
 	color: white;
 	text-decoration: none;
-	font-style: italic;
+/*	font-style: italic; */
 }
 
 div#page a:hover, div#gid-treeview a:hover

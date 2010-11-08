@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: src_download.php
- * $Date: Wed Oct 27 19:13:16 2010 +0800
+ * $Date: Mon Nov 08 19:44:52 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,7 +32,7 @@ if (!isset($_GET['rid']))
 	die('no such record');
 
 $where = array($DBOP['='], 'id', $_GET['rid']);
-$row = $db->select_from('records', array('uid', 'cid', 'lid'), $where);
+$row = $db->select_from('records', array('uid', 'cid', 'lid', 'pid', 'score'), $where);
 	
 if (count($row) != 1)
 	die('no such record');
@@ -50,8 +50,8 @@ if (count($src) != 1)
 $src = $src[0]['src'];
 
 header('Content-type: application/orzoj-user-src');
-header(sprintf('Content-Disposition: attachment; filename="usersrc-%d.%s"',
-	$_GET['rid'], plang_get_type_by_id($row['lid'])));
+header(sprintf('Content-Disposition: attachment; filename="%s-%s-%d-%d.%s"',
+	prob_get_code_by_id($row['pid']), user_get_username_by_id($row['uid']), $_GET['rid'], $row['score'], plang_get_type_by_id($row['lid'])));
 
 echo $src;
 
