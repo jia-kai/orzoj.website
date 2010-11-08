@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Mon Nov 08 08:53:47 2010 +0800
+ * $Date: Mon Nov 08 15:48:57 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -41,6 +41,7 @@ $includes_path = $root_path . 'includes/';
 require_once $includes_path . 'l10n.php';
 require_once $includes_path . 'exception.php';
 
+$static_password;
 define('TOTAL_STEP', 6);
 
 $step = 0;
@@ -48,6 +49,24 @@ if (isset($_GET['step']))
 	$step = intval($_GET['step']);
 if ($step < 0 || $step >= TOTAL_STEP) 
 	die(__('How are you doing?'));
+
+if (isset($_GET['action']) && isset($_GET['step']))
+	die(__('What\'s up buddy?'));
+$action = 'none';
+$action_list = array(
+	'set_administrator' => __('Set Administrator'),
+   	'set_administrator_finish' => __('Set Administrator Finished'),
+	'set_static_password' => __('Set Static Password'),
+	'set_static_password_finish' => __('Set Static Password Finished')
+);
+
+if (isset($_GET['action']))
+{
+	$step = -1;
+	$action = $_GET['action'];
+	if (array_key_exists($action, $action_list) === FALSE)
+		die(__('What\'s up buddy?'));
+}
 ?>
 
 <html>
@@ -56,7 +75,13 @@ if ($step < 0 || $step >= TOTAL_STEP)
 <link rel="stylesheet" href="style.css" type="text/css" />
 
 <?php 
-echo '<title>' . __('Orz Online Judge Installation Wizard - Step %d', $step) . '</title>';
+$title = __('Uh?');
+if ($step != -1)
+	$title =  __('Orz Online Judge Installation Wizard - Step %d', $step);
+else if ($action != 'none')
+	$title = __('Orz Online Judge Installation Wizard - %s', $action_list[$action]);
+echo '<title>' . $title . '</title>';
+
 ?>
 </head>
 <body>
@@ -65,7 +90,7 @@ echo '<title>' . __('Orz Online Judge Installation Wizard - Step %d', $step) . '
 <?php
 echo '<div class="content">';
 echo '<div class="logo"><h1><img alt="' . __('Orz Online Judge'). '" src="images/logo.gif" /></h1></div>';
-echo '<div class="logo"><h1>' . __('Orz Online Judge Installation Wizard - Step %d', $step) . '</h1></div>';
+echo '<div class="logo"><h1>' . $title . '</h1></div>';
 
 $default_db_host = $_SERVER['HTTP_HOST'];
 preg_match('/^(.*)\/install\/[^\/]*$/', $_SERVER['REQUEST_URI'], $default_website_root);
@@ -107,11 +132,6 @@ function make_form_table($items)
 
 }
 
-if ($step >= 4)
-{
-	require_once '../pre_include.php';
-	require_once $includes_path . 'user.php';
-}
 
 switch ($step)
 {
@@ -121,7 +141,7 @@ case 0:
 	echo '<ol>';
 	foreach(array(__('Database name'), __('Database username'),
 		__('Database password'), __('Database host'))
-		 as $item)
+		as $item)
 		echo '<li>' . $item . '</li>';
 	echo '</ol>';
 	echo __('In all likelihood, these items were supplied to you by your Web Host. If you do not have this information, then you will need to contact them before you can continue. If you are all ready...');
@@ -176,31 +196,189 @@ case 3:
 		option_set('max_src_length', 1024 * 32);
 	}
 
+	function make_src_code($lang, $src, $hint = '')
+	{
+		return '<h4>' . $lang . ':</h4>'
+			. '<textarea class="prob-view-single-io" readonly="readonly">'
+			. $src
+			. '</textarea>'
+			. "<p>$hint</p>";
+	}
+	function get_src($lang, $io = '')
+	{
+		if ($io != '')
+		{
+			$io = unserialize($io);
+			$input = $io[0];
+			$output = $io[1];
+		}
+		switch ($lang)
+		{
+		case 'c++':
+			if ($io == '')
+				return <<<EOF
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+	int a, b;
+	cin >> a >> b;
+	cout << a + b << endl;
+	return 0;
+}
+EOF;
+			else
+			{
+				return <<<EOF
+#include <fstream>
+
+using namespace std;
+
+int main()
+{
+	ifstream fin("$input");
+	ofstream fout("$output");
+	int a, b;
+	fin >> a >> b;
+	fout << a + b << endl;
+	return 0;
+}
+</textarea>
+<p>or a alternative way:</p>
+<textarea class="prob-view-single-io" readonly="readonly">
+#include <iostream>
+#include <cstdio>
+
+using namespace std;
+
+int main()
+{
+	freopen("$input", "r", stdin);
+	freopen("$output", "w", sdout);
+	int a, b;
+	cin >> a >> b;
+	cout << a + b << endl;
+	return 0;
+}
+</textarea>
+EOF;
+			}
+			break;
+		case 'c':
+			if ($io == '')
+				return <<<EOF
+#include <stdio.h>
+
+int main()
+{
+	int a, b;
+	scanf("%d%d", &a, &b);
+	printf("%d\\n", a + b);
+	return 0;
+}
+
+EOF;
+			else
+				return <<<EOF
+#include <stdio.h>
+
+int main()
+{
+	FILE* fin = fopen("$input", "r"),
+		fout = fopen("$output", "w');
+	int a, b;
+	fscanf(fin, "%d%d", &a, &b);
+	fprintf(fout, "%d\\n", a + b);
+	fclose(fin);
+	fclose(fout);
+	return 0;
+}
+</textarea>
+<p>or:</p>
+<textarea class="prob-view-single-io" readonly="readonly">
+#include <stdio.h>
+
+int main()
+{
+	freopen("$input", "r", stdin);
+	freopen("$output", "w", stdout);
+	int a, b;
+	scanf("%d%d", &a, &b);
+	printf("%d\\n", a + b);
+	return 0;
+}
+EOF;
+			break;
+		case 'pascal':
+			if ($io == '')
+				return <<<EOF
+program ab;
+var		a, b: longint;
+begin
+		readln(a, b);
+		writeln(a + b);
+end.
+EOF;
+			else return <<<EOF
+program ab;
+var		a, b: longint;
+begin
+		assign(input, '$input');
+		reset(input);
+		assing(output, '$output');
+		rewrite(output);
+		readln(a, b);
+		writeln(a + b);
+		close(input);
+		close(output);
+end.
+EOF;
+			break;
+		}
+	}
+	function make_hint($io = '')
+	{
+		$hint = __('code for this problem:') . '<br />';
+		$hint .= make_src_code('c++', get_src('c++', $io), __('and some other ways.'));
+		$hint .= make_src_code('c', get_src('c', $io));
+		$hint .= make_src_code('pascal', get_src('pascal', $io));
+		return $hint;
+	}
 	function add_prob_a_plus_b()
 	{
 		global $db;
-		$id_grp = $db->insert_into('prob_grps', array('pgid' => 0, 'name' => 'Hello world'));
-		prob_update_grp_cache_add($id_grp);
-		$id_prob = $db->insert_into('problems',
-			array('title' => 'A+B Problem',
-			'code' => 'a+b',
-			'perm' => serialize(array(0, 1, array(GID_ALL), array())),
-			'io' => serialize(array('a+b.in', 'a+b.out')),
-			'time' => time(),
-			'desc' => serialize(array(
-				'time' => '1s',
-				'memory' => '256MB',
-				'desc' => 'Calculate a + b',
-				'input_fmt' => 'Two numbers in a single row.',
-				'output_fmt' => 'A number, the sum of a and b.',
-				'input_samp' => '1 2',
-				'output_samp' => '3',
-				'source' => 'Every OJ',
-				'range' => '1 <= a, b <= 10',
-				'hint' => 'Hello world!'
-			))
-		));
-		$db->insert_into('map_prob_grp', array('pid' => $id_prob, 'gid' => $id_grp));
+		//$hint .= add_hint(__('Where are the input and output?'), __('The input and output is determined by the problem setting, either file or from standard input and standard output.'));
+		foreach (array(
+			array(__('A+B Problem'), 'a+b', ''),
+			array(__('A+B Problem(use file)'), 'a+b2', serialize(array('a+b.in', 'a+b.out')))
+		) as $prob)
+		{
+			$title = $prob[0];
+			$code = $prob[1];
+			$io = $prob[2];
+			$hint = make_hint($io);
+			$db->insert_into('problems',
+				array('title' => $title,
+				'code' => $code,
+				'perm' => serialize(array(0, 1, array(GID_ALL), array())),
+				'io' => $io,
+				'time' => time(),
+				'desc' => serialize(array(
+					'time' => '1s',
+					'memory' => '256MB',
+					'desc' => 'Calculate a + b',
+					'input_fmt' => 'Two numbers in a single row.',
+					'output_fmt' => 'A number, the sum of a and b.',
+					'input_samp' => '1 1',
+					'output_samp' => '2',
+					'source' => 'Every OJ',
+					'range' => '1 <= a, b <= 10',
+					'hint' => $hint
+				))
+			));
+		}
 	}
 
 	function add_post_topic_welcome()
@@ -322,13 +500,7 @@ case 3:
 		return TRUE;
 	}
 
-	function link_to_admin()
-	{
-		echo __('All right sparky! Orz Online Judge is ready to use!') . '<br />';
-		echo __('And we suggest you to set your default administration account now! <a href="index.php?step=4">Go</a>') . '<br />';
-		echo __('If not, the default adminitration user will be `admin` and its password is `admin888`.') . '<br />';
-		echo __('If you are not going to set your administration account now, <span style="font-size: 24px; color: red;">please <b>REMOVE</b> the installation directory `<b>%s</b>` <b>INMEDIATELY</b>!', realpath('.'));
-	}
+
 	if ($step == 2)
 	{
 		$items_cant_be_empty = array('db_type', 'db_name', 'db_user', 
@@ -411,30 +583,74 @@ case 3:
 	define('IN_INSTALLATION', true);
 	require_once $root_path . 'pre_include.php';
 	if (InstallDatabase())
-		link_to_admin();
-	break;
-
-case 4:
-case 5:
-	$items = array(
-		array(__('Nick name'), 'nickname', 'input', 'text', 'The God', ''),
-		array(__('Username'), 'username', 'input', 'text', 'admin', ''),
-		array(__('Password'), 'password', 'input', 'password', '', ''),
-		array(__('Confirm password'), 'password_confirm', 'input', 'password',  '', '')
-	);
-	if ($step == 4)
 	{
-		echo '<form action="index.php?step=5" method="post">';
+		echo __('All right sparky! Orz Online Judge is ready to use!') . '<br />';
+		echo __('...and some options is needed to set.');
+		echo '<ol>';
+		foreach (array(
+			array(__('Static password'), 'set_static_password', __('used to communicate withe the orzoj-server, default is `hello`')),
+			array(__('Administrator account'), 'set_administrator', __('default user is `admin` and password is `admin888`'))
+		) as $item)
+		echo '<li><a target="_blank" href="index.php?action=' . $item[1] . '">' . $item[0] . '</a> (' . $item[2]. ')</li>';
+		echo '</ol>';
+		echo __('If you are not going to go further steps,  <span style="font-size: 24px; color: red;">please <b>REMOVE</b> the installation directory `<b>%s</b>` <b>IMMEDIATELY NOW</b>!', realpath('.'));
+	}
+	break;
+}
+
+
+$items = array(
+	array(__('Nick name'), 'nickname', 'input', 'text', 'The God', ''),
+	array(__('Username'), 'username', 'input', 'text', 'admin', ''),
+	array(__('Password'), 'password', 'input', 'password', '', ''),
+	array(__('Confirm password'), 'password_confirm', 'input', 'password',  '', '')
+);
+
+if ($step == -1)
+{
+	require_once '../pre_include.php';
+	require_once $includes_path . 'user.php';
+	$finished = true;
+	switch ($action)
+	{
+	case 'set_static_password':
+		echo '<form action="index.php?action=set_static_password_finish" method="post"><label for="static_password">' 
+			. __('Static Password')
+			. '</label><input type="text" value="hello" id="static_password" name="static_password" />'
+			. '<input type="submit" name="submit" value="' . __('Set static password') . '" />'
+			. '</form>';
+		$finished = false;
+		break;
+
+	case 'set_static_password_finish':
+		try
+		{
+			if (!isset($_POST['static_password']))
+				throw new Exc_orzoj(__('Incomplete POST'));
+			$static_password = $_POST['static_password'];
+		}
+		catch (Exc_orzoj $e)
+		{
+			echo $e->msg() . '<br />';
+			echo __('Click <a href="index.php?action=set_static_password">here</a> to back to previous step.');
+			$finished = false;
+			break;
+		}
+		option_set('static_password', $static_password);
+		echo __('Static password has been successfully updated.') . '<br />';
+		break;
+	case 'set_administrator':
+		echo '<form action="index.php?action=set_administrator_finish" method="post">';
 		echo __('Set you own adminitration account:') . '<br>';
 		make_form_table($items);
 		$Register = __('Register');
 		echo "<p class=\"step\"><input type=\"submit\" value=\"$Register\" name=\"submit\" /></p>";
 		echo __('Detailed information of your account can be set when you are logined.') . '<br />';
 		echo '</form>';
+		$finished = false;
 		break;
-	}
-	else if ($step == 5)
-	{
+
+	case 'set_administrator_finish':
 		try
 		{
 			foreach ($items as $item)
@@ -456,7 +672,8 @@ case 5:
 		catch (Exc_orzoj $e)
 		{
 			echo $e->msg() . '<br />';
-			echo __('Click <a href="index.php?step=4">here</a> to back to previous step.');
+			echo __('Click <a href="index.php?action=set_administrator">here</a> to back to previous step.');
+			$finished = false;
 			break;
 		}
 		unset($_POST['password_confirm']);
@@ -468,11 +685,17 @@ case 5:
 		$val['reg_time'] = time();
 		$val['reg_ip'] = get_remote_addr();
 		$db->update_data('users', $val, array($DBOP['='], 'id', 1));
+		echo __('Adminitrator account has been updated.') . '<br />';
+		break;
+	}
+	if ($finished)
+	{
 		echo __('Congratulations! All things nearly done!') . '<br />';
 		echo __('But don\'t forget to <b style="font-size: 24px; color: red;">REMOVE `%s` NOW!</b>', realpath('.')) . '<br />';
-		echo __('We wish you a happy studying here, and the Installation Wizzard will say goodbye to you~');
+		echo __('We wish you a happy journey here, and the Installation Wizzard will say goodbye to you~');
 	}
 }
+
 echo '</div>';
 ?>
 	</div>
