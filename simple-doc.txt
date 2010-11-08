@@ -23,8 +23,9 @@
 |	|--	team.php		functions for managing user teams
 |	|--	announcement.php	publish and get announcements
 |	|--	exe_status.php	case execution status and case structure definitions
-|	|--	const.php	miscellaneous constants
-|	|--	record.php	execution status constant definitions and record-related structures
+|	|--	const.php		miscellaneous constants
+|	|--	record.php		execution status constant definitions and record-related structures
+|	|--	pages.php		custom pages
 |	|--	contest/
 |	|	|--	ctal.php	contest abstract layer
 |	|	|--	oi.php		implementation for OI rules of contest abstract layer

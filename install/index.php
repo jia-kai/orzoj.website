@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Mon Nov 08 07:59:52 2010 +0800
+ * $Date: Mon Nov 08 08:53:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -119,9 +119,9 @@ case 0:
 {
 	echo '<p>' . __('Welcome to Orz Online Judge. Before proceeding, you will need to know the following items:') . '</p>';
 	echo '<ol>';
-	foreach(array('Database name', 'Database username',
-		'Database password', 'Database host', 
-		'Table prefix (if you want to run more than one Orz Online Judge in a single database)') as $item)
+	foreach(array(__('Database name'), __('Database username'),
+		__('Database password'), __('Database host'))
+		 as $item)
 		echo '<li>' . $item . '</li>';
 	echo '</ol>';
 	echo __('In all likelihood, these items were supplied to you by your Web Host. If you do not have this information, then you will need to contact them before you can continue. If you are all ready...');
@@ -179,7 +179,9 @@ case 3:
 	function add_prob_a_plus_b()
 	{
 		global $db;
-		$db->insert_into('problems',
+		$id_grp = $db->insert_into('prob_grps', array('pgid' => 0, 'name' => 'Hello world'));
+		prob_update_grp_cache_add($id_grp);
+		$id_prob = $db->insert_into('problems',
 			array('title' => 'A+B Problem',
 			'code' => 'a+b',
 			'perm' => serialize(array(0, 1, array(GID_ALL), array())),
@@ -198,6 +200,7 @@ case 3:
 				'hint' => 'Hello world!'
 			))
 		));
+		$db->insert_into('map_prob_grp', array('pid' => $id_prob, 'gid' => $id_grp));
 	}
 
 	function add_post_topic_welcome()

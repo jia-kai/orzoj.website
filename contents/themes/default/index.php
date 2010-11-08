@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sat Nov 06 19:44:38 2010 +0800
+ * $Date: Mon Nov 08 08:29:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -108,6 +108,7 @@ $PAGES = array(
 );
 
 $SYS_PAGES = pages_get_list();
+
 foreach ($SYS_PAGES as $v)
 {
 	$PAGES['pages_'.$v->id] = array($v->title,'pages.php','sys_pages_id' => $v->id);
