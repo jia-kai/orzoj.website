@@ -49,7 +49,6 @@ function _make_prob($title)
 function make_prob()
 {
 	global $db, $DBOP;
-	/*
 	$db->insert_into('problems',
 		array('title' => 'A+B Problem',
 		'code' => 'a+b',
@@ -67,7 +66,7 @@ function make_prob()
 			'source' => 'Every OJ',
 			'hint' => '1 <= a, b <= 100000'
 		))
-	)); */
+	)); 
 	$db->insert_into('problems',
 		array('title' => 'A+B Problem, too',
 		'code' => 'a+b2',
