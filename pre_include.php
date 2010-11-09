@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Sun Nov 07 21:55:45 2010 +0800
+ * $Date: Tue Nov 09 15:00:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -74,7 +74,6 @@ if (defined('IN_INSTALLATION'))
 
 require_once $includes_path . 'const.php';
 require_once $includes_path . 'exception.php';
-require_once $includes_path . 'pages.php';
 
 if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 {
@@ -95,5 +94,3 @@ if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 	unset($process);
 }
 
-if (!defined('IN_INSTALLATION'))
-	require_once $includes_path . 'plugin.php';

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Fri Nov 05 20:17:12 2010 +0800
+ * $Date: Tue Nov 09 20:13:35 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -339,7 +339,7 @@ function tf_form_get_source_editor($prompt, $name, $default = NULL)
 	$id = get_random_id();
 	return sprintf('<tr><td colspan="2"><label for="%s">%s</label><br />
 		<textarea type="text" id="%s" name="%s" style="width: 600px; height: 400px;">%s</textarea></td></tr>',
-		$id, $prompt, $id, $name, is_null($default) ? '' : $default);
+		$id, $prompt, $id, $name, is_null($default) ? '' : htmlspecialchars($default));
 }
 
 /**
@@ -637,6 +637,19 @@ function tf_form_get_post_type_select($prompt, $post_name, $default = NULL, $cla
 	}
 	$str .= "</select></td></tr>\n";
 	return $str;
+}
+
+/**
+ * get raw field to print custom data
+ * @param string|NULL $prompt
+ * @param string $data
+ * @return string
+ */
+function tf_form_get_raw($prompt = NULL, $data)
+{
+	if (is_null($prompt))
+		return '<tr><td colspan="2">' . $data . '</td></tr>';
+	return "<tr><td>$prompt</td><td>$data</td></tr>";
 }
 
 

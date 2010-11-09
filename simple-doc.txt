@@ -143,4 +143,15 @@ options:
 	
 	max_src_length:
 		maximal source length in bytes (/includes/submit.php)
+	
+	orz_thread_reqid_max_size:
+		maximal number of rows in 'orz_thread_reqid' table
+		relogin will be requested when size exceeding the limit
+
+	prev_orzoj_server_response:
+		the time of previous orzoj-server response
+
+	orzoj_server_max_rint:
+		maximal refresh interval in seconds. If orzoj-server does not refresh after this long, it will be considered offline.
+
 

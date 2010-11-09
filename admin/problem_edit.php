@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: Thu Nov 04 22:03:31 2010 +0800
+ * $Date: Tue Nov 09 16:23:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -188,7 +188,7 @@ function get_title()
 
 function edit_desc()
 {
-	global $pinfo, $root_path;
+	global $pinfo, $root_path, $PROB_DESC_FIELDS_ALLOW_XHTML;
 	if (!is_null($pinfo) && !empty($pinfo['desc']))
 		$desc = unserialize($pinfo['desc']);
 	else
@@ -211,10 +211,13 @@ function edit_desc()
 	);
 
 	$small = 0;
-	foreach ($fields as $key => $val)
+	foreach ($fields as $key => $text)
 	{
 		$small ++;
-		form_get_textarea($val, "desc[$key]", get_array_val($desc, $key), $small > 2);
+		$val = get_array_val($desc, $key);
+		if (in_array($key, $PROB_DESC_FIELDS_ALLOW_XHTML))
+			$val = htmlspecialchars($val);
+		form_get_textarea($text, "desc[$key]", $val, $small > 2);
 	}
 }
 

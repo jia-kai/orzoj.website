@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Fri Oct 29 22:00:02 2010 +0800
+ * $Date: Tue Nov 09 21:40:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -40,6 +40,19 @@ class Judge
 }
 
 /**
+ * @ignore
+ */
+function _judge_make_where($online)
+{
+	global $db, $DBOP;
+	if (time() - option_get('prev_orzoj_server_response') > option_get('orzoj_server_max_rint'))
+		$db->update_data('judges', array('status' => JUDGE_STATUS_OFFLINE));
+	if (is_bool($online))
+		return array($DBOP['='], 'status', $online ? JUDGE_STATUS_ONLINE : JUDGE_STATUS_OFFLINE);
+	return NULL;
+}
+
+/**
  * get judges satisfying given conditions
  * @param NULL|int $id if not NULL, specifies the id of the wanted judge
  * @param NULL|bool $online only return online/offline judges if it is bool
@@ -48,9 +61,7 @@ class Judge
 function judge_get_list($id = NULL, $online = NULL)
 {
 	global $db, $DBOP;
-	$where = NULL;
-	if (is_bool($online))
-		$where = array($DBOP['='], 'status', $online ? JUDGE_STATUS_ONLINE : JUDGE_STATUS_OFFLINE);
+	$where = _judge_make_where($online);
 	if (is_int($id))
 		db_where_add_and($where,array($DBOP['='],'id',$id));
 	$judge_list = $db->select_from('judges', NULL, $where);
@@ -72,6 +83,17 @@ function judge_get_list($id = NULL, $online = NULL)
 		$ret[] = $judge;
 	}
 	return $ret;
+}
+
+/**
+ * get the number of judges
+ * @param NULL|bool $online only return online/offline judges if it is bool
+ * @return int
+ */
+function judge_get_amount($online)
+{
+	global $db;
+	return $db->get_number_of_rows('judges', _judge_make_where($online));
 }
 
 /**

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Tue Oct 26 19:24:00 2010 +0800
+ * $Date: Tue Nov 09 15:01:40 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,6 +30,8 @@ try
 	$theme_path = '';
 
 	require_once 'pre_include.php';
+	require_once $includes_path . 'pages.php';
+	require_once $includes_path . 'plugin.php';
 	require_once $includes_path . 'theme.php';
 	require_once $includes_path . 'user.php';
 

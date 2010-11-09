@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Mon Nov 08 08:29:22 2010 +0800
+ * $Date: Tue Nov 09 15:41:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -26,6 +26,8 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
+
+header("Content-Type: text/html; charset=utf-8");
 
 /**
  * @ignore

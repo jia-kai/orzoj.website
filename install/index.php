@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Mon Nov 08 23:50:32 2010 +0800
+ * $Date: Tue Nov 09 21:40:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -194,6 +194,8 @@ case 3:
 		option_set('static_password', 'hello');
 		option_set('email_validate_no_dns_check', '1');
 		option_set('max_src_length', 1024 * 32);
+		option_set('orz_thread_reqid_max_size', 100);
+		option_set('orzoj_server_max_rint', 20);
 	}
 
 	function make_src_code($lang, $src, $hint = '')
@@ -348,35 +350,38 @@ EOF;
 	}
 	function add_prob_a_plus_b()
 	{
-		global $db;
+		global $db, $PROB_DESC_FIELDS_ALLOW_XHTML;
 		//$hint .= add_hint(__('Where are the input and output?'), __('The input and output is determined by the problem setting, either file or from standard input and standard output.'));
 		foreach (array(
 			array(__('A+B Problem'), 'a+b', ''),
 			array(__('A+B Problem(use file)'), 'a+b2', serialize(array('a+b.in', 'a+b.out')))
-		) as $prob)
+			) as $prob)
 		{
 			$title = $prob[0];
 			$code = $prob[1];
 			$io = $prob[2];
-			$hint = make_hint($io);
+			$desc = array(
+				'time' => '1s',
+				'memory' => '256MB',
+				'desc' => 'Calculate a + b',
+				'input_fmt' => 'Two numbers in a single row.',
+				'output_fmt' => 'A number, the sum of a and b.',
+				'input_samp' => '1 1',
+				'output_samp' => '2',
+				'source' => 'Every OJ',
+				'range' => '1 <= a, b <= 10',
+				'hint' => make_hint($io)
+			);
+			foreach ($desc as $key => &$val)
+				if (!in_array($key, $PROB_DESC_FIELDS_ALLOW_XHTML))
+					$val = htmlencode($val);
 			$db->insert_into('problems',
 				array('title' => $title,
 				'code' => $code,
 				'perm' => serialize(array(0, 1, array(GID_ALL), array())),
 				'io' => $io,
 				'time' => time(),
-				'desc' => serialize(array(
-					'time' => '1s',
-					'memory' => '256MB',
-					'desc' => 'Calculate a + b',
-					'input_fmt' => 'Two numbers in a single row.',
-					'output_fmt' => 'A number, the sum of a and b.',
-					'input_samp' => '1 1',
-					'output_samp' => '2',
-					'source' => 'Every OJ',
-					'range' => '1 <= a, b <= 10',
-					'hint' => $hint
-				))
+				'desc' => serialize($desc)
 			));
 		}
 	}
@@ -468,6 +473,7 @@ EOF;
 			$db->create_table($name, $table);
 		}
 		require_once $includes_path . 'user.php';
+		require_once $includes_path . 'problem.php';
 		user_init_default_grp();
 		add_options();
 		add_plang_wlang();
@@ -704,4 +710,5 @@ echo '</div>';
 </div>
 </body>
 </html>
+
 

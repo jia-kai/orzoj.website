@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: src_download.php
- * $Date: Mon Nov 08 19:44:52 2010 +0800
+ * $Date: Tue Nov 09 15:36:30 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -51,7 +51,11 @@ $src = $src[0]['src'];
 
 header('Content-type: application/orzoj-user-src');
 header(sprintf('Content-Disposition: attachment; filename="%s-%s-%d-%d.%s"',
-	prob_get_code_by_id($row['pid']), user_get_username_by_id($row['uid']), $_GET['rid'], $row['score'], plang_get_type_by_id($row['lid'])));
+	prob_get_code_by_id($row['pid']),
+	user_get_username_by_id($row['uid']),
+	$row['score'],
+	$_GET['rid'],
+	plang_get_type_by_id($row['lid'])));
 
 echo $src;
 

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Sat Nov 06 21:24:39 2010 +0800
+ * $Date: Mon Nov 08 10:16:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -211,28 +211,33 @@ function form_get_gid_selector($name, $type, $default = NULL, $onclick = NULL, $
 		$class .= ' with-onclick';
 	$code = "<div class='$class'>";
 	$rows = $db->select_from($type ? 'prob_grps' : 'user_grps');
-	$tree = array();
-	foreach ($rows as $row)
+	if (empty($rows))
+		$code .= __('No problem group available');
+	else
 	{
-		$gid = intval($row['id']);
-		$pgid = intval($row['pgid']);
-		if (isset($tree[$gid]))
+		$tree = array();
+		foreach ($rows as $row)
 		{
-			$tree[$gid]->name = $row['name'];
-			$tree[$gid]->desc = $row['desc'];
+			$gid = intval($row['id']);
+			$pgid = intval($row['pgid']);
+			if (isset($tree[$gid]))
+			{
+				$tree[$gid]->name = $row['name'];
+				$tree[$gid]->desc = $row['desc'];
+			}
+			else
+				$tree[$gid] = new _Grp_tree_node($row['name'], $row['desc']);
+			if (!isset($tree[$pgid]))
+				$tree[$pgid] = new _Grp_tree_node();
+			$tree[$pgid]->add_child($gid);
 		}
-		else
-			$tree[$gid] = new _Grp_tree_node($row['name'], $row['desc']);
-		if (!isset($tree[$pgid]))
-			$tree[$pgid] = new _Grp_tree_node();
-		$tree[$pgid]->add_child($gid);
+		$selected = array();
+		if (is_array($default))
+			foreach ($default as $f)
+				$selected[$f] = TRUE;
+		$name = 'gid_selector_' . $name . '[]';
+		_form_get_gid_selector_dfs($name, $code, $tree, 0, $selected, $onclick);
 	}
-	$selected = array();
-	if (is_array($default))
-		foreach ($default as $f)
-			$selected[$f] = TRUE;
-	$name = 'gid_selector_' . $name . '[]';
-	_form_get_gid_selector_dfs($name, $code, $tree, 0, $selected, $onclick);
 	$code .= '</div>';
 	if ($direct_echo)
 		echo $code;

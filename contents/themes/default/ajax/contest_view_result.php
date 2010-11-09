@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_view_result.php
- * $Date: Thu Oct 28 10:59:43 2010 +0800
+ * $Date: Tue Nov 09 15:42:43 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -112,7 +112,7 @@ catch (Exc_orzoj $e)
 if ($pg_num < 0)
 {
 	ob_clean();
-	header('Content-type: application/orzoj-contest-result');
+	header('Content-Type: application/orzoj-contest-result');
 	header(sprintf('Content-Disposition: attachment; filename="result-%d.xhtml"',
 		$cid));
 ?>

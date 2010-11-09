@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Mon Nov 08 16:11:57 2010 +0800
+ * $Date: Tue Nov 09 21:37:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -30,6 +30,7 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'problem.php';
 require_once $includes_path . 'contest/ctal.php';
 require_once $includes_path . 'record.php';
+require_once $includes_path . 'judge.php';
 
 
 /**
@@ -43,15 +44,18 @@ function _get_latest_src_by_user_and_prob($uid, $pid)
 	db_where_add_and($where, array($DBOP['='], 'pid', $pid));
 
 	$order = array('id' => 'DESC');
-	$rid = $db->select_from('records', 'id', $where, $order, 0, 1);
-	if (count($rid) == 0)
-		return '';
-	$rid = $rid[0]['id'];
+	$row = $db->select_from('records', array('id', 'lid'), $where, $order, 0, 1);
+	if (empty($row))
+		return NULL;
+	$row = $row[0];
+	$rid = $row['id'];
 
 	// XXX retrieve from orzoj-server
 	$src = $db->select_from('sources', 'src', array($DBOP['='], 'rid', $rid));
+	if (empty($src))
+		return NULL;
 	$src = $src[0]['src'];
-	return $src;
+	return array($row['lid'], $src);
 }
 
 
@@ -71,10 +75,18 @@ function submit_src_get_form($pid)
 		$plang[$row['name']] = $row['id'];
 	if (!is_int($pid))
 		$pid = '';
-	$str = 
+	$str = '';
+	if (!judge_get_amount(TRUE))
+		$str .= tf_form_get_raw(NULL, '<span style="color:red;font-weight:bold">' .
+			__('Warning: No judge is currently online, so your submission may not be judged immediately.') . '</span>');
+	$lid = $user->plang;
+	$src = '';
+	if ($last_submit = _get_latest_src_by_user_and_prob($user->id, $pid))
+		list($lid, $src) = $last_submit;
+	$str .= 
 		tf_form_get_text_input(__('Problem code:'), 'code', NULL, prob_get_code_by_id($pid)) .
-		tf_form_get_select(__('Programming language:'), 'plang', $plang, $user->plang) .
-		tf_form_get_source_editor(__('Source code:'), 'src', _get_latest_src_by_user_and_prob($user->id, $pid));
+		tf_form_get_select(__('Programming language:'), 'plang', $plang, $lid) .
+		tf_form_get_source_editor(__('Source code:'), 'src', $src);
 	echo filter_apply('after_submit_src_form', $str);
 }
 

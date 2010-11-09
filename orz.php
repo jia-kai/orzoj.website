@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Sun Nov 07 10:58:30 2010 +0800
+ * $Date: Tue Nov 09 16:24:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -130,6 +130,8 @@ if (isset($_POST['data']))
 		die('can not unserialize data');
 	if (isset($data['thread_id']) && isset($data['data']) && isset($data['checksum']))
 	{
+		if ($db->get_number_of_rows('orz_thread_reqid') > option_get('orz_thread_reqid_max_size'))
+			exit('relogin');
 		$thread_id = $data['thread_id'];
 		$dynamic_password = option_get('dynamic_password');
 
@@ -157,6 +159,8 @@ if (isset($_POST['data']))
 		exit('4');
 
 	$func_param = unserialize($data['data']);
+
+	option_set("prev_orzoj_server_response", time());
 
 	// use $func_param as a global variable
 	call_func($func_param['action']);

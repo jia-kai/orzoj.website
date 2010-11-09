@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Sat Oct 30 23:29:31 2010 +0800
+ * $Date: Tue Nov 09 19:48:25 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -192,6 +192,16 @@ function tf_get_prob_html($pinfo)
  * @return string
  */
 function tf_form_get_post_type_selector()
+{
+}
+
+/**
+ * get raw field to print custom data
+ * @param string|NULL $prompt
+ * @param string $data
+ * @return string
+ */
+function tf_form_get_raw($prompt = NULL, $data)
 {
 }
 

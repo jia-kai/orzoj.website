@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user_edit.php
- * $Date: Sat Nov 06 11:54:30 2010 +0800
+ * $Date: Mon Nov 08 10:49:34 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -32,6 +32,10 @@ if (!defined('IN_ORZOJ'))
 /*
  * page argument:
  *	GET:
- *		[pgnum]:int page number, starting at 0
+ *		[edit]:int id of the user to be edited
+ *		[do]:  indicate the submission of the form
  */
 session_add_prefix('edit');
+
+
+
