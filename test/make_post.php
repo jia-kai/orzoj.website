@@ -1,11 +1,12 @@
 <?php
 
 require_once '../pre_include.php';
+/*
 $db->delete_item('post_topics');
 $db->delete_item('posts');
 mysql_query('TRUNCATE TABLE post_topics');
 mysql_query('TRUNCATE TABLE posts');
-
+ */
 $N_POSTS = 30;
 $N_POST_TOPIC = 21;
 
@@ -59,14 +60,15 @@ function add_post_topic($prob_id = NULL)
 	$db->insert_into('posts', $val);
 }
 
-function add_post_reply()
+function add_post_reply($tid = NULL)
 {
 	global $db, $DBOP, $N_POST_TOPIC;
 	static $tt = 0;
 	$tt ++;
 	$time = $tt + $N_POST_TOPIC + 10;
-	$uid = rand(1, 10);
-	$tid = rand(1, $N_POST_TOPIC);
+	$uid = rand(1, 1);
+	if ($tid == NULL)
+		$tid = rand(1, $N_POST_TOPIC);
 	$topic = $db->select_from('post_topics', array('floor_amount', 'reply_amount', 'viewed_amount'), array($DBOP['='], 'id', $tid));
 	$topic = $topic[0];
 	$floor = $topic['floor_amount'] + 1;
@@ -102,10 +104,12 @@ function add_post_reply()
 	$db->update_data('post_topics', $val, array($DBOP['='], 'id', $tid));
 }
 
+/*
 for ($i = 0; $i < $N_POST_TOPIC; $i ++)
 	add_post_topic();
 for ($i = 0; $i < $N_POST_TOPIC; $i ++)
 	add_post_topic(1);
 for ($i = 0; $i < $N_POSTS; $i ++)
 	add_post_reply();
-
+ */
+add_post_reply(1);

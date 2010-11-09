@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme.php
- * $Date: Thu Nov 04 14:29:41 2010 +0800
+ * $Date: Mon Nov 08 23:11:18 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -57,10 +57,9 @@ function t_get_footer()
 			$db->get_query_amount(),
 			(microtime(TRUE) - $PAGE_START_TIME) * 1000,
 			'<a target="_blank" href="' . ORZOJ_OFFICIAL_WEBSITE . '">Orz Online Judge ' . ORZOJ_VERSION . '</a>');
-	/*
+	
 	if ($db->record_query)
 		$str .= '<br /> <div style="text-align: left">Queries:' . htmlencode(print_r($db->query_log, TRUE)) . '</div>';
-	 */
 	echo filter_apply('after_footer', $str);
 }
 

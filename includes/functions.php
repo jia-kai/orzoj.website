@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Sun Nov 07 15:46:42 2010 +0800
+ * $Date: Mon Nov 08 23:16:16 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -179,25 +179,27 @@ function db_init()
 	$db->set_prefix($table_prefix);
 }
 
-static $_option_cache = array();
+$_option_cache = array();
 /**
  * get option value
  * @param string $key option key
  * @param mixed $default default value to return if no such option
  * @return string|NULL option value on success, $default if no such option
  */
-function option_get($key,$default = NULL)
+function option_get($key, $default = NULL)
 {
 	global $db, $DBOP, $_option_cache;
+	static $is_cached = false;
+	if (!$is_cached)
+	{
+		$is_cached = true;
+		$data = $db->select_from('options');
+		foreach ($data as $option)
+			$_option_cache[$option['key']] = $option['value'];
+	}
 	if (array_key_exists($key, $_option_cache))
 		return $_option_cache[$key];
-	$data = $db->select_from('options', 'value',
-		array($DBOP['=s'], 'key', $key));
-	if (count($data))
-		$data = $data[0]['value'];
-	else
-		return $default;
-	return $_option_cache[$key] = $data;
+	return $default;
 }
 
 /**
@@ -413,7 +415,7 @@ function email_validate($email)
 	{
 		if (!checkdnsrr($domain, 'MX'))
 			// || !checkdnsrr($domain,"A")))
-		throw new Exc_runtime(__('invalid email address: MX record not found in DNS'));
+			throw new Exc_runtime(__('invalid email address: MX record not found in DNS'));
 	}
 }
 
@@ -475,49 +477,49 @@ function time_interval_to_str($len)
 function time_interval_to_str_gen_js($func)
 {
 	$ret = "
-	function  $func(len)
-	{
-		if (typeof($func.units) == 'undefined')
-			$func.units = [";
-	foreach (time_interval_to_str(-1) as $item)
-	{
-		$ret .= '[';
-		foreach ($item as $v)
+		function  $func(len)
 		{
-			if (is_string($v))
-				$ret .= '"';
-			$ret .= $v;
-			if (is_string($v))
-				$ret .= '"';
-			$ret .= ',';
-		}
-		$ret[strlen($ret) - 1] = ']';
-		$ret .= ',';
-	}
-
-	$ret[strlen($ret) - 1] = ']';
-	$ret .= ";
-		var units = $func.units;";
-	
-	$ret .= '
-		var ret = new Array();
-		for (var i = 0; i < units.length && len; i ++)
-		{
-			var cur = len;
-			if (units[i][0])
+			if (typeof($func.units) == 'undefined')
+				$func.units = [";
+			foreach (time_interval_to_str(-1) as $item)
 			{
-				cur %= units[i][0];
-				len = Math.floor(len / units[i][0]);
+				$ret .= '[';
+				foreach ($item as $v)
+				{
+					if (is_string($v))
+						$ret .= '"';
+					$ret .= $v;
+					if (is_string($v))
+						$ret .= '"';
+					$ret .= ',';
+				}
+				$ret[strlen($ret) - 1] = ']';
+				$ret .= ',';
 			}
-			if (cur < 2)
-				ret = ret.concat([cur + " " + units[i][1]]);
-			else
-				ret = ret.concat([cur + " " + units[i][2]]);
-		}
-		ret.reverse();
-		return ret.join(" ");
-	}';
-	return $ret;
+
+			$ret[strlen($ret) - 1] = ']';
+			$ret .= ";
+			var units = $func.units;";
+
+			$ret .= '
+				var ret = new Array();
+			for (var i = 0; i < units.length && len; i ++)
+			{
+				var cur = len;
+				if (units[i][0])
+				{
+					cur %= units[i][0];
+					len = Math.floor(len / units[i][0]);
+}
+if (cur < 2)
+	ret = ret.concat([cur + " " + units[i][1]]);
+else
+	ret = ret.concat([cur + " " + units[i][2]]);
+}
+ret.reverse();
+return ret.join(" ");
+}';
+return $ret;
 }
 
 /**
@@ -568,7 +570,7 @@ function transform_pattern($tp)
 				$s .= '_';
 			else
 				$s .= $ch;
-				
+
 		}
 	$s = '%' . $s . '%';
 	return $s;

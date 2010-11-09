@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Fri Nov 05 16:44:24 2010 +0800
+ * $Date: Mon Nov 08 23:09:20 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -342,32 +342,47 @@ function _cv_rep_viewed()
 /**
  * @ignore
  */
+
+function _get_time_str($time)
+{
+	$now = time();
+	$today = strftime('%d %b %Y', $now);
+	$timeday = strftime('%d %b %Y', $time);
+	if ($today == $timeday)
+		return strftime('%H:%M', $time);
+	else
+		return strftime('%d %b', $time);
+	$time = strftime('%H:%M:%S %d %b %Y', $time);
+}
+
+/**
+ * @ignore
+ */
 function _cv_last_replay()
 {
 	global $post, $action;
-	$s = '<div class="post-last-reply">';
-	$s .= '<div class="post-last-reply-user">';
 
+	$s = '';
+	$time = _get_time_str($post['last_reply_time']);
+	$s .= $time . '</td>';
+
+	$s .= '<td>';
 	if ($action != 'in-colorbox')
-		$s .= '<a href="' . t_get_link('ajax-user-info', $post['last_reply_user'], TRUE, TRUE) . '"'
+		$s .= '<a class="post-last-reply-user" href="' . t_get_link('ajax-user-info', $post['last_reply_user'], TRUE, TRUE) . '"'
 		. ' title="' . $post['username_last_reply_user'] . '">' . $post['nickname_last_reply_user'] . '</a>';
 	else
 		$s .= '<span title="' . $post['username_last_reply_user'] . '">' . $post['nickname_last_reply_user'] . '</span>';
 
-	$time = strftime('%H:%M:%S %d %b %Y', $post['last_reply_time']);
-	$s .= '</div><!-- class: post-last-reply-user -->';
-	$s .= '<div class="post-last-reply-time">' . $time . '</div>';
-	$s .= '</div><!-- class: post-last-reply -->';
 	echo $s;
 }
 
 $cols = array(
 	// array(<display name>, <display function>)
-	array('', '_cv_type'),
-	array(__('Subject'), '_cv_subject'),
-	array(__('Author'), '_cv_author'),
-	array(__('Rep./Viewed'), '_cv_rep_viewed'),
-	array(__('Last reply'), '_cv_last_replay')
+	array('', '_cv_type', 1),
+	array(__('Subject'), '_cv_subject', 1),
+	array(__('Author'), '_cv_author', 1),
+	array(__('Rep./Viewed'), '_cv_rep_viewed', 1),
+	array(__('Last reply'), '_cv_last_replay', 2)
 );
 
 if (!$error)
@@ -379,7 +394,7 @@ if (!$error)
 
 	echo '<tr>';
 	foreach ($cols as $val)
-		echo "<th>$val[0]</th>";
+		echo "<th colspan=\"$val[2]\">$val[0]</th>";
 	echo '</tr>';
 
 
@@ -410,7 +425,7 @@ if (!$error)
 
 <?php if ($action != 'in-colorbox') {?>
 table_set_double_bgcolor();
-$(".post-last-reply-user a").colorbox();
+$("a.post-last-reply-user").colorbox();
 $("a.post-author").colorbox();
 <?php }?>
 

@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Mon Nov 08 19:09:29 2010 +0800
+ * $Date: Mon Nov 08 23:50:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -77,9 +77,9 @@ if (isset($_GET['action']))
 <?php 
 $title = __('Uh?');
 if ($step != -1)
-	$title =  __('Orz Online Judge Installation Wizard - Step %d', $step);
+	$title = __('Orz Online Judge Website Installation Wizard - Step %d', $step);
 else if ($action != 'none')
-	$title = __('Orz Online Judge Installation Wizard - %s', $action_list[$action]);
+	$title = __('Orz Online Judge Website Installation Wizard - %s', $action_list[$action]);
 echo '<title>' . $title . '</title>';
 
 ?>
@@ -593,7 +593,8 @@ EOF;
 		) as $item)
 		echo '<li><a target="_blank" href="index.php?action=' . $item[1] . '">' . $item[0] . '</a> (' . $item[2]. ')</li>';
 		echo '</ol>';
-		echo __('If you are not going to go further steps,  <span style="font-size: 24px; color: red;">please <b>REMOVE</b> the installation directory `<b>%s</b>` <b>IMMEDIATELY NOW</b>!', realpath('.'));
+		echo __('If you are not going to go further steps,  <span style="font-size: 24px; color: red;">please <b>REMOVE</b> the installation directory `<b>%s</b>` <b>RIGHT AFTER THE INSTALLATION</b>!', realpath('.')) . '<br />';
+		echo __('To make this Online Judge function properly, orzoj-server and orzoj-judge is needed. Please see <a href="http://code.google.com/p/orzoj">Orz Online Judge</a> for further information') . '</span>';
 	}
 	break;
 }
@@ -691,7 +692,8 @@ if ($step == -1)
 	if ($finished)
 	{
 		echo __('Congratulations! All things nearly done!') . '<br />';
-		echo __('But don\'t forget to <b style="font-size: 24px; color: red;">REMOVE `%s` NOW!</b>', realpath('.')) . '<br />';
+		echo __('But don\'t forget to <b style="font-size: 24px; color: red;">REMOVE `%s` RIGHT AFTER FINISHING THE INSTALLATION!</b>', realpath('.')) . '<br />';
+		echo '<span style="font-size: 24px; color: red;">' . __('To make this Online Judge function properly, orzoj-server and orzoj-judge is needed. Please see <a href="http://code.google.com/p/orzoj">Orz Online Judge</a> for further information.') . '</span><br />';
 		echo __('We wish you a happy journey here, and the Installation Wizzard will say goodbye to you~');
 	}
 }

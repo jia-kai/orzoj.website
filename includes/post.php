@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Fri Nov 05 13:37:56 2010 +0800
+ * $Date: Mon Nov 08 22:58:39 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -235,7 +235,7 @@ function _deal_addtional_fields_end(&$fields, $ID_SET, &$additional_fields, &$li
 		$ret = $db->select_from('users', $val_set, $where);
 
 		foreach ($ret as $us)
-			$_user[$us['id']] = $us;
+			$_users[$us['id']] = $us;
 
 		for ($j = $i; $j < $cnt && $j < $i + $block_size; $j ++)
 			foreach ($additional_fields as $prefix => $items)
@@ -244,7 +244,7 @@ function _deal_addtional_fields_end(&$fields, $ID_SET, &$additional_fields, &$li
 					$t = $list[$j][$item];
 					if ($t)
 						$list[$j][$prefix . '_' . $item] 
-							= $_user[$t][$prefix];
+							= $_users[$t][$prefix];
 					else
 						$list[$j][$prefix . '_' . $item] 
 							= '';

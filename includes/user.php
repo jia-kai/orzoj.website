@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Sat Nov 06 19:56:30 2010 +0800
+ * $Date: Mon Nov 08 23:32:27 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -149,6 +149,22 @@ class User
 			}
 		}
 
+		// TODO: a sqrt(n) division
+		
+		$where = NULL;
+		foreach ($groups as $id)
+			db_where_add_or($where, array($DBOP['='], 'id', $id));
+		$rows = $db->select_from('user_grps', 'pgid', $where);
+		foreach($rows as $row)
+		{
+			$pgid = intval($row['pgid']);
+			if (!isset($grp_set[$pgid]))
+			{
+				$groups[] = $pgid;
+				$grp_set[$pgid] = 1;
+			}
+		}
+		/*
 		for ($i = 0; $i < count($groups); $i ++)
 		{
 			$rows = $db->select_from('user_grps', 'pgid',
@@ -162,7 +178,7 @@ class User
 				$grp_set[$pgid] = 1;
 			}
 		}
-
+		 */
 		$this->groups = $groups;
 
 		sort($this->groups, SORT_NUMERIC);
