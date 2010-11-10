@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Tue Nov 09 15:00:59 2010 +0800
+ * $Date: Wed Nov 10 21:49:38 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -53,7 +53,10 @@ if (!defined('IN_INSTALLATION'))
 		echo '<div style="text-align: center; font-size: 40px">';
 		echo __('File `%s` does not exists.', $config_file_path) . '<br />';
 		echo __('Please install first.');
-		echo '<a href="install">' . __('Click here to install') . '</a>';
+		$dir = dirname(__FILE__);
+		$doc_root = $_SERVER['DOCUMENT_ROOT'];
+		$root_dir = str_replace($doc_root,'',$dir);
+		echo sprintf('<a href="%s">',$root_dir . '/install/'),__('Click here to install') . '</a>';
 		echo '</div>';
 die;
 	}

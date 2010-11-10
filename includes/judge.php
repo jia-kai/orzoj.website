@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Tue Nov 09 21:40:40 2010 +0800
+ * $Date: Wed Nov 10 21:39:56 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -45,7 +45,7 @@ class Judge
 function _judge_make_where($online)
 {
 	global $db, $DBOP;
-	if (time() - option_get('prev_orzoj_server_response') > option_get('orzoj_server_max_rint'))
+	if (time() - option_get('prev_orzoj_server_response', 0) > option_get('orzoj_server_max_rint', 30))
 		$db->update_data('judges', array('status' => JUDGE_STATUS_OFFLINE));
 	if (is_bool($online))
 		return array($DBOP['='], 'status', $online ? JUDGE_STATUS_ONLINE : JUDGE_STATUS_OFFLINE);
