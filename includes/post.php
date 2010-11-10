@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Mon Nov 08 22:58:39 2010 +0800
+ * $Date: Tue Nov 09 23:32:33 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -261,10 +261,10 @@ function _deal_addtional_fields_end(&$fields, $ID_SET, &$additional_fields, &$li
  * @param int|NULL $uid NULL ALL of the users, or int a specific user
  * @param string|NULL $subject the pattern the subject of topics is to be matched. the pattern should be a database-recognizable pattern, or a human-readable pattern transformed by includes/functions.php : transform_pattern
  * @param string|NULL $author the author of topic. if $uid is set, this option will not work
- * @param array|NULL $attrib valid attributes : array('is_top' => BOOL, 'is_locked' => BOOL), if set more than one, they will all to be matched
+ * @param array|NULL $attrib valid attributes : array('is_top' => BOOL, 'is_locked' => BOOL, 'is_boutique' => BOOL), if set more than one, they will all to be matched
  * @exception Exc_runtime if user does not exists
  */
-function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $subject = NULL, $author = NULL, $prob_id, $attrib = NULL)
+function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $subject = NULL, $author = NULL, $prob_id = NULL, $attrib = NULL)
 {
 	global $db, $DBOP, $POST_TOPIC_FIELDS_SET, $POST_TOPIC_USER_ID_SET, $POST_USER_NAME_SET;
 	if (is_array($fields))
@@ -272,6 +272,8 @@ function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $coun
 		$fields = array_intersect($fields, $POST_TOPIC_FIELDS_SET);
 		if (array_search('id', $fields) === FALSE)
 			$fields[] = 'id';
+		if (array_search('uid', $fields) === FALSE)
+			$fields[] = 'uid';
 	}
 
 	// additional fields

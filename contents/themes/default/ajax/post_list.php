@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_list.php
- * $Date: Mon Nov 08 23:09:20 2010 +0800
+ * $Date: Tue Nov 09 23:58:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -358,7 +358,7 @@ function _get_time_str($time)
 /**
  * @ignore
  */
-function _cv_last_replay()
+function _cv_last_reply()
 {
 	global $post, $action;
 
@@ -381,8 +381,8 @@ $cols = array(
 	array('', '_cv_type', 1),
 	array(__('Subject'), '_cv_subject', 1),
 	array(__('Author'), '_cv_author', 1),
-	array(__('Rep./Viewed'), '_cv_rep_viewed', 1),
-	array(__('Last reply'), '_cv_last_replay', 2)
+	array(__('Pop.'), '_cv_rep_viewed', 1),
+	array(__('Last reply'), '_cv_last_reply', 2)
 );
 
 if (!$error)

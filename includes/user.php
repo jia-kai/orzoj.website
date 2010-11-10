@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Mon Nov 08 23:32:27 2010 +0800
+ * $Date: Wed Nov 10 00:15:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -50,6 +50,11 @@ define('GID_SUPER_RECORD_VIEWER', $cnt ++);
 // view all records and sources
 define('GID_UINFO_VIEWER', $cnt ++); // view register IP, submission IP, user real name etc.
 
+$USER_RANK_SORT_LIST = array(
+	array('cnt_ac_prob', 'DESC'),
+	array('ac_ratio', 'DESC'),
+	array('cnt_submitted_prob', 'DESC')
+);
 
 /**
  * user structure
@@ -978,4 +983,71 @@ function user_update_grp_cache_delete($gid)
 		$DBOP['='], 'chid', $gid));
 }
 
+/**
+ * get a single user's rank
+ * @param int $uid
+ * @return int the rank
+ */
+function user_get_single_rank($uid)
+{
+	global $db, $DBOP, $USER_RANK_SORT_LIST;
+	$tmp = NULL;
+	$_get_rank_where = NULL;
+	foreach ($USER_RANK_SORT_LIST as $sort)
+	{
+		$t = $tmp;
+		$val = $db->select_from('users', array($sort[0]), array($DBOP['='], 'id', $uid));
+		$val = $val[0][$sort[0]];
+		db_where_add_and($t, array($DBOP[$sort[1] == 'ASC' ? '<' : '>'], $sort[0], $val));
+		db_where_add_or($_get_rank_where, $t);
+		db_where_add_and($tmp, array($DBOP['='], $sort[0], $val));
+	}
+	return $db->get_number_of_rows('users', $_get_rank_where) + 1;
+}
+
+/**
+ * @ignore
+ */
+function _cmp($user1, $user2)
+{
+	global $USER_RANK_SORT_LIST;
+	foreach($USER_RANK_SORT_LIST as $sort)
+		if ($user1[$sort[0]] != $user2[$sort[0]])
+			return $sort[1] == 'ASC' ? ($user1[$sort[0]] < $user2[$sort[0]]) : ($user1[$sort[0]] > $user2[$sort[0]]);
+	return false;
+}
+
+
+/**
+ * get rank of users
+ * @param int $offset the rank offset
+ * @param int $count
+ * @return array [<uid> => <rank>]
+ */
+function user_get_users_rank($offset = NULL, $count = NULL)
+{
+	global $USER_RANK_SORT_LIST, $db;
+	$order_by = array();
+	$cols = array('id');
+	foreach ($USER_RANK_SORT_LIST as $sort)
+	{
+		$order_by[$sort[0]] = $sort[1];
+		$cols[] = $sort[0];
+	}
+	$tmp = $db->select_from('users', $cols, NULL, $order_by, $offset, $count);
+	$id2rank = array();
+	$cur_rank = user_get_single_rank($tmp[0]['id']);
+	$cnt = $cur_rank - 1;
+	$prev_user = NULL;
+	foreach ($tmp as $_user)
+	{
+		if ($cnt > 0 && !_cmp($prev_user, $_user))
+			$id2rank[$_user['id']] = $cur_rank;
+		else
+			$id2rank[$_user['id']] = $cur_rank = $cnt + 1;
+		$cnt ++;
+		$prev_user = $_user;
+	}
+	return $id2rank;
+}
 

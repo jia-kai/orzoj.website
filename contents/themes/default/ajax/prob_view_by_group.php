@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_by_group.php
- * $Date: Fri Oct 29 23:27:59 2010 +0800
+ * $Date: Wed Nov 10 00:02:04 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -236,7 +236,7 @@ function _make_prob_link($id, $name)
 	global $gid, $start_page, $sort_col, $sort_way, $title_pattern_show;
 	if ($title_pattern_show === NULL)
 		$title_pattern_show = '*';
-	echo '<td><a href="' . prob_view_single_get_a_href($id, $gid, $start_page, $sort_col, $sort_way, $title_pattern_show)
+	echo '<td><a style="color: #9999ee" href="' . prob_view_single_get_a_href($id, $gid, $start_page, $sort_col, $sort_way, $title_pattern_show)
 		. '" onclick="' . prob_view_single_get_a_onclick($id, $gid, $start_page, $sort_col, $sort_way, $title_pattern_show) 
 		.'">' . $name . '</a></td>'; // Title
 }
