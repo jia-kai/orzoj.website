@@ -44,7 +44,7 @@ add index.html
 
 seperate user rank from rank_list.php
 
-'In reply to' does'nt work well!!
+'In reply to' doesn't work well!!
 
 *** MORE information of a post topic
 
@@ -65,8 +65,6 @@ goto框颜色。。
 header utf-8
 
 *********** check code!!!!!!
-
-详情代码
 
 用户题目提交机制
 

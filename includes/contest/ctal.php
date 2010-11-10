@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Wed Nov 03 19:04:39 2010 +0800
+ * $Date: Tue Nov 09 16:31:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -294,7 +294,7 @@ function ctal_get_list_size($time = NULL)
  * get a list of contests
  * @param array $fields requested fields, which must be a subset of
  *		id, type, name, desc, time_start, time_end, perm
- * @param int $time @see function ctal_get_list_size
+ * @param int|NULL $time @see function ctal_get_list_size
  * @order_by array|NULL @see /includes/db/dbal.php
  * @param int|NULL $offset
  * @param int|NULL $cnt

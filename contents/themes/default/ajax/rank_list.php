@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: rank_list.php
- * $Date: Mon Nov 01 22:19:39 2010 +0800
+ * $Date: Wed Nov 10 00:02:45 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -37,15 +37,13 @@ if (!defined('IN_ORZOJ'))
  *		'start_page': int
  * POST is for javascript, page argument is for search engine
  */
+
+require_once $includes_path . 'user.php';
+
 $USERS_PER_PAGE = 50;
 $RANK_LIST_COLOR_SELF = '#7f7f7f';
 
-$sort_list = array(
-	array('cnt_ac_prob', 'DESC'),
-	array('ac_ratio', 'DESC'),
-	array('cnt_submitted_prob', 'DESC')
-);
-
+$sort_list = $USER_RANK_SORT_LIST;
 
 $start_page = 1;
 if (isset($_POST['sort_col']) && isset($_POST['sort_way']))
@@ -205,60 +203,7 @@ $users = $db->select_from('users',
 	$USERS_PER_PAGE
 );
 
-
-
-function user_get_single_rank($uid)
-{
-	global $db, $DBOP, $sort_list;
-	$tmp = NULL;
-	$_get_rank_where = NULL;
-	foreach ($sort_list as $sort)
-	{
-		$t = $tmp;
-		$val = $db->select_from('users', array($sort[0]), array($DBOP['='], 'id', $uid));
-		$val = $val[0][$sort[0]];
-		db_where_add_and($t, array($DBOP[$sort[1] == 'ASC' ? '<' : '>'], $sort[0], $val));
-		db_where_add_or($_get_rank_where, $t);
-		db_where_add_and($tmp, array($DBOP['='], $sort[0], $val));
-	}
-	return $db->get_number_of_rows('users', $_get_rank_where) + 1;
-}
-
-
-// calculate all users rank
-$order_by = array();
-$cols = array('id');
-foreach ($sort_list as $sort)
-{
-	$order_by[$sort[0]] = $sort[1];
-	$cols[] = $sort[0];
-}
-$tmp = $db->select_from('users', $cols, NULL, $order_by);
-$id2rank = array();
-$cnt = 0;
-$now = 1;
-function cmp($user1, $user2)
-{
-	global $sort_list;
-	foreach($sort_list as $sort)
-		if ($user1[$sort[0]] != $user2[$sort[0]])
-		{
-			return $sort[1] == 'ASC' ? ($user1[$sort[0]] < $user2[$sort[0]]) : ($user1[$sort[0]] > $user2[$sort[0]]);
-		}
-	return false;
-}
-$prev_user = NULL;
-foreach ($tmp as $_user)
-{
-	if ($cnt > 0 && !cmp($prev_user, $_user))
-		$id2rank[$_user['id']] = $now;
-	else
-		$id2rank[$_user['id']] = $now = $cnt + 1;
-	$cnt ++;
-	$prev_user = $_user;
-}
-
-
+$id2rank = user_get_users_rank();
 
 foreach ($users as $_user)
 {
@@ -285,7 +230,7 @@ foreach ($users as $_user)
 				$username = __('This is you!') . ' ' . $username . '.';
 			}
 			//$url_href = t_get_link('problem', "$uid", TRUE, TRUE);
-			echo "<td><a class=\"rank-list-nickname-a\" href=\"$url_href\" style=\"$style\" title=\"$username\">$nickname</a></td>";
+			echo "<td><a style=\"color: #9999ee\" class=\"rank-list-nickname-a\" href=\"$url_href\" style=\"$style\" title=\"$username\">$nickname</a></td>";
 			break;
 		default:
 			echo '<td>' . $_user[$head[1]] . '</td>';
