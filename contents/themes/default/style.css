@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Nov 10 10:54:22 2010 +0800
+ * $Date: Wed Nov 10 15:54:36 2010 +0800
 
  This file is part of orzoj
 
@@ -1310,5 +1310,34 @@ div.home-links
 /*
  * }
  * home styles
+ */
+
+/*
+ * faq styles
+ * {
+ */
+div.faq
+{
+	font-size: 19px;
+	margin: 10px;
+	text-align: left;
+	color: #eeeeff;
+}
+
+span.faq-q
+{
+	color: green;
+	font-weight: bold;
+}
+
+span.faq-a
+{
+	color: blue;
+	font-weight: bold;
+}
+
+/*
+ * }
+ * faq styles
  */
 

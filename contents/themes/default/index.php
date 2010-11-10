@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Tue Nov 09 15:41:16 2010 +0800
+ * $Date: Wed Nov 10 15:24:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -105,8 +105,8 @@ $PAGES = array(
 	'discuss' => array(__('Discuss'), 'discuss.php'),
 	'team' => array(__('User Teams'), 'team.php'),
 	'judge' => array(__('Judges'), 'judge.php'),
-	'pages' => array(__('Pages'),'pages.php','hidden' => TRUE)
-	//'faq' => array(__('FAQ'), 'faq.php')
+	'pages' => array(__('Pages'),'pages.php','hidden' => TRUE),
+	'faq' => array(__('FAQ'), 'faq.php')
 );
 
 $SYS_PAGES = pages_get_list();
