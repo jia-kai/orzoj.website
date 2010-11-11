@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: Tue Nov 09 16:23:30 2010 +0800
+ * $Date: 四 11月 11 16:13:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -247,7 +247,7 @@ function get_desc()
 	{
 		if (!isset($desc_post[$f]))
 			throw new Exc_runtime(__('incomplete post'));
-		if (in_array($f, $fields_required) && empty($desc_post[$f]))
+		if (in_array($f, $fields_required) && !strlen($desc_post[$f]))
 			throw new Exc_runtime(__('%s can not be empty', $name));
 		$val = $desc_post[$f];
 		if (in_array($f, $PROB_DESC_FIELDS_ALLOW_XHTML))
