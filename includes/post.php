@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: post.php
- * $Date: Tue Nov 09 23:32:33 2010 +0800
+ * $Date: Thu Nov 11 13:21:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -509,7 +509,7 @@ function post_reply_get_form($tid)
 	$s .= tf_form_get_hidden('post_reply_uid', $user->id);
 	$s .= tf_form_get_rich_text_editor(__('Content:'), 'post_reply_content');
 
-	echo filter_apply('after_post_reply_form', $s);
+	echo filter_apply('after_post_reply_form', $s, $tid);
 }
 
 /**
@@ -558,11 +558,11 @@ function post_reply()
 	global $db, $DBOP, $user;
 	if (!user_check_login())
 		throw new Exc_runtime(__('You must be logined to reply.'));
-	filter_apply_no_iter('before_post_reply');
 	if (!isset($_POST['post_reply_tid']) || !isset($_POST['post_reply_uid']))
 		throw new Exc_runtime(__('Incomplete POST.'));
 
 	$tid = intval($_POST['post_reply_tid']);
+	filter_apply_no_iter('before_post_reply', $tid);
 	$uid = intval($_POST['post_reply_uid']);
 
 	$topic = post_get_topic($tid, 'is_locked');

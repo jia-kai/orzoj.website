@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Mon Nov 08 21:35:08 2010 +0800
+ * $Date: Thu Nov 11 13:29:47 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -497,9 +497,9 @@ if (user_check_login() && !_action('in-colorbox') && (!$topic['is_locked'] || ($
 		FALSE, TRUE);
 ?>
 	$("#post-reply-form").bind("submit", function(){
-		var content = <?php echo $Editor; ?>.getData();
+		//var content = <?php echo $Editor; ?>.getData();
 		//$("#post-reply-form").serializeArray(),
-
+		<?php echo $Editor; ?>.updateElement();
 		var t = $(".posts-all-container");
 		t.animate({"opacity" : 0.5}, 1);
 		$.colorbox({"html" : "<?php echo __('Submitting...'); ?>"});
@@ -507,10 +507,7 @@ if (user_check_login() && !_action('in-colorbox') && (!$topic['is_locked'] || ($
 			"type": "post",
 			"cache": false,
 			"url": "<?php echo $url; ?>",
-			"data": ({"post_reply_tid" : "<?php echo $tid; ?>",
-			"post_reply_uid" : "<?php echo $user->id; ?>",
-			"post_reply_content" : content
-			}),
+			"data": $("#post-reply-form").serializeArray(),
 			"success" : function(data) {
 				t.animate({"opacity" : 1}, 1);
 				if (data.charAt(0) == '0')

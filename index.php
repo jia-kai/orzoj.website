@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: index.php
- * $Date: Tue Nov 09 15:01:40 2010 +0800
+ * $Date: Wed Nov 10 22:53:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,6 +34,7 @@ try
 	require_once $includes_path . 'plugin.php';
 	require_once $includes_path . 'theme.php';
 	require_once $includes_path . 'user.php';
+	require_once $includes_path . 'captcha.php';
 
 	/*
 	 * Detect web server.

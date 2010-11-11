@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Tue Nov 09 21:37:20 2010 +0800
+ * $Date: Wed Nov 10 22:48:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -87,7 +87,7 @@ function submit_src_get_form($pid)
 		tf_form_get_text_input(__('Problem code:'), 'code', NULL, prob_get_code_by_id($pid)) .
 		tf_form_get_select(__('Programming language:'), 'plang', $plang, $lid) .
 		tf_form_get_source_editor(__('Source code:'), 'src', $src);
-	echo filter_apply('after_submit_src_form', $str);
+	echo filter_apply('after_submit_src_form', $str, $pid);
 }
 
 /**
@@ -100,11 +100,13 @@ function submit_src()
 	global $db, $DBOP, $user, $PROB_SUBMIT_PINFO;
 	if (!user_check_login())
 		throw new Exc_runtime(__('not logged in'));
-	filter_apply_no_iter('before_submit_src');
 	if (!isset($_POST['code']) || !isset($_POST['plang']))
 		throw new Exc_runtime(__('incomplete POST'));
 
 	$pid = prob_get_id_by_code($_POST['code']);
+	if ($pid == NULL)
+		throw new Exc_runtime(__('No such problem'));
+	filter_apply_no_iter('before_submit_src', $pid);
 	$plang = intval($_POST['plang']);
 	$row = $db->select_from('problems', $PROB_SUBMIT_PINFO,
 		array($DBOP['='], 'id', $pid));

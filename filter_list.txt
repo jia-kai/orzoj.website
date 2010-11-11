@@ -82,11 +82,11 @@ after_post_list:
 
 after_post_reply_form
 	file: includes/post.php
-	param: string adding post form in HTML
+	param: string $s adding post form in HTML,int $tid Topic ID
 
 before_post_reply
 	file: includes/posts.php
-	param: None
+	param: int $tid Topic ID
 
 before_post_modify:
 	file: includes/post.php
@@ -98,11 +98,11 @@ before_post_delete:
 
 after_submit_src_form:
 	file: includes/submit.php
-	param: string the HTML code
+	param: string $str the HTML code,int $pid problem id
 
 before_submit_src: (no iter)
 	file: includes/submit.php
-	param: None
+	param: int $pid problem id
 	executed when the source submission form is just posted, before actually doing anything
 
 after_html_head:

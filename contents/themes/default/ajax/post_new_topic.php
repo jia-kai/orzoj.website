@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_new_topic.php
- * $Date: Wed Nov 03 00:09:09 2010 +0800
+ * $Date: Wed Nov 10 23:30:55 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -79,11 +79,13 @@ $Editor = "CKEDITOR.instances.$editor_id";
 $url = t_get_link('ajax-post-new-topic', 'submit', FALSE, TRUE); 
 ?>
 $("#post-new-topic-form").bind("submit", function(){
+	/*
 	var prob_code = $("#post-new-topic-form input[name='prob_code']").val();
 	var type = $("#post-new-topic-form select[name='type']").val();
 	var subject = $("#post-new-topic-form input[name='subject']").val();
-	var content = <?php echo $Editor; ?>.getData();
-
+	// var content = <?php echo $Editor; ?>.getData();
+*/
+<?php echo $Editor; ?>.updateElement();
 	$.colorbox({"html" : "<?php echo __('Submitting...'); ?>"});
 	var t = $("#post-page");
 	t.animate({"opacity" : 0.5}, 1);
@@ -91,12 +93,7 @@ $("#post-new-topic-form").bind("submit", function(){
 		"type" : "post",
 		"cache" : false,
 		"url" : "<?php echo $url; ?>",
-		"data" : ({
-			"prob_code" : prob_code,
-			"type" : type,
-			"subject" : subject,
-			"content" : content
-		}),
+		"data" : $("#post-new-topic-form").serializeArray(),
 		"success" : function(data) {
 			t.animate({"opacity" : 1}, 1);
 			if (data.charAt(0) == '0')
@@ -132,7 +129,7 @@ $url = t_get_link('ajax-post-view-single', NULL, FALSE, TRUE);
 					}
 				})
 			}
-			else alert("????");
+			else alert(data);
 		}
 	});
 	return false;
