@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: captcha.php
- * $Date: Thu Nov 11 13:44:47 2010 +0800
+ * $Date: Thu Nov 11 21:18:10 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -121,7 +121,10 @@ function _captcha_system_verify($name)
 {
 	$answer = cookie_get(md5('orzoj_system_captcha_'.$name));
 	if ($answer == md5(trim($_REQUEST['orzoj_system_captcha_'.$name]))) 
+	{
+		cookie_set(md5('orzoj_system_captcha_'.$name),NULL,-100);
 		return true;
+	}
 	else
 		return false;
 }
