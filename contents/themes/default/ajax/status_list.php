@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Mon Nov 08 16:36:58 2010 +0800
+ * $Date: Wed Nov 10 15:13:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -108,7 +108,11 @@ if (isset($_POST['filter']))
 	if (isset($req['username']) && strlen($req['username']))
 		$req['uid'] = user_get_id_by_username($req['username']);
 	if (isset($req['pcode']) && strlen($req['pcode']))
+	{
 		$req['pid'] = prob_get_id_by_code($req['pcode']);
+		if (is_null($req['pid']))
+			$req['pid'] = -1;
+	}
 	foreach ($FILTER_ALLOWED as $f)
 		if (array_key_exists($f, $req) && !empty($req[$f]))
 			db_where_add_and($where, array($DBOP['='], $f, $req[$f]));
