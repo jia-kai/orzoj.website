@@ -4,7 +4,7 @@
  */
 /* 
  * $File: index.php
- * $Date: Tue Nov 09 21:40:30 2010 +0800
+ * $Date: Sun Nov 14 21:18:23 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -92,7 +92,8 @@ echo '<div class="content">';
 echo '<div class="logo"><h1><img alt="' . __('Orz Online Judge'). '" src="images/logo.gif" /></h1></div>';
 echo '<div class="logo"><h1>' . $title . '</h1></div>';
 
-$default_db_host = $_SERVER['HTTP_HOST'];
+//$default_db_host = $_SERVER['HTTP_HOST'];
+$default_db_host = 'localhost';
 preg_match('/^(.*)\/install\/[^\/]*$/', $_SERVER['REQUEST_URI'], $default_website_root);
 $default_website_root = $default_website_root[1];
 $items = array(

@@ -3,9 +3,24 @@ require_once '../../pre_include.php';
 require_once $includes_path . 'user.php';
 
 $odb = new Dbal_mysql();
-$odb->connect($db_host, $db_port, $db_user, $db_password, 'orzoj');
+$odb->connect($db_host, $db_port, $db_user, $db_password, 'orzoj_ancient');
 
 $trans_plang = array(1 => 3, 2 => 2, 3 => 1);
+
+$rows = $odb->select_from('problem');
+foreach ($rows as $row)
+	if (!$odb->get_number_of_rows('problemdata', array($DBOP['='], 'problemid', $row['id'])))
+	{
+		echo "Warning: $row[title] deleted";
+		$odb->delete_item('problem', array($DBOP['='], 'id', $row['id']));
+	}
+
+$rows = $odb->select_from('problemdata');
+foreach ($rows as $row)
+	if (!$odb->get_number_of_rows('problem', array($DBOP['='], 'id', $row['problemid'])))
+	{
+		echo "Warning: no problem for $row[name]\n";
+	}
 
 function odb_convert_username($name, $id)
 {
@@ -22,12 +37,17 @@ function odb_convert_username($name, $id)
 function odb_get_prob_code($pid)
 {
 	global $odb, $DBOP;
-	$row = $odb->select_from('problem', 'inputfile', array(
-		$DBOP['='], 'id', $pid));
+	$row = $odb->select_from('problemdata', 'name', array(
+		$DBOP['='], 'problemid', $pid));
+	if (empty($row))
+		return NULL;
+	return $row[0]['name'];
+	/*
 	if (empty($row))
 		return NULL;
 	$row = $row[0]['inputfile'];
 	return substr($row, 0, strpos($row, '.'));
+	 */
 }
 
 function odb_user_get_name_by_id($uid)

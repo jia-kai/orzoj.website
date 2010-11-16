@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Thu Nov 04 21:18:31 2010 +0800
+ * $Date: Mon Nov 15 17:38:51 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -84,24 +84,15 @@ function prob_view($pid)
 	$row = $row[0];
 	if (user_check_login())
 	{
-		$grp = $user->get_groups();
+		$user_grp = $user->get_groups();
 		$is_super_submitter = $user->is_grp_member(GID_SUPER_SUBMITTER);
 	}
 	else
 	{
-		$grp = array(GID_GUEST);
+		$user_grp = array(GID_GUEST);
 		$is_super_submitter = FALSE;
 	}
 
-	if (!$is_super_submitter)
-	{
-		$ct = ctal_get_class_by_pid($pid);
-		if (!$ct)
-		{
-			if (!prob_check_perm($grp, $row['perm']))
-				throw new Exc_runtime(__('You are not permitted to view this problem'));
-		}
-	}
 	$row_grp = array();
 	$grps = $db->select_from('map_prob_grp', 'gid',
 		array($DBOP['='], 'pid', $pid));
@@ -115,7 +106,13 @@ function prob_view($pid)
 
 	$row['cnt_submit'] = $row['cnt_ac'] + $row['cnt_unac'] + $row['cnt_ce'];
 
-	if (isset($ct))
+	$ct = ctal_get_class_by_pid($pid);
+	if (is_null($ct))
+	{
+		if (!$is_super_submitter && !prob_check_perm($user_grp, $row['perm']))
+			throw new Exc_runtime(__('You are not permitted to view this problem'));
+	}
+	else
 		$ct->view_prob($row);
 
 	$row = filter_apply('before_prob_html', $row);
@@ -228,12 +225,11 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 		$fields, $where, $order_by,
 		$offset, $cnt);
 
-	$is_super_submiter = FALSE;
+	$is_super_submitter = FALSE;
 	if (user_check_login())
 	{
 		$grp = $user->get_groups();
-		$is_super_submiter = ($user->is_grp_member(GID_SUPER_SUBMITTER) ||
-			$user->is_grp_member(GID_ADMIN_PROB));
+		$is_super_submitter = ($user->is_grp_member(GID_SUPER_SUBMITTER));
 	}
 	else $grp = array(GID_GUEST);
 
@@ -244,16 +240,11 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 	foreach ($rows as &$row)
 	{
 		$pid = intval($row['id']);
-		if (!$is_super_submiter)
+		if (!$is_super_submitter)
 		{
 			if (prob_future_contest($pid))
-			{
-				$ct = ctal_get_class_by_pid($pid);
-				if (!$ct->allow_viewing())
-					$row = NULL;
-			}
-			else
-				if (!prob_check_perm($grp, $row['perm']))
+				$row = NULL;
+			else if (!prob_check_perm($grp, $row['perm']))
 					$row = NULL;
 		}
 

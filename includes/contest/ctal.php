@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Tue Nov 09 16:31:45 2010 +0800
+ * $Date: Mon Nov 15 19:38:49 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -41,7 +41,7 @@ abstract class Ctal
 
 	/**
 	 * construction function
-	 * @param array|NULL $data row in the database describing the contest or NULL if only get_form_fields will be called
+	 * @param array|NULL $data row in the database describing the contest
 	 */
 	public function __construct($data)
 	{
@@ -50,8 +50,11 @@ abstract class Ctal
 
 	/**
 	 * echo contest-type specific form fields when adding a new contest/edit a contest
-	 * if $this->data is NULL, generate form fields for adding a new contest
+	 * if $this->data is only contains 'type' field, generate form fields for adding a new contest
 	 * otherwise generate fields for editing the contest
+	 *
+	 * this function is called from admin context, so functions in /admin/functions.php can be used
+	 *
 	 * @return void
 	 */
 	abstract protected function get_form_fields();
@@ -97,7 +100,7 @@ abstract class Ctal
 	 *		[0][i]: (0 <= i < m)
 	 *			head text for the ith column
 	 *		[0][m]:
-	 *			column index to contain the link to the problem
+	 *			index of column containing the link to the problem
 	 *		[i]: (1 <= i < n):
 	 *			NULL if the problem is not allowed to be viewd
 	 *		[i][j]: (1 <= i < n, 0 <= j < m):

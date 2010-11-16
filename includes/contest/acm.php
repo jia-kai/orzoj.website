@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: acm.php
- * $Date: Wed Nov 03 21:54:14 2010 +0800
+ * $Date: Tue Nov 16 20:20:59 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -34,38 +34,67 @@ require_once $includes_path . 'record.php';
 
 class Ctal_acm extends Ctal
 {
+	/**
+	 * check whether $this->data is valid
+	 * @exception Exc_runtime
+	 */
+	private function check_data()
+	{
+		if ($this->data['time_start'] >= $this->data['time_end'])
+			throw new Exc_runtime(__('the contest seems to end before it starts'));
+		if ($this->data['time_end'] <= time())
+			throw new Exc_runtime(__('the contest seems to have ended in the past'));
+		$opts = array('suspend_time', 'penalty_time', 'force_stdio');
+		$tmp = array();
+		foreach ($opts as $k)
+			$tmp[$k] = get_post($k);
+		$this->data['opt'] = json_encode($tmp);
+	}
+
 	public function get_form_fields()
 	{
-		return NULL;
+		$opts = array(
+			'input' => array(
+				// <form field> => array(<prompt>, <default value>)
+				'suspend_time' => array(
+					__('how long to block the refreshing of status list before the contest ends (in minutes)'), 60),
+				'penalty_time' => array(
+					__('penalty time for each rejected runs (in minutes)'), 20)
+			),
+			'checkbox' => array(
+				'force_stdio' => array(
+					__('whether to use stdio regardless of the original problem I/O method configuration'), 1)
+			)
+		);
+		if (isset($this->data['opt']))
+		{
+			$cur_opt = json_decode($this->data['opt'], TRUE);
+			foreach ($opts as $k0 => $v0)
+				foreach ($v0 as $k1 => $v1)
+					$opts[$k0][$k1][1] = $cur_opt[$k1];
+		}
+
+		foreach ($opts['input'] as $k => $v)
+			form_get_input($v[0], $k, $v[1]);
+
+		foreach ($opts['checkbox'] as $k => $v)
+			form_get_checkbox($v[0], $k, $v[1]);
 	}
 
 	public function add_contest()
 	{
 		$this->check_data();
 		global $db;
-		$id = $db->insert_into('contests', $this->data);
-		$this->data['id'] = $id;
-		$db->insert_into('contests_oi', array(
-			'cid' => $id,
-			'uid' => 0,
-			'total_score' => sched_add($this->data['time_end'], __FILE__, '_ctal_oi_judge', array($id))
-		));
-		return $id;
+		return $db->insert_into('contests', $this->data);
 	}
 
 	public function update_contest()
 	{
 		$this->check_data();
 		global $db, $DBOP;
-		$where = array($DBOP['='], 'cid', $this->data['id']);
-		$row = $db->select_from('contests_oi', 'total_score', $where);
-		if (count($row) != 1)
-			throw new Exc_inner(__('trying to update contest #%d before insertion', $this->data['id']));
-		sched_update($row[0]['total_score'], $this->data['time_end']);
 		$val = $this->data;
 		unset($val['id']);
-		$where[1] = 'id';
-		$db->update_data('contests', $val, $where);
+		$db->update_data('contests', $val, array($DBOP['='], 'id', $this->data['id']));
 	}
 
 	public function delete_contest()
@@ -73,14 +102,7 @@ class Ctal_acm extends Ctal
 		if (time() >= $this->data['time_start'])
 			throw new Exc_runtime(__('contests having already started can not be deleted'));
 		global $db, $DBOP;
-		$where = array($DBOP['='], 'cid', $this->data['id']);
-		$row = $db->select_from('contests_oi', 'total_score', $where);
-		if (count($row) != 1)
-			throw new Exc_inner(__('trying to delete contest #%d before insertion'));
-		sched_remove($row[0]['total_score']);
-		$db->delete_item('contests_oi', $where);
-		$where[1] = 'id';
-		$db->delete_item('contests', $where);
+		$db->delete_item('contests', array($DBOP['='], 'id', $this->data['id']));
 	}
 
 	public function view_prob(&$pinfo)
@@ -88,11 +110,9 @@ class Ctal_acm extends Ctal
 		global $PROB_VIEW_PINFO_STATISTICS;
 		if (!$this->allow_viewing())
 			throw new Exc_runtime(__('sorry, you are not allowed to view this problem now'));
-		if (time() >= $this->data['time_end'] &&  prob_future_contest($pinfo['id']))
-			throw new Exc_runtime(__('sorry, this problem belongs to a future contest and you are not allowed
- to view it here'));
-		if (is_null($pinfo['io']))
-			$pinfo['io'] = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
+		$opt = json_decode($this->data['opt'], TRUE);
+		if ($opt['force_stdio'])
+			$pinfo['io'] = NULL;
 		$pinfo['grp'] = array();
 
 		foreach ($PROB_VIEW_PINFO_STATISTICS as $f)
@@ -119,39 +139,60 @@ class Ctal_acm extends Ctal
 
 	public function get_prob_list()
 	{
+		if (!$this->allow_viewing())
+			throw new Exc_runtime(__('sorry, you can not get the problem list now'));
 		global $db, $DBOP, $user;
 		$ret = array(array(
-			__('NO.'), __('TITLE'), __('TIME'), __('MEMORY'), __('INPUT'), __('OUTPUT')
+			__('NO.'), __('TITLE'), __('TIME'), __('MEMORY'), __('TOTAL RUNS'), __('ACCEPTED RUNS')
 		));
-		$show_sumitted = user_check_login();
-		if ($show_sumitted)
-			array_push($ret[0], __('SUBMITTED?'));
+		$show_solved = user_check_login();
+		if ($show_solved)
+			array_push($ret[0], __('SOLVED?'));
 		array_push($ret[0], 1);
 		$rows = $db->select_from('map_prob_ct', 'pid', array(
 			$DBOP['='], 'cid', $this->data['id']), array('order' => 'ASC'));
-		$contest_end = time() >= $this->data['time_end'];
+		$time_left = $this->data['time_end'] - time();
 		for ($i = 0; $i < count($rows); $i ++)
 		{
 			$pid = $rows[$i]['pid'];
-			if ($contest_end && prob_future_contest($pid))
+			if ($time_left < 0 && prob_future_contest($pid))
 				array_push($ret, NULL);
 			else
 			{
-				$pinfo = $db->select_from('problems', array('code', 'io', 'desc'),
+				$pinfo = $db->select_from('problems', array('code', 'title', 'desc'),
 					array($DBOP['='], 'id', $pid));
-				if (count($pinfo) != 1)
+				if (empty($pinfo))
 					throw new Exc_inner(__('no such problem #%d for contest #%d',
 						$pid, $this->data['id']));
 				$pinfo = $pinfo[0];
-				if (strlen($pinfo['io']))
-					$io = unserialize($pinfo['io']);
-				else
-					$io = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
 				$desc = unserialize($pinfo['desc']);
-				$col = array($i + 1, prob_get_title_by_id($pid), 
-					$desc['time'], $desc['memory'], $io[0], $io[1]);
-				if ($show_sumitted)
-					array_push($col, is_null($this->get_record_id($pid)) ? ' ' : __('YES'));
+				$col = array($i + 1, $pinfo['title'],
+					$desc['time'], $desc['memory']);
+				if ($time_left >= 0 && $time_left < $this->get_opt('suspend_time'))
+					array_push($col, '---', '---');
+				else
+				{
+					$tmp = $this->get_opt('prob_sts');
+					if (isset($tmp[$pid]))
+					{
+						$tmp = $tmp[$pid];
+						array_push($col, $tmp[0], $tmp[1]);
+					}
+					else
+						array_push($col, 0, 0);
+				}
+				if ($show_solved)
+				{
+					$row = $db->select_from('contests_acm', 'prob_result', array(
+						$DBOP['&&'],
+						$DBOP['='], 'cid', $this->data['id'],
+						$DBOP['='], 'uid', $user->id
+					));
+					$res = '';
+					if (isset($row[0][$pid]) && $row[0][$pid][0] == RECORD_STATUS_ACCEPTED)
+						$res = __('YES');
+					array_push($col, $res);
+				}
 				array_push($col, $pid);
 				array_push($ret, $col);
 			}
@@ -357,14 +398,5 @@ class Ctal_acm extends Ctal
 		return intval($row[0]['id']);
 	}
 
-	/**
-	 * check whether $this->data is valid
-	 * @exception Exc_runtime
-	 */
-	private function check_data()
-	{
-		if ($this->data['time_start'] >= $this->data['time_end'])
-			throw new Exc_runtime(__('the contest seems to end before it starts'));
-	}
 }
 

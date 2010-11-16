@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Wed Nov 10 21:49:38 2010 +0800
+ * $Date: Sun Nov 14 11:41:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -42,6 +42,9 @@ define('ORZOJ_DEBUG_MODE', TRUE);
 $root_path = rtrim(realpath(dirname(__FILE__)), '/') . '/';
 $includes_path = $root_path . 'includes/';
 
+require_once $includes_path . 'const.php';
+require_once $includes_path . 'exception.php';
+
 $config_file_path = $root_path . 'config.php';
 
 require_once $includes_path . 'l10n.php';
@@ -74,9 +77,6 @@ catch (Exc_db $e)
 
 if (defined('IN_INSTALLATION'))
 	require_once $includes_path . 'functions.php';
-
-require_once $includes_path . 'const.php';
-require_once $includes_path . 'exception.php';
 
 if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 {

@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Mon Nov 08 10:16:01 2010 +0800
+ * $Date: Mon Nov 15 16:23:17 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -413,6 +413,7 @@ function get_array_val(&$array, $key, $default = NULL)
  * @param string $post_name
  * @param string|NULL $default
  * @param bool $add_div whether to put the input in a div with class form-field
+ * @return void
  */
 function form_get_input($prompt, $post_name, $default = NULL, $add_div = TRUE)
 {
@@ -424,6 +425,25 @@ function form_get_input($prompt, $post_name, $default = NULL, $add_div = TRUE)
 	echo "<label for='$id'>$prompt</label><input type='text' name='$post_name' value='$default' id='$id' />";
 	if ($add_div)
 		echo '</div>';
+}
+
+/**
+ * get a checkbox element
+ * @param string $prompt
+ * @param string $post_name
+ * @param bool|NULL $default
+ * @param 
+ */
+function form_get_checkbox($prompt, $post_name, $default = NULL)
+{
+	$id = get_unique_id();
+	if ($default)
+		$default = 'checked="checked"';
+	else
+		$default = '';
+	echo '<div class="form-field">';
+	echo "<label for='$id'>$prompt</label><input type='checkbox' name='$post_name' id='$id' $default />";
+	echo '</div>';
 }
 
 /**

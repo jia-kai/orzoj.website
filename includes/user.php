@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Wed Nov 10 00:15:50 2010 +0800
+ * $Date: Thu Nov 11 20:15:11 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -61,7 +61,7 @@ $USER_RANK_SORT_LIST = array(
  */
 class User
 {
-	var
+	public
 		// normal information (assign on construction)
 		$id, $username, $realname, $nickname,
 		$avatar_id, // avatar id
@@ -76,26 +76,8 @@ class User
 	private
 		$groups = NULL, // array of ids of groups that the user blongs to
 		$admin_groups = NULL, // array of ids of groups where the user is an administrator
+		$grp_set = NULL, // array(<group id> => 1), for fast membership test
 		$detail_val_done = FALSE;
-
-	/**
-	 * @ignore
-	 */
-	private static function bsearch($a, $key)
-	{
-		$left = 0;
-		$right = count($a) - 1;
-		while ($left != $right)
-		{
-			$mid = ($left + $right) >> 1;
-			if ($a[$mid] == $key)
-				return TRUE;
-			if ($a[$mid] < $key)
-				$left = $mid + 1;
-			else $right = $mid;
-		}
-		return $a[$left] == $key;
-	}
 
 	/**
 	 * @exception Exc_runtime if user id does not exist
@@ -156,6 +138,7 @@ class User
 
 		// TODO: a sqrt(n) division
 		
+		/*
 		$where = NULL;
 		foreach ($groups as $id)
 			db_where_add_or($where, array($DBOP['='], 'id', $id));
@@ -169,25 +152,25 @@ class User
 				$grp_set[$pgid] = 1;
 			}
 		}
-		/*
+		 */
+
 		for ($i = 0; $i < count($groups); $i ++)
 		{
-			$rows = $db->select_from('user_grps', 'pgid',
-				array($DBOP['='], 'id', $groups[$i]));
-			if (empty($rows))
+			$pgid = user_grp_get_pgid($groups[$i]);
+			if (empty($pgid))
 				continue;
-			$pgid = intval($rows[0]['pgid']);
 			if (!isset($grp_set[$pgid]))
 			{
 				$groups[] = $pgid;
 				$grp_set[$pgid] = 1;
 			}
 		}
-		 */
+
 		$this->groups = $groups;
 
-		sort($this->groups, SORT_NUMERIC);
-		sort($this->admin_groups, SORT_NUMERIC);
+		unset($grp_set[GID_NONE]);
+		unset($grp_set[GID_GUEST]);
+		$this->grp_set = $grp_set;
 		return $this->groups;
 	}
 
@@ -209,7 +192,9 @@ class User
 	 */
 	function is_grp_member($gid)
 	{
-		return User::bsearch($this->get_groups(), $gid);
+		if (is_null($this->grp_set))
+			$this->get_groups();
+		return isset($this->grp_set[$gid]);
 	}
 
 	/**
@@ -219,7 +204,7 @@ class User
 	 */
 	function has_admin_perm($gid)
 	{
-		return User::bsearch($this->get_admin_groups(), $gid);
+		return in_array($gid, $this->get_admin_groups());
 	}
 
 	/**
@@ -905,7 +890,7 @@ function user_init_default_grp()
 		GID_LOCK => array('Lock', __('locked users'), GID_ALL),
 		GID_ADMIN_USER => array('Admin-User', __('administrate users and user groups'), GID_ALL),
 		GID_ADMIN_TEAM => array('Admin-Team', __('administrate user teams'), GID_ALL),
-		GID_ADMIN_PROB => array('Admin-Prob', __('administrate problems and problem groups'), GID_ALL),
+		GID_ADMIN_PROB => array('Admin-Prob', __('administrate problems and problem groups'), GID_SUPER_SUBMITTER),
 		GID_ADMIN_CONTEST => array('Admin-Contest', __('administrate contests'), GID_ALL),
 		GID_ADMIN_POST => array('Admin-Post', __('administrate posts'), GID_ALL),
 		GID_ADMIN_ANNOUNCEMENT => array('Admin-Announcement', __('administrate announcements'), GID_ALL),
@@ -1049,5 +1034,23 @@ function user_get_users_rank($offset = NULL, $count = NULL)
 		$prev_user = $_user;
 	}
 	return $id2rank;
+}
+
+/**
+ * get the parent group id of a given user group
+ * @param int $gid user group id
+ * @reutrn int|NULL the id of its parent group, or NULL if no such group
+ */
+function user_grp_get_pgid($gid)
+{
+	static $cache = array();
+	if (array_key_exists($gid, $cache))
+		return $cache[$gid];
+	global $db, $DBOP;
+	$row = $db->select_from('user_grps', 'pgid', array(
+		$DBOP['='], 'id', $gid));
+	if (empty($row))
+		return $cache[$gid] = NULL;
+	return $cache[$gid] = $row[0]['pgid'];
 }
 

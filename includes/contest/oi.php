@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Fri Nov 05 18:13:38 2010 +0800
+ * $Date: Mon Nov 15 17:41:22 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -107,7 +107,7 @@ class Ctal_oi extends Ctal
 		global $user;
 		if (user_check_login())
 		{
-			if ($user->is_grp_member(GID_ADMIN_CONTEST) || $user->is_grp_member(GID_SUPER_SUBMITTER))
+			if ($user->is_grp_member(GID_SUPER_SUBMITTER))
 				return $this->res_allow_viewing = TRUE;
 			$user_grp = $user->get_groups();
 		}
@@ -119,6 +119,8 @@ class Ctal_oi extends Ctal
 
 	public function get_prob_list()
 	{
+		if (!$this->allow_viewing())
+			throw new Exc_runtime(__('sorry, you can not get the problem list now'));
 		global $db, $DBOP, $user;
 		$ret = array(array(
 			__('NO.'), __('TITLE'), __('TIME'), __('MEMORY'), __('INPUT'), __('OUTPUT')
@@ -173,6 +175,7 @@ class Ctal_oi extends Ctal
 		if (is_null($ltype) || !in_array($ltype, array('c', 'cpp', 'pas')))
 			throw new Exc_runtime(__('sorry, your programming language is unavailable in this contest'));
 
+		$db->transaction_begin();
 		$rid = $this->get_record_id($pinfo['id']);
 		if (!is_null($rid))
 		{
@@ -196,6 +199,7 @@ class Ctal_oi extends Ctal
 			$cid = $this->data['id'];
 		}
 		submit_add_record($pinfo['id'], $lid, $src, $io, $st, $cid);
+		$db->transaction_commit();
 	}
 
 	public function judge_done($rid)
@@ -374,6 +378,8 @@ class Ctal_oi extends Ctal
 	{
 		if ($this->data['time_start'] >= $this->data['time_end'])
 			throw new Exc_runtime(__('the contest seems to end before it starts'));
+		if ($this->data['time_end'] <= time())
+			throw new Exc_runtime(__('the contest seems to have ended in the past'));
 	}
 }
 

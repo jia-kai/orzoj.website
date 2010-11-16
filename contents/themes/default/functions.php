@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Tue Nov 09 20:13:35 2010 +0800
+ * $Date: Mon Nov 15 18:53:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -521,7 +521,7 @@ function tf_get_prob_html($pinfo)
 	unset($desc['time']);
 	unset($desc['memory']);
 	foreach ($desc as $key => $item)
-		if (!empty($item))
+		if (strlen($item))
 		{
 			if (!isset($translate[$key]))
 				$field = __('Extra info %s', $key);

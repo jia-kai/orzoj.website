@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: mysql.php
- * $Date: Sun Nov 07 20:49:31 2010 +0800
+ * $Date: Sun Nov 14 23:03:02 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -169,9 +169,14 @@ class Dbal_mysql extends Dbal
 		$linker = NULL,
 
 		/**
-		 * whether now it is in a transaction
+		 * the number of nested transactions
 		 */
-		$in_transaction = FALSE,
+		$transaction_cnt = 0,
+
+		/**
+		 * whether the transaction has been rollbacked
+		 */
+		$transaction_rollback_flag = FALSE,
 
 		/**
 		 * set engine, character and collate after creating a new table
@@ -221,7 +226,7 @@ class Dbal_mysql extends Dbal
 	{
 		if ($this->linker)
 		{
-			if ($this->in_transaction)
+			while ($this->transaction_cnt)
 				$this->transaction_rollback();
 			@mysql_close($this->linker);
 			$this->linker = NULL;
@@ -475,38 +480,46 @@ class Dbal_mysql extends Dbal
 
 	public function transaction_begin()
 	{
-		if ($this->in_transaction)
-			throw new Exc_inner(__('nested transaction'));
-		$queries = array('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE', 'START TRANSACTION');
+		$this->transaction_cnt ++;
+		if ($this->transaction_cnt == 1)
+		{
+			$queries = array('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE', 'START TRANSACTION');
+			if (!$this->direct_query)
+				return $queries;
+			foreach ($queries as $q)
+				$this->query($q);
+		}
 		if (!$this->direct_query)
-			return $queries;
-		foreach ($queries as $q)
-			$this->query($q);
-		$this->in_transaction = TRUE;
+			return array();
 	}
 
 	public function transaction_commit()
 	{
-		if (!$this->in_transaction)
-			throw new Exc_inner(__('attempt to commit before beginning transaction'));
-		$this->in_transaction = FALSE;
-		$query = 'COMMIT';
-		if ($this->direct_query)
-			$this->query($query);
-		else
-			return array($query);
+		if (!$this->transaction_cnt)
+			throw Exc_inner(__('attempt to commit/rollback before starting transaction'));
+		$this->transaction_cnt --;
+		if (!$this->transaction_cnt)
+		{
+			if ($this->transaction_rollback_flag)
+			{
+				$query = 'ROLLBACK';
+				$this->transaction_rollback_flag = FALSE;
+			}
+			else
+				$query = 'COMMIT';
+			if ($this->direct_query)
+				$this->query($query);
+			else
+				return array($query);
+		}
+		if (!$this->direct_query)
+			return array();
 	}
 
 	public function transaction_rollback()
 	{
-		if (!$this->in_transaction)
-			throw new Exc_inner(__('attempt to rollback before beginning transaction'));
-		$this->in_transaction = FALSE;
-		$query = 'ROLLBACK';
-		if ($this->direct_query)
-			$this->query($query);
-		else
-			return array($query);
+		$this->transaction_rollback_flag = TRUE;
+		return $this->transaction_commit();
 	}
 
 	/**
@@ -560,7 +573,7 @@ class Dbal_mysql extends Dbal
 		if ($ret === FALSE)
 		{
 			$msg = __('SQL query error [query: %s]: %s', $query, $this->get_err_msg());
-			if ($this->in_transaction)
+			if ($this->transaction_cnt)
 				$this->transaction_rollback();
 			throw new Exc_db($msg);
 		}

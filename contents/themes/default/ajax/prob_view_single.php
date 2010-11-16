@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_view_single.php
- * $Date: Wed Nov 03 12:48:27 2010 +0800
+ * $Date: Tue Nov 16 20:30:32 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -125,6 +125,9 @@ try
 
 	try
 	{
+		if (!is_null($cid = prob_future_contest($pid)))
+			throw new Exc_runtime(
+				__('sorry, this problem belongs to a future contest (#%d) and you should view it in the contest.', $cid));
 		echo prob_view($pid);
 	}
 	catch (Exc_orzoj $e)

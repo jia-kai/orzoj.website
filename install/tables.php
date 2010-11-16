@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Sat Nov 06 18:12:19 2010 +0800
+ * $Date: Tue Nov 16 19:45:36 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -301,7 +301,8 @@ $tables = array(
 			'desc' => array('type' => 'TEXT'), // description
 			'time_start' => array('type' => 'INT64'),
 			'time_end' => array('type' => 'INT64'),
-			'perm' => array('type' => 'TEXT') // see 'problems' table
+			'perm' => array('type' => 'TEXT'), // see 'problems' table
+			'opt' => array('type' => 'TEXT') // contest type specified options
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -328,8 +329,32 @@ $tables = array(
 			'total_time' => array('type' => 'INT32'), // microsecond
 		),
 		'index' => array(
-			array('cols' => array('cid', 'uid')),
-			array('cols' => array('cid', 'total_score', 'uid'))
+			array('cols' => array('cid', 'total_score')),
+			array('cols' => array('cid', 'uid'))
+		)
+	),
+
+	/* contests_acm */
+	'contests_acm' => array( // ACM/ICPC contests
+		/*
+		 * options in 'contests' table:
+		 *		json encoded array(
+		 *			'suspend_time' => <suspend time(minutes)>,
+		 *			'penalty_time' => <penalty time(minutes)>,
+		 *			'force_stdio' => <whether to force using stdio>,
+		 *			'prob_sts' => array(<problem id> => array(<total runs, accepted runs>)))
+		 */
+		'cols' => array(
+			'cid' => array('type' => 'INT32'), // contest id
+			'uid' => array('type' => 'INT32'), // user id
+			'ac_cnt'  => array('type' => 'INT32'),
+			'penalty' => array('type' => 'INT32'), // in seconds
+			'prob_result' => array('type' => 'TEXT')
+			// json encoded array(<problem id> => array(<execution status>, <number of rejected runs>))
+		),
+		'index' => array(
+			array('cols' => array('cid', 'ac_cnt', 'penalty')),
+			array('cols' => array('cid', 'uid'))
 		)
 	),
 
