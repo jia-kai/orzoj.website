@@ -5,7 +5,6 @@ Description:Make all problems appear the same.
 Author URI:http://www.fqj1994.org/
 Plugin URI:http://www.orzoj.org/
 Version:1.0
-Supported Operation:settings
 Author:Qijiang
  */
 

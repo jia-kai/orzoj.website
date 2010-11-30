@@ -37,6 +37,10 @@ before_user_register:
 	param: array the value to be inserted into the database
 	executed when user register form is parsed while database has not been updated
 
+after_user_register:
+	file: includes/user.php
+	param: int UID
+
 after_user_login_form:
 	file: includes/user.php
 	param: string user login form in HTML
@@ -53,11 +57,15 @@ after_user_login: (no iter)
 
 after_user_update_info_form:
 	file: includes/user.php
-	param: string the form in HTML
+	param: string the form in HTML,int UID
 
 before_user_update_info:
 	file: includes/user.php
-	param: array the value to be inserted into the database
+	param: array the value to be inserted into the database,int UID
+
+after_user_update_info:
+	file: includes/user.php
+	param: int UID
 
 post_type_set:
 	file: includes/post.php

@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Thu Nov 11 20:15:11 2010 +0800
+ * $Date: Tue Nov 30 14:45:00 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -93,13 +93,16 @@ class User
 		$row = $row[0];
 
 		$VAL_SET = array('id', 'username', 'realname', 'nickname',
-			'email', 'self_desc', 'tid', 'plang', 'wlang');
+			'email', 'self_desc', 'tid', 'plang', 'wlang','avatar_id','avatar');
+
+		$row['avatar'] = avatar_get_url($row['aid']);
+
+		$row = filter_apply('before_user_class_construct',$row);
+
+		$row['avatar_id'] = $row['aid'];
 
 		foreach ($VAL_SET as $val)
 			$this->$val = $row[$val];
-
-		$this->avatar_id = $row['aid'];
-		$this->avatar = avatar_get_url($row['aid']);
 
 		$this->view_gid = json_decode($row['view_gid']);
 
@@ -654,6 +657,8 @@ function user_register($login_after_register = FALSE)
 		cookie_set('password', _user_make_passwd($uid, $salt . $val['passwd']));
 	}
 
+	filter_apply_no_iter('after_user_register', $uid);
+
 	return $uid;
 }
 
@@ -713,7 +718,7 @@ function user_update_info_get_form()
 		tf_form_get_team_browser(__('Your team:'), 'tid', $user->tid) .
 		tf_form_get_long_text_input(__('Self description(XHTML):'), 'self_desc', htmlspecialchars($user->self_desc));
 
-	echo filter_apply('after_user_update_info_form', $str);
+	echo filter_apply('after_user_update_info_form', $str, $user->id);
 }
 
 /**
@@ -756,9 +761,11 @@ function user_update_info()
 	$val['email'] = htmlencode($val['email']);
 	$val['view_gid'] = json_encode(tf_form_get_gid_selector_value('view_gid'));
 
-	$val = filter_apply('before_user_update_info', $val);
+	$val = filter_apply('before_user_update_info', $val, $user->id);
 
 	$db->update_data('users', $val, array($DBOP['='], 'id', $user->id));
+
+	filter_apply_no_iter('after_user_update_info', $user->id);
 }
 
 /**
@@ -1052,5 +1059,20 @@ function user_grp_get_pgid($gid)
 	if (empty($row))
 		return $cache[$gid] = NULL;
 	return $cache[$gid] = $row[0]['pgid'];
+}
+
+/**
+ * Get the e-mail address of a user
+ * @param int $uid user id
+ * @return string|NULL the e-mail address, or NULL of no such user.
+ */
+function user_get_email($uid)
+{
+	global $db,$DBOP;
+	static $cache = array();
+	$row = $db->select_from('users','email',array($DBOP['='],'id',$uid));
+	if (empty($row))
+		return $cache[$uid] = NULL;
+	return $cache[$uid] = $row[0]['email'];
 }
 

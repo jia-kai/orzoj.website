@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: avatar.php
- * $Date: Sun Oct 31 18:31:55 2010 +0800
+ * $Date: Mon Nov 22 23:14:01 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -92,8 +92,13 @@ function avatar_get_url_by_user_id($uid)
 		return $cache[$uid];
 	$aid = $db->select_from('users', 'aid', array($DBOP['='], 'id', $uid));
 	if (count($aid) != 1)
-		return avatar_get_url_by_file('default.gif');
-	$aid = $aid[0]['aid'];
-	return $cache[$uid] = avatar_get_url($aid);
+		$this_avatar = avatar_get_url_by_file('default.gif');
+	else
+	{
+		$aid = $aid[0]['aid'];
+		$this_avatar = avatar_get_url($aid);
+	}
+	$this_avatar = filter_apply('after_avatar_get_url_by_user_id',$this_avatar,$uid);
+	return $cache[$uid] = $this_avatar;
 }
 
