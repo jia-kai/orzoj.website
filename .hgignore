@@ -1,3 +1,6 @@
+syntax: glob
+
+*.swp
 config.php
 install/config.php
 contents/themes/default/scripts/jquery/orig

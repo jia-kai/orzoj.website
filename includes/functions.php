@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Nov 08 23:16:16 2010 +0800
+ * $Date: Sat Feb 12 16:30:29 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -62,7 +62,7 @@ function cookie_get($name)
 	if (isset($_COOKIE[$name]))
 		return $_COOKIE[$name];
 	else
-		return FALSE;
+		return NULL;
 }
 
 /**

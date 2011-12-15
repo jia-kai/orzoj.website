@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Nov 10 15:54:36 2010 +0800
+ * $Date: Wed Nov 17 14:24:06 2010 +0800
 
  This file is part of orzoj
 
@@ -634,6 +634,10 @@ div.prob-view-single-desc-content pre
 	white-space: normal;
 }
 
+div.prob-view-single-desc-content img
+{
+	float: none;
+}
 
 textarea.prob-view-single-io
 {

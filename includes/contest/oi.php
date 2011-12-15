@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Mon Nov 15 17:41:22 2010 +0800
+ * $Date: Tue Nov 16 20:47:50 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -168,9 +168,6 @@ class Ctal_oi extends Ctal
 			throw new Exc_runtime(__('please login first'));
 		if (!$this->allow_viewing())
 			throw new Exc_runtime(__('sorry, you can not submit problem in contest #%d now', $this->data['id']));
-		if (!$user->is_grp_member(GID_SUPER_SUBMITTER))
-			if (time() >= $this->data['time_end'])
-				throw new Exc_runtime(__('you can not submit after the contest ends'));
 		$ltype = plang_get_type_by_id($lid);
 		if (is_null($ltype) || !in_array($ltype, array('c', 'cpp', 'pas')))
 			throw new Exc_runtime(__('sorry, your programming language is unavailable in this contest'));

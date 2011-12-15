@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: acm.php
- * $Date: Tue Nov 16 20:20:59 2010 +0800
+ * $Date: Wed Nov 17 15:26:12 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -40,10 +40,20 @@ class Ctal_acm extends Ctal
 	 */
 	private function check_data()
 	{
+		global $db, $DBOP;
 		if ($this->data['time_start'] >= $this->data['time_end'])
 			throw new Exc_runtime(__('the contest seems to end before it starts'));
 		if ($this->data['time_end'] <= time())
 			throw new Exc_runtime(__('the contest seems to have ended in the past'));
+		if (!empty($this->data['id']))
+		{
+			$row = $db->select_from('contests', 'time_start', array($DBOP['='], 'id', $this->data['id']));
+			if (empty($row))
+				throw new Exc_inner(__('contest not found in database'));
+			$t0 = intval($row[0]['time_start']);
+			if ($t0 != $this->data['time_start'] && time() >= $t0)
+				throw new Exc_runtime(__(''));
+		}
 		$opts = array('suspend_time', 'penalty_time', 'force_stdio');
 		$tmp = array();
 		foreach ($opts as $k)
@@ -207,27 +217,13 @@ class Ctal_acm extends Ctal
 			throw new Exc_runtime(__('please login first'));
 		if (!$this->allow_viewing())
 			throw new Exc_runtime(__('sorry, you can not submit problem in contest #%d now', $this->data['id']));
-		if (!$user->is_grp_member(GID_SUPER_SUBMITTER))
-			if (time() >= $this->data['time_end'])
-				throw new Exc_runtime(__('you can not submit after the contest ends'));
-		$ltype = plang_get_type_by_id($lid);
-		if (is_null($ltype) || !in_array($ltype, array('c', 'cpp', 'pas')))
-			throw new Exc_runtime(__('sorry, your programming language is unavailable in this contest'));
 
-		$rid = $this->get_record_id($pinfo['id']);
-		if (!is_null($rid))
-		{
-			$db->delete_item('records', array(
-				$DBOP['='], 'id', $rid));
-			$db->delete_item('sources', array(
-				$DBOP['='], 'rid', $rid));
-		}
 		$io = $pinfo['io'];
-		if (is_null($io))
-			$io = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
+		if (is_null($io) || $this->get_opt('force_stdio'))
+			$io = array('', '');
 
 		submit_add_record($pinfo['id'], $lid, $src, $io,
-			RECORD_STATUS_WAITING_FOR_CONTEST, $this->data['id']);
+			RECORD_STATUS_WAITING_TO_BE_FETCHED, $this->data['id']);
 	}
 
 	public function judge_done($rid)

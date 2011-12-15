@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: 四 11月 11 16:13:59 2010 +0800
+ * $Date: Wed Nov 17 15:26:08 2010 +0800
  */
 /**
  * @package orzoj-website
@@ -414,7 +414,10 @@ function get_contest()
 		$db->insert_into('map_prob_ct',
 			array('cid' => $cid, 'pid' => $pid, 'order' => $pid));
 	else
+	{
+
 		$db->update_data('map_prob_ct', array('cid' => $cid), $where);
+	}
 }
 
 ?>

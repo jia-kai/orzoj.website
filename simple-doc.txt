@@ -65,7 +65,8 @@ plugin structure:
 theme structure:
 /contents/themes/
 |--	<theme name>/
-	|--	index.php		will be included by /index.php, with global variable $action set properly
+	|--	index.php		will be included by /index.php,
+	|					with global variablse $cur_page and $page_arg set properly
 	|--	functions.php	functions exported to the whole website
 	|--	...				theme specific files
 

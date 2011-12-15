@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: plugin.php
- * $Date: Sun Nov 07 19:18:00 2010 +0800
+ * $Date: Thu Dec 15 14:28:30 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -73,9 +73,10 @@ function _filter_changed($hook_name)
 
 /**
  * add a filter (filter_add() should be called by plugins)
- * @param string $hook_name name of hook called by filter_apply(@see filter_apply) and do_action(@see do_action)
+ * @param string $hook_name name of hook called by filter_apply(@see filter_apply)
  * @param callback $func the function to be called
- * @param int $priority priority of the function. The smaller, the earlier to be executed (must be within [-10, 10])
+ * @param int $priority priority of the function.
+ *			The smaller, the earlier to be executed (must be within [-10, 10])
  * @return void
  */
 function filter_add($hook_name, $func, $priority = 0)
@@ -138,10 +139,10 @@ function filter_remove($hook_name, $func)
  * apply filters and iterate on $value
  * @param string $hook_name is the name of hook to be called
  * @param mixed $value
- * @param mixed more_param more param is supported, which will be passed to functions in the hook
+ * @param mixed more_param more param is supported,
+ *		which will be passed to functions in the hook
  * @return mixed the final value after iteration
  */
-
 function filter_apply($hook_name, $value)
 {
 	_filter_sort($hook_name);

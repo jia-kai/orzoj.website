@@ -46,11 +46,13 @@ function gravatar_user_register_form($str, $uid = 0)
 	if ($uid > 0)
 	{
 		global $db,$DBOP;
-		$rs = $db->select_from('plugin_gravatar_enabled_users',NULL,array($DBOP['='],'uid',$uid));
+		$rs = $db->select_from('plugin_gravatar_enabled_users',NULL,
+			array($DBOP['='],'uid',$uid));
 		if (count($rs))
 			$checkbox = ' value="1" checked';
 	}
-	return $str.tf_form_get_raw('<input name="gravatar_enabled" type="checkbox"'.$checkbox.'>'.__('Use Gravatar to replace my avatar!').'</input>',NULL);
+	return $str.tf_form_get_raw('<input name="gravatar_enabled" type="checkbox"'.
+		$checkbox.'>'.__('Use Gravatar to replace my avatar!').'</input>',NULL);
 }
 
 
