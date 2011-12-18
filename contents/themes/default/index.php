@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Wed Nov 10 15:24:11 2010 +0800
+ * $Date: Sun Dec 18 19:30:45 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -276,7 +276,8 @@ if (!user_check_login())
 						<?php _tf_form_generate_body('user_check_login_get_form'); ?>
 						<button type="submit" class="in-form" ><?php echo __('Login'); ?></button>
 						<a href="<?php t_get_link('ajax-user-register'); ?>"
-						id="user-register"><button type="button" class="in-form" ><?php echo __('Register'); ?></button></a>
+						id="user-register"><button type="button" class="in-form" ><?php
+							echo __('Register'); ?></button></a>
 						</div>
 					</form>
 <?php
