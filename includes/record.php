@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: record.php
- * $Date: Fri Oct 29 10:54:55 2010 +0800
+ * $Date: Wed Dec 21 22:37:02 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -177,5 +177,21 @@ function record_allow_view_src($uid, $cid)
 		return $ct->allow_view_src($uid);
 	}
 	return user_check_view_src_perm($uid);
+}
+
+/**
+ * get the source by record id
+ * NOTE: no permission check performed
+ * @param int $rid  record id
+ */
+function record_get_src_by_rid($rid)
+{
+	global $db, $DBOP;
+	$row = $db->select_from('sources', 'src', array(
+		$DBOP['='], 'rid', $rid));
+	if (count($row) == 1)
+		return $row[0]['src'];
+	throw new Exc_runtime(__('source not found (rid=%d)', $rid));
+	//TODO: retrieve source from orzoj-server
 }
 

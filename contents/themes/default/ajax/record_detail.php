@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: record_detail.php
- * $Date: Fri Nov 05 15:00:51 2010 +0800
+ * $Date: Wed Dec 21 22:33:06 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -241,15 +241,9 @@ function _fd_detail()
 
 function _fd_src()
 {
-	global $row, $db, $DBOP, $page_arg, $plang_type;
-	$src = $db->select_from('sources', 'src', array(
-		$DBOP['='], 'rid', $page_arg));
-	if (count($src) == 1)
-		$src = $src[0]['src'];
-	else $src = __('not found');
-	//TODO: retrieve source from orzoj-server
+	global $page_arg, $plang_type;
 	printf('<a href="%s">%s</a><br />', t_get_src_download_url($page_arg), __('Source: (click here to download)'));
-	$geshi = new GeSHi($src, $plang_type);
+	$geshi = new GeSHi(record_get_src_by_rid($page_arg), $plang_type);
 	$geshi->set_header_type(GESHI_HEADER_PRE_TABLE);
 	$geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS);
 	$geshi->enable_classes();

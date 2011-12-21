@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: src_download.php
- * $Date: Tue Nov 09 15:36:30 2010 +0800
+ * $Date: Wed Dec 21 22:35:42 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -41,13 +41,7 @@ $row = $row[0];
 if (!record_allow_view_src($row['uid'], $row['cid']))
 	die('permission denied');
 
-$where[1] = 'rid';
-$src = $db->select_from('sources', 'src', $where);
-// TODO: retrieve source from orzoj-server
-if (count($src) != 1)
-	die('source unavailable');
-
-$src = $src[0]['src'];
+$src = record_get_src_by_rid($_GET['rid']);
 
 header('Content-type: application/orzoj-user-src');
 header(sprintf('Content-Disposition: attachment; filename="%s-%s-%d-%d.%s"',
