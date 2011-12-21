@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: orz.php
- * $Date: Tue Nov 09 16:24:38 2010 +0800
+ * $Date: Wed Dec 21 09:02:57 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -254,6 +254,16 @@ function register_new_judge()
 		judge_update($ret, $judge_name, $lang_sup, $query_ans);
 	judge_set_online($ret);
 	msg_write(MSG_STATUS_OK, array('id_num' => $ret));
+}
+
+/**
+ * remove all judge
+ * @return void
+ */
+function remove_judge_all()
+{
+	judge_set_offline_all();
+	msg_write(MSG_STATUS_OK, NULL);
 }
 
 /**
@@ -690,89 +700,5 @@ function report_prob_result()
 
 	update_statistics($rid, $status == RECORD_STATUS_ACCEPTED ? 'ac' : 'unac');
 	msg_write(MSG_STATUS_OK, NULL);
-}
-
-/**
- * add a judge
- * @param string $name
- * @param string $lang_sup serialized array, 
- *			see $root_path . 'install/table.php'
- * @param string $query_ans serialized array,
- * @return int new judge id
- */
-function judge_add($name,$lang_sup,$query_ans)
-{
-	global $db;
-	$content = array(
-		'name' => $name,
-		'lang_sup' => serialize($lang_sup),
-		'detail' => serialize($query_ans)
-	);
-	$db->transaction_begin();
-	$insert_id = $db->insert_into('judges',$content);
-	filter_apply('after_add_judge', true, $insert_id);
-	$db->transaction_commit();
-	return $insert_id;
-}
-
-/**
- * update judge info
- * @param int $id
- * @param string $name
- * @param string $lang_sup
- * @param string $query_ans
- * @return int judge id
- * @see judge_add
- */
-function judge_update($id, $name, $lang_sup, $query_ans)
-{
-	global $db, $DBOP;
-	$condition = array($DBOP['='], 'id', $id);
-	$content = array(
-		'name' => $name,
-		'lang_sup' => serialize($lang_sup),
-		'detail' => serialize($query_ans)
-	);
-	$db->transaction_begin();
-	$db->update_data('judges', $content, $condition);
-	filter_apply('after_add_judge', true, $id);
-	$db->transaction_commit();
-	return $id;
-}
-
-/**
- * set judge status
- * @param int $id
- * @param int $status see const.php
- * @param $success_filter 
- * @return void
- */
-function judge_set_status($id, $status, $success_filter)
-{	
-	global $db, $DBOP;
-	$condition = array($DBOP['='], 'id', $id);
-	$content = array('status' => $status);
-	$db->update_data('judges', $content, $condition);
-	filter_apply($success_filter, TRUE, $id);
-}
-
-/**
- * set judge status to online
- * @param int $id
- * @return void
- */
-function judge_set_online($id)
-{
-	judge_set_status($id, JUDGE_STATUS_ONLINE, 'after_set_judge_online');
-}
-
-/**
- * set judge status to offline
- * @param int $id
- * @return void
- */
-function judge_set_offline($id)
-{
-	judge_set_status($id, JUDGE_STATUS_OFFLINE, 'after_judge_offline');
 }
 

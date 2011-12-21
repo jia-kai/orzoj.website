@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: judge.php
- * $Date: Wed Nov 10 21:39:56 2010 +0800
+ * $Date: Wed Dec 21 09:02:51 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -139,5 +139,99 @@ function judge_get_id_by_name($name)
 	if (count($row) != 1)
 		return NULL;
 	return $row[0]['id'];
+}
+
+/**
+ * add a judge
+ * @param string $name
+ * @param string $lang_sup serialized array, 
+ *			see $root_path . 'install/table.php'
+ * @param string $query_ans serialized array,
+ * @return int new judge id
+ */
+function judge_add($name,$lang_sup,$query_ans)
+{
+	global $db;
+	$content = array(
+		'name' => $name,
+		'lang_sup' => serialize($lang_sup),
+		'detail' => serialize($query_ans)
+	);
+	$db->transaction_begin();
+	$insert_id = $db->insert_into('judges',$content);
+	filter_apply('after_add_judge', true, $insert_id);
+	$db->transaction_commit();
+	return $insert_id;
+}
+
+/**
+ * update judge info
+ * @param int $id
+ * @param string $name
+ * @param string $lang_sup
+ * @param string $query_ans
+ * @return int judge id
+ * @see judge_add
+ */
+function judge_update($id, $name, $lang_sup, $query_ans)
+{
+	global $db, $DBOP;
+	$condition = array($DBOP['='], 'id', $id);
+	$content = array(
+		'name' => $name,
+		'lang_sup' => serialize($lang_sup),
+		'detail' => serialize($query_ans)
+	);
+	$db->transaction_begin();
+	$db->update_data('judges', $content, $condition);
+	filter_apply('after_add_judge', true, $id);
+	$db->transaction_commit();
+	return $id;
+}
+
+/**
+ * set judge status
+ * @param int $id
+ * @param int $status see const.php
+ * @param $success_filter 
+ * @return void
+ */
+function _judge_set_status($id, $status, $success_filter)
+{	
+	global $db, $DBOP;
+	$condition = array($DBOP['='], 'id', $id);
+	$content = array('status' => $status);
+	$db->update_data('judges', $content, $condition);
+	filter_apply($success_filter, TRUE, $id);
+}
+
+/**
+ * set judge status to online
+ * @param int $id
+ * @return void
+ */
+function judge_set_online($id)
+{
+	_judge_set_status($id, JUDGE_STATUS_ONLINE, 'after_set_judge_online');
+}
+
+/**
+ * set judge status to offline
+ * @param int $id
+ * @return void
+ */
+function judge_set_offline($id)
+{
+	_judge_set_status($id, JUDGE_STATUS_OFFLINE, 'after_set_judge_offline');
+}
+
+/**
+ * set all judge status to be offline
+ * @return void
+ */
+function judge_set_offline_all()
+{
+	global $db;
+	$db->update_data('judges', array('status' => JUDGE_STATUS_OFFLINE));
 }
 
