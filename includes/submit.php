@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Wed Nov 10 22:48:11 2010 +0800
+ * $Date: Wed Dec 21 16:28:14 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -131,8 +131,6 @@ function submit_src()
 		if (!$user->is_grp_member(GID_SUPER_SUBMITTER) && !prob_check_perm($user->get_groups(), $row['perm']))
 			throw new Exc_runtime(__('permission denied for this problem'));
 		$io = $row['io'];
-		if (is_null($io))
-			$io = array('', '');
 		submit_add_record($pid, $plang, $src, $io);
 	}
 }
@@ -142,7 +140,7 @@ function submit_src()
  * @param int $pid problem id
  * @param int $lid programming language id
  * @param string $src the source
- * @param array $io array(<input filename>, <output filename>), empty string for stdio
+ * @param array $io array(<input filename>, <output filename>) or NULL for stdio
  * @param int $status the initial status for this record
  * @param int $cid contest id
  * @return int record id
@@ -152,6 +150,8 @@ function submit_add_record($pid, $lid, $src, $io,
 {
 	if (!user_check_login())
 		throw new Exc_inner(__('Not logged in'));
+	if (is_null($io))
+		$io = array('', '');	// see server-judge/orzoj/structures.py
 	global $db, $DBOP, $user;
 	$db->transaction_begin();
 	$rid = $db->insert_into('records',

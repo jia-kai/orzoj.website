@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: oi.php
- * $Date: Tue Nov 16 20:47:50 2010 +0800
+ * $Date: Wed Dec 21 16:30:00 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -91,8 +91,6 @@ class Ctal_oi extends Ctal
 		if (time() >= $this->data['time_end'] &&  prob_future_contest($pinfo['id']))
 			throw new Exc_runtime(__('sorry, this problem belongs to a future contest and you are not allowed
  to view it here'));
-		if (is_null($pinfo['io']))
-			$pinfo['io'] = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
 		$pinfo['grp'] = array();
 
 		foreach ($PROB_VIEW_PINFO_STATISTICS as $f)
@@ -148,7 +146,7 @@ class Ctal_oi extends Ctal
 				if (strlen($pinfo['io']))
 					$io = unserialize($pinfo['io']);
 				else
-					$io = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
+					$io = array(__('standard input'), __('standard output'));
 				$desc = unserialize($pinfo['desc']);
 				$col = array($i + 1, prob_get_title_by_id($pid), 
 					$desc['time'], $desc['memory'], $io[0], $io[1]);
@@ -181,9 +179,6 @@ class Ctal_oi extends Ctal
 			$db->delete_item('sources', array(
 				$DBOP['='], 'rid', $rid));
 		}
-		$io = $pinfo['io'];
-		if (is_null($io))
-			$io = array($pinfo['code'] . '.in', $pinfo['code'] . '.out');
 
 		if ($user->is_grp_member(GID_SUPER_SUBMITTER))
 		{
@@ -195,7 +190,7 @@ class Ctal_oi extends Ctal
 			$st = RECORD_STATUS_WAITING_FOR_CONTEST;
 			$cid = $this->data['id'];
 		}
-		submit_add_record($pinfo['id'], $lid, $src, $io, $st, $cid);
+		submit_add_record($pinfo['id'], $lid, $src, $pinfo['io'], $st, $cid);
 		$db->transaction_commit();
 	}
 
