@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: prob_submit.php
- * $Date: Tue Oct 26 10:01:07 2010 +0800
+ * $Date: Wed Dec 21 16:59:06 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -71,7 +71,8 @@ if (!user_check_login())
 
 $("button").button();
 
-var is_closed = false, cur_id = 0;
+var is_closed = false,	// whether the user closed ths box
+	cur_id = 0;			// id for the timer
 
 function show_running_status()
 {
@@ -84,7 +85,8 @@ function show_running_status()
 			if (data.charAt(0) == '0')
 			{
 				$.colorbox({
-					"html": data.substr(1),
+					"html": "<div style='text-align: center;'>" + data.substr(1) + "</div>",
+					"width": "300px",
 					"onClosed" : function(){
 						is_closed = true;
 						if (cur_id != -1)
