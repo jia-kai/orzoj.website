@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: status_list.php
- * $Date: Wed Nov 10 15:13:12 2010 +0800
+ * $Date: Wed Dec 21 21:51:53 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -106,7 +106,11 @@ if (isset($_POST['filter']))
 {
 	$req = &$_POST['filter'];
 	if (isset($req['username']) && strlen($req['username']))
+	{
 		$req['uid'] = user_get_id_by_username($req['username']);
+		if (is_null($req['uid']))
+			$req['uid'] = -1;
+	}
 	if (isset($req['pcode']) && strlen($req['pcode']))
 	{
 		$req['pid'] = prob_get_id_by_code($req['pcode']);
