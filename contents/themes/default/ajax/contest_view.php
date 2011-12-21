@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_view.php
- * $Date: Wed Oct 27 14:11:34 2010 +0800
+ * $Date: Wed Dec 21 16:19:17 2011 +0800
  */
 /**
  * @package orzoj-website
@@ -221,6 +221,11 @@ echo '</div>';
 
 table_set_double_bgcolor();
 
+function replace_this_page(data)
+{
+	$("#<?php echo $html_id_page;?>").parent().html(data);
+}
+
 function contest_view_prob(pid)
 {
 	$.ajax({
@@ -231,13 +236,7 @@ function contest_view_prob(pid)
 			<?php if ($have_back_to_list) echo ", 'back_to_list': '$back_to_list_encoded'"; ?>
 		}),
 		"success": function(data) {
-<?php
-		if ($have_back_to_list)
-			echo '$("#contest-list-' . $_POST['time'] . '").html(data);';
-		else
-			echo '$("#contest-page").html(data);';
-?>
-
+			replace_this_page(data);
 		}
 	});
 }
@@ -254,7 +253,7 @@ function refresh()
 			echo ", 'back_to_list': '$back_to_list_encoded'";
 ?>}),
 		"success": function(data) {
-			$("#<?php echo $html_id_page;?>").parent().html(data);
+			replace_this_page(data);
 		}
 	});
 }
@@ -308,7 +307,7 @@ if ($have_back_to_list)
 			"data": ({
 				<?php echo "'sort_col': '$_POST[sort_col]', 'sort_way': '$_POST[sort_way]', 'page_num': '$_POST[page_num]'";?>}),
 			"success": function(data) {
-				$("#contest-list-<?php echo $_POST['time'];?>").html(data);
+				replace_this_page(data);
 			}
 		});
 	}
@@ -330,7 +329,7 @@ if ($ct->result_is_ready())
 				echo "'data': ({'back_to_list': '$back_to_list_encoded'}),\n";
 ?>
 			"success": function(data) {
-				$("#<?php echo $html_id_page;?>").parent().html(data);
+				replace_this_page(data);
 			}
 		});
 	}
