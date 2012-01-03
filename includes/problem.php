@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Mon Nov 15 17:38:51 2010 +0800
+ * $Date: Tue Jan 03 21:57:04 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -245,7 +245,9 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 			if (prob_future_contest($pid))
 				$row = NULL;
 			else if (!prob_check_perm($grp, $row['perm']))
-					$row = NULL;
+				$row = NULL;
+			else if ((int)($row['deleted']) == 1)
+				$row = NULL;
 		}
 
 		if ($row != NULL)
@@ -479,7 +481,7 @@ function prob_grp_get_id_by_name($name)
 function prob_delete($pid)
 {
 	global $db, $DBOP;
-	$db->update_data('problems', array('desc' => ''),
+	$db->update_data('problems', array('deleted' => 1),
 		array($DBOP['='], 'id', $pid));
 }
 

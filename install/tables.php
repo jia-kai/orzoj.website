@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Nov 16 19:45:36 2010 +0800
+ * $Date: Tue Jan 03 21:54:18 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -228,7 +228,9 @@ $tables = array(
 			// total number of submissions of which the corresponding user does not
 			// have an accepted solution before
 
-			'difficulty' => array('type' => 'INT32', 'default' => DB_REAL_PRECISION)
+			'difficulty' => array('type' => 'INT32', 'default' => DB_REAL_PRECISION),
+
+			'deleted' => array('type' => 'INT32', 'default' => 0)
 			// (cnt_ac_submission_sum - cnt_ac_user) / cnt_ac_submission_sum
 		),
 		'primary_key' => 'id',
