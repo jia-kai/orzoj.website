@@ -20,8 +20,6 @@ status filter:
 how about changing all recursive functions to manual stack?
 	-- i guess doing so will make it much slower, no experiment now (jk)
 
-is pomo still being used?
-
 通过次数 => 通过提交数
 
 Statistics => 统计信息
@@ -39,8 +37,6 @@ add index.html
 输入格式：  => 冒号哪儿来的?
 
 *** Add additional field in function tf_form_get*
-
-题目更新失败！！！！
 
 seperate user rank from rank_list.php
 
@@ -72,3 +68,21 @@ Data Not Found
 
 
 in best solutions we can see sources submitted by admin
+
+
+
+
+
+Need by HUST:
+
+crawling problems & forwarding to other OJs
+
+ACM support
+
+1 problem <--> multiple contests
+
+
+Other Need:
+
+public key encryption using JS when transmitting password without SSL
+
