@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Sun Dec 18 19:30:45 2011 +0800
+ * $Date: Fri Jan 06 14:16:01 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -103,7 +103,6 @@ $PAGES = array(
 	'rank' => array(__('Rank'), 'rank.php'),
 	'contest' => array(__('Contest'), 'contest.php'),
 	'discuss' => array(__('Discuss'), 'discuss.php'),
-	'team' => array(__('User Teams'), 'team.php'),
 	'judge' => array(__('Judges'), 'judge.php'),
 	'pages' => array(__('Pages'),'pages.php','hidden' => TRUE),
 	'faq' => array(__('FAQ'), 'faq.php')

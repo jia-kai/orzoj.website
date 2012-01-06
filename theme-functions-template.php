@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: theme-functions-template.php
- * $Date: Tue Nov 09 19:48:25 2010 +0800
+ * $Date: Fri Jan 06 14:15:29 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -90,14 +90,6 @@ function tf_form_get_theme_browser($prompt, $post_name, $default = NULL)
 	/*
 	 * !!! THIS FUNCTION IS PLANNED TO BE IMPLEMENTED IN THE FUTURE
 	 */
-}
-
-/**
- * get a team browser, which will post the selected team id
- * @param int|NULL $default default team id if not NULL
- */
-function tf_form_get_team_browser($prompt, $post_name, $default = NULL)
-{
 }
 
 /**

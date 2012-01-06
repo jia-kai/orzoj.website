@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: functions.php
- * $Date: Mon Nov 15 18:53:12 2010 +0800
+ * $Date: Fri Jan 06 14:16:34 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -26,8 +26,6 @@
 
 if (!defined('IN_ORZOJ'))
 	exit;
-
-require_once $includes_path . 'team.php';
 
 
 /**
@@ -257,19 +255,6 @@ function tf_form_get_rich_text_editor_data($editor_name)
 function tf_form_get_theme_browser($prompt, $post_name, $default = NULL)
 {
 	die('unimplemented');
-}
-
-/**
- * get a team browser, which will post the selected team id
- * @param int|NULL $default default team id if not NULL
- */
-function tf_form_get_team_browser($prompt, $post_name, $default = NULL)
-{
-	$list = team_get_list();
-	$opt = array();
-	foreach ($list as $row)
-		$opt[$row->name] = $row->id;
-	return tf_form_get_select($prompt, $post_name, $opt, $default);
 }
 
 /**

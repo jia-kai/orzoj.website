@@ -1,7 +1,6 @@
-#!/bin/sh -e
-mv messages.pot ../../old.pot -f
-cd ../../
-xgettext `find . -iname '*.php'` --from-code=UTF-8 --language=PHP --keyword=__ -o messages.pot
-msgmerge old.pot messages.pot -o messages.pot
-rm old.pot
-mv messages.pot contents/lang/
+#!/bin/bash -e
+# $File: genpot.sh
+# $Date: Fri Jan 06 14:26:19 2012 +0800
+
+(cd ../.. ; find . -name "*.php" | xgettext -f - --from-code=UTF-8 --language=PHP --keyword=__ -o -) | \
+	msgmerge messages.pot - -o messages.pot

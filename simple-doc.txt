@@ -20,7 +20,6 @@
 |	|--	exception.php	exception definitions
 |	|--	problem.php		problem operations
 |	|--	submit.php		functions for submitting source files and getting judge results
-|	|--	team.php		functions for managing user teams
 |	|--	announcement.php	publish and get announcements
 |	|--	exe_status.php	case execution status and case structure definitions
 |	|--	const.php		miscellaneous constants
@@ -41,7 +40,6 @@
 |	|	|--	...
 |	|--	uploads/		store uploaded data such as images (permission: 777)
 |	|	|--	user_avatars/	user avatars
-|	|	|--	team_images/	team images
 |	|	|--	...
 |	|--	lang/			.mo files for various languages
 |	|	|--<lang_name>/	language name e.g. zh_CN, en_US

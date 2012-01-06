@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: user.php
- * $Date: Tue Nov 30 14:45:00 2010 +0800
+ * $Date: Fri Jan 06 14:54:21 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -37,7 +37,6 @@ define('GID_ALL', $cnt ++); // every registered user should be in this group
 define('GID_LOCK', $cnt ++); // locked group id
 define('GID_ADMIN_USER', $cnt ++); // manage users (lock a user, change password, etc)
 define('GID_ADMIN_GROUP', $cnt ++);  // manage user groups (add, remove groups and assign group administrators)
-define('GID_ADMIN_TEAM', $cnt ++); // manage user teams
 define('GID_ADMIN_PROB', $cnt ++); // manage problems and problem groups
 define('GID_ADMIN_CONTEST', $cnt ++);  // manage contests
 define('GID_ADMIN_POST', $cnt ++); // manage posts
@@ -66,7 +65,7 @@ class User
 		$id, $username, $realname, $nickname,
 		$avatar_id, // avatar id
 		$avatar, // avatar URL
-		$tid, $plang, $wlang,
+		$plang, $wlang,
 		$view_gid, // array of gid who can view the user's source
 
 		// detailed information (assign by set_val_detail())
@@ -93,7 +92,7 @@ class User
 		$row = $row[0];
 
 		$VAL_SET = array('id', 'username', 'realname', 'nickname',
-			'email', 'self_desc', 'tid', 'plang', 'wlang','avatar_id','avatar');
+			'email', 'self_desc', 'plang', 'wlang','avatar_id','avatar');
 
 		$row['avatar'] = avatar_get_url($row['aid']);
 
@@ -592,7 +591,7 @@ function user_register_get_form()
 /**
  * register a user, using the data posted by the user register form
  * @param bool $login_after_register whether to set cookies indicating
- * the user has logged in after succesful regesteration
+ *			the user has logged in after succesful regesteration
  * @return int user id
  * @see user_register_get_form fields
  * @exception Exc_runtime if failed
@@ -715,7 +714,6 @@ function user_update_info_get_form()
 		tf_form_get_select(__('Preferred programming language:'), 'plang', $_user_plang, $user->plang) .
 		tf_form_get_select(__('Preferred website language:'), 'wlang', $_user_wlang, $user->wlang) .
 		tf_form_get_gid_selector(__('User groups who can view your source:'), 'view_gid', $user->view_gid) .
-		tf_form_get_team_browser(__('Your team:'), 'tid', $user->tid) .
 		tf_form_get_long_text_input(__('Self description(XHTML):'), 'self_desc', htmlspecialchars($user->self_desc));
 
 	echo filter_apply('after_user_update_info_form', $str, $user->id);
@@ -732,7 +730,7 @@ function user_update_info()
 		throw new Exc_runtime(__('Not logged in'));
 	global $db, $DBOP, $user;
 	$VAL_SET = array('realname', 'nickname', 'email', 'aid',
-		'plang', 'wlang', 'tid', 'self_desc');
+		'plang', 'wlang', 'self_desc');
 
 	$val = array();
 	foreach ($VAL_SET as $v)
@@ -896,7 +894,6 @@ function user_init_default_grp()
 		GID_ALL => array('All-Reg.', __('all registered users'), 0),
 		GID_LOCK => array('Lock', __('locked users'), GID_ALL),
 		GID_ADMIN_USER => array('Admin-User', __('administrate users and user groups'), GID_ALL),
-		GID_ADMIN_TEAM => array('Admin-Team', __('administrate user teams'), GID_ALL),
 		GID_ADMIN_PROB => array('Admin-Prob', __('administrate problems and problem groups'), GID_SUPER_SUBMITTER),
 		GID_ADMIN_CONTEST => array('Admin-Contest', __('administrate contests'), GID_ALL),
 		GID_ADMIN_POST => array('Admin-Post', __('administrate posts'), GID_ALL),

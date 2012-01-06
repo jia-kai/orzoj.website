@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user_info.php
- * $Date: Wed Oct 27 10:50:14 2010 +0800
+ * $Date: Fri Jan 06 14:16:21 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -25,8 +25,6 @@
  */
 if (!defined('IN_ORZOJ'))
 	exit;
-
-require_once $includes_path . 'team.php';
 
 /**
  * page argument: [<user id:int>]
@@ -60,17 +58,6 @@ function fd_avatar($val)
 	make_field_value('<img src="' . $val . '" alt="avatar" style="float:left" />');
 }
 
-function fd_team($val)
-{
-	make_field_name(__('Team:'));
-	$tmp = new Team();
-	if (!$tmp->set_val($val))
-		make_field_value('&lt;' . __('unknown') . '&gt;');
-	else
-		make_field_value('<img class="user-info-team-img" src="' . $tmp->img . '" alt="&lt;team image&gt;" />' .
-			$tmp->name);
-}
-
 function fd_self_desc($val)
 {
 	make_field_name(__('Self description:'));
@@ -98,7 +85,6 @@ $fields = array(
 	'realname' => __('Real name:'),
 	'email' => __('Email:'),
 	'avatar' => array('fd_avatar'),
-	'tid' => array('fd_team'),
 	'self_desc' => array('fd_self_desc'),
 	'reg_time' => array('fd_reg_time'),
 	'reg_ip' => __('Registration ip:'),

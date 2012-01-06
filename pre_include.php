@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: pre_include.php
- * $Date: Sun Nov 14 11:41:50 2010 +0800
+ * $Date: Fri Jan 06 15:44:59 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -61,21 +61,20 @@ if (!defined('IN_INSTALLATION'))
 		$root_dir = str_replace($doc_root,'',$dir);
 		echo sprintf('<a href="%s">',$root_dir . '/install/'),__('Click here to install') . '</a>';
 		echo '</div>';
-die;
+		die;
 	}
 	require_once $config_file_path;
 	require_once $includes_path . 'functions.php';
-try
-{
-	db_init();
+	try
+	{
+		db_init();
+	}
+	catch (Exc_db $e)
+	{
+		die(__('failed to connect to database'));
+	}
 }
-catch (Exc_db $e)
-{
-	die(__('failed to connect to database'));
-}
-}
-
-if (defined('IN_INSTALLATION'))
+else
 	require_once $includes_path . 'functions.php';
 
 if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())

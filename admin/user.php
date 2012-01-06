@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: user.php
- * $Date: Sat Nov 06 11:53:04 2010 +0800
+ * $Date: Fri Jan 06 14:15:11 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -46,8 +46,6 @@ session_add_prefix('user');
 
 define('PAGE_SIZE', 50);
 
-require_once $includes_path . 'team.php';
-
 if (!empty($_GET['edit']))
 {
 	$cur_page_link = "$cur_page_link&amp;edit=$_GET[edit]";
@@ -61,7 +59,6 @@ $fields = array(
 	'username' => array(__('USERNAME'), 0),
 	'nickname' => array(__('NICKNAME'), 0),
 	'realname' => array(__('REAL NAME'), 0),
-	'tid' => array(__('TEAM'), 0, 'team_get_name_by_id'),
 	'reg_time' => array(__('REGISTER'), 1, 'time2str'),
 	'last_login_time' => array(__('LAST LOGIN'), 1, 'time2str')
 );
@@ -171,18 +168,6 @@ function filter_form_get_input($prompt, $pname)
 	global $filters_req;
 	echo '<span>';
 	form_get_input($prompt, "filters[$pname]", get_array_val($filters_req, $pname), FALSE);
-	echo '</span>';
-}
-
-function make_tid_select()
-{
-	global $filters_req;
-	echo '<span>';
-	$list = team_get_list();
-	$opt = array();
-	foreach ($list as $team)
-		$opt[$team->name] = $team->id;
-	form_get_select(__('User team:'), 'filters[tid]', $opt, get_array_val($filters_req, 'tid'));
 	echo '</span>';
 }
 

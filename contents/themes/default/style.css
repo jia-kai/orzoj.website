@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Wed Nov 17 14:24:06 2010 +0800
+ * $Date: Fri Jan 06 14:16:44 2012 +0800
 
  This file is part of orzoj
 
@@ -833,13 +833,6 @@ div.user-info-self-desc
 	height: 248px;
 	overflow: auto;
 	border: 1px blue solid;
-}
-
-img.user-info-team-img
-{
-	margin: 3px;
-	padding: 3px;
-	border: 1px solid blue;
 }
 
 div.user-info-field-name
