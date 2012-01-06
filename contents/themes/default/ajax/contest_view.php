@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_view.php
- * $Date: Wed Dec 21 16:19:17 2011 +0800
+ * $Date: Fri Jan 06 21:24:14 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -164,7 +164,7 @@ echo '</div>';
 echo '<div style="clear: both; text-align: center; margin-top: 100px;">';
 
 
-if (!$ct->allow_viewing())
+if (!$ct->allow_view_prob())
 	echo __('Sorry, you are not allowed to view problems in this contest now');
 else
 {
@@ -314,7 +314,7 @@ if ($have_back_to_list)
 
 <?php
 }
-if ($ct->result_is_ready())
+if ($ct->result_is_ready() && $ct->allow_view_result())
 {
 ?>
 

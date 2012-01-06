@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_view_result.php
- * $Date: Tue Nov 09 15:42:43 2010 +0800
+ * $Date: Fri Jan 06 21:23:09 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -95,6 +95,8 @@ try
 	$ct = ctal_get_class_by_cid($cid);
 	if (!$ct->result_is_ready())
 		throw new Exc_runtime(__('contest result is not available'));
+	if (!$ct->allow_view_result())
+		throw new Exc_runtime(__('you are not permitted to view the result'));
 
 	if ($pg_num < 0)
 		$list = $ct->get_rank_list();

@@ -1,7 +1,7 @@
 <?php
 /* 
- * $File: oi.php
- * $Date: Fri Jan 06 21:27:57 2012 +0800
+ * $File: freesub.php
+ * $Date: Fri Jan 06 22:31:40 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -29,10 +29,9 @@ if (!defined('IN_ORZOJ'))
 
 require_once $includes_path . 'contest/ctal.php';
 require_once $includes_path . 'problem.php';
-require_once $includes_path . 'sched.php';
 require_once $includes_path . 'record.php';
 
-class Ctal_oi extends Ctal
+class Ctal_freesub extends Ctal
 {
 	public function get_form_fields()
 	{
@@ -45,11 +44,6 @@ class Ctal_oi extends Ctal
 		global $db;
 		$id = $db->insert_into('contests', $this->data);
 		$this->data['id'] = $id;
-		$db->insert_into('contests_oi', array(
-			'cid' => $id,
-			'uid' => 0,
-			'total_score' => sched_add($this->data['time_end'], __FILE__, '_ctal_oi_judge', array($id))
-		));
 		return $id;
 	}
 
@@ -57,14 +51,9 @@ class Ctal_oi extends Ctal
 	{
 		$this->check_data();
 		global $db, $DBOP;
-		$where = array($DBOP['='], 'cid', $this->data['id']);
-		$row = $db->select_from('contests_oi', 'total_score', $where);
-		if (count($row) != 1)
-			throw new Exc_inner(__('trying to update contest #%d before insertion', $this->data['id']));
-		sched_update($row[0]['total_score'], $this->data['time_end']);
+		$where = array($DBOP['='], 'id', $this->data['id']);
 		$val = $this->data;
 		unset($val['id']);
-		$where[1] = 'id';
 		$db->update_data('contests', $val, $where);
 	}
 
@@ -73,13 +62,7 @@ class Ctal_oi extends Ctal
 		if (time() >= $this->data['time_start'])
 			throw new Exc_runtime(__('contests having already started can not be deleted'));
 		global $db, $DBOP;
-		$where = array($DBOP['='], 'cid', $this->data['id']);
-		$row = $db->select_from('contests_oi', 'total_score', $where);
-		if (count($row) != 1)
-			throw new Exc_inner(__('trying to delete contest #%d before insertion'));
-		sched_remove($row[0]['total_score']);
-		$db->delete_item('contests_oi', $where);
-		$where[1] = 'id';
+		$where = array($DBOP['='], 'iid', $this->data['id']);
 		$db->delete_item('contests', $where);
 	}
 
@@ -100,24 +83,24 @@ class Ctal_oi extends Ctal
 
 	public function allow_view_prob()
 	{
-		if (isset($this->res_allow_view_prob))
-			return $this->res_allow_view_prob;
+		if (isset($this->res_allow_viewing))
+			return $this->res_allow_viewing;
 		global $user;
 		if (user_check_login())
 		{
 			if ($user->is_grp_member(GID_SUPER_SUBMITTER))
-				return $this->res_allow_view_prob = TRUE;
+				return $this->res_allow_viewing = TRUE;
 			$user_grp = $user->get_groups();
 		}
 		else $user_grp = array(GID_GUEST);
 		if (time() < $this->data['time_start'])
-			return $this->res_allow_view_prob = FALSE;
-		return $this->res_allow_view_prob = prob_check_perm($user_grp, $this->data['perm']);
+			return $this->res_allow_viewing = FALSE;
+		return $this->res_allow_viewing = prob_check_perm($user_grp, $this->data['perm']);
 	}
 
 	public function allow_view_result()
 	{
-		// XXX
+		// XXX: resource permission checker
 		return TRUE;
 	}
 
@@ -129,9 +112,19 @@ class Ctal_oi extends Ctal
 		$ret = array(array(
 			__('NO.'), __('TITLE'), __('TIME'), __('MEMORY'), __('INPUT'), __('OUTPUT')
 		));
-		$show_sumitted = user_check_login();
-		if ($show_sumitted)
-			array_push($ret[0], __('SUBMITTED?'));
+		$show_score = user_check_login();
+		if ($show_score)
+		{
+			array_push($ret[0], __('SCORE'));
+			$prob_result = $db->select_from('contests_freesub',
+				'prob_result', array($DBOP['&&'],
+				$DBOP['='], 'cid', $this->data['id'],
+				$DBOP['='], 'uid', $user->id));
+			if (count($prob_result))
+				$prob_result = json_decode($prob_result[0]['prob_result'], TRUE);
+			else
+				$prob_result = array();
+		}
 		array_push($ret[0], 1);
 		$rows = $db->select_from('map_prob_ct', 'pid', array(
 			$DBOP['='], 'cid', $this->data['id']), array('order' => 'ASC'));
@@ -156,8 +149,13 @@ class Ctal_oi extends Ctal
 				$desc = unserialize($pinfo['desc']);
 				$col = array($i + 1, prob_get_title_by_id($pid), 
 					$desc['time'], $desc['memory'], $io[0], $io[1]);
-				if ($show_sumitted)
-					array_push($col, is_null($this->get_record_id($pid)) ? ' ' : __('YES'));
+				if ($show_score)
+				{
+					if (isset($prob_result[$pid]))
+						array_push($col, $prob_result[$pid][1]);
+					else
+						array_push($col, '---');
+				}
 				array_push($col, $pid);
 				array_push($ret, $col);
 			}
@@ -172,34 +170,9 @@ class Ctal_oi extends Ctal
 			throw new Exc_runtime(__('please login first'));
 		if (!$this->allow_view_prob())
 			throw new Exc_runtime(__('sorry, you can not submit problem in contest #%d now', $this->data['id']));
-		$ltype = plang_get_type_by_id($lid);
-		if (is_null($ltype) || !in_array($ltype, array('c', 'cpp', 'pas')))
-			throw new Exc_runtime(__('sorry, your programming language is unavailable in this contest'));
-
-		$db->transaction_begin();
-		$rid = $this->get_record_id($pinfo['id']);
-		if (!is_null($rid))
-		{
-			$db->delete_item('records', array(
-				$DBOP['='], 'id', $rid));
-			$db->delete_item('sources', array(
-				$DBOP['='], 'rid', $rid));
-		}
-
-		if ($user->is_grp_member(GID_SUPER_SUBMITTER))
-		{
-			$st = RECORD_STATUS_WAITING_TO_BE_FETCHED;
-			$cid = 0;
-		}
-		else
-		{
-			$st = RECORD_STATUS_WAITING_FOR_CONTEST;
-			$cid = $this->data['id'];
-		}
-		submit_add_record($pinfo['id'], $lid, $src, $pinfo['io'], $st, $cid);
-		$db->transaction_commit();
-
-		return FALSE;
+		submit_add_record($pinfo['id'], $lid, $src, $pinfo['io'],
+			RECORD_STATUS_WAITING_TO_BE_FETCHED, $this->data['id']);
+		return TRUE;
 	}
 
 	public function judge_done($rid)
@@ -208,26 +181,32 @@ class Ctal_oi extends Ctal
 		$row = $db->select_from('records', array('status', 'pid', 'uid', 'score', 'time'),
 			array($DBOP['='], 'id', $rid));
 		if (count($row) != 1)
-			throw new Exc_inner(__('Ctal_oi::judge_done: no such record #%d', $rid));
-		$db->transaction_begin();
+			throw new Exc_inner(__('no such record #%d', $rid));
+
 		$row = $row[0];
 		$where = array(
 			$DBOP['&&'],
 			$DBOP['='], 'cid', $this->data['id'],
 			$DBOP['='], 'uid', $row['uid']);
-		$val = $db->select_from('contests_oi', array('prob_result', 'total_score', 'total_time'), $where);
+		$val = $db->select_from('contests_freesub', array('prob_result', 'total_score', 'total_time'), $where);
 		$res_new = array(
 				intval($row['status']), intval($row['score']),
 				intval($row['time']), intval($rid));
 		if (count($val) == 1)
 		{
 			$val = $val[0];
+			$prob_result = json_decode($val['prob_result'], TRUE);
+			if (isset($prob_result[$row['pid']]))
+			{
+				$cpres = $prob_result[$row['pid']];
+				$val['total_score'] -= $cpres[1];
+				$val['total_time'] -= $cpres[2];
+			}
 			$val['total_score'] += $row['score'];
 			$val['total_time'] += $row['time'];
-			$res = json_decode($val['prob_result'], TRUE);
-			$res[$row['pid']] = $res_new;
-			$val['prob_result'] = json_encode($res);
-			$db->update_data('contests_oi', $val, $where);
+			$prob_result[$row['pid']] = $res_new;
+			$val['prob_result'] = json_encode($prob_result);
+			$db->update_data('contests_freesub', $val, $where);
 		} else
 		{
 			$val = array(
@@ -237,40 +216,13 @@ class Ctal_oi extends Ctal
 				'total_time' => $row['time'],
 				'prob_result' => json_encode(array(
 					intval($row['pid']) => $res_new)));
-			$db->insert_into('contests_oi', $val);
+			$db->insert_into('contests_freesub', $val);
 		}
-
-		$where = array(
-			$DBOP['&&'],
-			$DBOP['='], 'cid', $this->data['id'],
-			$DBOP['='], 'uid', 0);
-		$row = $db->select_from('contests_oi', 'total_score', $where);
-		if (count($row) != 1)
-		{
-			$db->transaction_rollback();
-			throw new Exc_inner(__('No data row for contest #%d', $this->data['id']));
-		}
-		$row = $row[0];
-		$row['total_score'] --;
-		if ($row['total_score'] == 0)
-			$db->delete_item('contests_oi', $where);
-		else
-			$db->update_data('contests_oi', $row, $where);
-
-		$db->transaction_commit();
 	}
 
 	public function result_is_ready()
 	{
-		if (isset($this->res_result_is_ready))
-			return $this->res_result_is_ready;
-		if (!$this->allow_view_prob())
-			return $this->res_result_is_ready = FALSE;
-		global $db, $DBOP;
-		return $this->res_result_is_ready = ($db->get_number_of_rows('contests_oi', array(
-			$DBOP['&&'],
-			$DBOP['='], 'cid', $this->data['id'],
-			$DBOP['='], 'uid', 0)) == 0);
+		return time() >= $this->data['time_end'];
 	}
 
 	public function get_user_amount($where = NULL)
@@ -279,13 +231,13 @@ class Ctal_oi extends Ctal
 		if (!$this->result_is_ready())
 			return NULL;
 		db_where_add_and($where, array($DBOP['='], 'cid', $this->data['id']));
-		return $db->get_number_of_rows('contests_oi', $where);
+		return $db->get_number_of_rows('contests_freesub', $where);
 	}
 
 	public function get_rank_list($where = NULL, $offset = NULL, $cnt = NULL)
 	{
 		global $db, $DBOP;
-		if (!$this->result_is_ready())
+		if (!$this->result_is_ready() || !$this->allow_view_result())
 			return NULL;
 		$probs = $db->select_from('map_prob_ct', 'pid', array(
 			$DBOP['='], 'cid', $this->data['id']), array('order' => 'ASC'));
@@ -297,7 +249,7 @@ class Ctal_oi extends Ctal
 			array_push($col, prob_future_contest($p) ? '---' : prob_get_title_by_id($p));
 		$ret = array($col);
 		db_where_add_and($where, array($DBOP['='], 'cid', $this->data['id']));
-		$rows = $db->select_from('contests_oi', NULL, $where,
+		$rows = $db->select_from('contests_freesub', NULL, $where,
 			array('total_score' => 'DESC', 'total_time' => 'ASC'),
 			$offset, $cnt);
 
@@ -343,57 +295,16 @@ class Ctal_oi extends Ctal
 	{
 		global $user;
 		if (time() < $this->data['time_end'] && (!user_check_login() || $user->id != $row['uid']))
-			$row = NULL;
+		{
+			$row['src_len'] = 0;
+			$row['time'] = 0;
+			$row['mem'] = 0;
+		}
 	}
 
 	public function allow_view_src($uid)
 	{
 		return time() >= $this->data['time_end'];
 	}
-
-	/**
-	 * @param int $pid problem id
-	 * @return int|NULL record id or NULL
-	 */
-	private function get_record_id($pid)
-	{
-		if (!user_check_login())
-			return NULL;
-		global $db, $DBOP, $user;
-		$row = $db->select_from('records', 'id', array(
-			$DBOP['&&'], $DBOP['&&'],
-			$DBOP['='], 'uid', $user->id,
-			$DBOP['='], 'pid', $pid,
-			$DBOP['='], 'cid', $this->data['id']));
-		if (count($row) != 1)
-			return NULL;
-		return intval($row[0]['id']);
-	}
-
-	/**
-	 * check whether $this->data is valid
-	 * @exception Exc_runtime
-	 */
-	private function check_data()
-	{
-		if ($this->data['time_start'] >= $this->data['time_end'])
-			throw new Exc_runtime(__('the contest seems to end before it starts'));
-		if ($this->data['time_end'] <= time())
-			throw new Exc_runtime(__('the contest seems to have ended in the past'));
-	}
-}
-
-function _ctal_oi_judge($cid)
-{
-	global $db, $DBOP;
-	$where = array($DBOP['='], 'cid', $cid);
-
-	$db->transaction_begin();
-	$num = $db->update_data('records', array('status' => RECORD_STATUS_WAITING_TO_BE_FETCHED), $where);
-	if ($num == 0)
-		$db->delete_item('contests_oi', $where);
-	else
-		$db->update_data('contests_oi', array('total_score' => $num), $where);
-	$db->transaction_commit();
 }
 

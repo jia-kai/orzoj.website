@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: submit.php
- * $Date: Wed Dec 21 16:28:14 2011 +0800
+ * $Date: Fri Jan 06 21:13:23 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -93,7 +93,7 @@ function submit_src_get_form($pid)
 /**
  * parse posted data and submit the source
  * @exception Exc_runtime
- * @return void
+ * @return bool whether the submission will be judged immediately
  */
 function submit_src()
 {
@@ -125,14 +125,12 @@ function submit_src()
 
 	$ct = ctal_get_class_by_pid($pid);
 	if ($ct)
-		$ct->user_submit($row, $plang, $src);
-	else
-	{
-		if (!$user->is_grp_member(GID_SUPER_SUBMITTER) && !prob_check_perm($user->get_groups(), $row['perm']))
-			throw new Exc_runtime(__('permission denied for this problem'));
-		$io = $row['io'];
-		submit_add_record($pid, $plang, $src, $io);
-	}
+		return $ct->user_submit($row, $plang, $src);
+	if (!$user->is_grp_member(GID_SUPER_SUBMITTER) && !prob_check_perm($user->get_groups(), $row['perm']))
+		throw new Exc_runtime(__('permission denied for this problem'));
+	$io = $row['io'];
+	submit_add_record($pid, $plang, $src, $io);
+	return TRUE;
 }
 
 /**

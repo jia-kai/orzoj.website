@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Mon Nov 15 19:38:49 2010 +0800
+ * $Date: Fri Jan 06 22:29:16 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -28,6 +28,8 @@ if (!defined('IN_ORZOJ'))
 	exit;
 
 require_once $includes_path . 'problem.php';
+
+$CONTEST_TYPE2CLASS = array('freesub', 'oi', 'acm');
 
 /**
  * contest abstract layer
@@ -89,10 +91,16 @@ abstract class Ctal
 	abstract protected function view_prob(&$pinfo);
 
 	/**
-	 * whether problem or result of the contest is allowed to be viewed
+	 * whether problems the contest is allowed to be viewed
 	 * @return bool
 	 */
-	abstract protected function allow_viewing();
+	abstract protected function allow_view_prob();
+
+	/**
+	 * whether result the contest is allowed to be viewed
+	 * @return bool
+	 */
+	abstract protected function allow_view_result();
 
 	/**
 	 * get a list of problems in the contest
@@ -115,7 +123,7 @@ abstract class Ctal
 	 * @param array $pinfo problem information, containing $PROB_SUBMIT_PINFO (defined in problem.php)
 	 * @param int $lid programming language id
 	 * @param string $src source
-	 * @return void
+	 * @return bool whether the submission will be judged immediately
 	 */
 	abstract protected function user_submit($pinfo, $lid, $src);
 
@@ -140,7 +148,7 @@ abstract class Ctal
 	abstract protected function get_user_amount($where = NULL);
 
 	/**
-	 * get final rank list of the problem
+	 * get final rank list of the contest
 	 * @param array|NULL $where additional where caluse for column 'uid' (see /includes/db/dbal.php for where clause syntax)
 	 * @return array a 2-dimension array representing the result
 	 *		[0][i]: (0 <= i < m)
@@ -156,7 +164,7 @@ abstract class Ctal
 
 	/**
 	 * this function is called when an unprivileged user wants to view a record of this contest
-	 * @param &array $row a $row from the record table
+	 * @param &array $row a $row from the records table, set it to NULL if viewing not allowed
 	 * @return void
 	 */
 	abstract protected function filter_record(&$row);
@@ -168,9 +176,19 @@ abstract class Ctal
 	 * @return bool
 	 */
 	abstract protected function allow_view_src($uid);
-}
 
-$CONTEST_TYPE2CLASS = array('oi', 'acm');
+	/**
+	 * check whether $this->data is valid
+	 * @exception Exc_runtime
+	 */
+	protected function check_data()
+	{
+		if ($this->data['time_start'] >= $this->data['time_end'])
+			throw new Exc_runtime(__('the contest seems to end before it starts'));
+		if ($this->data['time_end'] <= time())
+			throw new Exc_runtime(__('the contest seems to have ended in the past'));
+	}
+}
 
 
 /**

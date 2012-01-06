@@ -1,7 +1,7 @@
 #!/bin/sh -e
 pushd .
 cd ..
-files='make_option.php make_avatar.php make_plang_wlang.php make_team.php make_user_grp.php'
+files='make_option.php make_avatar.php make_plang_wlang.php make_user_grp.php'
 
 for i in $files
 do

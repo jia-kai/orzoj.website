@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Fri Jan 06 15:46:16 2012 +0800
+ * $Date: Fri Jan 06 22:14:12 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -299,6 +299,25 @@ $tables = array(
 	// result for each user is stored
 	// required column: uid
 
+	/* contests_freesub */
+	// sumit at any time, no penalty
+	// use the last submission to compute final score
+	'contests_freesub' => array(
+		'cols' => array(
+			'cid' => array('type' => 'INT32'), // contest id
+			'uid' => array('type' => 'INT32'), // user id
+			'prob_result' => array('type' => 'TEXT'),
+			// json encoded array(<problem id> =>
+			//		array(<execution status>, <score>, <execution time (microsecond)>, <record id>))
+			'total_score' => array('type' => 'INT32'),
+			'total_time' => array('type' => 'INT32') // microsecond
+		),
+		'index' => array(
+			array('cols' => array('cid', 'total_score')),
+			array('cols' => array('cid', 'uid'))
+		)
+	),
+
 	/* contests_oi */
 	'contests_oi' => array( // OI contests
 		'cols' => array(
@@ -306,7 +325,7 @@ $tables = array(
 			'uid' => array('type' => 'INT32'), // user id
 			'prob_result' => array('type' => 'TEXT'),
 			// json encoded array(<problem id> =>
-			//		array(<execution status>, <score>, <execution time (microsecond)>, <record id>)))
+			//		array(<execution status>, <score>, <execution time (microsecond)>, <record id>))
 			'total_score' => array('type' => 'INT32'),
 			// before the contest ends, scheduled job id is stored in column 'total_score'
 			// before judge process finishes, remaining number of unjudged submissions is stored in
