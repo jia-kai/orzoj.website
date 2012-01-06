@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: tables.php
- * $Date: Tue Jan 03 21:54:18 2012 +0800
+ * $Date: Fri Jan 06 13:15:21 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -187,7 +187,6 @@ $tables = array(
 				// serialized array of (<field name> => <value>)
 				// e.g. array('time'=>'1s', 'memory'=>'256MB', 'desc'=>'...')
 				// see simple-doc.txt
-				// if the problem is deleted, this field is empty string
 			'perm' => array('type' => 'TEXT'), // permission
 			// serialized array (order, no_match, grp_allow, grp_deny),
 			// order = 0: allow, deny
@@ -229,9 +228,9 @@ $tables = array(
 			// have an accepted solution before
 
 			'difficulty' => array('type' => 'INT32', 'default' => DB_REAL_PRECISION),
+			// (cnt_ac_submission_sum - cnt_ac_user) / cnt_ac_submission_sum
 
 			'deleted' => array('type' => 'INT32', 'default' => 0)
-			// (cnt_ac_submission_sum - cnt_ac_user) / cnt_ac_submission_sum
 		),
 		'primary_key' => 'id',
 		'index' => array(
@@ -239,6 +238,9 @@ $tables = array(
 				'type' => 'UNIQUE',
 				'cols' => array('code')
 			),
+			array(
+				'cols' => array('deleted')
+			)
 		),
 		'index_len' => array(
 			'code' => PROB_CODE_LEN_MAX

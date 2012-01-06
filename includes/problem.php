@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: problem.php
- * $Date: Tue Jan 03 21:57:04 2012 +0800
+ * $Date: Fri Jan 06 13:13:40 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -141,6 +141,7 @@ function _prob_get_list_make_where($gid, $title_pattern)
 	if (!is_null($title_pattern) && strlen($title_pattern))
 		db_where_add_and($where, array($DBOP['like'], 'title', $title_pattern));
 
+	db_where_add_and($where, array($DBOP['='], 'deleted', 0));
 	return $where;
 }
 
@@ -245,8 +246,6 @@ function prob_get_list($fields, $gid = NULL, $title_pattern = NULL, $order_by = 
 			if (prob_future_contest($pid))
 				$row = NULL;
 			else if (!prob_check_perm($grp, $row['perm']))
-				$row = NULL;
-			else if ((int)($row['deleted']) == 1)
 				$row = NULL;
 		}
 
@@ -473,14 +472,16 @@ function prob_grp_get_id_by_name($name)
 /**
  * delete a problem
  * if the problem has no associated submissions, contests and posts, it will be deleted;
- * otherwise it will be marked as deleted (set 'desc' to empty string)
+ * otherwise it will be marked as deleted 
  * !!! no permission verification performed in this function !!!
  * @param int $pid problem id
  * @return void
  */
 function prob_delete($pid)
 {
-	global $db, $DBOP;
+	global $db, $DBOP, $user;
+	if (!$user->is_grp_member(GID_ADMIN_PROB))
+		return;
 	$db->update_data('problems', array('deleted' => 1),
 		array($DBOP['='], 'id', $pid));
 }

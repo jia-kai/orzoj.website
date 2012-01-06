@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem.php
- * $Date: Fri Oct 29 13:14:02 2010 +0800
+ * $Date: Fri Jan 06 13:05:42 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -29,7 +29,8 @@ if (!defined('IN_ORZOJ'))
 
 /*
  * page argument: [<problem code: int>]
- *		problem code: if set, the specific problem will be showed, otherwise						the problem list will be showed.
+ *		problem code: if set, the specific problem will be showed, otherwise
+ *		the problem list will be shown.
  */
 
 
