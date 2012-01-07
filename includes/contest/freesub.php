@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: freesub.php
- * $Date: Fri Jan 06 22:31:40 2012 +0800
+ * $Date: Sat Jan 07 16:00:11 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -62,8 +62,9 @@ class Ctal_freesub extends Ctal
 		if (time() >= $this->data['time_start'])
 			throw new Exc_runtime(__('contests having already started can not be deleted'));
 		global $db, $DBOP;
-		$where = array($DBOP['='], 'iid', $this->data['id']);
+		$where = array($DBOP['='], 'id', $this->data['id']);
 		$db->delete_item('contests', $where);
+		$where[1] = 'cid';
 	}
 
 	public function view_prob(&$pinfo)

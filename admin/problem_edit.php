@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: Sat Jan 07 10:25:43 2012 +0800
+ * $Date: Sat Jan 07 17:32:20 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -281,10 +281,10 @@ function edit_io()
 		$checked = array('', 'checked="checked"');
 	}
 	echo '<div class="form-field">';
-	echo '<label>' . __('Problem I/O:') . '</label>';
+	echo '<div><label>' . __('Problem I/O:') . '</label></div>';
 	echo '<div class="form-field-prob-io">';
 	echo '<div>';
-	echo '<span>' . __('I/O method:') . '</span>';
+	echo '<label>' . __('I/O method:') . '</label>';
 
 	$id = get_unique_id();
 	echo "<input type='radio' onchange='$(\"#prob-io\").slideUp()' name='io_method' value='0' id='$id' $checked[0] />";

@@ -1,6 +1,6 @@
 /*
  * $File: style.css
- * $Date: Fri Nov 05 20:23:26 2010 +0800
+ * $Date: Sat Jan 07 17:33:18 2012 +0800
 
  This file is part of orzoj
 
@@ -184,7 +184,13 @@ div.form-field
 
 div.form-field input
 {
-	width: 300px;
+	width: 350px;
+}
+
+div.form-field input[type="radio"]
+{
+	width: 20px;
+	margin-right: 10px;
 }
 
 div.form-field label
@@ -246,7 +252,12 @@ div.gid-selector li.subtree
 	list-style-type: none;
 }
 
-div.form-field-prob-io, div.form-field-prob-io span, div.form-field-prob-io input
+div.form-field-prob-io
+{
+	float: left;
+}
+
+div.form-field-prob-io input, div.form-field-prob-io label
 {
 	float: left;
 }
@@ -262,6 +273,7 @@ div.form-field-prob-io label
 	clear: none;
 	margin-right: 20px;
 	font-weight: normal;
+	width: 150px;
 }
 
 div.form-help-msg
