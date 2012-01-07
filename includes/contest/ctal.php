@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Fri Jan 06 22:29:16 2012 +0800
+ * $Date: Fri Jan 06 22:48:50 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -30,6 +30,8 @@ if (!defined('IN_ORZOJ'))
 require_once $includes_path . 'problem.php';
 
 $CONTEST_TYPE2CLASS = array('freesub', 'oi', 'acm');
+$CONTEST_TYPE2NAME = array(__('free submission'), __('Olympiad in informatics'),
+			__('ACM/ICPC'));
 
 /**
  * contest abstract layer
@@ -250,15 +252,8 @@ function ctal_filter_record($cid, &$row)
  */
 function &ctal_get_typename_all()
 {
-	static $TEXT = NULL;
-	if (is_null($TEXT))
-	{
-		$TEXT = array(
-			__('Olympiad in informatics'),
-			__('ACM/ICPC')
-		);
-	}
-	return $TEXT;
+	global $CONTEST_TYPE2NAME;
+	return $CONTEST_TYPE2NAME;
 }
 
 /**
