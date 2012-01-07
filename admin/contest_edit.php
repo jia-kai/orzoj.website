@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_edit.php
- * $Date: Thu Nov 04 16:09:16 2010 +0800
+ * $Date: Sat Jan 07 16:13:48 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -117,13 +117,15 @@ $fields = array(
 	array('edit_time_start', 'get_time_start'),
 	array('edit_time_end', 'get_time_end'),
 	array('edit_perm', 'get_perm'),
-	array('edit_order', 'get_order')
+	array('edit_prob', 'get_prob')
 );
+$add_ct_after_got_id_func = array('get_prob');
 
 if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify'] == session_get('edit_verify'))
 {
 	try
 	{
+		$db->transaction_begin();
 		foreach ($fields as $f)
 			if (is_array($f))
 				$f[1]();
@@ -131,7 +133,9 @@ if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify']
 		{
 			$cid = $ct->add_contest();
 			$_GET['edit'] = $cid;
-			$cur_page_link  = "index.php?page=$cur_page&amp;edit=$cid";
+			foreach ($add_ct_after_got_id_func as $f)
+				$f();
+			$cur_page_link = "index.php?page=$cur_page&amp;edit=$cid";
 		}
 		else
 		{
@@ -140,10 +144,12 @@ if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify']
 		}
 		session_set('edit_verify', NULL);
 		echo "1index.php?page=$cur_page&edit=$cid&success_info=1";
+		$db->transaction_commit();
 		return;
 	}
 	catch(Exc_orzoj $e)
 	{
+		$db->transaction_rollback();
 		echo '0';
 		get_info_div('error', __('Failed to add/update contest: %s', htmlencode($e->msg())));
 		return;
@@ -239,8 +245,11 @@ function get_time_start()
 {
 	$time = strtotime(get_post('time_start'));
 	if ($time === FALSE)
-		throw new Exc_runtime('failed to convert start time. Is the format correct?');
+		throw new Exc_runtime(__('failed to convert start time. Is the format correct?'));
 	global $ct;
+	$orig_time_start = get_array_val($ct->data, 'time_start');
+	if ($orig_time_start && $orig_time_start < time() && $time != $orig_time_start)
+		throw new Exc_runtime(__('can not change the start time of a contest that has aleady started'));
 	$ct->data['time_start'] = $time;
 }
 
@@ -275,8 +284,13 @@ function get_time_end()
 {
 	$time = strtotime(get_post('time_end'));
 	if ($time === FALSE)
-		throw new Exc_runtime('failed to convert end time. Is the format correct?');
+		throw new Exc_runtime(__('failed to convert end time. Is the format correct?'));
+	if ($time < time())
+		throw new Exc_runtime(__('can not set the end time to the past'));
 	global $ct;
+	$orig_time_start = get_array_val($ct->data, 'time_start');
+	if ($orig_time_start && $time <= $orig_time_start)
+		throw new Exc_runtime(__('this contest ends even before it starts'));
 	$ct->data['time_end'] = $time;
 }
 
@@ -296,56 +310,50 @@ function get_perm()
 	$ct->data['perm'] = form_get_perm_editor_val('perm');
 }
 
-function edit_order()
+function edit_prob()
 {
 	global $ct, $db, $DBOP;
 	$cid = get_array_val($ct->data, 'id');
-	if (!$cid)
-		return;
-	echo '<div class="form-field" style="float: none">';
-	echo '<table class="page-table">';
-	echo '<caption>' . __('Problem order') . '</caption><br />';
-	echo '<tr>';
-	foreach (array(__('ID'), __('TITLE'), __('CODE'), __('ORDER')) as $f)
-		echo '<th>' . $f . '</th>';
-	echo '</tr>';
-	$rows = $db->select_from('map_prob_ct',
-		array('pid', 'order'), array($DBOP['='], 'cid', $cid), array('order' => 'ASC'));
-	foreach ($rows as $row)
+	$prob_code = array();
+	if ($cid)
 	{
-		echo '<tr>';
-		$pid = $row['pid'];
-		foreach (array($pid, prob_get_title_by_id($pid), prob_get_code_by_id($pid)) as $v)
-			echo '<td>' . $v . '</td>';
-		echo '<td>';
-		echo "<input style='width:30px' type='text' name='porder_$pid' value='$row[order]' />";
-		echo '</td>';
-		echo '</tr>';
+		$db_rows = $db->select_from('map_prob_ct',
+			'pid', array($DBOP['='], 'cid', $cid), array('order' => 'ASC'));
+		foreach ($db_rows as &$row)
+			array_push($prob_code, prob_get_code_by_id($row['pid']));
 	}
-	echo '</table>';
-	echo '</div>';
+
+	form_get_input(__('Problems(use problem code, separated by comma)'), 'prob_code',
+		implode(',', $prob_code), TRUE, 'input-prob-code');
 }
 
-function get_order()
+function get_prob()
 {
 	global $ct, $db, $DBOP;
 	$cid = get_array_val($ct->data, 'id');
 	if (!$cid)
 		return;
-	$rows = $db->select_from('map_prob_ct',
-		array('pid', 'order'), array($DBOP['='], 'cid', $cid), array('order' => 'ASC'));
-	$where = array($DBOP['&&'],
-		$DBOP['='], 'pid', -1,
-		$DBOP['='], 'cid', $cid);
-	foreach ($rows as $row)
+	$prob_id = array();
+	foreach (explode(',', $_POST['prob_code']) as $pcode)
 	{
-		$pid = $row['pid'];
-		if ($val = get_array_val($_POST, "porder_$pid"))
-		{
-			$where[3] = $pid;
-			$db->update_data('map_prob_ct', array('order' => $val), $where);
-		}
+		$pcode = trim($pcode);
+		if (!strlen($pcode))
+			continue;
+		$id = prob_get_id_by_code($pcode);
+		if (is_null($id))
+			throw new Exc_runtime(__('unknown problem code: %s', $pcode));
+		$other_ct = prob_future_contest($id);
+		if (!is_null($other_ct) && $other_ct != $cid)
+			throw new Exc_runtime(__('problem %s already belongs to upcoming contest %d',
+				$pcode, $other_ct));
+		array_push($prob_id, $id);
 	}
+	if (empty($prob_id))
+		throw new Exc_runtime(__('no problem in this contest'));
+	$db->delete_item('map_prob_ct', array($DBOP['='], 'cid', $cid));
+	for ($i = 0; $i < count($prob_id); $i ++)
+		$db->insert_into('map_prob_ct', array('pid' => $prob_id[$i],
+			'cid' => $cid, 'order' => $i));
 }
 
 ?>
@@ -396,6 +404,17 @@ function delete_contest()
 		});
 	}
 }
+
+$('#input-prob-code').autocomplete("contest_edit_complete_prob.php", {
+	multiple: true,
+	multipleSeparator: ",",
+	formatItem: function(row) {
+		return row[0] + " (<?php echo __('title:')?>" + row[1] + ")";
+	},
+	formatResult: function (row) {
+		return row[0];
+	}
+});
 
 </script>
 

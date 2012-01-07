@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: problem_edit.php
- * $Date: Wed Nov 17 15:26:08 2010 +0800
+ * $Date: Sat Jan 07 17:32:20 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -96,7 +96,6 @@ if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify']
 			$pid = $_GET['edit'];
 		}
 		get_grp();
-		get_contest();
 		session_set('edit_verify', NULL);
 		echo "1index.php?page=$cur_page&edit=$pid&success_info=1";
 		return;
@@ -133,7 +132,6 @@ foreach ($fields as $f)
 	$f();
 }
 edit_grp();
-edit_contest();
 $edit_verify = get_random_id();
 session_set('edit_verify', $edit_verify);
 form_get_hidden('edit_verify', $edit_verify);
@@ -283,10 +281,10 @@ function edit_io()
 		$checked = array('', 'checked="checked"');
 	}
 	echo '<div class="form-field">';
-	echo '<label>' . __('Problem I/O:') . '</label>';
+	echo '<div><label>' . __('Problem I/O:') . '</label></div>';
 	echo '<div class="form-field-prob-io">';
 	echo '<div>';
-	echo '<span>' . __('I/O method:') . '</span>';
+	echo '<label>' . __('I/O method:') . '</label>';
 
 	$id = get_unique_id();
 	echo "<input type='radio' onchange='$(\"#prob-io\").slideUp()' name='io_method' value='0' id='$id' $checked[0] />";
@@ -377,47 +375,6 @@ function get_grp()
 			$db->insert_into('map_prob_grp', array(
 				'pid' => $pid, 'gid' => $i
 			));
-}
-
-function edit_contest()
-{
-	$list = ctal_get_list(array('id', 'type', 'name'), 0);
-	$list = array_merge($list, ctal_get_list(array('id', 'type', 'name'), 1));
-	$opt = array(__('None') => 0);
-	foreach ($list as $r)
-		$opt[$r['id'] . ':' . ctal_get_typename_by_type($r['type']) .
-			':' . $r['name']] = $r['id'];
-	global $pinfo;
-	$default = NULL;
-	if (!is_null($pid = get_array_val($pinfo, 'id')))
-		$default = prob_future_contest($pid);
-	if (is_null($default))
-		$default = '0';
-	echo '<div class="form-field">';
-	form_get_select(__('Related contest:'), 'ctid', $opt, $default);
-	echo '</div>';
-}
-
-function get_contest()
-{
-	global $pinfo, $db, $DBOP;
-	$cid = intval(get_post('ctid'));
-	$cur_cid = intval(prob_future_contest($pid = $pinfo['id']));
-	if ($cid == $cur_cid)
-		return;
-	$where = array($DBOP['&&'],
-			$DBOP['='], 'cid', $cur_cid,
-			$DBOP['='], 'pid', $pid);
-	if (!$cid)
-		$db->delete_item('map_prob_ct', $where);
-	else if (!$cur_cid)
-		$db->insert_into('map_prob_ct',
-			array('cid' => $cid, 'pid' => $pid, 'order' => $pid));
-	else
-	{
-
-		$db->update_data('map_prob_ct', array('cid' => $cid), $where);
-	}
 }
 
 ?>
