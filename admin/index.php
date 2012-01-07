@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: index.php
- * $Date: Tue Nov 02 10:56:18 2010 +0800
+ * $Date: Sat Jan 07 11:37:33 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -77,6 +77,7 @@ try
 <head>
 	<title>---</title>
 	<link href="style.css" rel="stylesheet" type="text/css" />
+	<link href="js/style.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript">
 		var CKEDITOR_BASEPATH = '<?php echo get_page_url($root_path . 'contents/editors/ckeditor');?>/';
 	</script>
@@ -86,7 +87,7 @@ try
 	<script type="text/javascript">
 		CKEDITOR.basePath = CKEDITOR_BASEPATH;
 	</script>
-	<script type="text/javascript" src="./js/jquery.js"></script>
+	<script type="text/javascript" src="js/jquery.js"></script>
 </head>
 <?php
 				if ($_GET['page'] != 'nav')

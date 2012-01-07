@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: contest_edit.php
- * $Date: Thu Nov 04 16:09:16 2010 +0800
+ * $Date: Sat Jan 07 11:46:00 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -117,7 +117,7 @@ $fields = array(
 	array('edit_time_start', 'get_time_start'),
 	array('edit_time_end', 'get_time_end'),
 	array('edit_perm', 'get_perm'),
-	array('edit_order', 'get_order')
+	array('edit_prob', 'get_prob')
 );
 
 if (isset($_GET['do']) && !empty($_POST['edit_verify']) && $_POST['edit_verify'] == session_get('edit_verify'))
@@ -296,25 +296,37 @@ function get_perm()
 	$ct->data['perm'] = form_get_perm_editor_val('perm');
 }
 
-function edit_order()
+function edit_prob()
 {
 	global $ct, $db, $DBOP;
 	$cid = get_array_val($ct->data, 'id');
 	if (!$cid)
 		return;
+	$prob_id = array();
+	$prob_code = array();
+	$db_rows = $db->select_from('map_prob_ct',
+		array('pid', 'order'), array($DBOP['='], 'cid', $cid), array('order' => 'ASC'));
+	foreach ($db_rows as &$row)
+	{
+		array_push($prob_id, $row['pid']);
+		array_push($prob_code, prob_get_code_by_id($row['pid']));
+	}
+
+	form_get_input(__('Problems(use problem code, separated by comma'), 'prob_code',
+		implode(',', $prob_code), TRUE, 'input-prob-code');
+
 	echo '<div class="form-field" style="float: none">';
+	echo '<label style="float: left">' . __('Problems in the contest') . '</label>';
 	echo '<table class="page-table">';
-	echo '<caption>' . __('Problem order') . '</caption><br />';
+	echo '<caption>' . __('Problems') . '</caption><br />';
 	echo '<tr>';
 	foreach (array(__('ID'), __('TITLE'), __('CODE'), __('ORDER')) as $f)
 		echo '<th>' . $f . '</th>';
 	echo '</tr>';
-	$rows = $db->select_from('map_prob_ct',
-		array('pid', 'order'), array($DBOP['='], 'cid', $cid), array('order' => 'ASC'));
-	foreach ($rows as $row)
+	for ($i = 0; $i < count($prob_id); $i ++)
 	{
 		echo '<tr>';
-		$pid = $row['pid'];
+		$pid = $prob_id[$i];
 		foreach (array($pid, prob_get_title_by_id($pid), prob_get_code_by_id($pid)) as $v)
 			echo '<td>' . $v . '</td>';
 		echo '<td>';

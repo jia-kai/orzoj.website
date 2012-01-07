@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: functions.php
- * $Date: Mon Nov 15 16:23:17 2010 +0800
+ * $Date: Sat Jan 07 11:40:14 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -413,11 +413,13 @@ function get_array_val(&$array, $key, $default = NULL)
  * @param string $post_name
  * @param string|NULL $default
  * @param bool $add_div whether to put the input in a div with class form-field
- * @return void
+ * @param string|NULL $id id of the input, NULL if using random id
+ * @return string id of the input
  */
-function form_get_input($prompt, $post_name, $default = NULL, $add_div = TRUE)
+function form_get_input($prompt, $post_name, $default = NULL, $add_div = TRUE, $id = NULL)
 {
-	$id = get_unique_id();
+	if (is_null($id))
+		$id = get_unique_id();
 	if (is_null($default))
 		$default = '';
 	if ($add_div)
@@ -425,6 +427,7 @@ function form_get_input($prompt, $post_name, $default = NULL, $add_div = TRUE)
 	echo "<label for='$id'>$prompt</label><input type='text' name='$post_name' value='$default' id='$id' />";
 	if ($add_div)
 		echo '</div>';
+	return $id;
 }
 
 /**
