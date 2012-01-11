@@ -37,7 +37,7 @@ try
 	$POST_MAN_OPTION = array('tid', 'action', 'pid', 'start_page');
 	$POST_ACTION_SET = array(
 		'stick', 'unstick',
-		'set_boutique', 'unset_boutique',
+		'set_elaborate', 'unset_elaborate',
 		'lock', 'unlock', 
 		'delete', 'do_delete',
 		'delete_post', 'do_delete_post'
@@ -101,13 +101,13 @@ try
 		post_topic_set_attrib($tid, 'is_top', FALSE);
 		_report_success(__('Unstick'));
 		break;
-	case 'set_boutique':
-		post_topic_set_attrib($tid, 'is_boutique', TRUE);
-		_report_success(__('Set boutique'));
+	case 'set_elaborate':
+		post_topic_set_attrib($tid, 'is_elaborate', TRUE);
+		_report_success(__('Set elaborate'));
 		break;
-	case 'unset_boutique':
-		post_topic_set_attrib($tid, 'is_boutique', FALSE);
-		_report_success(__('Unset boutique'));
+	case 'unset_elaborate':
+		post_topic_set_attrib($tid, 'is_elaborate', FALSE);
+		_report_success(__('Unset elaborate'));
 		break;
 	case 'lock':
 		post_topic_set_attrib($tid, 'is_locked', TRUE);

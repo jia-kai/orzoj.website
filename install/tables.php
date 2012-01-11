@@ -551,7 +551,7 @@ $tables = array(
 			'priority' => array('type' => 'INT32', 'default' => 0), // every post topic should have a priority, the bigger, the prior
 			'is_top' => array('type' => 'INT32', 'default' => 0), //whether the post should be on the top, ordering by priority and time if more than one.
 			'is_locked' => array('type' => 'INT32', 'default' => 0), // whether the post is locked
-			'is_boutique' => array('type' => 'INT32', 'default' => 0), // where the post is a boutique 
+			'is_elaborate' => array('type' => 'INT32', 'default' => 0), // where the post is a elaborate 
 			//'view_gid' => array('type' => 'TEXT'),
 			'type' => array('type' => 'INT32', 'default' => 1),
 			/* one of the attribs below should setted

@@ -189,7 +189,7 @@ try
 		'last_reply_time', 'last_reply_user', 
 		'nickname_last_reply_user', 'username_last_reply_user', 
 		'nickname_uid', 'username_uid', 
-		'subject', 'content', 'is_top', 'is_locked', 'is_boutique',
+		'subject', 'content', 'is_top', 'is_locked', 'is_elaborate',
 		'reply_amount', 'viewed_amount'), 
 		$type,
 		($start_page - 1) * $POST_TOPIC_PER_PAGE, 
@@ -303,8 +303,8 @@ function _cv_subject()
 		else
 			$s .= '<a style="color: #ccccff" class="post-list-prob-code" target="_blank" href="' . t_get_link('problem', $prob_code, TRUE, TRUE) . '">[' . $prob_code . ']</a>';
 	}
-	if ($post['is_boutique'])
-		$s .= '<span class="post-subject-boutique">[' . __('Boutique') . ']</span>';
+	if ($post['is_elaborate'])
+		$s .= '<span class="post-subject-elaborate">[' . __('Elaborate') . ']</span>';
 
 	$s .= '</div>';
 	echo $s;
