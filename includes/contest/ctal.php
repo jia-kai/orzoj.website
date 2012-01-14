@@ -1,7 +1,7 @@
 <?php
 /* 
  * $File: ctal.php
- * $Date: Fri Jan 06 22:48:50 2012 +0800
+ * $Date: Sat Jan 14 19:31:02 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -29,9 +29,11 @@ if (!defined('IN_ORZOJ'))
 
 require_once $includes_path . 'problem.php';
 
-$CONTEST_TYPE2CLASS = array('freesub', 'oi', 'acm');
-$CONTEST_TYPE2NAME = array(__('free submission'), __('Olympiad in informatics'),
-			__('ACM/ICPC'));
+//$CONTEST_TYPE2CLASS = array('freesub', 'oi', 'acm');
+//$CONTEST_TYPE2NAME = array(__('free submission'), __('Olympiad in informatics'),
+//			__('ACM/ICPC'));
+$CONTEST_TYPE2CLASS = array('oi', 'acm');
+$CONTEST_TYPE2NAME = array(__('Olympiad in informatics'), __('ACM/ICPC'));
 
 /**
  * contest abstract layer
