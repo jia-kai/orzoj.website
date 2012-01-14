@@ -23,7 +23,7 @@ function add_post_topic($prob_id = NULL)
 	$is_top = (rand(0, 99) < 20) ? 1 : 0;
 	$priority = ($is_top ? 5 : 0);
 	$is_locked = rand(0, 100) < 20 ? 1 : 0;
-	$is_boutique = rand(0, 1);
+	$is_elaborate = rand(0, 1);
 	$type = rand(1, 3); // vote is temporary disabled
 	$subject = 'subject ' . $i;
 
@@ -32,7 +32,7 @@ function add_post_topic($prob_id = NULL)
 
 	$val = array();
 	foreach (array('time', 'uid', 'prob_id', 
-		'priority', 'is_top', 'is_locked', 'is_boutique',
+		'priority', 'is_top', 'is_locked', 'is_elaborate',
 		'type', 'subject', 'last_reply_time', 'last_reply_user') as $item)
 		$val[$item] = $$item;
 	$tid = $db->insert_into('post_topics', $val);

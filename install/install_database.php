@@ -253,7 +253,7 @@ function add_post_topic_welcome()
 	$is_top = 0;
 	$priority = 0;
 	$is_locked = 0;
-	$is_boutique = 0;
+	$is_elaborate = 0;
 	$type = 1;
 	$subject = __('Welcome to %s!', $website_name);
 
@@ -262,7 +262,7 @@ function add_post_topic_welcome()
 
 	$val = array();
 	foreach (array('time', 'uid', 'prob_id', 
-		'priority', 'is_top', 'is_locked', 'is_boutique',
+		'priority', 'is_top', 'is_locked', 'is_elaborate',
 		'type', 'subject', 'last_reply_time', 'last_reply_user') as $item)
 		$val[$item] = $$item;
 	$tid = $db->insert_into('post_topics', $val);

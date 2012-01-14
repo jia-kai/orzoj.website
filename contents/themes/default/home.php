@@ -171,8 +171,8 @@ function _cv_subject($post)
 		$prob_code = prob_get_code_by_id($post['prob_id']);
 		$s .= '<a style="color: #ccccff" class="post-list-prob-code" target="_blank" href="' . t_get_link('problem', $prob_code, TRUE, TRUE) . '">[' . $prob_code . ']</a>';
 	}
-	if ($post['is_boutique'])
-		$s .= '<span class="post-subject-boutique">[' . __('Boutique') . ']</span>';
+	if ($post['is_elaborate'])
+		$s .= '<span class="post-subject-elaborate">[' . __('Elaborate') . ']</span>';
 	$s .= '</div>';
 	$s .= '</td>';
 	echo $s;
@@ -236,7 +236,7 @@ function gen_newest_posts()
 		'nickname_last_reply_user', 'username_last_reply_user', 
 		'username_uid', 'nickname_uid',
 		'subject', 
-		'is_top', 'is_locked', 'is_boutique', 
+		'is_top', 'is_locked', 'is_elaborate', 
 		'type', 'reply_amount', 'viewed_amount', 'prob_id');
 	$topics = post_get_topic_list($fields, NULL, 0, 8);
 	$cols = array(

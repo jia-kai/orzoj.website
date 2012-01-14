@@ -32,7 +32,7 @@ require_once $includes_path . 'problem.php';
 /* post topic constants */
 $POST_TOPIC_FIELDS_SET = array('id', 'time', 'uid', 'prob_id',
 	'reply_amount', 'viewed_amount', 'floor_amount',
-	'priority', 'is_top', 'is_locked', 'is_boutique', 'type',
+	'priority', 'is_top', 'is_locked', 'is_elaborate', 'type',
 	'last_reply_time', 'last_reply_user',
    	'subject', 'content',
 	'nickname_uid', 'nickname_last_reply_user',
@@ -58,7 +58,7 @@ $POST_TYPE_TO_NUM = array();
 foreach ($POST_TYPE_SET as $key => $val)
 	$POST_TYPE_TO_NUM[$val] = $key;
 
-$POST_TOPIC_ATTRIB_SET = array('is_top', 'is_locked', 'is_boutique');
+$POST_TOPIC_ATTRIB_SET = array('is_top', 'is_locked', 'is_elaborate');
 $POST_TOPIC_STATISTIC_SET = array('reply_amount', 'viewed_amount', 'floor_amount');
 
 $POST_TOPIC_PRIORITY = array('is_top' => 5, 'normal' => 0);
@@ -261,7 +261,7 @@ function _deal_addtional_fields_end(&$fields, $ID_SET, &$additional_fields, &$li
  * @param int|NULL $uid NULL ALL of the users, or int a specific user
  * @param string|NULL $subject the pattern the subject of topics is to be matched. the pattern should be a database-recognizable pattern, or a human-readable pattern transformed by includes/functions.php : transform_pattern
  * @param string|NULL $author the author of topic. if $uid is set, this option will not work
- * @param array|NULL $attrib valid attributes : array('is_top' => BOOL, 'is_locked' => BOOL, 'is_boutique' => BOOL), if set more than one, they will all to be matched
+ * @param array|NULL $attrib valid attributes : array('is_top' => BOOL, 'is_locked' => BOOL, 'is_elaborate' => BOOL), if set more than one, they will all to be matched
  * @exception Exc_runtime if user does not exists
  */
 function post_get_topic_list($fields = NULL, $type = NULL, $offset = NULL, $count = NULL, $uid = NULL, $subject = NULL, $author = NULL, $prob_id = NULL, $attrib = NULL)

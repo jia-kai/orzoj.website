@@ -1,7 +1,7 @@
 <?php
 /*
  * $File: post_view_single.php
- * $Date: Thu Nov 11 13:29:47 2010 +0800
+ * $Date: Wed Jan 11 14:03:04 2012 +0800
  */
 /**
  * @package orzoj-website
@@ -292,8 +292,8 @@ if ($prob_id && !_action('in-colorbox'))
 	echo '<a style="color: #ccccff" target="_blank" href="'
 		. t_get_link('problem', $prob_code, TRUE, TRUE) . '">[' . $prob_code . ']</a>';
 }
-if ($topic['is_boutique'])
-	echo '<span class="post-subject-boutique">[' . __('Boutique') . ']</span>';
+if ($topic['is_elaborate'])
+	echo '<span class="post-subject-elaborate">[' . __('Elaborate') . ']</span>';
 
 ?>
 </div><!-- class: post-subject -->
@@ -313,18 +313,18 @@ function _get_man_href($action)
 function _make_post_topic_manipulation()
 {
 	global $topic;
-	foreach (array('is_top', 'is_boutique', 'is_locked') as $item)
+	foreach (array('is_top', 'is_elaborate', 'is_locked') as $item)
 		$$item = $topic[$item];
 	echo '<div class="post-topic-manipulation">';
 	$Sticky = $is_top ? __('Unstick') : __('Stick');
-	$Boutique = $is_boutique ? __('Unset boutique') : __('Set outique');
+	$Elaborate = $is_elaborate ? __('Unset elaborate') : __('Set elaborate');
 	$Locked = $is_locked ? __('Unlock') : __('Lock');
 	$href_sticky = _get_man_href($is_top ? 'unstick' : 'stick');
-	$href_boutique = _get_man_href($is_boutique ? 'unset_boutique' : 'set_boutique');
+	$href_elaborate = _get_man_href($is_elaborate ? 'unset_elaborate' : 'set_elaborate');
 	$href_locked = _get_man_href($is_locked ? 'unlock' : 'lock');
 	$href_delete = _get_man_href('delete');
 	echo '<a class="post-subject-sticky" href="' . $href_sticky. '">[' . $Sticky. ']</a>';
-	echo '<a class="post-subject-boutique" href="' . $href_boutique . '">[' . $Boutique . ']</a>';
+	echo '<a class="post-subject-elaborate" href="' . $href_elaborate . '">[' . $Elaborate . ']</a>';
 	echo '<a class="post-subject-locked" href="' . $href_locked . '">[' . $Locked . ']</a>';
 	echo '<a class="post-subject-delete" href="' . $href_delete. '">[' . __('DELETE') . ']</a>';
 	echo '</div>';
